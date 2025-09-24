@@ -2108,11 +2108,7 @@ public class RegistreServiceImpl implements RegistreService {
 				entitatId,
 				registreId,
 				text).isPublicat();
-	}
-	
-	
-	
-	
+	}	
 
 	@Transactional(readOnly = true)
 	@Override
@@ -2170,7 +2166,8 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional(readOnly = true)
 	public FitxerDto getZipDocumentacio(
 			Long registreId,
-			String rolActual) throws Exception {
+			String rolActual,
+			boolean ambVersioImprimible) throws Exception {
 
 		FitxerDto zip = new FitxerDto();
 
@@ -2212,7 +2209,8 @@ public class RegistreServiceImpl implements RegistreService {
 								zos,
 								zipItems,
 								executor,
-								errors);
+								errors,
+								ambVersioImprimible);
 						
 						wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
 						executor.execute(wrappedRunnable);					}
@@ -2231,7 +2229,17 @@ public class RegistreServiceImpl implements RegistreService {
 				}
 				
 		        if (!errors.isEmpty()) {
-		        	throw new Exception(errors.size() + " errors generant el .zip " + errors.get(0));
+		        	// throw new Exception(errors.size() + " errors generant el .zip " + errors.get(0));
+		        	StringBuilder avisosContent = new StringBuilder();
+		        	for(String error : errors) {
+						avisosContent.append("- " + error + "\n");
+					}		        	
+		        	ZipEntry entry = new ZipEntry("errors.txt");
+		        	byte[] contingut = avisosContent.toString().getBytes();		        	
+		        	entry.setSize(contingut.length);
+		        	zos.putNextEntry(entry);
+		        	zos.write(contingut);
+		        	zos.closeEntry();		        	
 		        }
 		        
 		        for (FitxerDto fitxer: zipItems) {
@@ -2261,14 +2269,14 @@ public class RegistreServiceImpl implements RegistreService {
 			
 			zos.close();
 			
-			if (!errors.isEmpty()) {
-				throw new Exception(errors.size() + " errors generant el .zip " + errors.get(0));
-			} else {	
+//			if (!errors.isEmpty()) {
+//				throw new Exception(errors.size() + " errors generant el .zip " + errors.get(0));
+//			} else {	
 				zip.setNom(revisarContingutNom(registre.getNumero()) + ".zip");
 				zip.setContingut(baos.toByteArray());
 				zip.setContentType("application/zip");
 				return zip;
-			}
+//			}
 
 		} catch (Exception ex) {
 			String errMsg = "Error generant el .zip de documentació pel registre " + registre.getNumero() + " amb ID " + registreId + " : " + ex.getMessage();
@@ -2292,7 +2300,8 @@ public class RegistreServiceImpl implements RegistreService {
 		private ZipOutputStream zip;
 		private List<FitxerDto> zipItems;
 		ExecutorService executor;
-		private List<String> errors;		
+		private List<String> errors;
+		private boolean ambVersioImprimible;
 		
 		/** Constructor amb els objectes de consulta i el zip per actualitzar. 
 		 * @param registreHelper 
@@ -2310,7 +2319,8 @@ public class RegistreServiceImpl implements RegistreService {
 				ZipOutputStream zip, 
 				List<FitxerDto> zipItems,
 				ExecutorService executor, 
-				List<String> errors) {
+				List<String> errors,
+				boolean ambVersioImprimible) {
 			this.entitatActual = entitatActual;
 			this.justificantId = justificantId;
 			this.registreNumero = registreNumero;
@@ -2321,7 +2331,8 @@ public class RegistreServiceImpl implements RegistreService {
 			this.zip = zip;
 			this.zipItems = zipItems;
 			this.executor = executor;
-			this.errors = errors;			
+			this.errors = errors;
+			this.ambVersioImprimible = ambVersioImprimible;
 		}
 
 		@Transactional(readOnly = true)
@@ -2330,14 +2341,22 @@ public class RegistreServiceImpl implements RegistreService {
 			ConfigHelper.setEntitat(this.entitatActual);
 			try {		
 				String nom;
-				FitxerDto fitxer = new FitxerDto();
-				try {
-					fitxer = registreHelper.getAnnexFitxer(annexID, true);
-				} catch (Exception e) {
-					logger.warn("Error obtenint la versió imprimible del l'annex " + this.annexID + "\"" + annexTitol + "\", es procedeix a consultar l'original. Error: "
-								+ e.getClass() + " " + e.getMessage());
-					fitxer = registreHelper.getAnnexFitxer(annexID, false);
+				FitxerDto fitxer = null;
+				
+				if (ambVersioImprimible) {
+					try {
+						fitxer = registreHelper.getAnnexFitxerImprimible(annexID);
+					} catch (Exception e) {
+						String errMsg = "Error obtenint la versió imprimible del l'annex " + this.annexID + "\"" + annexTitol + "\", es procedeix a consultar l'original. Error: "
+								+ e.getClass() + " " + e.getMessage();
+						logger.warn(errMsg);
+						errors.add(errMsg);						
+					}					
 				}
+				
+				if (fitxer==null) {
+					fitxer = registreHelper.getAnnexFitxer(annexID, false);
+				}								
 						
 				String fitxerNom = annexFitxerNom;
 				if (justificantId == null || annexID != justificantId) {

@@ -1960,96 +1960,117 @@ public class RegistreHelper {
 	public List<RegistreEntity> findPendentsTancarArxiuByEntitat(Date date, EntitatEntity entitat) {
 		return registreRepository.findPendentsTancarArxiuByEntitat(date, entitat);
 	}
+	
+	@Transactional
+	public FitxerDto getAnnexFitxerImprimible(Long annexId) throws Exception {
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(annexId);
+	    RegistreEntity registre = registreAnnexEntity.getRegistre();
+	    FitxerDto fitxerDto = new FitxerDto();
+	    String titol = registreAnnexEntity.getFitxerNom().replace(".pdf", "_imprimible.pdf");
+	    if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
+	    	if (this.potGenerarVersioImprimible(registreAnnexEntity)) {
+	    		try {
+	    			TemporalThreadStorage.set("numeroRegistre", registre.getNumero());
+	    			fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid(), titol);
+	    		} catch (Exception ex) {
+	    			throw new Exception("Error no controlat consultant la versió imprimible: " + ex.getMessage());
+	    		}
+	    	} else {
+	    		throw new Exception("No és un document pel qual es pugui generar una versió imprimible.");
+	    	}
+	    } else {
+	    	throw new Exception("No es pot obtenir una versió imprimible d'un document que no està a l'Arxiu.");
+	    }
+	    return fitxerDto;
+	}
 
 	@Transactional
 	public FitxerDto getAnnexFitxer(Long annexId, boolean ambVersioImprimible) {
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(annexId);
-		RegistreEntity registre = registreAnnexEntity.getRegistre();
-		String titol = registreAnnexEntity.getFitxerNom().replace(".pdf", "_imprimible.pdf");
-		FitxerDto fitxerDto = new FitxerDto();
-		// if annex is already created in arxiu take content from arxiu
-		if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
-			if (ambVersioImprimible && this.potGenerarVersioImprimible(registreAnnexEntity)) {
-				try {
-					TemporalThreadStorage.set("numeroRegistre", registre.getNumero());
-					fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid(), titol);
-				} catch (Exception ex) {
-					Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false, registre.getNumero());
-					if (document != null) {
-						DocumentContingut documentContingut = document.getContingut();
-						if (documentContingut != null) {
-							fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
-							fitxerDto.setContentType(documentContingut.getTipusMime());
-							fitxerDto.setContingut(documentContingut.getContingut());
-							fitxerDto.setTamany(documentContingut.getContingut().length);
-						}
-						switch(document.getEstat()) {
-						case DEFINITIU:
-							registreAnnexEntity.setArxiuEstat(AnnexEstat.DEFINITIU);
-							break;
-						case ESBORRANY:
-							registreAnnexEntity.setArxiuEstat(AnnexEstat.ESBORRANY);
-							break;
-						}
-					}
-				}
-			} else {
-				Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false,registre.getNumero());
-				if (document != null) {
-					DocumentContingut documentContingut = document.getContingut();
-					if (documentContingut != null) {
-						fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
-						fitxerDto.setContentType(documentContingut.getTipusMime());
-						fitxerDto.setContingut(documentContingut.getContingut());
-						fitxerDto.setTamany(documentContingut.getContingut().length);
-					}
-				}
-			}
-		// if annex is not yet created in arxiu take content from gestio documental
-		} else {
-			// if annex is signed with firma attached, contingut is located either in firma or in annex
-			if (registreAnnexEntity.getFirmes() != null && !registreAnnexEntity.getFirmes().isEmpty() &&
-					!registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF02") && !registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF04")) {
-				RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(0);
-				if (firmaEntity.getGesdocFirmaId() != null) {
-					byte[] firmaContingut = this.getFirmaContingut(firmaEntity.getGesdocFirmaId(),registre.getNumero());
-					fitxerDto.setNom(firmaEntity.getFitxerNom());
-					fitxerDto.setContentType(firmaEntity.getTipusMime());
-					fitxerDto.setContingut(firmaContingut);
-					fitxerDto.setTamany(firmaContingut.length);
-				}
-				if (registreAnnexEntity.getGesdocDocumentId() != null) {
-					ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
-					gestioDocumentalHelper.gestioDocumentalGet(
-							registreAnnexEntity.getGesdocDocumentId(), 
-							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
-							streamAnnex,
-							registre.getNumero());
-					byte[] annexContingut = streamAnnex.toByteArray();
-					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
-					fitxerDto.setContentType(registreAnnexEntity.getFitxerTipusMime());
-					fitxerDto.setContingut(annexContingut);
-					fitxerDto.setTamany(annexContingut.length);
-				}
-			// if annex not signed or is signed with firma detached contingut is in annex	
-			} else {
-				if (registreAnnexEntity.getGesdocDocumentId() != null) {
-					ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
-					gestioDocumentalHelper.gestioDocumentalGet(
-							registreAnnexEntity.getGesdocDocumentId(), 
-							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
-							streamAnnex,
-							registre.getNumero());
-					byte[] annexContingut = streamAnnex.toByteArray();
-					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
-					fitxerDto.setContentType(registreAnnexEntity.getFitxerTipusMime());
-					fitxerDto.setContingut(annexContingut);
-					fitxerDto.setTamany(annexContingut.length);
-				}
-			}
-		}
-		return fitxerDto;
-	}
+	    RegistreEntity registre = registreAnnexEntity.getRegistre();
+	    FitxerDto fitxerDto = new FitxerDto();
+	    // if annex is already created in arxiu take content from arxiu
+	    if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
+	    	if (ambVersioImprimible && this.potGenerarVersioImprimible(registreAnnexEntity)) {
+	    		try {
+	    			fitxerDto = this.getAnnexFitxerImprimible(annexId);
+	    		} catch (Exception ex) {
+	    			Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false, registre.getNumero());
+	    			if (document != null) {
+	    				DocumentContingut documentContingut = document.getContingut();
+	    				if (documentContingut != null) {
+	    					fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
+	    					fitxerDto.setContentType(documentContingut.getTipusMime());
+	    					fitxerDto.setContingut(documentContingut.getContingut());
+	    					fitxerDto.setTamany(documentContingut.getContingut().length);
+	    				}
+	    				switch(document.getEstat()) {
+	    					case DEFINITIU:
+	    						registreAnnexEntity.setArxiuEstat(AnnexEstat.DEFINITIU);
+	    					break;
+	    					case ESBORRANY:
+	    						registreAnnexEntity.setArxiuEstat(AnnexEstat.ESBORRANY);
+	    					break;
+	    				}
+	    			}
+	    		}
+	      } else {
+	    	  Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, false,registre.getNumero());
+	    	  if (document != null) {
+	    		  DocumentContingut documentContingut = document.getContingut();
+	    		  if (documentContingut != null) {
+	    			  fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
+	    			  fitxerDto.setContentType(documentContingut.getTipusMime());
+	    			  fitxerDto.setContingut(documentContingut.getContingut());
+	    			  fitxerDto.setTamany(documentContingut.getContingut().length);
+	    		  }
+	    	  }
+	      }
+	    // if annex is not yet created in arxiu take content from gestio documental
+	    } else {
+	    	// if annex is signed with firma attached, contingut is located either in firma or in annex
+	    	if (registreAnnexEntity.getFirmes() != null && !registreAnnexEntity.getFirmes().isEmpty() &&
+	          !registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF02") && !registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF04")) {
+	    		RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(0);
+	    		if (firmaEntity.getGesdocFirmaId() != null) {
+	    			byte[] firmaContingut = this.getFirmaContingut(firmaEntity.getGesdocFirmaId(),registre.getNumero());
+	    			fitxerDto.setNom(firmaEntity.getFitxerNom());
+	    			fitxerDto.setContentType(firmaEntity.getTipusMime());
+	    			fitxerDto.setContingut(firmaContingut);
+	    			fitxerDto.setTamany(firmaContingut.length);
+	    		}
+	    		if (registreAnnexEntity.getGesdocDocumentId() != null) {
+	    			ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
+	    			gestioDocumentalHelper.gestioDocumentalGet(
+	    					registreAnnexEntity.getGesdocDocumentId(), 
+	    					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
+	    					streamAnnex,
+	    					registre.getNumero());
+	    			byte[] annexContingut = streamAnnex.toByteArray();
+	    			fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
+	    			fitxerDto.setContentType(registreAnnexEntity.getFitxerTipusMime());
+	    			fitxerDto.setContingut(annexContingut);
+	    			fitxerDto.setTamany(annexContingut.length);
+	    		}
+	    	// if annex not signed or is signed with firma detached contingut is in annex  
+	    	} else {
+	    		if (registreAnnexEntity.getGesdocDocumentId() != null) {
+	    			ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
+	    			gestioDocumentalHelper.gestioDocumentalGet(
+	    					registreAnnexEntity.getGesdocDocumentId(), 
+	    					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
+	    					streamAnnex,
+	    					registre.getNumero());
+	    			byte[] annexContingut = streamAnnex.toByteArray();
+	    			fitxerDto.setNom(registreAnnexEntity.getFitxerNom());
+	    			fitxerDto.setContentType(registreAnnexEntity.getFitxerTipusMime());
+	    			fitxerDto.setContingut(annexContingut);
+	    			fitxerDto.setTamany(annexContingut.length);
+	    		}
+	    	}
+	    }
+	    return fitxerDto;
+	  }
 
 	/**
 	 * Mètode per retornar un llistat dels identificadors de les anotacions processades al backoffice

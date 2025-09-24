@@ -618,8 +618,13 @@ $(document).ready(function() {
 								<li role="separator" class="divider"></li>
 								<li {{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./enviarViaEmail/{{:id}}?isVistaMoviments=true" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
 								<li>
-									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip"/>">
-										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
+									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip/DOCUMENT_ORIGINAL"/>">
+										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip.vo"/>
+									</a>
+								</li>
+								<li>
+									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip/DOCUMENT"/>">
+										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip.cai"/>
 									</a>
 								</li>
 							</ul>

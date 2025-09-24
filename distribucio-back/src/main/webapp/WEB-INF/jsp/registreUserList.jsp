@@ -891,8 +891,14 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 								{{/if}}	
 								<li>
 									{{!-- DESCARREGAR ZIP ---}}
-									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip"/>">
-										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
+									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip/DOCUMENT_ORIGINAL"/>">
+										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip.vo"/>
+									</a>
+								</li>
+								<li>
+									{{!-- DESCARREGAR ZIP ---}}
+									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip/DOCUMENT"/>">
+										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip.cai"/>
 									</a>
 								</li>
 								{{if ~hlpIsPermesReservarAnotacions}}

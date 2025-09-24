@@ -247,15 +247,28 @@ public class ContingutController extends BaseUserController {
 	}
 	
 	/** Recupera el contingut de tots els annexos i crea un ZIP per descarregar */
-	@RequestMapping(value = "/contingut/registre/{registreId}/descarregarZip", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/descarregarZip/{tipus}", method = RequestMethod.GET)
 	public String descarregarZipDocumentacio(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long registreId) throws IOException {
+			@PathVariable Long registreId,
+			@PathVariable String tipus) throws IOException {
 		String rolActual = RolHelper.getRolActual(request);
 		try {
+			boolean ambVersioImprimible;
+			switch (tipus) {
+				case "DOCUMENT_ORIGINAL":
+					ambVersioImprimible = false;
+					break;
+				case "DOCUMENT": 
+					ambVersioImprimible = true;
+					break;				
+				default:
+					ambVersioImprimible = true;
+					break;				
+			}
 			getEntitatActualComprovantPermisUsuari(request);
-			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, rolActual);
+			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, rolActual, ambVersioImprimible);
 			writeFileToResponse(
 					fitxer.getNom(),
 					fitxer.getContingut(),
@@ -284,7 +297,7 @@ public class ContingutController extends BaseUserController {
 		try {
 			String clau = registreService.obtenirRegistreIdDesencriptat(key);
 			Long registreId = Long.valueOf(clau);
-			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, null);
+			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, null, true);
 			writeFileToResponse(
 					fitxer.getNom(),
 					fitxer.getContingut(),

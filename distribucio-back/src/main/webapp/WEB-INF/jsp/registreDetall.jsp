@@ -824,8 +824,13 @@ li[id^="anotacio_"] {
 					</c:if>
 				<%--</c:if>--%>
 				<li>
-					<a href="<c:url value="/contingut/registre/${registre.id}/descarregarZip"/>">
-						<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
+					<a href="<c:url value="/contingut/registre/${registre.id}/descarregarZip/DOCUMENT_ORIGINAL"/>">
+						<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip.vo"/>
+					</a>
+				</li>
+				<li>
+					<a href="<c:url value="/contingut/registre/${registre.id}/descarregarZip/DOCUMENT"/>">
+						<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip.cai"/>
 					</a>
 				</li>
 				<li role="separator" class="divider"></li>
