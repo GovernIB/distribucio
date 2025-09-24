@@ -238,7 +238,19 @@ $(document).ready(function() {
 					required="true"/>
 			</div>
 			<dis:inputCheckbox name="aturarAvaluacio" textKey="bustia.form.camp.aturarAvaluacio"></dis:inputCheckbox>
-			
+
+            <c:if test="${ not empty regla.id}">
+                <div style="min-height: 60px;">
+                    <div class="alert well-sm alert-info" >
+                        <span class="fa fa-info-circle"></span>
+                        <spring:message code="regla.form.camp.createdDate"/> ${regla.createdDateAmbFormat} <spring:message code="regla.form.per"/> ${regla.createdBy.codiAndNom}.
+                        <c:if test="${not empty regla.lastModifiedBy}">
+                            <spring:message code="regla.form.camp.modifiedDate"/> ${regla.lastModifiedDateAmbFormat} <spring:message code="regla.form.per"/> ${regla.lastModifiedBy.codiAndNom}.
+                        </c:if>
+                    </div>
+                </div>
+            </c:if>
+
 			<div id="modal-botons">
 				<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 				<a href="<c:url value="/regla"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>

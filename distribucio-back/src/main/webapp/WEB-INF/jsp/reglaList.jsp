@@ -205,8 +205,23 @@
 						$("#seleccioCount").html(data);
 					}
 			);
-		});		
-	});
+		});
+
+        $('#tipusSelect').on("change", () => {
+            const fields = {
+                UNITAT: $('#camps_tipus_UNITAT'),
+                BUSTIA: $('#camps_tipus_BUSTIA'),
+                BACKOFFICE: $('#camps_tipus_BACKOFFICE')
+            };
+
+            const value = $('#tipusSelect').val();
+            Object.values(fields).forEach(f => f.hide() );
+            if (value) {
+                fields[value].show();
+            }
+        });
+        $('#tipusSelect').trigger('change');
+    });
 	
 	function deselectItems() {
 		$.get(
@@ -225,18 +240,32 @@
 		<div class="row">
 			<div class="col-md-3">
 				<dis:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
-			</div>		
-			<div class="col-md-3">
-				<dis:inputText name="codiAssumpte" inline="true" placeholderKey="regla.form.camp.assumpte.codi"/>
-			</div>			
-			<div class="col-md-3">
-				<dis:inputText name="codiSIA" inline="true" placeholderKey="regla.list.columna.procediment.single.codi"/>
 			</div>
 			<div class="col-md-3">
-				<dis:inputSelect name="tipus" optionEnum="ReglaTipusEnumDto" emptyOption="true" placeholderKey="regla.list.columna.tipus" inline="true"/>
-			</div>	
+				<dis:inputText name="codiAssumpte" inline="true" placeholderKey="regla.form.camp.assumpte.codi"/>
+			</div>
+            <div class="col-md-3">
+                <dis:inputText name="codiServei" inline="true" placeholderKey="regla.list.columna.servei.single.codi"/>
+            </div>
+            <div class="col-md-3">
+				<dis:inputText name="codiSIA" inline="true" placeholderKey="regla.list.columna.procediment.single.codi"/>
+			</div>
 		</div>
 		<div class="row">
+            <div class="col-md-3">
+                <c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
+                <c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
+                <dis:inputSuggest
+                        name="unitatId"
+                        urlConsultaInicial="${urlConsultaInicial}"
+                        urlConsultaLlistat="${urlConsultaLlistat}"
+                        inline="true"
+                        placeholderKey="bustia.form.camp.unitat"
+                        suggestValue="id"
+                        suggestText="codiAndNom"
+                        optionTemplateFunction="formatSelectUnitat"/>
+            </div>
+
 			<div class="col-md-3">		
 				<c:url value="/bustiaajax/bustia" var="urlConsultaInicial"/>
 				<c:url value="/bustiaajax/llistaBusties" var="urlConsultaLlistat"/>			
@@ -250,30 +279,7 @@
 					inline="true"
 					optionTemplateFunction="formatSelectBustia" />  
 			</div>
-			<div class="col-md-3">
-				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
-				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
-				<dis:inputSuggest 
-					name="unitatId" 
-					urlConsultaInicial="${urlConsultaInicial}" 
-					urlConsultaLlistat="${urlConsultaLlistat}" 
-					inline="true" 
-					placeholderKey="bustia.form.camp.unitat"
-					suggestValue="id"
-					suggestText="codiAndNom" 
-					optionTemplateFunction="formatSelectUnitat"/>
-			</div>
-			<div class="col-md-3">
-				<dis:inputSelect 
-					name="backofficeId" 
-					placeholderKey="bustia.list.filtre.backoffice" 
-					optionItems="${backoffices}" 
-					emptyOption="true" 
-					optionValueAttribute="id" 
-					optionTextAttribute="nom" 
-					inline="true"
-					optionMinimumResultsForSearch="0"/>
-			</div>		
+
 			<div class="col-md-3">
 				<dis:inputSelect 
 					name="activa" 
@@ -289,14 +295,59 @@
 				</button>
 				<dis:inputHidden name="activa"/> --%> 
 			</div>
+
+            <div class="col-md-3">
+                <dis:inputSelect name="presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial" inline="true"/>
+            </div>
 		</div>
+
 		<div class="row">
-			<div class="col-md-3">
-				<dis:inputText name="codiServei" inline="true" placeholderKey="regla.list.columna.servei.single.codi"/>
-			</div>		
-			<div class="col-md-3">
-				<dis:inputSelect name="presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial" inline="true"/>
-			</div>
+            <div class="col-md-3">
+                <dis:inputSelect id="tipusSelect" name="tipus" optionEnum="ReglaTipusEnumDto" emptyOption="true" placeholderKey="regla.list.columna.tipus" inline="true"/>
+            </div>
+
+            <div class="col-md-2">
+                <div id="camps_tipus_UNITAT" style="display: none">
+                    <c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
+                    <c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
+                    <dis:inputSuggest
+                            name="unitatDestiId"
+                            urlConsultaInicial="${urlConsultaInicial}"
+                            urlConsultaLlistat="${urlConsultaLlistat}"
+                            inline="true"
+                            placeholderKey="bustia.list.filtre.unitat.desti"
+                            suggestValue="id"
+                            suggestText="codiAndNom"
+                            optionTemplateFunction="formatSelectUnitat"/>
+                </div>
+
+                <div id="camps_tipus_BUSTIA" style="display: none">
+                    <c:url value="/bustiaajax/bustia" var="urlConsultaInicial"/>
+                    <c:url value="/bustiaajax/llistaBusties" var="urlConsultaLlistat"/>
+                    <dis:inputSuggest
+                            name="bustiaDestiId"
+                            urlConsultaInicial="${urlConsultaInicial}"
+                            urlConsultaLlistat="${urlConsultaLlistat}"
+                            suggestValue="id"
+                            suggestText="nom"
+                            placeholderKey="bustia.list.filtre.bustia.desti"
+                            inline="true"
+                            optionTemplateFunction="formatSelectBustia" />
+                </div>
+
+                <div id="camps_tipus_BACKOFFICE" style="display: none">
+                    <dis:inputSelect
+                            name="backofficeId"
+                            placeholderKey="bustia.list.filtre.backoffice"
+                            optionItems="${backoffices}"
+                            emptyOption="true"
+                            optionValueAttribute="id"
+                            optionTextAttribute="nom"
+                            inline="true"
+                            optionMinimumResultsForSearch="0"/>
+                </div>
+            </div>
+
 			<div class="col-md-6"></div>
 			<div class="col-md-3 d-flex pull-right justify-content-end">
 				<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>

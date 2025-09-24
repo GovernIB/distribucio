@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import es.caib.distribucio.logic.intf.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,17 +23,6 @@ import es.caib.distribucio.logic.helper.EntityComprovarHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.ReglaHelper;
 import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
-import es.caib.distribucio.logic.intf.dto.PaginaDto;
-import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
-import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
-import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionEnumDto;
-import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
-import es.caib.distribucio.logic.intf.dto.ReglaDto;
-import es.caib.distribucio.logic.intf.dto.ReglaFiltreActivaEnumDto;
-import es.caib.distribucio.logic.intf.dto.ReglaFiltreDto;
-import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
-import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
@@ -469,8 +459,10 @@ public class ReglaServiceImpl implements ReglaService {
 		
 		
 		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findById(filtre.getUnitatId()).orElse(null);
-		
+		UnitatOrganitzativaEntity unitatDesti = filtre.getUnitatDestiId() == null ? null : unitatOrganitzativaRepository.findById(filtre.getUnitatDestiId()).orElse(null);
+
 		BustiaEntity bustia = filtre.getBustiaId() == null ? null : bustiaRepository.findById(filtre.getBustiaId()).orElse(null);
+		BustiaEntity bustiaDesti = filtre.getBustiaDestiId() == null ? null : bustiaRepository.findById(filtre.getBustiaDestiId()).orElse(null);
 
 		BackofficeEntity backoffice = filtre.getBackofficeId() == null ? null : backofficeRepository.findById(filtre.getBackofficeId()).orElse(null);
 		
@@ -500,9 +492,13 @@ public class ReglaServiceImpl implements ReglaService {
 						filtre.getPresencial() == null,
 						filtre.getPresencial(),
 						bustia == null, 
-						bustia, 
-						backoffice == null ,
+						bustia,
+                        !ReglaTipusEnumDto.BACKOFFICE.equals(filtre.getTipus()) || backoffice == null,
 						backoffice,
+                        !ReglaTipusEnumDto.UNITAT.equals(filtre.getTipus()) || filtre.getUnitatDestiId() == null,
+                        unitatDesti,
+                        !ReglaTipusEnumDto.BUSTIA.equals(filtre.getTipus()) || filtre.getBustiaDestiId() == null,
+                        bustiaDesti,
 //						filtre.isActiva(),
 						totes,
 						activa, 
@@ -742,7 +738,14 @@ public class ReglaServiceImpl implements ReglaService {
 		if (busitaFiltre != null) {
 			dto.setBustiaFiltreId(busitaFiltre.getId());
 		}
-	
+
+        if (regla.getCreatedBy().isPresent())  {
+            dto.setCreatedBy(conversioTipusHelper.convertir(regla.getCreatedBy().get(), UsuariDto.class));
+        }
+
+        if (regla.getLastModifiedBy().isPresent())  {
+            dto.setLastModifiedBy(conversioTipusHelper.convertir(regla.getLastModifiedBy().get(), UsuariDto.class));
+        }
 		
 		return dto;
 	}

@@ -66,6 +66,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"and (:esNullPresencial = true or r.presencial = :isPresencial) " +
 			"and (:esNullBustia = true or r.bustiaFiltre = :bustia) " + 
 			"and (:esNullBackoffice = true or r.backofficeDesti = :backoffice) " + 
+			"and (:esNullUnitatDesti = true or r.unitatDesti = :unitatDesti) " +
+			"and (:esNullBustiaDesti = true or r.bustiaDesti = :bustiaDesti) " +
 //			"and (r.activa = :isActiva) ") +
 			"and (:esNullActiva = true or r.activa = :activa)")
 	Page<ReglaEntity> findByFiltrePaginat(
@@ -88,6 +90,10 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("bustia") BustiaEntity bustia, 
 			@Param("esNullBackoffice") boolean esNullBackoffice,
 			@Param("backoffice") BackofficeEntity backoffice,
+            @Param("esNullUnitatDesti") boolean esNullUnitatDesti,
+            @Param("unitatDesti") UnitatOrganitzativaEntity unitatDesti,
+            @Param("esNullBustiaDesti") boolean esNullBustiaDesti,
+            @Param("bustiaDesti") BustiaEntity bustiaDesti,
 //			@Param("isActiva") boolean isActiva,
 			@Param("esNullActiva") boolean esNullActiva, 
 			@Param("activa") boolean activa, 

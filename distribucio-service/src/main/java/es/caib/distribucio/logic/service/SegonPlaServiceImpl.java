@@ -578,36 +578,42 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	
 	@Override
 	public void actualitzarProcediments() throws Exception {
-		List<EntitatEntity> llistaEntitats = entitatRepository.findAll();
-		List<String> entitatsError = new ArrayList<>();		
-		for (EntitatEntity entitat : llistaEntitats) {
-			try {
-				procedimentService.findAndUpdateProcediments(entitat.getId());
-			} catch (Exception e) {
-				entitatsError.add(entitat.getCodi());
-				logger.error("Error sincronitzant els procediments per l'entitat " + entitat.getCodi() + " - " + entitat.getNom() + ": " + e.getMessage()); 
-			}			
-		}
-		if (!entitatsError.isEmpty()) {
-			throw new Exception("No s'han pogut sincronitzar tots els procediments per les següents entitats: " + entitatsError);
-		}
+        List<EntitatEntity> llistaEntitats = entitatRepository.findAll();
+        List<String> entitatsError = new ArrayList<>();
+        for (EntitatEntity entitat : llistaEntitats) {
+            try {
+                String disabledEntitat = configHelper.getConfigForEntitat(entitat.getCodi(), "es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments.disable");
+                if (!"true".equals(disabledEntitat)) {
+                    procedimentService.findAndUpdateProcediments(entitat.getId());
+                }
+            } catch (Exception e) {
+                entitatsError.add(entitat.getCodi());
+                logger.error("Error sincronitzant els procediments per l'entitat " + entitat.getCodi() + " - " + entitat.getNom() + ": " + e.getMessage());
+            }
+        }
+        if (!entitatsError.isEmpty()) {
+            throw new Exception("No s'han pogut sincronitzar tots els procediments per les següents entitats: " + entitatsError);
+        }
 	}
 	
 	@Override
 	public void actualitzarServeis() throws Exception {
-		List<EntitatEntity> llistaEntitats = entitatRepository.findAll();
-		List<String> entitatsError = new ArrayList<>();		
-		for (EntitatEntity entitat : llistaEntitats) {
-			try {
-				serveiService.findAndUpdateServeis(entitat.getId());
-			} catch (Exception e) {
-				entitatsError.add(entitat.getCodi());
-				logger.error("Error sincronitzant els serveis per l'entitat " + entitat.getCodi() + " - " + entitat.getNom() + ": " + e.getMessage()); 
-			}			
-		}
-		if (!entitatsError.isEmpty()) {
-			throw new Exception("No s'han pogut sincronitzar tots els serveis per les següents entitats: " + entitatsError);
-		}
+        List<EntitatEntity> llistaEntitats = entitatRepository.findAll();
+        List<String> entitatsError = new ArrayList<>();
+        for (EntitatEntity entitat : llistaEntitats) {
+            try {
+                String disabledEntitat = configHelper.getConfigForEntitat(entitat.getCodi(), "es.caib.distribucio.tasca.monitor.integracio.actualitzar.serveis.disable");
+                if (!"true".equals(disabledEntitat)) {
+                    serveiService.findAndUpdateServeis(entitat.getId());
+                }
+            } catch (Exception e) {
+                entitatsError.add(entitat.getCodi());
+                logger.error("Error sincronitzant els serveis per l'entitat " + entitat.getCodi() + " - " + entitat.getNom() + ": " + e.getMessage());
+            }
+        }
+        if (!entitatsError.isEmpty()) {
+            throw new Exception("No s'han pogut sincronitzar tots els serveis per les següents entitats: " + entitatsError);
+        }
 	}
 	
 	@Override
