@@ -10,6 +10,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import es.caib.distribucio.back.helper.EntitatHelper;
+import es.caib.distribucio.logic.intf.service.EntitatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,7 @@ public class UsuariController  extends BaseAdminController {
 
 	@Autowired
 	private AplicacioService aplicacioService;
+    @Autowired private EntitatService entitatService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
@@ -73,6 +76,9 @@ public class UsuariController  extends BaseAdminController {
 		
 		EntitatDto entitatActual = this.getEntitatActual(request);
 		BustiaDto bustiaPerDefecte = aplicacioService.getBustiaPerDefecte(usuari, entitatActual.getId());
+
+        List<EntitatDto> entitatsAccessibles = EntitatHelper.findEntitatsAccessibles(request, entitatService);
+        model.addAttribute("entitats", entitatsAccessibles);
 		
 		model.addAttribute(UsuariCommand.asCommand(usuari));
 		model.addAttribute("rolsPerMostrar", this.getFiltraRolsPerMostrar(usuari.getRols()));

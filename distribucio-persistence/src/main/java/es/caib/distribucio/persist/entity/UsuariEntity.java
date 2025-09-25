@@ -5,12 +5,10 @@ package es.caib.distribucio.persist.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import javax.persistence.*;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
@@ -21,6 +19,8 @@ import es.caib.distribucio.logic.intf.config.BaseConfig;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
+@Getter
+@Setter
 @Table(name = BaseConfig.DB_PREFIX + "usuari")
 public class UsuariEntity implements Serializable {
 
@@ -45,40 +45,14 @@ public class UsuariEntity implements Serializable {
 	private boolean rebreEmailsAgrupats = true;
 	@Column(name="rol_actual", length = 64)
 	private String rolActual;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entitat_defecte_id")
+    @org.hibernate.annotations.ForeignKey(name = BaseConfig.DB_PREFIX + "entitat_usuari_fk")
+    private EntitatEntity entitatPerDefecte;
 	
 	@Version
 	private long version = 0;
-
-	public String getCodi() {
-		return codi;
-	}
-	public String getNom() {
-		return nom;
-	}
-	public String getNif() {
-		return nif;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public String getEmailAlternatiu() {
-		return emailAlternatiu;
-	}
-	public String getIdioma() {
-		return idioma;
-	}
-	public String getRolActual() {
-		return rolActual;
-	}
-	public boolean isInicialitzat() {
-		return inicialitzat;
-	}
-	public boolean isRebreEmailsBustia() {
-		return rebreEmailsBustia;
-	}
-	public boolean isRebreEmailsAgrupats() {
-		return rebreEmailsAgrupats;
-	}
 	
 	public void update(
 			String nom,
@@ -97,10 +71,12 @@ public class UsuariEntity implements Serializable {
 	public void update(
 			boolean rebreEmailsBustia,
 			boolean rebreEmailsAgrupats,
-			String idioma) {
+			String idioma,
+            EntitatEntity entitatPerDefecte) {
 		this.rebreEmailsBustia = rebreEmailsBustia;
 		this.rebreEmailsAgrupats = rebreEmailsAgrupats;
 		this.idioma = idioma;
+        this.entitatPerDefecte = entitatPerDefecte;
 	}
 	
 	public void updateRolActual(String rolActual) {
