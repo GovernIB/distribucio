@@ -28,6 +28,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.caib.comanda.ms.salut.model.EstatSalut;
+import es.caib.comanda.ms.salut.model.IntegracioApp;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaPerfilEnumDto;
@@ -47,6 +48,7 @@ import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
+import es.caib.distribucio.plugin.arxiu.ArxiuPlugin;
 import es.caib.distribucio.plugin.distribucio.DistribucioPlugin;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
@@ -71,7 +73,6 @@ import es.caib.pluginsib.arxiu.api.ExpedientMetadades;
 import es.caib.pluginsib.arxiu.api.Firma;
 import es.caib.pluginsib.arxiu.api.FirmaPerfil;
 import es.caib.pluginsib.arxiu.api.FirmaTipus;
-import es.caib.pluginsib.arxiu.api.IArxiuPlugin;
 import es.caib.pluginsib.arxiu.caib.ArxiuConversioHelper;
 //import es.caib.pluginsib.arxiu.filesystem.ArxiuPluginFilesystem;
 import es.caib.pluginsib.arxiu.filesystem.ArxiuPluginFilesystem;
@@ -96,16 +97,34 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	private String gesdocAgrupacioAnnexos = "anotacions_registre_doc_tmp";
 	private String gesdocAgrupacioFirmes = "anotacions_registre_fir_tmp";
 
-	private IArxiuPlugin arxiuPlugin;
+	private ArxiuPlugin arxiuPlugin;
 	private SignaturaPlugin signaturaPlugin;
 	private GestioDocumentalPlugin gestioDocumentalPlugin;
+
+	private final MeterRegistry meterRegistry;
+	
+	private boolean arxiuConfiguracioEspecifica, gdcConfiguracioEspecifica, sigConfiguracioEspecifica;
 		
-	public DistribucioPluginArxiuImpl() {
+	public DistribucioPluginArxiuImpl(MeterRegistry meterRegistry) {
 		super();
+		this.meterRegistry = meterRegistry;
 	}
 	
-	public DistribucioPluginArxiuImpl(Properties properties) {
+	public DistribucioPluginArxiuImpl(
+			MeterRegistry meterRegistry, 
+			Properties properties, 
+			boolean configuracioEspecifica,
+			boolean arxiuConfiguracioEspecifica,
+			boolean gdcConfiguracioEspecifica,
+			boolean sigConfiguracioEspecifica) {
 		super(properties);
+		this.meterRegistry = meterRegistry;
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
+		
+		// Cridada a un altre plugin
+		this.arxiuConfiguracioEspecifica = arxiuConfiguracioEspecifica;
+		this.gdcConfiguracioEspecifica = gdcConfiguracioEspecifica;
+		this.sigConfiguracioEspecifica = sigConfiguracioEspecifica;
 	}
 	
 	@Override
@@ -1602,16 +1621,20 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					throwable);
 		}
 	}
-	private IArxiuPlugin getArxiuPlugin() throws SistemaExternException {
+	private ArxiuPlugin getArxiuPlugin() throws SistemaExternException {
 		if (arxiuPlugin == null) {
 			String pluginClass = getPropertyPluginArxiu();
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					arxiuPlugin = (IArxiuPlugin)clazz.getDeclaredConstructor(
+					
+					arxiuPlugin = (ArxiuPlugin)clazz.getDeclaredConstructor(
 													String.class, 
-													Properties.class)
-									.newInstance("es.caib.distribucio.", this.getProperties());		
+													Properties.class,
+													boolean.class)
+									.newInstance("es.caib.distribucio.", this.getProperties(), arxiuConfiguracioEspecifica);
+					
+					arxiuPlugin.init(meterRegistry, getArxiuCodiApp().name());
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							integracioArxiuCodi,
@@ -1632,8 +1655,10 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					signaturaPlugin = (SignaturaPlugin)clazz.getDeclaredConstructor(Properties.class)
-							.newInstance(this.getProperties());
+					signaturaPlugin = (SignaturaPlugin)clazz.getDeclaredConstructor(Properties.class, boolean.class)
+							.newInstance(this.getProperties(), sigConfiguracioEspecifica);
+					
+					signaturaPlugin.init(meterRegistry, getSignaturaCodiApp().name());
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							integracioSignaturaCodi,
@@ -1654,8 +1679,10 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			if (pluginClass != null && pluginClass.length() > 0) {
 				try {
 					Class<?> clazz = Class.forName(pluginClass);
-					gestioDocumentalPlugin = (GestioDocumentalPlugin)clazz.getDeclaredConstructor(Properties.class)
-							.newInstance(this.getProperties());
+					gestioDocumentalPlugin = (GestioDocumentalPlugin)clazz.getDeclaredConstructor(Properties.class, boolean.class)
+							.newInstance(this.getProperties(), gdcConfiguracioEspecifica);
+					
+					gestioDocumentalPlugin.init(meterRegistry, getGestioDocumentalCodiApp().name());
 				} catch (Exception ex) {
 					throw new SistemaExternException(
 							itegracioGesdocCodi,
@@ -1670,7 +1697,19 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		}
 		return gestioDocumentalPlugin;
 	}
-
+	
+	protected IntegracioApp getGestioDocumentalCodiApp() {
+		return IntegracioApp.GDC;
+	}
+	
+	protected IntegracioApp getArxiuCodiApp() {
+		return IntegracioApp.ARX;
+	}
+	
+	protected IntegracioApp getSignaturaCodiApp() {
+		return IntegracioApp.PFI;
+	}
+	
 	private boolean isRegistreSignarAnnexos() {
 		return this.getPropertyPluginRegistreSignarAnnexos();
 	}

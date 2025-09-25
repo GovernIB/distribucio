@@ -334,10 +334,14 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 		if (pluginClass != null && pluginClass.length() > 0) {
 			try {
 				Class<?> clazz = Class.forName(pluginClass);
+				var configuracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, getConfigGrup());
+				var arxiuConfiguracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, "ARXIU");
+				var gdcConfiguracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, "GES_DOC");
+				var sigConfiguracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, "SIGNATURA");
 				Properties properties = configHelper.getAllEntityProperties(codiEntitat);
 				plugin = (DistribucioPlugin)clazz.
-						getDeclaredConstructor(Properties.class).
-						newInstance(properties);
+						getDeclaredConstructor(MeterRegistry.class, Properties.class, boolean.class, boolean.class, boolean.class, boolean.class).
+						newInstance(meterRegistry, properties, configuracioEspecifica, arxiuConfiguracioEspecifica, gdcConfiguracioEspecifica, sigConfiguracioEspecifica);
 				
 				plugin.configurar(
 						new IntegracioManager() {

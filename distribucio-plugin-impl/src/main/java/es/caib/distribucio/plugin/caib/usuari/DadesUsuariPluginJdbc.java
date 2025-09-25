@@ -37,8 +37,9 @@ public class DadesUsuariPluginJdbc extends DistribucioAbstractPluginProperties i
 		super();
 	}
 	
-	public DadesUsuariPluginJdbc(Properties properties) {
+	public DadesUsuariPluginJdbc(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override

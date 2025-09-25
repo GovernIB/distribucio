@@ -26,8 +26,9 @@ public class DadesUsuariPluginMock extends DistribucioAbstractPluginProperties i
 		super();
 	}
 	
-	public DadesUsuariPluginMock(Properties properties) {
+	public DadesUsuariPluginMock(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override

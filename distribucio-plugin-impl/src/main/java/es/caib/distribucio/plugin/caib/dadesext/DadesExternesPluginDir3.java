@@ -51,8 +51,9 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 		super();
 	}
 	
-	public DadesExternesPluginDir3(Properties properties) {
+	public DadesExternesPluginDir3(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override

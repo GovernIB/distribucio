@@ -31,8 +31,9 @@ public class UnitatsOrganitzativesPluginCaibMock extends DistribucioAbstractPlug
 		super();
 	}
 	
-	public UnitatsOrganitzativesPluginCaibMock(Properties properties) {
+	public UnitatsOrganitzativesPluginCaibMock(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override

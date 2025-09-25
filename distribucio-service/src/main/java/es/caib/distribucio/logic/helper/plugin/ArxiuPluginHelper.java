@@ -272,10 +272,11 @@ public class ArxiuPluginHelper extends AbstractPluginHelper<ArxiuPlugin> {
 		if (pluginClass != null && pluginClass.length() > 0) {
 			try {
 				Class<?> clazz = Class.forName(pluginClass);
+				var configuracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, getConfigGrup());
 				Properties properties = configHelper.getAllProperties(codiEntitat);
 				plugin = (ArxiuPlugin)clazz.
-						getDeclaredConstructor(String.class, Properties.class).
-						newInstance("es.caib.distribucio.", properties);
+						getDeclaredConstructor(String.class, Properties.class, boolean.class).
+						newInstance("es.caib.distribucio.", properties, configuracioEspecifica);
 				plugin.init(meterRegistry, getCodiApp().name());
 			} catch (Exception ex) {
 				throw new SistemaExternException(

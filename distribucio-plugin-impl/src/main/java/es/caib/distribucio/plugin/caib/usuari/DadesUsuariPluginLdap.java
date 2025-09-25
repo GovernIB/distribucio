@@ -42,8 +42,9 @@ public class DadesUsuariPluginLdap extends DistribucioAbstractPluginProperties i
 		super();
 	}
 	
-	public DadesUsuariPluginLdap(Properties properties) {
+	public DadesUsuariPluginLdap(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	

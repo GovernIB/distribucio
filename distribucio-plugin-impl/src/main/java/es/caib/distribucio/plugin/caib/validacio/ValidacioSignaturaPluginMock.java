@@ -26,8 +26,9 @@ public class ValidacioSignaturaPluginMock extends DistribucioAbstractPluginPrope
 		super();
 	}
 	
-	public ValidacioSignaturaPluginMock(Properties properties) {
+	public ValidacioSignaturaPluginMock(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 
 	

@@ -33,8 +33,9 @@ public class UnitatsOrganitzativesPluginMock extends DistribucioAbstractPluginPr
 		super();
 	}
 	
-	public UnitatsOrganitzativesPluginMock(Properties properties) {
+	public UnitatsOrganitzativesPluginMock(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override

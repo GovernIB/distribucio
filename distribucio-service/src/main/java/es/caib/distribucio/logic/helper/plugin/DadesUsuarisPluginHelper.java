@@ -227,8 +227,8 @@ public class DadesUsuarisPluginHelper extends AbstractPluginHelper<DadesUsuariPl
 			try {
 				Class<?> clazz = Class.forName(pluginClass);
 				plugin = (DadesUsuariPlugin)clazz.
-						getDeclaredConstructor(String.class, Properties.class).
-						newInstance("es.caib.distribucio.plugin.dades.usuari.", configHelper.getAllEntityProperties(null));
+						getDeclaredConstructor(String.class, Properties.class, boolean.class).
+						newInstance("es.caib.distribucio.plugin.dades.usuari.", configHelper.getAllEntityProperties(null), false);
 				plugin.init(meterRegistry, getCodiApp().name());
 			} catch (Exception ex) {
 				throw new SistemaExternException(

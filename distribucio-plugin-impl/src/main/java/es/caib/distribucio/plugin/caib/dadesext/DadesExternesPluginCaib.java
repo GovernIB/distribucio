@@ -42,8 +42,9 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 		super();
 	}
 	
-	public DadesExternesPluginCaib(Properties properties) {
+	public DadesExternesPluginCaib(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override

@@ -1,5 +1,7 @@
 package es.caib.distribucio.plugin.caib.arxiu;
 
+import java.util.Properties;
+
 import es.caib.comanda.ms.salut.model.EstatSalut;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.plugin.AbstractSalutPlugin;
@@ -11,6 +13,19 @@ import es.caib.pluginsib.arxiu.caib.ArxiuPluginCaib;
 import io.micrometer.core.instrument.MeterRegistry;
 
 public class ArxiuPluginSalutCaib extends ArxiuPluginCaib implements ArxiuPlugin {
+	
+	public ArxiuPluginSalutCaib() {
+		super();
+	}
+
+	public ArxiuPluginSalutCaib(String propertyKeyBase, Properties properties, boolean configuracioEspecifica) {
+		super(propertyKeyBase, properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
+	}
+
+	public ArxiuPluginSalutCaib(String propertyKeyBase) {
+		super(propertyKeyBase);
+	}
 	
 	@Override
 	public ContingutArxiu expedientCrear(

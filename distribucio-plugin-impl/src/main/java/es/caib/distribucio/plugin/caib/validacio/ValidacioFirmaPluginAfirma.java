@@ -34,8 +34,9 @@ public class ValidacioFirmaPluginAfirma extends DistribucioAbstractPluginPropert
 		super();
 	}
 	
-	public ValidacioFirmaPluginAfirma(Properties properties) {
+	public ValidacioFirmaPluginAfirma(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 
 	@Override

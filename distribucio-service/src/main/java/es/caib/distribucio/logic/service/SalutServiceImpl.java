@@ -187,6 +187,7 @@ public class SalutServiceImpl implements SalutService {
                 integracionsSalut.addAll(helper.getIntegracionsSalut());
             }
         } catch (Exception e) {
+        	log.error("Error checkIntegracions", e);
             return Collections.emptyList();
         }
         

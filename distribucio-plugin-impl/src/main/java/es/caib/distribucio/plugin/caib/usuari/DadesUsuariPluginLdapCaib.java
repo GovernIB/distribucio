@@ -37,8 +37,9 @@ import io.micrometer.core.instrument.MeterRegistry;
  */
 public class DadesUsuariPluginLdapCaib extends LdapUserInformationPlugin implements DadesUsuariPlugin {
 
-	public DadesUsuariPluginLdapCaib(String propertyKeyBase, Properties properties) {
+	public DadesUsuariPluginLdapCaib(String propertyKeyBase, Properties properties, boolean configuracioEspecifica) {
 		super(propertyKeyBase, properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 
 	public DadesUsuariPluginLdapCaib(String propertyKeyBase) {

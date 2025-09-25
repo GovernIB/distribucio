@@ -45,8 +45,9 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 		super();
 	}
 	
-	public ServeiPluginRolsac(Properties properties) {
+	public ServeiPluginRolsac(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override

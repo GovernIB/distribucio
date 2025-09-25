@@ -48,8 +48,9 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 		super();
 	}
 	
-	public ProcedimentPluginRolsac(Properties properties) {
+	public ProcedimentPluginRolsac(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override

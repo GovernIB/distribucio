@@ -42,8 +42,9 @@ public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperti
 		super();
 	}
 	
-	public FirmaSimplePluginPortafib(Properties properties) {
+	public FirmaSimplePluginPortafib(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 
 	@Override

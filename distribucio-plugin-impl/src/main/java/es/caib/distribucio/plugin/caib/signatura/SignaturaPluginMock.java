@@ -34,8 +34,9 @@ public class SignaturaPluginMock extends DistribucioAbstractPluginProperties imp
 		super();
 	}
 	
-	public SignaturaPluginMock(Properties properties) {
+	public SignaturaPluginMock(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 
 	

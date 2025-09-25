@@ -37,8 +37,9 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
 		super();
 	}
 	
-	public ValidacioFirmaPluginApiPortafib(Properties properties) {
+	public ValidacioFirmaPluginApiPortafib(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 
 	@Override

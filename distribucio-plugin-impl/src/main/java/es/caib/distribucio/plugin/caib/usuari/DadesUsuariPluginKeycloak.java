@@ -53,8 +53,9 @@ import io.micrometer.core.instrument.MeterRegistry;
  */
 public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin implements DadesUsuariPlugin {
 
-	public DadesUsuariPluginKeycloak(String propertyKeyBase, Properties properties) {
+	public DadesUsuariPluginKeycloak(String propertyKeyBase, Properties properties, boolean configuracioEspecifica) {
 		super(propertyKeyBase, properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 
 	public DadesUsuariPluginKeycloak(String propertyKeyBase) {

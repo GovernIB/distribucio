@@ -148,10 +148,11 @@ public class SignaturaPluginHelper extends AbstractPluginHelper<SignaturaPlugin>
 		if (pluginClass != null && pluginClass.length() > 0) {
 			try {
 				Class<?> clazz = Class.forName(pluginClass);
+				var configuracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, getConfigGrup());
 				Properties properties = configHelper.getAllEntityProperties(codiEntitat);
 				plugin = (SignaturaPlugin)clazz.
-						getDeclaredConstructor(Properties.class).
-						newInstance(properties);
+						getDeclaredConstructor(Properties.class, boolean.class).
+						newInstance(properties, configuracioEspecifica);
 				plugin.init(meterRegistry, getCodiApp().name());
 			} catch (Exception ex) {
 				throw new SistemaExternException(

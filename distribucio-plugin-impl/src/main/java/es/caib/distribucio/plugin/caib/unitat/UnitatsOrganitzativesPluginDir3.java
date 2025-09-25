@@ -39,8 +39,9 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 		super();
 	}
 	
-	public UnitatsOrganitzativesPluginDir3(Properties properties) {
+	public UnitatsOrganitzativesPluginDir3(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override

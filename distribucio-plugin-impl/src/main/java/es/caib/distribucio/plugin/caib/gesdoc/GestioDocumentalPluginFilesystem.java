@@ -13,7 +13,6 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 
 import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
@@ -34,8 +33,9 @@ public class GestioDocumentalPluginFilesystem extends DistribucioAbstractPluginP
 		super();
 	}
 	
-	public GestioDocumentalPluginFilesystem(Properties properties) {
+	public GestioDocumentalPluginFilesystem(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override
