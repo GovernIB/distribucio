@@ -75,11 +75,13 @@ public class EjbClientConfig {
 	}
 
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean salutService() {
 		return getLocalEjbFactoyBean(SalutService.class);
 	}
 	
 	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean estadisticaService() {
 		return getLocalEjbFactoyBean(EstadisticaService.class);
 	}

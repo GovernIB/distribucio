@@ -1788,6 +1788,8 @@ public class RegistreServiceImpl implements RegistreService {
 						false);
 				break;
 			case REBUTJADA:
+				List<String> params = new ArrayList<>();
+				params.add(observacions);
 				registre.updateBackEstat(
 						RegistreProcesEstatEnum.BACK_REBUTJADA,
 						observacions);
@@ -1795,7 +1797,7 @@ public class RegistreServiceImpl implements RegistreService {
 				contingutLogHelper.log(
 						registre,
 						LogTipusEnumDto.BACK_REBUTJADA,
-						null,
+						params,
 						false);
 				break;
 			case ERROR:
