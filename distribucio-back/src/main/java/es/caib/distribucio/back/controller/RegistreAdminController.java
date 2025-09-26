@@ -557,11 +557,13 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long registreId) {
 		try {
 			registreService.marcarSobreescriure(getEntitatActualComprovantPermisAdmin(request).getId(), registreId);
+            EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+            RegistreDto registreDto = registreService.findOne(entitatActual.getId(), registreId, false);
 			return getAjaxControllerReturnValueSuccess(
 					request,
 					"redirect:../../registreAdmin",
 					"registre.admin.controller.marcar.sobreescriure.ok",
-					new Object[] {registreId});
+					new Object[] {registreDto.getNumero()});
 		} catch (Exception e) {
 			return getAjaxControllerReturnValueError(
 					request,
