@@ -73,7 +73,7 @@ public class ValidacioFirmaApiTest {
 		PropertiesHelper.getProperties().setProperty(
 				"es.caib.distribucio.pluginsib.validatesignature.api.portafib.password",
 				API_PASSWORD);
-		plugin = new ValidacioFirmaPluginApiPortafib(PropertiesHelper.getProperties());
+		plugin = new ValidacioFirmaPluginApiPortafib(PropertiesHelper.getProperties(), false);
 	}
 
 	@Test

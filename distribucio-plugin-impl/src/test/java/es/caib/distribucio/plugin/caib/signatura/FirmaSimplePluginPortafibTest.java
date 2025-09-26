@@ -90,7 +90,7 @@ public class FirmaSimplePluginPortafibTest {
 		PropertiesHelper.getProperties().setProperty(
 				"es.caib.distribucio.plugin.signatura.portafib.username",
 				USERNAME);
-		plugin = new FirmaSimplePluginPortafib(PropertiesHelper.getProperties());
+		plugin = new FirmaSimplePluginPortafib(PropertiesHelper.getProperties(), false);
 	}
 
 	@Test

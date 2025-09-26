@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -53,8 +54,9 @@ public class BustiaHelper {
 		}
 	}
 	
-	public Workbook generarExcelUsuarisPermissionsPerBustia(List<BustiaDto> busties) {
-	    Collections.sort(busties, new BustiesUnitatOrganicaComparador());
+//	public Workbook generarExcelUsuarisPermissionsPerBustia(List<BustiaDto> busties) {
+	public Workbook generarExcelUsuarisPermissionsPerBustia(Map<BustiaDto, List<UsuariPermisDto>> dades) {
+//	    Collections.sort(busties, new BustiesUnitatOrganicaComparador());
 
 	    HSSFWorkbook wb = new HSSFWorkbook();
 
@@ -92,10 +94,13 @@ public class BustiaHelper {
 	    createHeader(wb, sheet);
 
 	    int rowNum = 1;
-	    for (BustiaDto bustiaDto : busties) {
+//	    for (BustiaDto bustiaDto : busties) {
+    	for (Map.Entry<BustiaDto, List<UsuariPermisDto>> entry : dades.entrySet()) {
+    		BustiaDto bustiaDto = entry.getKey();
 	        try {
-	            List<UsuariPermisDto> usuaris = bustiaService.getUsuarisPerBustia(bustiaDto.getId());
-
+//	            List<UsuariPermisDto> usuaris = bustiaService.getUsuarisPerBustia(bustiaDto.getId());	            
+	            List<UsuariPermisDto> usuaris = entry.getValue();
+	            
 	            for (UsuariPermisDto usuariPermisDto : usuaris) {
 	                HSSFRow xlsRow = sheet.createRow(rowNum++);
 
@@ -131,19 +136,19 @@ public class BustiaHelper {
 	    return wb;
 	}
 	
-	public void generarExcelUsuarisPermissionsPerBustia(HttpServletResponse response, List<BustiaDto> busties) {
-		try (Workbook wb = generarExcelUsuarisPermissionsPerBustia(busties)) {
-		String fileName = "UsuarisPerBustia.xls";
-		response.setHeader("Pragma", "");
-		response.setHeader("Expires", "");
-		response.setHeader("Cache-Control", "");
-		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-		response.setContentType(new MimetypesFileTypeMap().getContentType(fileName));		
-		wb.write(response.getOutputStream());
-		} catch (Exception e) {
-			logger.error("No s'ha pogut realitzar la exportació.", e);
-		}
-	}
+//	public void generarExcelUsuarisPermissionsPerBustia(HttpServletResponse response, List<BustiaDto> busties) {
+//		try (Workbook wb = generarExcelUsuarisPermissionsPerBustia(busties)) {
+//		String fileName = "UsuarisPerBustia.xls";
+//		response.setHeader("Pragma", "");
+//		response.setHeader("Expires", "");
+//		response.setHeader("Cache-Control", "");
+//		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+//		response.setContentType(new MimetypesFileTypeMap().getContentType(fileName));		
+//		wb.write(response.getOutputStream());
+//		} catch (Exception e) {
+//			logger.error("No s'ha pogut realitzar la exportació.", e);
+//		}
+//	}
 
 //	public void generarExcelUsuarisPermissionsPerBustiaAntic(
 //			HttpServletResponse response,
@@ -286,12 +291,17 @@ public class BustiaHelper {
 
 	public String generateExcelAsync(List<BustiaDto> busties) {
         String taskId = UUID.randomUUID().toString();
+        
+        Map<BustiaDto, List<UsuariPermisDto>> dades = new HashMap<>();
+        for (BustiaDto bustia : busties) {
+            dades.put(bustia, bustiaService.getUsuarisPerBustia(bustia.getId()));
+        }
 
-        SecurityContext context = SecurityContextHolder.getContext();
+//        SecurityContext context = SecurityContextHolder.getContext();
         CompletableFuture.runAsync(() -> {
-        	SecurityContextHolder.setContext(context);
+//        	SecurityContextHolder.setContext(context);
             try {
-                Workbook wb = this.generarExcelUsuarisPermissionsPerBustia(busties);
+                Workbook wb = this.generarExcelUsuarisPermissionsPerBustia(dades);
 
                 File tempFile = File.createTempFile("usuarisPerBustia_", ".xls");
                 try (FileOutputStream fos = new FileOutputStream(tempFile)) {
@@ -301,9 +311,10 @@ public class BustiaHelper {
                 generatedFiles.put(taskId, tempFile);
             } catch (Exception e) {
                 e.printStackTrace();
-            } finally {
-            	SecurityContextHolder.clearContext();
-            }
+            } 
+//            finally {
+//            	SecurityContextHolder.clearContext();
+//            }
         });
 
         return taskId;

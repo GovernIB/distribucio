@@ -40,7 +40,7 @@ public class DadesUsuariPluginKeycloakTest {
     properties.put("es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.keycloak.mapping.administrationID", "nif");
     properties.put("es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.keycloak.debug", "true");
 
-    keycloak = new DadesUsuariPluginKeycloak(propertyKeyBase, properties);
+    keycloak = new DadesUsuariPluginKeycloak(propertyKeyBase, properties, false);
   }
 
   /**

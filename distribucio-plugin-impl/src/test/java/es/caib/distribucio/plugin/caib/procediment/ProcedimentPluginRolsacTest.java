@@ -73,7 +73,7 @@ public class ProcedimentPluginRolsacTest {
 		PropertiesHelper.getProperties().setProperty(
 				"es.caib.distribucio.plugin.procediment.rolsac.service.password",
 				PASSWORD);
-		plugin = new ProcedimentPluginRolsac(PropertiesHelper.getProperties());
+		plugin = new ProcedimentPluginRolsac(PropertiesHelper.getProperties(),false);
 	}
 
 	@Test
