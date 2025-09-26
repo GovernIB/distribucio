@@ -2427,6 +2427,14 @@ public class RegistreServiceImpl implements RegistreService {
 		return arxiu;
 	}
 
+    @Transactional(readOnly = true)
+	@Override
+	public String getNumeroById(
+			Long registreId) {
+		RegistreEntity registre = registreRepository.getReferenceById(registreId);
+		return registre.getNumero();
+	}
+
 	@Override
 	@Transactional
 	public RegistreAnnexDto getAnnexAmbFirmes(

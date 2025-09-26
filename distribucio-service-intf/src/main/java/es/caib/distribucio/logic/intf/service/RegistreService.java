@@ -186,6 +186,10 @@ public interface RegistreService {
 			Long registreId) throws NotFoundException;
 
 	@PreAuthorize("isAuthenticated()")
+	public String getNumeroById(
+			Long registreId) throws NotFoundException;
+
+	@PreAuthorize("isAuthenticated()")
 	public FitxerDto getAnnexFirmaFitxer(
 			Long annexId,
 			int indexFirma) throws NotFoundException;

@@ -997,15 +997,19 @@ public class RegistreUserController extends BaseUserController {
 			try {
 				String rolActual = RolHelper.getRolActual(request);
 				contingutService.marcarProcessat(
-						entitatActual.getId(), 
+						entitatActual.getId(),
 						registreId,
-						"<span class='label label-default'>" + 
+						"<span class='label label-default'>" +
 						getMessage(
-								request, 
-								"bustia.pendent.accio.marcat.processat") + 
-						"</span> " + command.getMotiu(), 
+								request,
+								"bustia.pendent.accio.marcat.processat") +
+						"</span> " + command.getMotiu(),
 						rolActual);
-				missatge.append(getMessage(request, "bustia.controller.pendent.contingut.marcat.processat.ok"));	
+
+                String numero = registreService.getNumeroById(registreId);
+				missatge.append(getMessage(request,
+                        "bustia.controller.pendent.contingut.marcat.processat.ok",
+                        new Object[] {numero}));
 			} catch (Exception exception) {
 				correcte = false;
 				Throwable thr = ExceptionHelper.getRootCauseOrItself(exception);
@@ -1626,18 +1630,20 @@ public class RegistreUserController extends BaseUserController {
 		}
 		try {
 			contingutService.marcarProcessat(
-					entitatActual.getId(), 
+					entitatActual.getId(),
 					registreId,
-					"<span class='label label-default'>" + 
+					"<span class='label label-default'>" +
 					getMessage(
-							request, 
-							"bustia.pendent.accio.marcat.processat") + 
-					"</span> " + command.getMotiu(), 
+							request,
+							"bustia.pendent.accio.marcat.processat") +
+					"</span> " + command.getMotiu(),
 					rolActual);
+            String numero = registreService.getNumeroById(registreId);
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:/registreUser/registre/" + registreId,
-					"bustia.controller.pendent.contingut.marcat.processat.ok");
+					"bustia.controller.pendent.contingut.marcat.processat.ok",
+                    new Object[] {numero});
 		} catch (RuntimeException re) {
 			MissatgesHelper.error(
 					request,
