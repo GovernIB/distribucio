@@ -1875,7 +1875,7 @@ public class RegistreUserController extends BaseUserController {
 					getMessage(
 							request, 
 							"bustia.controller.pendent.contingut.classificat.backoffice",
-							null));
+							new Object[]{ resultat.getBackofficeDesti() }));
 			break;
 		case REGLA_ERROR:
 			MissatgesHelper.warning(

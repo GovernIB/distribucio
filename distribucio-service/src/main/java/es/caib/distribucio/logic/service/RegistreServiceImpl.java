@@ -2698,6 +2698,7 @@ public class RegistreServiceImpl implements RegistreService {
 							unitatOrganitzativaHelper.toDto(novaBustia.getUnitatOrganitzativa()));
 					
 				} else if (ReglaTipusEnumDto.BACKOFFICE.equals(lastReglaApplied.getTipus())) {
+                    classificacioResultat.setBackofficeDesti(lastReglaApplied.getBackofficeDesti().getNom());
 					classificacioResultat.setResultat(ClassificacioResultatEnumDto.REGLA_BACKOFFICE);
 				}
 			} else {
