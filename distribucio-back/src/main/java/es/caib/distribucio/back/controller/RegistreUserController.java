@@ -848,13 +848,14 @@ public class RegistreUserController extends BaseUserController {
 			bustiaService.registreAnotacioEnviarPerEmail(
 					entitatActual.getId(),
 					command.getContingutId(),
-					adreces, 
+					adreces,
 					command.getMotiu(),
 					isVistaMoviments,
 					RolHelper.getRolActual(request));
 			MissatgesHelper.success(
 					request,
-					getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));
+					getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok",
+                            new Object[] {registreDto.getNumero()}));
 			return modalUrlTancar();
 		} catch (Exception exception) {
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(exception);
@@ -958,7 +959,7 @@ public class RegistreUserController extends BaseUserController {
 				RolHelper.getRolActual(request));
 		this.revisarEstatPerEnviarViaEmail(request, entitatActual, registreDto, bindingResult);
 		this.revisarEstatPerMarcarProcessat(request, entitatActual, registreDto, bindingResult);
-		
+
 		if (bindingResult.hasErrors()) {
 			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
 			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
@@ -973,11 +974,12 @@ public class RegistreUserController extends BaseUserController {
 			bustiaService.registreAnotacioEnviarPerEmail(
 					entitatActual.getId(),
 					registreDto.getId(),
-					adreces, 
+					adreces,
 					null,
 					isVistaMoviments,
 					RolHelper.getRolActual(request));
-			missatge.append(getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));	
+			missatge.append(getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok",
+                    new Object[]{registreDto.getNumero()}));
 		} catch (Exception exception) {
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(exception);
 			correcte = false;
