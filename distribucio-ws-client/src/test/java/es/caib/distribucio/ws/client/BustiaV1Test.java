@@ -66,6 +66,8 @@ public class BustiaV1Test {
 	private static final String IDIOMA_DESC = "Català";
 	private static final String IDENTIFICADOR = "15/10/2015";
 	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2025";
+	private static final String TRAMIT_CODI = "1234";
+	private static final String TRAMIT_NOM = "Tràmit de prova";
 	
 
 	private static final int N_ANOTACIONS = 1;
@@ -185,6 +187,8 @@ public class BustiaV1Test {
 	        anotacio.setExpedientNumero(EXPEDIENT_NUM);
 	        anotacio.setPresencial(PRESENCIAL);
 	        anotacio.setObservacions("Anotacio Observacions....");
+	        anotacio.setTramitCodi(TRAMIT_CODI);
+	        anotacio.setTramitNom(TRAMIT_NOM);
 	        
 //	        anotacio.setDocumentacioFisicaCodi("1");
 //	        anotacio.setDocumentacioFisicaDescripcio("Documentació adjunta en suport PAPER (o altres suports)");

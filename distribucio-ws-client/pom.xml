@@ -8,7 +8,7 @@
 		<version>1.0.4.2</version>
 	</parent>
 	<artifactId>distribucio-ws-client</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.6</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>

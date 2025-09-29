@@ -995,7 +995,17 @@ li[id^="anotacio_"] {
 					</td>
 					<td><strong><spring:message code="registre.detalls.camp.numexp"/></strong></td>
 					<td>${registre.expedientNumero}</td>
-				</tr>				
+				</tr>
+				<tr>
+					<td>
+						<strong><spring:message code="registre.detalls.camp.tramit"/></strong>
+					</td>
+					<td colspan="5">
+						<c:if test="${not empty registre.tramitCodi && not empty registre.tramitNom}">
+							${registre.tramitCodi} - ${registre.tramitNom}
+						</c:if>
+					</td>
+				</tr>			
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.observacions"/></strong></td>
 					<td colspan="5">${registre.observacions}</td>
@@ -1464,12 +1474,25 @@ li[id^="anotacio_"] {
 						<table class="table table-bordered">
 							<tbody>
 								<tr>
-									<td colspan="2"><strong><spring:message code="registre.detalls.camp.assumpte.codi"/></strong></td>
-									<td colspan="2">(${registre.assumpteCodi})</td>
+									<td colspan="2"><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
+									<td colspan="2">
+									<c:choose>
+										<c:when test="${procedimentDades != null }">
+											${procedimentDades.codiSia} - ${procedimentDades.nom}
+										</c:when>
+										<c:otherwise>
+											${registre.procedimentCodi}
+										</c:otherwise>
+									</c:choose>
+									</td>
 								</tr>
 								<tr>
-									<td colspan="2"><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
-									<td colspan="2">${registre.procedimentCodi}</td>
+									<td colspan="2"><strong><spring:message code="registre.detalls.camp.tramit"/></strong></td>
+									<td colspan="2">
+										<c:if test="${not empty registre.tramitCodi && not empty registre.tramitNom}">
+										${registre.tramitCodi} - ${registre.tramitNom}
+										</c:if>
+									</td>
 								</tr>
 								<tr>
 									<td><strong><spring:message code="registre.detalls.camp.refext"/></strong></td>
@@ -1484,8 +1507,10 @@ li[id^="anotacio_"] {
 									<td>${registre.transportNumero}</td>
 								</tr>
 								<tr>
-									<td colspan="2"><strong><spring:message code="registre.detalls.camp.origen.oficina"/></strong></td>
-									<td colspan="2">${registre.oficinaOrigenDescripcio} ${registre.oficinaOrigenCodi!=null?'(':''}${registre.oficinaOrigenCodi}${registre.oficinaOrigenCodi!=null?')':''}</td>
+									<td><strong><spring:message code="registre.detalls.camp.origen.oficina"/></strong></td>
+									<td>${registre.oficinaOrigenDescripcio} ${registre.oficinaOrigenCodi!=null?'(':''}${registre.oficinaOrigenCodi}${registre.oficinaOrigenCodi!=null?')':''}</td>
+									<td><strong><spring:message code="registre.detalls.camp.assumpte.codi"/></strong></td>
+									<td>(${registre.assumpteCodi})</td>
 								</tr>
 								<tr>
 									<td><strong><spring:message code="registre.detalls.camp.origen.num"/></strong></td>

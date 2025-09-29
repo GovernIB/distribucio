@@ -121,6 +121,9 @@ public class RegistreDto extends ContingutDto {
 	
 	private String motiuRebuig;
 	
+	private String tramitCodi;
+	private String tramitNom;
+	
 	public int getDadesCount() {
 		if (dades == null)
 			return 0;
@@ -622,6 +625,19 @@ public class RegistreDto extends ContingutDto {
 	public void setReactivat(boolean reactivat) {
 		this.reactivat = reactivat;
 	}
+	public String getTramitCodi() {
+		return tramitCodi;
+	}
+	public void setTramitCodi(String tramitCodi) {
+		this.tramitCodi = tramitCodi;
+	}
+	public String getTramitNom() {
+		return tramitNom;
+	}
+	public void setTramitNom(String tramitNom) {
+		this.tramitNom = tramitNom;
+	}
+
 	public String getInteressatsAndRepresentantsResum() {
 		String interessatsResum = "";
 		if (this.interessats != null)

@@ -347,7 +347,9 @@ public class RegistreHelper {
 					registreAnotacio.getDataOrigen(),
 					registreAnotacio.getOficinaOrigenCodi(),
 					registreAnotacio.getOficinaOrigenDescripcio(),
-					null);
+					null,
+					registreAnotacio.getTramitCodi(),
+					registreAnotacio.getTramitNom());
 			registreRepetit.updateJustificant(null);
 			for (Iterator<RegistreAnnexEntity> iterator = registreRepetit.getAnnexos().iterator(); iterator.hasNext();) {
 				RegistreAnnexEntity annex = iterator.next();
@@ -422,6 +424,8 @@ public class RegistreHelper {
 					registreAnotacio.getOficinaOrigenDescripcio()).
 			justificantArxiuUuid(justificantArxiuUuid).
 			presencial(registreAnotacio.isPresencial()).
+			tramitCodi(registreAnotacio.getTramitCodi()).
+			tramitNom(registreAnotacio.getTramitNom()).
 			build();
 			registreRepository.saveAndFlush(registreEntity);
 			

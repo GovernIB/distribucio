@@ -235,7 +235,8 @@ public class ContingutHelper {
 			registreDto.setMaxReintents(maxReintents);
 			registreDto.setMotiuRebuig(registreEntity.getMotiuRebuig());
 			registreDto.setBackObservacions(registreEntity.getBackObservacions());
-			
+			registreDto.setTramitCodi(registreEntity.getTramitCodi());
+			registreDto.setTramitNom(registreEntity.getTramitNom());
 			contingutDto = registreDto;
 		}
 		// ########################################### CONTINGUT ####################################################
@@ -903,6 +904,8 @@ public class ContingutHelper {
 				regla(null).
 				oficinaOrigen(registreOriginal.getDataOrigen(), registreOriginal.getOficinaOrigenCodi(), registreOriginal.getOficinaOrigenDescripcio()).
 				presencial(registreOriginal.getPresencial()).
+				tramitCodi(registreOriginal.getTramitCodi()).
+				tramitNom(registreOriginal.getTramitNom()).
 				build();
 		// Copia els interessats
 		if (registreOriginal.getInteressats() != null) {

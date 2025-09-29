@@ -248,6 +248,11 @@ public class RegistreEntity extends ContingutEntity {
 	@OneToMany(mappedBy = "registre", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
 	protected Set<DadaEntity> dades;
 	
+	@Column(name = "tramit_codi", length = 64)
+	private String tramitCodi;
+	@Column(name = "tramit_nom", length = 255)
+	private String tramitNom;
+	
 	public boolean isEnviatPerEmail() {
 		return enviatPerEmail;
 	}
@@ -449,6 +454,12 @@ public class RegistreEntity extends ContingutEntity {
 	}
 	public UsuariEntity getAgafatPer() {
 		return agafatPer;
+	}
+	public String getTramitCodi() {
+		return tramitCodi;
+	}
+	public String getTramitNom() {
+		return tramitNom;
 	}
 	public void updateAgafatPer(UsuariEntity usuari) {
 		this.agafatPer = usuari;
@@ -856,6 +867,14 @@ public class RegistreEntity extends ContingutEntity {
 		public RegistreEntity build() {
 			return built;
 		}
+		public Builder tramitCodi(String tramitCodi) {
+			built.tramitCodi = tramitCodi;
+			return this;
+		}
+		public Builder tramitNom(String tramitNom) {
+			built.tramitNom = tramitNom;
+			return this;
+		}
 	}
 	
 	public void override(
@@ -902,7 +921,9 @@ public class RegistreEntity extends ContingutEntity {
 			Date dataOrigen,
 			String oficinaOrigenCodi,
 			String oficinaOrigenDescripcio,
-			String justificantArxiuUuid) {
+			String justificantArxiuUuid,
+			String tramitCodi,
+			String tramitNom) {
 		// Nom del contingut
 		this.nom = numero;
 		if (extracte != null) {
@@ -964,6 +985,8 @@ public class RegistreEntity extends ContingutEntity {
 		this.justificant = null;
 		this.procesError = null;
 		this.sobreescriure = false;
+		this.tramitCodi = tramitCodi;
+		this.tramitNom = tramitNom;
 	}
 
 	@Override
