@@ -65,9 +65,35 @@ pageContext.setAttribute(
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('#netejarFiltre').click(function(e) {
-				$('#arxiuEstat').val('ESBORRANY').change();
-			});
+						
+			// Prefilter: inyecta accio en las peticiones del datatable
+		    $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+		        if (options && options.url && options.url.indexOf('annexosAdmin/datatable') !== -1) {
+		            var accio = $('#accioHidden').val() || '';
+		            if (!accio) return;
+
+		            if ((options.type || 'GET').toUpperCase() === 'GET') {
+		                options.url += (options.url.indexOf('?') === -1 ? '?' : '&') + 'accio=' + encodeURIComponent(accio);
+		            } else {
+		                options.data = (options.data ? options.data + '&' : '') + 'accio=' + encodeURIComponent(accio);
+		            }
+		        }
+		    });	
+		
+		    $('#filtrarBtn').on('click', function(e){
+		        $('#accioHidden').val('filtrar');
+		        $('#annexosFiltreCommand')[0].submit();
+		    });
+
+		    $('#netejarFiltre').on('click', function(e){
+		        $('#accioHidden').val('netejar');
+		        var $form = $('#annexosFiltreCommand');
+		        $form.find('input, textarea').val('');
+		        $form.find('select').val('').trigger('change');
+		        $('#arxiuEstat').val('ESBORRANY').trigger('change');
+		        $form[0].submit();
+		    });
+		    
 			$(document).on('hidden.bs.modal', function (event) {				
 				var data = sessionStorage.getItem('selectedElements');
 				if (data != null) {
@@ -227,10 +253,19 @@ pageContext.setAttribute(
 				<dis:inputText name="fitxerNom" inline="true" placeholderKey="annex.admin.filtre.fitxerNom"/>
 			</div>	
 			<div class="col-md-2 d-flex justify-content-end">
-				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-				<button type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+			    <button id="netejarFiltre" type="button" class="btn btn-default">
+			        <spring:message code="comu.boto.netejar"/>
+			    </button>
+			    <button id="filtrarBtn" type="button" class="ml-2 btn btn-primary">
+			        <span class="fa fa-filter"></span> 
+			        <spring:message code="comu.boto.filtrar"/>
+			    </button>
 			</div>
+
+<input type="hidden" id="accioHidden" name="accio" value="filtrar"/>
+
 		</div>
+		<input type="hidden" id="accioHidden" name="accio" value="filtrar"/>
 	</form:form>
 	<c:set var="rol" value="admin"/>
 	
