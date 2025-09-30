@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import es.caib.distribucio.persist.repository.ProcedimentRepository;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,8 +131,10 @@ public class RegistreUserController extends BaseUserController {
 	private ProcedimentService procedimentService;
 	@Autowired
 	private ServeiService serveiService;
-	
-	@RequestMapping(method = RequestMethod.GET)
+    @Autowired
+    private ProcedimentRepository procedimentRepository;
+
+    @RequestMapping(method = RequestMethod.GET)
 	public String registreUserGet(
 			@CookieValue(value = COOKIE_SENSE_ASSIGNAR, defaultValue = "false") boolean mostrarSenseAssignar,
 			HttpServletRequest request,
@@ -1840,6 +1843,10 @@ public class RegistreUserController extends BaseUserController {
 					model);
 			return "registreClassificar";
 		}
+        RegistreDto registreDto = registreService.findOne(
+                entitatActual.getId(),
+                registreId,
+                false);
 		String codiProcediment = null;
 		if (command.getTipus() != null && RegistreClassificarTipusEnum.PROCEDIMENT.name().equals(command.getTipus()) ) {
 				codiProcediment = command.getCodiProcediment();
@@ -1860,9 +1867,9 @@ public class RegistreUserController extends BaseUserController {
 		case REGLA_BUSTIA:
 		case REGLA_UNITAT:
 			MissatgesHelper.info(
-					request, 
+					request,
 					getMessage(
-							request, 
+							request,
 							"bustia.controller.pendent.contingut.classificat.mogut",
 							new Object[] {
 									resultat.getBustiaNom(),
@@ -1871,33 +1878,65 @@ public class RegistreUserController extends BaseUserController {
 			break;
 		case REGLA_BACKOFFICE:
 			MissatgesHelper.info(
-					request, 
+					request,
 					getMessage(
-							request, 
+							request,
 							"bustia.controller.pendent.contingut.classificat.backoffice",
 							new Object[]{ resultat.getBackofficeDesti() }));
 			break;
 		case REGLA_ERROR:
 			MissatgesHelper.warning(
-					request, 
+					request,
 					getMessage(
-							request, 
+							request,
 							"bustia.controller.pendent.contingut.classificat.error",
 							null));
 			break;
 		case TITOL_MODIFICAT:
 			MissatgesHelper.info(
-					request, 
+					request,
 					getMessage(
-							request, 
+							request,
 							"bustia.controller.pendent.contingut.classificat.titol",
 							null));
 			break;
 		}
-		return getModalControllerReturnValueSuccess(
-				request,
-				"redirect:/registreUser/registre/" + registreId,
-				"bustia.controller.pendent.contingut.classificat.ok");
+        if (command.getCodiProcediment() != null) {
+            ProcedimentDto procediment = procedimentService.findByCodiSia(
+                    entitatActual.getId(),
+                    command.getCodiProcediment()
+            );
+
+            return getModalControllerReturnValueSuccess(
+                    request,
+                    "redirect:/registreUser/registre/" + registreId,
+                    "bustia.controller.pendent.contingut.classificat.ok.procediment",
+                    new Object[]{
+                            registreDto.getNumero(),
+                            procediment.getCodiSia() + " - " + procediment.getNom()
+                    });
+        } else if (command.getCodiServei() != null) {
+            ServeiDto servei = serveiService.findByCodiSia(
+                    entitatActual.getId(),
+                    command.getCodiServei()
+            );
+            return getModalControllerReturnValueSuccess(
+                    request,
+                    "redirect:/registreUser/registre/" + registreId,
+                    "bustia.controller.pendent.contingut.classificat.ok.servei",
+                    new Object[]{
+                            registreDto.getNumero(),
+                            servei.getCodiSia() + " - " + servei.getNom()
+                    });
+        } else {
+            return getModalControllerReturnValueSuccess(
+                    request,
+                    "redirect:/registreUser/registre/" + registreId,
+                    "bustia.controller.pendent.contingut.classificat.ok",
+                    new Object[]{
+                            registreDto.getNumero(),
+                    });
+        }
 	}	
 	
 	//Gestió bústies favorits
