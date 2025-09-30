@@ -65,20 +65,6 @@ pageContext.setAttribute(
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
-						
-			// Prefilter: inyecta accio en las peticiones del datatable
-		    $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
-		        if (options && options.url && options.url.indexOf('annexosAdmin/datatable') !== -1) {
-		            var accio = $('#accioHidden').val() || '';
-		            if (!accio) return;
-
-		            if ((options.type || 'GET').toUpperCase() === 'GET') {
-		                options.url += (options.url.indexOf('?') === -1 ? '?' : '&') + 'accio=' + encodeURIComponent(accio);
-		            } else {
-		                options.data = (options.data ? options.data + '&' : '') + 'accio=' + encodeURIComponent(accio);
-		            }
-		        }
-		    });	
 		
 		    $('#filtrarBtn').on('click', function(e){
 		        $('#accioHidden').val('filtrar');
@@ -105,12 +91,12 @@ pageContext.setAttribute(
 				}
 			});
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();			
-// 			$("#taulaDades").dataTable();
 
 			$('form').submit(function() {				
 				$.get(
 						"annexosAdmin/deselect",
 						function(data) {
+							console.log("DATA: " + data);
 							$("#seleccioCount").html(data);
 							$('#taulaDades').webutilDatatable('select-none');
 						}
@@ -122,8 +108,7 @@ pageContext.setAttribute(
 			$('#taulaDades').on( 'draw.dt', function () {
 				if (!selectButtonsInitialized) {					
 					selectButtonsInitialized = true;
-					$('#seleccioAll').on('click', function(e) {
-						debugger;
+					$('#seleccioAll').on('click', function(e) {						
 						$.get(
 								"annexosAdmin/select",
 								function(data) {
@@ -261,11 +246,7 @@ pageContext.setAttribute(
 			        <spring:message code="comu.boto.filtrar"/>
 			    </button>
 			</div>
-
-<input type="hidden" id="accioHidden" name="accio" value="filtrar"/>
-
-		</div>
-		<input type="hidden" id="accioHidden" name="accio" value="filtrar"/>
+		</div>		
 	</form:form>
 	<c:set var="rol" value="admin"/>
 	
