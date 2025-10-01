@@ -6,8 +6,8 @@ package es.caib.distribucio.back.helper;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.service.ConfigService;
 import es.caib.distribucio.logic.intf.service.EntitatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,8 @@ public class SessioHelper {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			AplicacioService aplicacioService,
-            EntitatService entitatService) {
+            EntitatService entitatService,
+            ConfigService configService) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null) {
 			Boolean autenticacioProcessada = (Boolean)request.getSession().getAttribute(
@@ -55,7 +56,7 @@ public class SessioHelper {
 			}
 			try {
                 EntitatDto entitatActual = EntitatHelper.getEntitatActual(request, entitatService);
-                ConfigHelper.setEntitat(entitatActual);
+                configService.setEntitatPerPropietat(entitatActual);
 				String idioma_usuari = aplicacioService.getUsuariActual().getIdioma();
 				request.getSession().setAttribute(
 						SESSION_ATTRIBUTE_IDIOMA_USUARI,
