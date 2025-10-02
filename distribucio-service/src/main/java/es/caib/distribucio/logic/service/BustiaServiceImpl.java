@@ -1853,17 +1853,23 @@ public class BustiaServiceImpl implements BustiaService {
 			}
 		}	
 		if (opcioDeixarCopiaSelectada) {
+            List<String> params = new ArrayList<>();
+            params.add("ORIGINAL_AMB_COPIA");
 			contingutLogHelper.logMoviment(
 					registreOriginal,
 					LogTipusEnumDto.REENVIAMENT,
 					contingutMoviment,
-					true);
+					true,
+                    params);
 		}
+        List<String> params = new ArrayList<>();
+        params.add(opcioDeixarCopiaSelectada ?"COPIA": "ORIGINAL");
 		contingutLogHelper.logMoviment(
 				registrePerReenviar,
 				LogTipusEnumDto.REENVIAMENT,
 				contingutMoviment,
-				true);
+				true,
+                params);
 		emailHelper.createEmailsPendingToSend(
 				bustia,
 				registrePerReenviar,

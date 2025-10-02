@@ -597,7 +597,13 @@ public class ContingutController extends BaseUserController {
 			break;
 		case MOVIMENT:
 		case REENVIAMENT:
-			sb.append(this.getMessage(request, "contingut.log.resum.msg.reenviar"));
+            if (log.getParams().contains("ORIGINAL")) {
+                sb.append(this.getMessage(request, "contingut.log.resum.msg.reenviar"));
+            } else if (log.getParams().contains("ORIGINAL_AMB_COPIA")) {
+                sb.append(this.getMessage(request, "contingut.log.resum.msg.reenviar.original"));
+            } else if (log.getParams().contains("COPIA")) {
+                sb.append(this.getMessage(request, "contingut.log.resum.msg.reenviar.copia"));
+            }
 			if (log.getContenidorMoviment() != null) {
 				if (log.getContingutMoviment().getOrigenId() != null) {
 					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.deLaBustia")).append(" \"");
