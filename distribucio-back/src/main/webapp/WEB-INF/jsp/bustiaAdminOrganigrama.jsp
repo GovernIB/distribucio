@@ -306,7 +306,7 @@
 		function() {
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 
-			if ($('#nomFiltre').val() || $('#unitatIdFiltre').val()) {
+			if ($('#nom').val() || $('#unitatIdFiltre').val()) {
 				$('#arbreUnitatsOrganitzatives').jstree('open_all');
 			}
 
@@ -329,7 +329,7 @@
 	<form:form action="" method="post" cssClass="well" modelAttribute="bustiaFiltreOrganigramaCommand">
 		<div class="row">
 			<div class="col-md-4">
-				<dis:inputText name="nomFiltre" inline="true" placeholderKey="bustia.list.filtre.nom"/>
+				<dis:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
 			</div>
 						
 			<div class="col-md-4">			
@@ -346,7 +346,8 @@
 			</div>
 			<div class="col-md-4">
 				<dis:inputSuggest
-					name="unitatIdFiltre" 
+                    id="unitatIdFiltre"
+					name="unitatId"
 					urlConsultaInicial="${urlConsultaInicial}" 
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="true"

@@ -805,8 +805,8 @@ public class BustiaServiceImpl implements BustiaService {
 	@Override
 	@Transactional
 	public List<BustiaDto> findAmbEntitatAndFiltre(
-			Long entitatId, 
-			BustiaFiltreOrganigramaDto filtre) {
+			Long entitatId,
+            BustiaFiltreDto filtre) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.trace("Cercant bústies de l'entitat ("
 				+ "entitatId=" + entitatId + ", "
@@ -816,7 +816,7 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false,
 				false);
-		UnitatOrganitzativaEntity unitat = filtre.getUnitatIdFiltre() != null ? unitatOrganitzativaRepository.findById(filtre.getUnitatIdFiltre()).orElse(null) : null;
+		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() != null ? unitatOrganitzativaRepository.findById(filtre.getUnitatId()).orElse(null) : null;
 		
 		// Si es filtra per unitat superior llavors es passa la llista d'identificadors possibles de l'arbre.
 		List<String> codisUnitatsSuperiors = bustiaHelper.getCodisUnitatsSuperiors(entitat, filtre.getCodiUnitatSuperior()); 
@@ -848,10 +848,10 @@ public class BustiaServiceImpl implements BustiaService {
 		Timer.Context contextfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre = timerfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre.time();
 		List<BustiaEntity> busties = bustiaRepository.findAmbEntitatAndFiltreAmbLlistes(
 				entitat,
-				filtre.getUnitatIdFiltre() == null, 
+				filtre.getUnitatId() == null,
 				unitat,
-				filtre.getNomFiltre() == null || filtre.getNomFiltre().isEmpty(), 
-				filtre.getNomFiltre() != null ? filtre.getNomFiltre().trim() : "",
+				filtre.getNom() == null || filtre.getNom().isEmpty(),
+				filtre.getNom() != null ? filtre.getNom().trim() : "",
 				filtre.getCodiUnitatSuperior() == null || filtre.getCodiUnitatSuperior().isEmpty(),
 				//codisUnitatsSuperiors,
 				!llistaCodisUnitats1.isEmpty() ? llistaCodisUnitats1 : null,

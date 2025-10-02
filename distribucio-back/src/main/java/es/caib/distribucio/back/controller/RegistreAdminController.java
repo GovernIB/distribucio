@@ -384,9 +384,9 @@ public class RegistreAdminController extends BaseAdminController {
 			@RequestParam(required = false) Long unitatId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
-		BustiaFiltreOrganigramaDto filtre = new BustiaFiltreOrganigramaDto();
+        BustiaFiltreDto filtre = new BustiaFiltreDto();
 		filtre.setActiva(!mostrarInactives);
-		filtre.setUnitatIdFiltre(unitatId);
+		filtre.setUnitatId(unitatId);
 		return bustiaService.findAmbEntitatAndFiltre(entitatActual.getId(), filtre);
 	}
 

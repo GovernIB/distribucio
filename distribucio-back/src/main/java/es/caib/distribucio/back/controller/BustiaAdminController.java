@@ -192,11 +192,9 @@ public class BustiaAdminController extends BaseAdminController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
 		
-		BustiaFiltreOrganigramaDto filtre = omplirFiltreExcelUsuarisPermissionsPerBustia(bustiaFiltreCommand);
-		
 		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
 				entitatActual.getId(),
-				filtre);
+                BustiaFiltreCommand.asDto(bustiaFiltreCommand));
 
 		bustiaHelper.generarExcelUsuarisPermissionsPerBustia(
 				response,
