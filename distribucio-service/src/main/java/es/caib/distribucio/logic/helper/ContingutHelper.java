@@ -121,6 +121,8 @@ public class ContingutHelper {
 	private UsuariRepository usuariRepository;
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;
+	@Autowired
+	private PermisosContingutHelper permisosContingutHelper;
 
 	public ContingutDto toContingutDto(
 			ContingutEntity contingut) {
@@ -193,7 +195,9 @@ public class ContingutHelper {
 			// toBustiaContingut 
 			if (registreEntity.getPare() != null) {
 				ContingutEntity contingutPareDeproxied = HibernateHelper.deproxy(registreEntity.getPare());
-				registreDto.setBustiaActiva(((BustiaEntity)contingutPareDeproxied).isActiva());				
+                BustiaEntity bustiaEntity = ((BustiaEntity)contingutPareDeproxied);
+				registreDto.setBustiaActiva(bustiaEntity.isActiva());
+                permisosContingutHelper.omplirPermisosPerContingut(registreDto, bustiaEntity.getId());
 			}
 			if (RegistreProcesEstatEnum.isPendent(registreEntity.getProcesEstat())) {
 				registreDto.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PENDENT);

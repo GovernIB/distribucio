@@ -63,9 +63,16 @@
 		<form:hidden path="id"/>
 		<dis:inputSelect name="principalTipus" textKey="bustia.permis.form.camp.tipus" disabled="${not empty permisCommand.id}" optionEnum="PrincipalTipusEnumDto"/>
 		<dis:inputText name="principalNom" textKey="bustia.permis.form.camp.principal" disabled="${not empty permisCommand.id}"/>
-		<dis:inputCheckbox name="read" textKey="bustia.permis.form.camp.acces"/>
+<%--		<dis:inputRadio name="tipusPermis" textKey="bustia.permis.form.camp.acces" optionEnum="TipusPermisEnumDto"/>--%>
+        <dis:inputRadio
+                name="tipusPermis"
+                textKey="bustia.permis.form.camp.acces"
+                optionItems="${tipusPermis}"
+                optionValueAttribute="value"
+                optionTextKeyAttribute="text"
+                required="true"/>
 		<div id="modal-botons" class="well">
-			<button type="submit" class="btn btn-success submitDialog"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
+			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span>&nbsp;<spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/bustiaAdmin/${bustia.id}/permis"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>

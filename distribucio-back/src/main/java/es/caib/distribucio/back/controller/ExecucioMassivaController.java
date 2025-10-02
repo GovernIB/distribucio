@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -306,7 +307,9 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
-			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
+			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false)
+                    .stream().filter(RegistreDto::isPotModificar)
+                    .collect(Collectors.toList());
 			
 			if (! registresSeleccionats.isEmpty()) {
 				Map<String, Object> params = new HashMap<String, Object>();
@@ -425,7 +428,9 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		}
 
 		try {
-			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, isVistaMoviments);
+			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, isVistaMoviments)
+                    .stream().filter(RegistreDto::isPotModificar)
+                    .collect(Collectors.toList());
 			
 			if (! registresSeleccionats.isEmpty()) {
 				Map<String, Object> params = new HashMap<String, Object>();
@@ -507,7 +512,9 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 				return "registreUserMarcarProcessat";
 			}
 			EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
-			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
+			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false)
+                    .stream().filter(RegistreDto::isPotModificar)
+                    .collect(Collectors.toList());
 			
 			if (! registresSeleccionats.isEmpty()) {
 				Map<String, Object> params = new HashMap<String, Object>();
@@ -584,7 +591,9 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 			}
 			
 			EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
-			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
+			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false)
+                    .stream().filter(RegistreDto::isPotModificar)
+                    .collect(Collectors.toList());
 			
 			if (! registresSeleccionats.isEmpty()) {
 				Map<String, Object> params = new HashMap<String, Object>();
@@ -740,7 +749,9 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 			}
 			
 			EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
-			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
+			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false)
+                    .stream().filter(RegistreDto::isPotModificar)
+                    .collect(Collectors.toList());
 			
 			if (! registresSeleccionats.isEmpty()) {
 				Map<String, Object> params = new HashMap<String, Object>();

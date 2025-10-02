@@ -29,7 +29,9 @@
 			itemUrlParam1="id"
 			itemKey="numero"
 			itemText="extracte" 
-			missatgeHeader="registresSeleccionats.anotacions.seleccionades"/>
+			missatgeHeader="registresSeleccionats.anotacions.seleccionades"
+            itemError="potModificar"
+            missatgeError="registresSeleccionats.anotacions.seleccionades.permisos"/>
 	</c:if>
 
 	<form:form method="post" cssClass="form-horizontal" modelAttribute="registreEnviarIProcessarCommand">

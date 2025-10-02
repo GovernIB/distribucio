@@ -784,6 +784,7 @@ li[id^="anotacio_"] {
 			<ul class="dropdown-menu">
 				<%--<c:if test="${isVistaMoviments || isVistaRegistresAndNoReservat || isVistaRegistresAndReservatUsuariActual}"> --%>				
 					<%-- CLASSIFICAR --%>
+                    <c:if test="${registre.potModificar}">
 					<c:choose>
 						<c:when test="${registre.procesEstat != 'ARXIU_PENDENT'}">
 							<li class="<c:if test="${isVistaMoviments}">hidden opt_classificar_${registre.id}</c:if>"><a id="accioClassificar" href="#"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
@@ -792,7 +793,7 @@ li[id^="anotacio_"] {
 							<li class="<c:if test="${isVistaMoviments}">hidden opt_classificar_${registre.id} disabled</c:if>"><a><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 						</c:otherwise>
 					</c:choose>
-					
+                    </c:if>
 					
 					<!-- ENVIAR VIA EMAIL -->
 					<c:choose>
@@ -810,6 +811,7 @@ li[id^="anotacio_"] {
 					</c:choose>
 					
 					<%-- REENVIAR --%>
+                    <c:if test="${registre.potModificar}">
 					<li class="<c:if test="${isAccioVisible}">hidden opt_reenviar_${registre.id}</c:if>"><a id="accioReenviar" href="#"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 					<c:if test="${registre.procesEstatSimple == 'PENDENT'}">
 						<%-- PROCESSAR --%>
@@ -822,6 +824,7 @@ li[id^="anotacio_"] {
 							</c:otherwise>
 						</c:choose>	
 					</c:if>
+                    </c:if>
 				<%--</c:if>--%>
 				<li>
 					<a href="<c:url value="/contingut/registre/${registre.id}/descarregarZip/DOCUMENT_ORIGINAL"/>">

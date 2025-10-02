@@ -665,13 +665,14 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false"></th>
+				<th data-col-name="potModificar" data-visible="false"></th>
 				<th data-col-name="error" data-visible="false"></th>
 				<th data-col-name="alerta" data-visible="false"></th>
 				<th data-col-name="enviatPerEmail" data-visible="false"></th>
 				<th data-col-name="enviamentsPerEmail" data-visible="false"></th>
-				<th data-col-name="procesEstatSimple"  data-visible="false">
-				<th data-col-name="perConeixement"  data-visible="false">
-				<th data-col-name="reactivat"  data-visible="false">
+				<th data-col-name="procesEstatSimple"  data-visible="false"></th>
+				<th data-col-name="perConeixement"  data-visible="false"></th>
+				<th data-col-name="reactivat"  data-visible="false"></th>
 				<th data-col-name="agafat" data-visible="false"></th>
 				<th data-col-name="agafatPer.codi" data-visible="false"></th>
 				<th data-col-name="motiuRebuig" data-visible="false"></th>
@@ -870,25 +871,25 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 								{{if alerta}}
 									<li><a href="./registreUser/pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-sticky-note-o"></span>&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>
 								{{/if}}
-								<li role="separator" class="divider"></li>								
+								<li role="separator" class="divider"></li>
+                            {{if potModificar}}
 								{{!-- CLASSIFICAR ---}}
 								<li{{if !~hlpIsPermesReservarAnotacionsAndAgafat(agafat, agafatPer)}} class="opt_classificar_{{:id}} hidden"{{/if}}{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 								<li role="separator" class="divider opt_separator_{{:id}}{{if !~hlpIsPermesReservarAnotacionsAndAgafat(agafat, agafatPer)}}  hidden"{{/if}}"></li>
-
+                            {{/if}}
 								{{!-- VIA MAIL ---}}
 								<li{{if procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat}} class="disabled" {{/if}}><a {{if !(procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat)}} href="./registreUser/enviarViaEmail/{{:id}}" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
-								
+                            {{if potModificar}}
 								{{!-- REENVIAR ---}}
 								<li{{if !~hlpIsPermesReservarAnotacionsAndAgafat(agafat, agafatPer)}} class="opt_reenviar_{{:id}} hidden"{{/if}}><a href="./registreUser/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
-									
 								{{!-- PROCESSAR ---}}
 								{{if procesEstatSimple == 'PENDENT'}}
 									<li{{if !~hlpIsPermesReservarAnotacionsAndAgafat(agafat, agafatPer)}} class="opt_processar_{{:id}} hidden"{{/if}} {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat) || procesEstat == 'BACK_REBUTJADA')}} class="disabled" {{/if}}><a data-refresh-tancar="true" {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)  || procesEstat == 'BACK_REBUTJADA'}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
-								{{/if}}		
-
+								{{/if}}
 								{{if procesEstat == 'BUSTIA_PROCESSADA'}}
 									<li ><a href="./registreUser/{{:id}}/marcarPendent" data-toggle="modal"><span class="fa fa-undo"></span>&nbsp;&nbsp;<spring:message code="registre.user.accio.marcar.pendent"/>...</a></li>
-								{{/if}}	
+								{{/if}}
+                            {{/if}}
 								<li>
 									{{!-- DESCARREGAR ZIP ---}}
 									<a href="<c:url value="/contingut/registre/{{:id}}/descarregarZip/DOCUMENT_ORIGINAL"/>">
