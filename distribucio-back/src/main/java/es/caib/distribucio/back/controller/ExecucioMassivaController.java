@@ -398,8 +398,9 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 			@PathVariable String rol,
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			@Valid ContingutReenviarCommand command,
-			Model model,
-			BindingResult bindingResult) {
+			BindingResult bindingResult,
+			Model model
+			) {
 		List<Long> registresSeleccionatsIds= obtenirIdsSeleccioRegistres(request, rol, isVistaMoviments);
 		EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 		if (bindingResult.hasErrors()) {
