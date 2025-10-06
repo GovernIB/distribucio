@@ -38,6 +38,7 @@ import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -49,6 +50,7 @@ import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
 public class BustiaAdminController extends BaseAdminController {
 	
 	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaAdminController.session.filtre";
+    private static final String SESSION_ATTRIBUTE_MODIFIED_ID = "BustiaAdminController.session.bustiaModifiedId";
 
 	@Autowired
 	private BustiaService bustiaService;
@@ -122,19 +124,26 @@ public class BustiaAdminController extends BaseAdminController {
 			
 			// if it is modified
 			if (command.getId() != null) {
-				bustiaService.update(
+                BustiaDto bustiaDto = bustiaService.update(
 						entitatActual.getId(),
 						BustiaCommand.asDto(command));
-				
+                RequestSessionHelper.actualitzarObjecteSessio(
+                        request,
+                        SESSION_ATTRIBUTE_MODIFIED_ID,
+                        bustiaDto.getId());
 				return getModalControllerReturnValueSuccess(
 						request,
 						"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
 						"bustia.controller.modificat.ok");
 			//if it is new	
 			} else {
-				bustiaService.create(
+				BustiaDto bustiaDto = bustiaService.create(
 						entitatActual.getId(),
 						BustiaCommand.asDto(command));
+                RequestSessionHelper.actualitzarObjecteSessio(
+                        request,
+                        SESSION_ATTRIBUTE_MODIFIED_ID,
+                        bustiaDto.getId());
 				return getModalControllerReturnValueSuccess(
 						request,
 						"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",

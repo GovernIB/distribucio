@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.back.command.BustiaCommand;
 import es.caib.distribucio.back.command.BustiaCommand.CreateUpdate;
-import es.caib.distribucio.back.command.BustiaFiltreOrganigramaCommand;
 import es.caib.distribucio.back.helper.BustiaHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.logic.intf.dto.ArbreDto;
@@ -42,6 +41,7 @@ import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.dto.UsuariPermisDto;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -53,6 +53,7 @@ import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
 public class BustiaAdminOrganigramaController extends BaseAdminController {
 	
 	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaAdminController.session.filtre";
+	private static final String SESSION_ATTRIBUTE_MODIFIED_ID = "BustiaAdminController.session.bustiaModifiedId";
 
 	@Autowired
 	private BustiaService bustiaService;
@@ -64,10 +65,20 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
-			Model model,
-			Long bustiaId) {
+			Model model) {
 		
 		omplirModel(request, model);
+
+        Long bustiaId = (Long) RequestSessionHelper.obtenirObjecteSessio(
+                request,
+                SESSION_ATTRIBUTE_MODIFIED_ID);
+        if (bustiaId != null) {
+            RequestSessionHelper.esborrarObjecteSessio(
+                    request,
+                    SESSION_ATTRIBUTE_MODIFIED_ID);
+
+            model.addAttribute("bustiaModifiedId", bustiaId);
+        }
 		
 		return "bustiaAdminOrganigrama";
 	}
@@ -230,11 +241,10 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletRequest request,
 			@Validated(CreateUpdate.class) BustiaCommand command,
 			BindingResult bindingResult,
-			Model model) {
+            RedirectAttributes redirectAttributes) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			if (bindingResult.hasErrors()) {
-				omplirModel(request, model);
 				List<String> errorMsgs = new ArrayList<>();
 				for(ObjectError objectError: bindingResult.getAllErrors()){
 					String field = "";
@@ -250,10 +260,14 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 						"bustia.controller.modificat.error.validacio",
 						new Object[] {errorMsgs});	
 			}
-			bustiaService.update(
+			BustiaDto bustiaDto = bustiaService.update(
 					entitatActual.getId(),
 					BustiaCommand.asDto(command));
-			
+            RequestSessionHelper.actualitzarObjecteSessio(
+                    request,
+                    SESSION_ATTRIBUTE_MODIFIED_ID,
+                    bustiaDto.getId());
+
 			return getAjaxControllerReturnValueSuccess(
 					request,
 					"redirect:/bustiaAdminOrganigrama",
@@ -267,7 +281,6 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 					new Object[] {e.getMessage()});			
 		}
 	}
-	
 	
 	@RequestMapping(value = "/{bustiaId}/delete", method = RequestMethod.GET)
 	public String delete(

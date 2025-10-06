@@ -315,6 +315,34 @@
 		$("#canviVistaBusties").click(function(){
 			window.location.replace(webutilContextPath() + "/bustiaAdmin");
 		});
+
+        var bustiaModifiedId = ${empty bustiaModifiedId ? 'null' : bustiaModifiedId};
+        if (bustiaModifiedId != null) {
+            var $arbre = $('#arbreUnitatsOrganitzatives');
+
+            function openAndSelectNode() {
+                var tree = $arbre.jstree(true);
+                if (tree && tree.get_node(bustiaModifiedId)) {
+                    tree.open_node(bustiaModifiedId, function () {
+                        tree.activate_node(bustiaModifiedId);
+                    });
+                    console.log("Nodo abierto y seleccionado:", bustiaModifiedId);
+                } else {
+                    console.warn("No se encontró el nodo con ID:", bustiaModifiedId);
+                }
+            }
+
+            // Si jsTree ya está inicializado
+            if ($arbre.hasClass("jstree")) {
+                console.log("Árbol ya inicializado — ejecutando directamente");
+                openAndSelectNode();
+            } else {
+                console.log("Esperando evento ready.jstree");
+                $arbre.on('ready.jstree', function (e, data) {
+                    openAndSelectNode();
+                })
+            }
+        }
 	});
 	</script>
 	
