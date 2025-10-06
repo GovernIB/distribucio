@@ -40,6 +40,7 @@ import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.ws.soap.SOAPFaultException;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -1481,12 +1482,16 @@ public class RegistreHelper {
 			}
 			logger.trace(">>> Despres de cridar backoffice WS "+ backofficeDesti.getCodi());
 			return null;
-		} catch (Exception ex) {
+        } catch (Exception ex) {
 			String errorDescripcio = "";
-			if (ids.size() > 0) {
-				errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions al backoffice " + backofficeDesti.getNom() + ":" + ex.getMessage();
+			if (!ids.isEmpty()) {
+				errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions al backoffice " + backofficeDesti.getNom();
 			} else {
-				errorDescripcio = "No s'ha pogut fer la connexió amb el backoffice: " + ex.getMessage();
+                if (ExceptionHelper.isExceptionOrCauseInstanceOf(ex, SOAPFaultException.class)) {
+                    errorDescripcio = "S'ha pogut establir connexió però s'ha produït un error intern al backoffice " + backofficeDesti.getCodi();
+                } else {
+                    errorDescripcio = "No s'ha pogut probar la connexió amb el backoffice " + backofficeDesti.getCodi();
+                }
 			}
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_BACKOFFICE,
