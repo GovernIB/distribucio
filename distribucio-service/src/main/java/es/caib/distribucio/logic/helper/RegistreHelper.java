@@ -2385,8 +2385,7 @@ public class RegistreHelper {
 			Long entitatId,
 			Long registreId,
 			boolean isVistaMoviments,
-			String rolActual,
-			boolean comprovarPermisRead) throws NotFoundException {
+			String rolActual) throws NotFoundException {
 		logger.debug("Obtenint anotació de registre ("
 				+ "entitatId=" + entitatId + ", "
 				+ "registreId=" + registreId + ")");
@@ -2398,23 +2397,11 @@ public class RegistreHelper {
 		RegistreEntity registre = registreRepository.findById(registreId).orElse(null);
 		if (registre == null)
 			throw new NotFoundException(registreId, RegistreEntity.class);
-		
-		boolean permisLecturaSobreLaBustia = false;
-		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura() && !isVistaMoviments) {
-			
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			permisLecturaSobreLaBustia = permisosHelper.isGrantedAll(
-					registre.getPareId(),
-					BustiaEntity.class,
-					new Permission[] {ExtendedPermission.READ},
-					auth);
-			
+		if (!usuariHelper.isAdmin() && !usuariHelper.isAdminLectura() && !isVistaMoviments)
 			entityComprovarHelper.comprovarBustia(
-					entitat,
-					registre.getPareId(),
-					comprovarPermisRead);
-		}
-		
+							entitat,
+							registre.getPareId(),
+							true);
 		RegistreDto registreAnotacio = (RegistreDto)contingutHelper.toContingutDto(
 				registre,
 				false,
@@ -2424,8 +2411,6 @@ public class RegistreHelper {
 				true,
 				false,
 				true);
-		
-		if (permisLecturaSobreLaBustia) registreAnotacio.setPermisLecturaBustia(true);
 		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());	
 		// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
 		for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {

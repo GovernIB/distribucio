@@ -258,7 +258,7 @@ public class RegistreServiceImpl implements RegistreService {
 			boolean isVistaMoviments,
 			String rolActual) throws NotFoundException {
 		
-		return registreHelper.findOne(entitatId, registreId, isVistaMoviments, rolActual, true);
+		return registreHelper.findOne(entitatId, registreId, isVistaMoviments, rolActual);
 	}
 
 	@Transactional(readOnly = true)
@@ -269,7 +269,7 @@ public class RegistreServiceImpl implements RegistreService {
 			boolean isVistaMoviments,
 			String rolActual) throws NotFoundException {
 		
-		RegistreDto registre = registreHelper.findOne(entitatId, registreId, isVistaMoviments, rolActual, false);
+		RegistreDto registre = registreHelper.findOne(entitatId, registreId, isVistaMoviments, rolActual);
 		
 		List<DadaEntity> dades = dadaRepository.findByRegistreId(registre.getId());
 		
@@ -1996,7 +1996,7 @@ public class RegistreServiceImpl implements RegistreService {
 				"entitatId=" + entitatId + ", " +
 				"registreId=" + registreId + ")");
 		
-		RegistreDto anotacio = registreHelper.findOne(entitatId, registreId, false, null, true);
+		RegistreDto anotacio = registreHelper.findOne(entitatId, registreId, false, null);
 		entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
@@ -3358,7 +3358,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 	private Throwable processarAnotacioPendent(long entitatId, long anotacioId) {
 		
-		RegistreDto anotacio = registreHelper.findOne(entitatId, anotacioId, false, null, true);
+		RegistreDto anotacio = registreHelper.findOne(entitatId, anotacioId, false, null);
 		entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
