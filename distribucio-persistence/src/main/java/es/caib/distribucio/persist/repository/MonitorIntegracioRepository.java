@@ -67,6 +67,19 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 	public List<Object[]> countErrorsGroupByCodi(
 			@Param("dataInici") Date dataInici);
 
+	@Query(	"select count(mon)" +
+			"from MonitorIntegracioEntity mon " +
+			"where mon.codiUsuari = :usuari " +
+            "and mon.data >= :dataInici " +
+			"and mon.data <= :dataFinal " +
+            "and mon.descripcio like '%Canvi d''estat%'" +
+			"and mon.codi = 'BACKOFFICE' ")
+	public Integer countBackofficeCanvisEstatFromUser(
+			@Param("usuari") String usuari,
+			@Param("dataInici") Date dataInici,
+			@Param("dataFinal") Date dataFinal
+    );
+
 	/** Esborra les dades anteriors a la data passada per paràmetre. */
 	@Modifying
 	@Query(	"delete from MonitorIntegracioEntity mon " +

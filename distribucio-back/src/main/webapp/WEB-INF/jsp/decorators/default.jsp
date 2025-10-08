@@ -265,6 +265,7 @@ body {
 											<li><a href="<c:url value="/config"/>"> <spring:message code="decorator.menu.config.properties"/></a></li>
 											<li><a href="<c:url value="/scheduled"/>" data-toggle="modal" data-maximized="true"><spring:message code="decorator.menu.reinici.scheduler"/> ...</a></li>											
 											<li><a href="<c:url value="/usuari/usernames/change"/>"> <spring:message code="decorator.menu.canvi.usuari.codis"/></a></li>
+											<li><a href="<c:url value="/limitCanviEstat"/>"> <spring:message code="decorator.menu.limit.canvi.estat"/></a></li>
 										</ul>
 									</div> 
 
