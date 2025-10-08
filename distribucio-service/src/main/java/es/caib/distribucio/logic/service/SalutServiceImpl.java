@@ -6,11 +6,13 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -62,9 +64,13 @@ public class SalutServiceImpl implements SalutService {
     
 	@Override
 	public List<IntegracioInfo> getIntegracions() {
-        return pluginHelper.getPluginHelpers().stream()
-                .flatMap(pluginHelper -> pluginHelper.getIntegracionsInfo().stream())
-                .collect(Collectors.toList());
+		List<IntegracioInfo> integracionsInfo = pluginHelper.getPluginHelpers().stream()
+	            .flatMap(helper -> helper.getIntegracionsInfo().stream())
+	            .collect(Collectors.collectingAndThen(
+	                    Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(IntegracioInfo::getCodi))),
+	                    ArrayList::new));
+		
+		return integracionsInfo;
 	}
 
 	@Override

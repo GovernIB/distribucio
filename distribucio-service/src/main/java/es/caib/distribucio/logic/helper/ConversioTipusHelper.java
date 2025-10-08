@@ -268,9 +268,23 @@ public class ConversioTipusHelper {
 		mapperFactory.getConverterFactory().registerConverter(
 				new CustomConverter<AvisEntity, MissatgeSalut>() {
 					public MissatgeSalut convert(AvisEntity source, Type<? extends MissatgeSalut>destinationClass, MappingContext mappingContext) {
+						String avisNivell = null;
+						switch (source.getAvisNivell()){
+						case INFO:
+							avisNivell = "INFO";
+							break;
+						case WARNING:
+							avisNivell = "WARN";
+							break;
+						case ERROR:
+							avisNivell = "ERROR";
+							break;
+						default:
+							break;
+						}
 						MissatgeSalut target = new MissatgeSalut(
 								source.getDataInici(), 
-								source.getAvisNivell().name(), 
+								avisNivell, 
 								source.getMissatge());
 						return target;
 					}
