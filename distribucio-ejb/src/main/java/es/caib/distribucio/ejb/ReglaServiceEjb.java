@@ -55,10 +55,12 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	public ReglaDto updateActiva(
 			Long entitatId,
 			Long reglaId,
+			String sia,
 			boolean activa) throws NotFoundException {
 		return delegateService.updateActiva(
 				entitatId,
 				reglaId,
+				sia,
 				activa);
 	}
 
@@ -67,13 +69,15 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	public ReglaDto updateActivaPresencial(Long entitatId,
 			Long reglaId,
 			boolean activa,
-			ReglaPresencialEnumDto presencial)
+			ReglaPresencialEnumDto presencial,
+			String sia)
 			 throws NotFoundException {
 		return delegateService.updateActivaPresencial(
 				entitatId,
 				reglaId,
 				activa,
-				presencial);
+				presencial,
+				sia);
 	}
 
 	@Override

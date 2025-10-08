@@ -176,7 +176,8 @@ public class ReglaRestController {
 			}
 			reglaService.updateActiva(
 					regla.getEntitatId(), 
-					regla.getId(), 
+					regla.getId(),
+					sia,
 					activa);
 			if (activa) {
 				response = "La regla amb codi " + sia + " s'ha activat correctament.";	
@@ -251,7 +252,8 @@ public class ReglaRestController {
 					regla.getEntitatId(), 
 					regla.getId(), 
 					activa, 
-					presencialEnum);
+					presencialEnum,
+					sia);
 			response = "Regla amb id " + regla.getId() + " actualitzada correctament.";
 		} catch (Exception e) {
 			String errMsg = "Error actualitzant la regla " + regla.getNom() + " amb id " + regla.getId() + " pel procediment " + regla.getProcedimentCodiFiltre() + ": " + e.getMessage();

@@ -92,8 +92,8 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 	@Transactional
 	@Override
 	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio) {
-		logger.trace("Creant una nova monitorIntegracio (" +
-				"monitorIntegracio=" + monitorIntegracio + ")");
+//		logger.trace("Creant una nova monitorIntegracio (" +
+//				"monitorIntegracio=" + monitorIntegracio + ")");
 		MonitorIntegracioEntity entity = monitorIntegracioRepository.save(
 				MonitorIntegracioEntity.getBuilder(
 						monitorIntegracio.getCodi(),

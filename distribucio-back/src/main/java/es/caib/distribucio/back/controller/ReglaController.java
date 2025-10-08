@@ -295,6 +295,7 @@ public class ReglaController  extends BaseAdminController {
 		ReglaDto regla = reglaService.updateActiva(
 				entitatActual.getId(),
 				reglaId,
+				null,
 				true);
 		return getAjaxControllerReturnValueSuccess(
 				request,
@@ -325,6 +326,7 @@ public class ReglaController  extends BaseAdminController {
 		ReglaDto regla = reglaService.updateActiva(
 				entitatActual.getId(),
 				reglaId,
+				null,
 				false);
 		return getAjaxControllerReturnValueSuccess(
 				request,
