@@ -254,7 +254,10 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		return salutPluginComponent.getPeticionsPlugin();
+		IntegracioPeticions peticions = salutPluginComponent.getPeticionsPlugin();
+		peticions.setEndpoint(getServiceUrl());
+		return peticions;
 	}
+	
 
 }

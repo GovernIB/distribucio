@@ -241,7 +241,9 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		return salutPluginComponent.getPeticionsPlugin();
+		IntegracioPeticions peticions = salutPluginComponent.getPeticionsPlugin();
+		peticions.setEndpoint(getServiceUrl());
+		return peticions;
 	}
 
 }

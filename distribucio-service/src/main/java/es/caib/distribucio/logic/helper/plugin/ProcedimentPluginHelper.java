@@ -265,7 +265,7 @@ public class ProcedimentPluginHelper extends AbstractPluginHelper<ProcedimentPlu
 				plugin = (ProcedimentPlugin)clazz.
 						getDeclaredConstructor(Properties.class, boolean.class).
 						newInstance(properties, configuracioEspecifica);
-				plugin.init(meterRegistry, getCodiApp().name());
+				plugin.init(meterRegistry, getCodiApp().name() + "_PROCEDIMENTSS");
 			} catch (Exception ex) {
 				throw new SistemaExternException(
 						PROCEDIMENT.name(),

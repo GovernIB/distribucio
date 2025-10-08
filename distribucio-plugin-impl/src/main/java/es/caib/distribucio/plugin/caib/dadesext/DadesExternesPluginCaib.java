@@ -384,7 +384,9 @@ public class DadesExternesPluginCaib extends DistribucioAbstractPluginProperties
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		return salutPluginComponent.getPeticionsPlugin();
+		IntegracioPeticions peticions = salutPluginComponent.getPeticionsPlugin();
+		peticions.setEndpoint(getBaseUrl());
+		return peticions;
 	}
 	
 }

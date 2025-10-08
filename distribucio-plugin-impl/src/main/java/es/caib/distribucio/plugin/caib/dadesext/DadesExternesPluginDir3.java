@@ -355,7 +355,9 @@ public class DadesExternesPluginDir3 extends DistribucioAbstractPluginProperties
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		return salutPluginComponent.getPeticionsPlugin();
+		IntegracioPeticions peticions = salutPluginComponent.getPeticionsPlugin();
+		peticions.setEndpoint(getServiceUrl());
+		return peticions;
 	}
 	
 }

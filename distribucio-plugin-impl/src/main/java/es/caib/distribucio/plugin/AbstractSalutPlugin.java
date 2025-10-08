@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Strings;
 
+import es.caib.comanda.ms.salut.model.EstatByPercent;
 import es.caib.comanda.ms.salut.model.EstatSalut;
 import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
@@ -38,12 +39,6 @@ public class AbstractSalutPlugin  implements SalutPlugin {
     private Counter counterError;
 
     private CuaFifoBool cuaPeticions;
-
-    // Llindars d'avís en percentatge (0-100)
-    private static final int DOWN_PCT = 100;     // 100% errors
-    private static final int ERROR_GT_PCT = 30;  // >30% errors
-    private static final int DEGRADED_GT_PCT = 10; // >10% errors
-    private static final int UP_LT_PCT = 5;      // <5% errors
 
     public void init(MeterRegistry registry, String codiPlugin) {
 
@@ -128,31 +123,25 @@ public class AbstractSalutPlugin  implements SalutPlugin {
 
     private EstatSalutEnum calculaEstat(Long totalPeticionsOk, Long totalPeticionsError) {
 
-        // TODO EN COMPTES DE CALCULAR AMB LES totalPeticions FER-HO AMB ELS ELEMENTS DE LA CUA
-//        final long peticionsOkSegures = (totalPeticionsOk != null) ? totalPeticionsOk : 0L;
-//        final long peticionsErrorSegures = (totalPeticionsError != null) ? totalPeticionsError : 0L;
-        final long peticionsOkSegures = !cuaPeticions.isEmpty() ? cuaPeticions.getOk() : 0L;
-        final long peticionsErrorSegures = !cuaPeticions.isEmpty() ? cuaPeticions.getError() : 0L;
-
+    	var totalPeticions = totalPeticionsOk + totalPeticionsError;
+        long peticionsOkSegures;
+        long peticionsErrorSegures;
+        
+        if (totalPeticions < 20) {
+            peticionsOkSegures = totalPeticionsOk;
+            peticionsErrorSegures = totalPeticionsError;
+        } else {
+            peticionsOkSegures = !cuaPeticions.isEmpty() ? cuaPeticions.getOk() : 0L;
+            peticionsErrorSegures = !cuaPeticions.isEmpty() ? cuaPeticions.getError() : 0L;
+        }
+        
         final long totalOperacions = peticionsOkSegures + peticionsErrorSegures;
         if (totalOperacions == 0L) {
             return darrerEstat;
         }
 
-        // Percentatge d'errors arrodonit correctament evitant divisió d'enters
         final int errorRatePct = (int) Math.round((peticionsErrorSegures * 100.0) / totalOperacions);
-
-        if (errorRatePct >= DOWN_PCT) {
-            return EstatSalutEnum.DOWN;
-        } else if (errorRatePct >= ERROR_GT_PCT) {
-            return EstatSalutEnum.ERROR;
-        } else if (errorRatePct >= DEGRADED_GT_PCT) {
-            return EstatSalutEnum.DEGRADED;
-        } else if (errorRatePct <= UP_LT_PCT) {
-            return EstatSalutEnum.UP;
-        } else {
-            return EstatSalutEnum.WARN; // 5-10%
-        }
+        return EstatByPercent.calculaEstat(errorRatePct);
     }
 
     @Override

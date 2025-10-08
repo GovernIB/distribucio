@@ -6,9 +6,9 @@ import javax.ejb.Stateless;
 
 import org.springframework.context.annotation.Primary;
 
-import es.caib.comanda.ms.salut.model.AppInfo;
 import es.caib.comanda.ms.salut.model.IntegracioInfo;
 import es.caib.comanda.ms.salut.model.SalutInfo;
+import es.caib.comanda.ms.salut.model.SubsistemaInfo;
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.service.SalutService;
 import lombok.experimental.Delegate;
@@ -32,7 +32,7 @@ public class SalutServiceEjb extends AbstractServiceEjb<SalutService> implements
     }
 
     @Override
-    public List<AppInfo> getSubsistemes() {
+    public List<SubsistemaInfo> getSubsistemes() {
         return delegateService.getSubsistemes();
     }
 

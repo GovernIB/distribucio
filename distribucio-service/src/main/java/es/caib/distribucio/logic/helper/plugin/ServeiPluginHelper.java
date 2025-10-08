@@ -147,7 +147,7 @@ public class ServeiPluginHelper extends AbstractPluginHelper<ServeiPlugin> {
 				plugin = (ServeiPlugin)clazz.
 						getDeclaredConstructor(Properties.class, boolean.class).
 						newInstance(properties, configuracioEspecifica);
-				plugin.init(meterRegistry, getCodiApp().name());
+				plugin.init(meterRegistry, getCodiApp().name() + "_SERVEIS");
 			} catch (Exception ex) {
 				throw new SistemaExternException(
 						PROCEDIMENT.name(),

@@ -210,7 +210,7 @@ public class DadesExternesPluginHelper extends AbstractPluginHelper<DadesExterne
 				plugin = (DadesExternesPlugin)clazz.
 						getDeclaredConstructor(Properties.class, boolean.class).
 						newInstance(properties, configuracioEspecifica);
-				plugin.init(meterRegistry, getCodiApp().name());
+				plugin.init(meterRegistry, getCodiApp().name() + "_EXTERNES");
 			} catch (Exception ex) {
 				throw new SistemaExternException(
 						UNITATS.name(),
