@@ -25,7 +25,13 @@ DISTRIBUCIO ofereix un servei web per donar d'altra anotacions de registre i que
 ### [1.0.4.2](https://github.com/GovernIB/distribucio/releases/tag/Distribucio_1.0.4.2)
 
 ## <a name="v_jars"></a> Llibreries d'integració i utilitats
+Per projectes amb Java 7:
 >- [distribucio-backoffice-utils-0.9.50](https://github.com/GovernIB/maven/tree/gh-pages/maven/es/caib/distribucio/distribucio-backoffice-utils/0.9.50): Llibreria d'utilitats per a backoffices de Distribucio.
 >- [distribucio-rest-client-0.9.49](https://github.com/GovernIB/maven/tree/gh-pages/maven/es/caib/distribucio/distribucio-rest-client/0.9.49): Client REST per a backoffices de Distribucio.
+
+Per projectes amb Java 11:
+>- [distribucio-backoffice-utils-1.0.1](https://github.com/GovernIB/maven/tree/gh-pages/maven/es/caib/distribucio/distribucio-backoffice-utils/1.0.1): Llibreria d'utilitats per a backoffices de Distribucio.
+>- [distribucio-rest-client-1.0.1](https://github.com/GovernIB/maven/tree/gh-pages/maven/es/caib/distribucio/distribucio-rest-client/1.0.1): Client REST per a backoffices de Distribucio.
+
 
 
