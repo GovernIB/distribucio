@@ -77,6 +77,9 @@ public interface MonitorIntegracioService {
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public Map<String, Integer> countErrors(int numeroHores);
 
+//	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
+	public Map<String, Integer> countCanvisEstatFromUser(String user);
+
 	/** Mètode per esborrar dades anteriors a una data passada per paràmetre */
 	public int esborrarDadesAntigues(Date data);
 

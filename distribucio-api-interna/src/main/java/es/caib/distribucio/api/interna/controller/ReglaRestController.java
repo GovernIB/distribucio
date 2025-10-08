@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@SecurityRequirement(name = "basicScheme")
 @Controller
 @RequestMapping("/regla")
 @Tag(

@@ -1,14 +1,23 @@
 package es.caib.distribucio.api.interna.controller;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import es.caib.distribucio.logic.helper.ConfigHelper;
+import es.caib.distribucio.logic.intf.dto.LimitCanviEstatDto;
+import es.caib.distribucio.logic.intf.service.LimitCanviEstatService;
+import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,6 +41,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  *
  * @author Limit Tecnologies <limit@limit.es>
  */
+@SecurityRequirement(name = "basicScheme")
 @Controller
 @RequestMapping("/backoffice")
 @Tag(
@@ -44,6 +54,12 @@ public class BackofficeRestController {
 
 	@Autowired
 	private BackofficeIntegracioWsService backofficeIntegracioWsService;
+	@Autowired
+	private LimitCanviEstatService limitCanviEstatService;
+	@Autowired
+	private MonitorIntegracioService monitorIntegracioService;
+	@Autowired
+	private ConfigHelper configHelper;
 
 	@RequestMapping(
 			value= "/consulta",
@@ -77,6 +93,24 @@ public class BackofficeRestController {
 		}
 	}
 
+    public static boolean matchesNow(String cron) {
+        try {
+            CronExpression expression = CronExpression.parse(cron);
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime nextExecution = expression.next(now.minusSeconds(1));
+
+            if (nextExecution == null) {
+                return false;
+            }
+
+            // Si la próxima ejecución ocurre dentro del segundo actual
+            Duration diff = Duration.between(now, nextExecution).abs();
+            return diff.getSeconds() == 0;
+        } catch (Exception e) {
+            return false; // Si el cron es inválido
+        }
+    }
+
 	@RequestMapping(
 			value= "/canviEstat",
 			method = RequestMethod.POST,
@@ -108,6 +142,29 @@ public class BackofficeRestController {
 		} catch(Exception e) {
 			return new ResponseEntity<Object>("L'estat " + infoCanviEstat.getEstat() + " no és un estat vàlid.", HttpStatus.BAD_REQUEST);		
 		}
+
+        String horariLaboral = configHelper.getConfig("es.caib.distribucio.horari.laboral", "* * 7-16 * * MON-FRI");
+
+        boolean inHorariLaboral = matchesNow(horariLaboral);
+        String user = SecurityContextHolder.getContext().getAuthentication().getName();
+        LimitCanviEstatDto limitCanviEstatDto = limitCanviEstatService.findByUsuariCodi(user);
+        if (limitCanviEstatDto == null) limitCanviEstatDto = new LimitCanviEstatDto();
+        if (limitCanviEstatDto.getLimitMinutLaboral() == null) limitCanviEstatDto.setLimitMinutLaboral(Integer.valueOf(configHelper.getConfig("es.caib.distribucio.limit.minut.laboral", "4")));
+        if (limitCanviEstatDto.getLimitMinutNoLaboral() == null) limitCanviEstatDto.setLimitMinutNoLaboral(Integer.valueOf(configHelper.getConfig("es.caib.distribucio.limit.minut.no.laboral", "8")));
+        if (limitCanviEstatDto.getLimitDiaLaboral() == null) limitCanviEstatDto.setLimitDiaLaboral(Integer.valueOf(configHelper.getConfig("es.caib.distribucio.limit.dia.laboral", "8000")));
+        if (limitCanviEstatDto.getLimitDiaNoLaboral() == null) limitCanviEstatDto.setLimitDiaNoLaboral(Integer.valueOf(configHelper.getConfig("es.caib.distribucio.limit.dia.no.laboral", "1000")));
+
+        Integer limitMinut = inHorariLaboral ?limitCanviEstatDto.getLimitMinutLaboral() : limitCanviEstatDto.getLimitMinutNoLaboral();
+        Integer limitDia = inHorariLaboral ?limitCanviEstatDto.getLimitDiaLaboral() : limitCanviEstatDto.getLimitDiaNoLaboral();
+        Map<String, Integer> count = monitorIntegracioService.countCanvisEstatFromUser(user);
+
+        if ( limitMinut < count.get("minut") ) {
+            return new ResponseEntity<Object>("S'ha superat el nombre máxim d'enviaments per minut ("+limitMinut+")", HttpStatus.BAD_REQUEST);
+        }
+        if ( limitDia < count.get("dia") ) {
+            return new ResponseEntity<Object>("S'ha superat el nombre máxim d'enviaments per dia ("+limitDia+")", HttpStatus.BAD_REQUEST);
+        }
+
 		try {
 			AnotacioRegistreId id = new AnotacioRegistreId();
 			id.setIndetificador(infoCanviEstat.getId().getIndetificador());
