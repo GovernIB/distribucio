@@ -28,6 +28,9 @@
 			<url-pattern>/appInfo</url-pattern>
             <url-pattern>/salut</url-pattern>
             <url-pattern>/salutPerformance</url-pattern>
+            <url-pattern>/estadistiquesInfo</url-pattern>
+            <url-pattern>/estadistiques</url-pattern>
+            <url-pattern>/estadistiques/*</url-pattern>
 		</web-resource-collection>
 	</security-constraint>
 	<security-constraint>
