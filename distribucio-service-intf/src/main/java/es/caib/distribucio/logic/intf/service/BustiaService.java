@@ -510,7 +510,7 @@ public interface BustiaService {
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "') or hasRole('" + BaseConfig.ROLE_REPORT + "')")
 	public List<UsuariDadesObertesDto> findBustiesUsuarisPerDadesObertes(
 			String usuari, Long id, 
-			String uo, String uoSuperior, 
+			String uoDir3Entitat, String uo, String uoSuperior,
 			Boolean rol, Boolean permis);
 
 }

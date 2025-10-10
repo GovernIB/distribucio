@@ -94,7 +94,9 @@ public class ApiExternaController {
 			@Parameter(name = "usuari", description = "Codi de l'usuari")
 			@RequestParam(required = false) String usuari, 
 			@Parameter(name = "bustiaId", description = "Id de la bústia")
-			@RequestParam(required = false) Long bustiaId, 
+			@RequestParam(required = false) Long bustiaId,
+            @Parameter(name = "uoDir3Entitat", description = "Codi dir3 de l'entitat de l'unitat organitzativa")
+            @RequestParam(required = false) String uoDir3Entitat,
 			@Parameter(name = "uo", description = "Codi dir3 de l'unitat organitzativa")
 			@RequestParam(required = false) String uo, 
 			@Parameter(name = "uoSuperior", description = "Codi dir3 de l'unitat organitzativa superior")
@@ -119,6 +121,7 @@ public class ApiExternaController {
 			usuariDOdto = bustiaService.findBustiesUsuarisPerDadesObertes(
 					usuari, 
 					bustiaId,
+                    uoDir3Entitat,
 					uo,
 					uoSuperior, 
 					rol, 

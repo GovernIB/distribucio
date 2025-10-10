@@ -2691,16 +2691,15 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 	
 	@Transactional
-	private String getCodiUnitatOrganitzativaArrel(String codiUnitat) {
-		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodi(codiUnitat);
+	private String getCodiUnitatOrganitzativaArrel(String codiDir3Entitat, String codiUnitat) {
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(codiDir3Entitat, codiUnitat);
 		if (unitatOrganitzativa == null) {
 			return codiUnitat;		
 		} 
 		if (!unitatOrganitzativa.getCodi().equals(unitatOrganitzativa.getCodiUnitatArrel())) {
-			return getCodiUnitatOrganitzativaArrel(unitatOrganitzativa.getCodiUnitatSuperior());
+			return getCodiUnitatOrganitzativaArrel(codiDir3Entitat, unitatOrganitzativa.getCodiUnitatSuperior());
 		}
 		return unitatOrganitzativa.getCodi();
-		
 	}
 	
 	

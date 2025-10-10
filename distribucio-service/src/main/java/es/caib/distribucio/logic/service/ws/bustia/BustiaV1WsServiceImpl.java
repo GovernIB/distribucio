@@ -73,9 +73,10 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		Timer.Context context = timer.time();
 		String entitatOArrel;
 		if (entitat == null || entitat.isEmpty()) {
-			UnitatOrganitzativaDto unitatOrganitzativaDto = unitatOrganitzativaHelper.findAmbCodi(unitatAdministrativa);
-			entitatOArrel = unitatOrganitzativaDto.getCodiUnitatArrel();
-			registreEntrada.setEntitatCodi(entitatOArrel);
+//			UnitatOrganitzativaDto unitatOrganitzativaDto = unitatOrganitzativaHelper.findAmbCodi(unitatAdministrativa);
+//			entitatOArrel = unitatOrganitzativaDto.getCodiUnitatArrel();
+//			registreEntrada.setEntitatCodi(entitatOArrel);
+            throw new ValidationException("Entitat no pot ser buida");
 		} else {
 			entitatOArrel = entitat;
 		}

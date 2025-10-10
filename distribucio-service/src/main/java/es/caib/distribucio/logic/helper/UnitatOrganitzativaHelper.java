@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
@@ -165,7 +166,7 @@ public class UnitatOrganitzativaHelper {
 		// what we want is to add direct pointer from unitat A to C (A -> C)
 		for (UnitatOrganitzativa vigentObsolete : unitatsVigentObsolete) {			
 		
-			vigentObsolete.setLastHistoricosUnitats(getLastHistoricos(vigentObsolete, unitatsWS));
+			vigentObsolete.setLastHistoricosUnitats(getLastHistoricos(entitat, vigentObsolete, unitatsWS));
 		}
 		// converting from UnitatOrganitzativa to UnitatOrganitzativaDto
 		List<UnitatOrganitzativaDto> unitatsVigentObsoleteDto = toUnitatOrganitzativaDto(unitatsVigentObsolete);
@@ -408,7 +409,7 @@ public class UnitatOrganitzativaHelper {
 		unitats = pluginHelper.findAmbPare(entitat.getCodiDir3(), null, null);
 		// Takes all the unitats from WS and saves them to database. If unitat did't exist in db it creates new one if it already existed it overrides existing one.  
 		for (UnitatOrganitzativa unidadWS : unitats) {
-			comprovarDenominacio(unidadWS);
+			comprovarDenominacio(entitat.getCodiDir3(), unidadWS);
 		}
 	}
 
@@ -417,7 +418,7 @@ public class UnitatOrganitzativaHelper {
 			UnitatOrganitzativa unidadWS) {
 		if (unidadWS.getHistoricosUO()!=null && !unidadWS.getHistoricosUO().isEmpty()) {
 			for (String historicoCodi : unidadWS.getHistoricosUO()) {
-				UnitatOrganitzativaEntity nova = unitatOrganitzativaRepository.findByCodi(historicoCodi);
+				UnitatOrganitzativaEntity nova = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(unitat.getCodiDir3Entitat(), historicoCodi);
 				if (!unitat.getNoves().contains(nova)) {
 					unitat.addNova(nova);
 				}
@@ -433,11 +434,11 @@ public class UnitatOrganitzativaHelper {
 	 * 
 	 * @param unitatWS
 	 */
-	public void comprovarDenominacio( UnitatOrganitzativa unitatWS) {
+	public void comprovarDenominacio(String codiDir3Entitat, UnitatOrganitzativa unitatWS) {
 		UnitatOrganitzativaEntity unitat = null;
 		if (unitatWS != null) {
 			// checks if unitat already exists in database
-			unitat = unitatOrganitzativaRepository.findByCodi(unitatWS.getCodi());
+			unitat = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(codiDir3Entitat,unitatWS.getCodi());
 			if (unitat != null) {
 				if (unitat.getCodi().equals(unitatWS.getCodi()) && unitatWS.getEstat().equals("V")
 						&& !(unitat.getDenominacio().equals(unitatWS.getDenominacio()))) {
@@ -459,7 +460,7 @@ public class UnitatOrganitzativaHelper {
 		UnitatOrganitzativaEntity unitat = null;
 		if (unitatWS != null) {					
 			// checks if unitat already exists in database
-			unitat = unitatOrganitzativaRepository.findByCodi(unitatWS.getCodi());
+			unitat = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(codiEntitat, unitatWS.getCodi());
 			//if not it creates a new one
 			if (unitat == null) {
 				unitat = UnitatOrganitzativaEntity.getBuilder(
@@ -567,9 +568,11 @@ public class UnitatOrganitzativaHelper {
 				unitatOrganitzativaCodi));
 	}
 
-	public UnitatOrganitzativaDto findAmbCodi(
+	public UnitatOrganitzativaDto findByCodiDir3EntitatAndCodi(
+            String codiDir3Entitat,
 			String unitatOrganitzativaCodi) {
-		return toUnitatOrganitzativaDto(unitatOrganitzativaRepository.findByCodi(
+		return toUnitatOrganitzativaDto(unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(
+                codiDir3Entitat,
 				unitatOrganitzativaCodi));
 	}
 
@@ -825,11 +828,13 @@ public class UnitatOrganitzativaHelper {
 	 * @param addHistoricos - initially empty list to add the last historicos (unitats that dont have historicos)
 	 */
 	private List<UnitatOrganitzativa> getLastHistoricos(
+            EntitatEntity entitat,
 			UnitatOrganitzativa unitat, 
 			List<UnitatOrganitzativa> unitatsFromWebService){
 		
 		List<UnitatOrganitzativa> lastHistorcos = new ArrayList<>();
 		getLastHistoricosRecursive(
+                entitat,
 				unitat, 
 				unitatsFromWebService, 
 				lastHistorcos);
@@ -837,6 +842,7 @@ public class UnitatOrganitzativaHelper {
 	}
 
 	private void getLastHistoricosRecursive(
+            EntitatEntity entitat,
 			UnitatOrganitzativa unitat,
 			List<UnitatOrganitzativa> unitatsFromWebService,
 			List<UnitatOrganitzativa> lastHistorcos) {
@@ -851,7 +857,7 @@ public class UnitatOrganitzativaHelper {
 						unitatsFromWebService);
 				if (unitatFromCodi == null) {
 					// Looks for historico in database
-					UnitatOrganitzativaEntity entity = unitatOrganitzativaRepository.findByCodi(historicoCodi);
+					UnitatOrganitzativaEntity entity = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), historicoCodi);
 					if (entity != null) {
 						UnitatOrganitzativa uo = conversioTipusHelper.convertir(entity, UnitatOrganitzativa.class);
 						lastHistorcos.add(uo);						
@@ -864,6 +870,7 @@ public class UnitatOrganitzativaHelper {
 					}
 				} else {
 					getLastHistoricosRecursive(
+                            entitat,
 							unitatFromCodi,
 							unitatsFromWebService,
 							lastHistorcos);
