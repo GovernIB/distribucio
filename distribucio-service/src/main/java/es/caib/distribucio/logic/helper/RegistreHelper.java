@@ -1958,6 +1958,19 @@ public class RegistreHelper {
 		return registreRepository.findAmbEstatPendentEnviarBackoffice(entitat, date, maxReintents);
 	}
 
+    /** Consulta de les anotacions comunicades que han sobrepassat el limit. */
+	@Transactional
+	public List<RegistreEntity> findAmbLimitDiesEstatComunicadaBackoffice(int dies) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.add(Calendar.DAY_OF_YEAR, -dies);
+        Date dataLimit = cal.getTime();
+		return registreRepository.findAmbLimitEstatComunicadaBackoffice(dataLimit);
+	}
+
 	/** Consulta les anotacions pendents d'aplicar regles amb un màxim de reintents. */
 	@Transactional(readOnly = true)
 	public List<RegistreEntity> findAmbReglaPendentAplicar(EntitatEntity entitat, int maxReintents) {

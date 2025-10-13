@@ -17,6 +17,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import es.caib.distribucio.logic.intf.dto.ReglaDto;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.Estat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,6 @@ import es.caib.distribucio.logic.helper.HistogramPendentsHelper;
 import es.caib.distribucio.logic.helper.HistoricHelper;
 import es.caib.distribucio.logic.helper.RegistreHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.SemaphoreDto;
 import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
@@ -94,6 +95,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private UsuariRepository usuariRepository;
 	@Autowired
 	private SchedulingConfig schedulingConfig;
+    @Autowired
+    private RegistreServiceImpl registreServiceImpl;
 
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
 	/**
@@ -230,25 +233,48 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		// Obtenir la llista de pendents agrupats per regles
 		Map<ReglaDto, List<Long>> pendentsByRegla = registreHelper.getPendentsEnviarBackoffice();
-		
+
 		// Envia les anotacions pendents agrupades per regla
 		for (ReglaDto regla : pendentsByRegla.keySet()) {
-			
+
 			final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarIdsAnotacionsPendentsBackoffice"));
 			Timer.Context context = timer.time();
-			
+
 			List<Long> pendentsIdsGroupedByRegla = pendentsByRegla.get(regla);
 			logger.debug("Enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " + regla.getNom());
 			Throwable t = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
 			if (t != null) {
-				logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + " anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " + 
+				logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + " anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " +
 							regla.getNom() + ": " + t.getMessage());
 			}
 			context.stop();
 		}
+
 		long stopTime = new Date().getTime();
 		logger.debug("Fi de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice " + (stopTime - startTime) + "ms");
 	}
+
+    @Override
+    public void canviEstatComunicatAPendent(){
+        long startTime = new Date().getTime();
+        logger.debug("Execució de tasca programada (" + startTime + "): canviar estat comunicat a pendent al backoffice");
+
+        try {
+            Integer dies = Integer.valueOf(configHelper.getConfig("es.caib.distribucio.tasca.enviar.anotacions.backoffice.maxim.temps.estat.comunicada", "60"));
+            List<RegistreEntity> registres = registreHelper.findAmbLimitDiesEstatComunicadaBackoffice(dies);
+
+            for (RegistreEntity registre : registres) {
+                String observacions = "S'ha canviat automàticament l'estat a \"Bústia pendent\" després d'estar "+
+                        dies +" dies en estat \"Comunicada a "+ registre.getBackCodi() +"\" sense conformació de recepció";
+                registreServiceImpl.canviEstat(registre.getId(), Estat.PENDENT, observacions);
+            }
+        } catch (Exception e) {
+            logger.error("S'ha produit un error al intentar canviar els registres comunicats que han superat el limit de temps", e);
+        }
+
+        long stopTime = new Date().getTime();
+        logger.debug("Fi de tasca programada (" + stopTime + "): canviar estat comunicat a pendent al backoffice " + (stopTime - startTime) + "ms");
+    }
 	
 	
 	@Override

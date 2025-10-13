@@ -173,6 +173,9 @@ public class RegistreEntity extends ContingutEntity {
 	@Column(name = "back_rebuda_data")
 	// Date when backoffice called BackofficeIntegracioWsService.canviEstat(RegistreProcesEstatEnum.BACK_REBUDA) method 
 	private Date backRebudaData;
+	@Column(name = "back_comunicada_data")
+    // Date when change state of anotacio to RegistreProcesEstatEnum.BACK_COMUNICADA
+	private Date backComunicadaData;
 	@Column(name = "back_proces_rebutj_error_data")
 	// Date when backoffice called BackofficeIntegracioWsService.canviEstat(RegistreProcesEstatEnum.BACK_PROCESADA) or (RegistreProcesEstatEnum.BACK_REBUTJADA) or (RegistreProcesEstatEnum.BACK_ERROR) method 
 	private Date backProcesRebutjErrorData;
@@ -591,6 +594,9 @@ public class RegistreEntity extends ContingutEntity {
 //		if (procesEstat.equals(RegistreProcesEstatEnum.BACK_ERROR)) {
 //			this.procesIntents = 0;
 //		}
+        if (RegistreProcesEstatEnum.BACK_COMUNICADA.equals(procesEstat)) {
+            this.backComunicadaData = new Date();
+        }
 		this.procesEstat = procesEstat;
 		this.backObservacions = backObservacions;
 		this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);

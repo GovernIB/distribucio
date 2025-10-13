@@ -119,6 +119,18 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("maxReintents") int maxReintents);
 
 
+	/** Consulta de les anotacions comunicades que han sobrepassat el limit. */
+    @Query(	"from " +
+            "    RegistreEntity r " +
+            "where " +
+			"    r.regla.activa = true " +
+			"and r.regla.tipus = es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto.BACKOFFICE " +
+			"and r.procesEstat = es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum.BACK_COMUNICADA " +
+			"and r.backComunicadaData <= :dataLimit")
+	List<RegistreEntity> findAmbLimitEstatComunicadaBackoffice(
+			@Param("dataLimit") Date dataLimit);
+
+
 	/*
 	RegistreEntity findByPareAndId(
 			ContingutEntity pare,

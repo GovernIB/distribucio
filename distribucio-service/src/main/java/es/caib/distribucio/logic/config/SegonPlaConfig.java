@@ -99,12 +99,12 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 				new Runnable() {
 					@Override
 					public void run() {
-						monitorTasquesService.inici(codiEnviarBackoffice);
-						try { 
-							segonPlaService.enviarIdsAnotacionsPendentsBackoffice();
-							monitorTasquesService.fi(codiEnviarBackoffice);
+						monitorTasquesService.inici(codiCanviarAPendent);
+						try {
+							segonPlaService.canviEstatComunicatAPendent();
+							monitorTasquesService.fi(codiCanviarAPendent);
 						} catch(Throwable th) {
-							tractarErrorTascaSegonPla(th, codiEnviarBackoffice);
+							tractarErrorTascaSegonPla(th, codiCanviarAPendent);
 						}
 					}
 				},
@@ -113,9 +113,9 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 					public Date nextExecutionTime(TriggerContext triggerContext) {
 						Long value = null;
 						try {
-							value = configService.getConfigAsLong("es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio");
+							value = configService.getConfigAsLong("es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.comunicada");
 						} catch (Exception e) {
-							log.warn("Error consultant la propietat per la propera execució d'enviar anotacions pendents als backoffices: " + e.getMessage());
+							log.warn("Error consultant la propietat per la propera execució canviar estat comunicat a pendent: " + e.getMessage());
 						}
 						if (value == null) 
 							value = Long.valueOf("60000");
@@ -123,11 +123,11 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 						trigger.setInitialDelay(value);
 						Date nextExecution = trigger.nextExecutionTime(triggerContext);
 						Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
-						monitorTasquesService.updateProperaExecucio(codiEnviarBackoffice, longNextExecution);
+						monitorTasquesService.updateProperaExecucio(codiCanviarAPendent, longNextExecution);
 						return nextExecution;
 					}
 				});
-		monitorTasquesService.addTasca(codiEnviarBackoffice);
+		monitorTasquesService.addTasca(codiCanviarAPendent);
 		//Aplicar regles de tipus backoffice
 		final String codiAplicarReglesBackoffice = "aplicarReglesBackoffice";
 		monitorTasquesService.addTasca(codiAplicarReglesBackoffice);
