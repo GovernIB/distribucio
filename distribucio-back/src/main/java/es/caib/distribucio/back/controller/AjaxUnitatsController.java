@@ -150,8 +150,8 @@ public class AjaxUnitatsController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable String unitatSuperiorCodi,
 			Model model) {
-
-		return unitatOrganitzativaService.findByCodi(unitatSuperiorCodi);
+        EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
+		return unitatOrganitzativaService.findByCodiDir3EntitatAndCodi(entitatActual.getCodiDir3(), unitatSuperiorCodi);
 	}
 
 	/** Obté una llista de les unitats orgàniques que són unitats superiros d'alguna bústia. 

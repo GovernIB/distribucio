@@ -205,7 +205,7 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 		
 		
 		for (UnitatOrganitzativaDto unitatOrganitzativaDto : resultPagina.getContingut()) {
-			UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatOrganitzativaRepository.findByCodi(unitatOrganitzativaDto.getCodiUnitatSuperior());
+			UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), unitatOrganitzativaDto.getCodiUnitatSuperior());
 			if (unitatOrganitzativaEntity != null) {
 				unitatOrganitzativaDto.setDenominacioUnitatSuperior(unitatOrganitzativaEntity.getDenominacio());
 			}
@@ -380,10 +380,11 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 
 	@Override
 	@Transactional(readOnly = true)
-	public UnitatOrganitzativaDto findByCodi(
+	public UnitatOrganitzativaDto findByCodiDir3EntitatAndCodi(
+            String codiDir3Entitat,
 			String unitatOrganitzativaCodi) {
 		return unitatOrganitzativaHelper.toDto(
-				unitatOrganitzativaRepository.findByCodi(unitatOrganitzativaCodi));
+				unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(codiDir3Entitat, unitatOrganitzativaCodi));
 	}
 
 	@Override

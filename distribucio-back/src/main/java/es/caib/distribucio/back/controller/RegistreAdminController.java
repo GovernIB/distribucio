@@ -783,7 +783,7 @@ public class RegistreAdminController extends BaseAdminController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		UnitatOrganitzativaDto unitatOrganitzativa = null;
 		if (unitatCodi != null && !"null".equalsIgnoreCase(unitatCodi)) {
-			unitatOrganitzativa = unitatOrganitzativaService.findByCodi(unitatCodi);
+			unitatOrganitzativa = unitatOrganitzativaService.findByCodiDir3EntitatAndCodi(entitatActual.getCodiDir3(), unitatCodi);
 		}
 		if ("undefined".equalsIgnoreCase(text) || "null".equalsIgnoreCase(text)) {
 			text = "";

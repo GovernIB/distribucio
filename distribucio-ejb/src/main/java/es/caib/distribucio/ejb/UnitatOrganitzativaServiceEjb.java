@@ -39,9 +39,9 @@ public class UnitatOrganitzativaServiceEjb extends AbstractServiceEjb<UnitatOrga
 
 	@Override
 	@RolesAllowed("**")
-	public UnitatOrganitzativaDto findByCodi(
-			String codi) {
-		return delegateService.findByCodi(codi);
+	public UnitatOrganitzativaDto findByCodiDir3EntitatAndCodi(
+            String codiDir3Entitat, String codi) {
+		return delegateService.findByCodiDir3EntitatAndCodi(codiDir3Entitat, codi);
 	}
 
 	@Override
