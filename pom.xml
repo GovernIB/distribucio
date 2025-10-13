@@ -35,7 +35,7 @@
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
 		<skipTests>true</skipTests>
-		<version.date>2025.08.05 13:00h</version.date>
+		<version.date>2025.10.13 18:00h</version.date>
 	</properties>
 	<modules>
 		<module>distribucio-api-externa</module>
