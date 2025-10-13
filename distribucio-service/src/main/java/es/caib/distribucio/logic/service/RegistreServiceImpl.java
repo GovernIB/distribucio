@@ -1752,6 +1752,16 @@ public class RegistreServiceImpl implements RegistreService {
 			RegistreEntity registre = registreRepository.findOneAmbBloqueig(registreId);
 			EntitatDto entitatDto = new EntitatDto();
 
+            // Si el backoffice comunica que està rebuda i l'anotació està pendent de regla o processada llavors no es canvia l'estat
+            if (estat.equals(Estat.REBUDA)) {
+                if (RegistreProcesEstatEnum.REGLA_PENDENT.equals(registre.getProcesEstat())
+                        || RegistreProcesEstatEnum.BACK_PROCESSADA.equals(registre.getProcesEstat())
+                        || (RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(registre.getProcesEstat()) && registre.getArxiuTancat())
+                ) {
+                    return;
+                }
+            }
+
 			entitatDto.setCodi(registre.getEntitat().getCodi());
 			ConfigHelper.setEntitat(entitatDto);
 			switch (estat) {
