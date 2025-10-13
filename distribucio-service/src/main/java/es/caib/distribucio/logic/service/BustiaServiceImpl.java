@@ -3271,17 +3271,19 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		List<String> codisUosSuperiors = new ArrayList<String>();
 		UnitatOrganitzativaEntity uoEntity = null;
 		if (uo != null && !uo.isEmpty()) {
-			uoEntity = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(uoDir3Entitat, uo);
-			if (uoEntity == null)
+			List<UnitatOrganitzativaEntity> uos = unitatOrganitzativaRepository.findAllByCodi(uo);
+			if (uos.isEmpty())
 				return resultat;
 			codisUosSuperiors.add(uo);
 		} else if (uoSuperior != null && !uoSuperior.isEmpty()) {
 			// Arbre d'unitats superiors
-			UnitatOrganitzativaEntity uoSuperiorEntity = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(uoDir3Entitat, uoSuperior);
-			if (uoSuperiorEntity == null)
+			List<UnitatOrganitzativaEntity> uosSuperiorsEntity = unitatOrganitzativaRepository.findAllByCodi(uoSuperior);
+			if (uosSuperiorsEntity.isEmpty())
 				return resultat;
-			EntitatEntity entitat = entitatRepository.findByCodiDir3(uoSuperiorEntity.getCodiUnitatArrel());
-			codisUosSuperiors.addAll(bustiaHelper.getCodisUnitatsSuperiors(entitat, uoSuperior));
+			for (UnitatOrganitzativaEntity uoSuperiorEntity : uosSuperiorsEntity) {
+				EntitatEntity entitat = entitatRepository.findByCodiDir3(uoSuperiorEntity.getCodiDir3Entitat());
+				codisUosSuperiors.addAll(bustiaHelper.getCodisUnitatsSuperiors(entitat, uoSuperior));
+			}
 		} else {
 			// no es filtra per UO
 			isCodisUosSuperiorsEmpty = true;
@@ -3332,7 +3334,7 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 			if (uoSuperiorEntityList.isEmpty())
 				return resultat;
             for(UnitatOrganitzativaEntity uoSuperiorEntity :uoSuperiorEntityList) {
-                EntitatEntity entitat = entitatRepository.findByCodiDir3(uoSuperiorEntity.getCodiUnitatArrel());
+                EntitatEntity entitat = entitatRepository.findByCodiDir3(uoSuperiorEntity.getCodiDir3Entitat());
                 codisUosSuperiors.addAll(bustiaHelper.getCodisUnitatsSuperiors(entitat, uoSuperior));
             }
 		} else {
