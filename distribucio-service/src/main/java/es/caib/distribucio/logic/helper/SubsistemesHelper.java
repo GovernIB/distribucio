@@ -10,8 +10,10 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Component;
 
+import es.caib.comanda.ms.salut.model.EstatByPercent;
 import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.SubsistemaSalut;
+import es.caib.distribucio.logic.utils.CuaFifoBool;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -27,24 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 public class SubsistemesHelper {
     
     private final MeterRegistry meterRegistry;
-    
-    @Getter
-    public enum SubsistemesEnum {
-    	
-    	AWS("Alta Registre WS", true),
-        BKC("Backoffice consulta", true),
-        BKE("Backoffice canvi estat", true),
-        BKL("Backoffice llistar", true),
-        RGB("Aplicar Regla tipus Backoffice", true),
-        GDO("Gestió documental FileSystem", true);
 
-    	private final String nom;
-        private final boolean sistemaCritic;
-        SubsistemesEnum(String nom, boolean sistemaCritic) {
-            this.nom = nom;
-            this.sistemaCritic = sistemaCritic;
-        }
-    }
+    private static final CuaFifoBool cuaPeticions = new CuaFifoBool(20);
 
     // Llindars d'avís en percentatge (0-100)
     private static final int DOWN_PCT = 100;     // 100% errors
@@ -121,6 +107,24 @@ public class SubsistemesHelper {
         }
     }
 
+    @Getter
+    public enum SubsistemesEnum {
+    	
+    	AWS("Alta Registre WS", true),
+        BKC("Backoffice consulta", true),
+        BKE("Backoffice canvi estat", true),
+        BKL("Backoffice llistar", true),
+        RGB("Aplicar Regla tipus Backoffice", true),
+        GDO("Gestió documental FileSystem", true);
+
+    	private final String nom;
+        private final boolean sistemaCritic;
+        SubsistemesEnum(String nom, boolean sistemaCritic) {
+            this.nom = nom;
+            this.sistemaCritic = sistemaCritic;
+        }
+    }
+    
     private static void resetLocalTimers() {
         // Re-crea el localRegistry i totes les mètriques locals per subsistema
         initializeMetrics();
@@ -138,6 +142,8 @@ public class SubsistemesHelper {
         if (m.timerOkLocal != null) {
             m.timerOkLocal.record(duracio, TimeUnit.MILLISECONDS);
         }
+        
+        cuaPeticions.add(true);
     }
 
     public static void addErrorOperation(SubsistemesEnum subsistema) {
@@ -153,6 +159,8 @@ public class SubsistemesHelper {
         if (m.counterErrorLocal != null) {
             m.counterErrorLocal.increment();
         }
+        
+        cuaPeticions.add(false);
     }
 
     public static SubsistemesInfo getSubsistemesInfo() {
@@ -203,30 +211,23 @@ public class SubsistemesHelper {
     }
 
     private static EstatSalutEnum calculaEstat(Long totalPeticionsOk, Long totalPeticionsError, SubsistemesEnum subsistema) {
-        final long ok = (totalPeticionsOk != null) ? totalPeticionsOk : 0L;
-        final long ko = (totalPeticionsError != null) ? totalPeticionsError : 0L;
-        final long total = ok + ko;
-
-        if (total == 0L) {
+    	var totalPeticions = totalPeticionsOk + totalPeticionsError;
+        if (totalPeticions == 0L) {
             return getDarrerEstat(subsistema);
         }
-
+        long ok;
+        long ko;
+        if (totalPeticions >= 20) {
+            ok = totalPeticionsOk;
+            ko = totalPeticionsError;
+        } else {
+            ok = !cuaPeticions.isEmpty() ? cuaPeticions.getOk() : 0L;
+            ko = !cuaPeticions.isEmpty() ? cuaPeticions.getError() : 0L;
+        }
+        final long total = ok + ko;
         // Percentatge d'errors arrodonit correctament evitant divisió d'enters
         final int errorRatePct = (int) Math.round((ko * 100.0) / Math.max(1L, total));
-
-        EstatSalutEnum estat = null;
-        if (errorRatePct >= DOWN_PCT) {
-            estat = EstatSalutEnum.DOWN;
-        } else if (errorRatePct >= ERROR_GT_PCT) {
-            estat = EstatSalutEnum.ERROR;
-        } else if (errorRatePct >= DEGRADED_GT_PCT) {
-            estat = EstatSalutEnum.DEGRADED;
-        } else if (errorRatePct <= UP_LT_PCT) {
-            estat = EstatSalutEnum.UP;
-        } else {
-            estat = EstatSalutEnum.WARN; // 5-10%
-        }
-
+        EstatSalutEnum estat = EstatByPercent.calculaEstat(errorRatePct);
         setDarrerEstat(subsistema, estat);
         return estat;
     }
@@ -248,32 +249,57 @@ public class SubsistemesHelper {
     private static EstatSalutEnum calculateGlobalHealth(List<SubsistemaSalut> subsistemes) {
         // Ordre de severitat: DOWN > ERROR > DEGRADED > WARN > UP > UNKNOWN
         boolean anyDown = false, anyError = false, anyDegraded = false, anyWarn = false, anyUp = false;
-        for (SubsistemaSalut s : subsistemes) {
+        boolean isCritic;
+        for (var s : subsistemes) {
+            isCritic = SubsistemesEnum.valueOf(s.getCodi()).isSistemaCritic();
             switch (s.getEstat()) {
                 case UP:
-                    anyUp = true; break;
+                    anyUp = true;
+                    break;
                 case WARN:
-                    anyWarn = true; break;
+                    anyWarn = true;
+                    break;
                 case DEGRADED:
-                    anyDegraded = true; break;
+                    if (isCritic) {
+                        anyDegraded = true;
+                    } else {
+                        anyWarn = true;
+                    }
+                    break;
                 case ERROR:
-                    anyError = true; break;
+                    if (isCritic) {
+                        anyError = true;
+                    } else {
+                        anyWarn = true;
+                    }
+                    break;
                 case DOWN:
-                    SubsistemesEnum subsistemesEnum = SubsistemesEnum.valueOf(s.getCodi());
-                    if (subsistemesEnum.isSistemaCritic()) anyDown = true;
-                    else anyError = true;
+                    if (isCritic) {
+                        anyDown = true;
+                    } else {
+                        anyWarn = true;
+                    }
                     break;
                 default:
                     // UNKNOWN o altres
             }
         }
-        if (anyDown) return EstatSalutEnum.DOWN;
-        if (anyError) return EstatSalutEnum.ERROR;
-        if (anyDegraded) return EstatSalutEnum.DEGRADED;
-        if (anyWarn) return EstatSalutEnum.WARN;
-        if (anyUp) return EstatSalutEnum.UP;
+        
+        if (anyError || anyDown)  {
+            return EstatSalutEnum.ERROR;
+        }
+        if (anyDegraded) {
+            return EstatSalutEnum.DEGRADED;
+        }
+        if (anyWarn) {
+            return EstatSalutEnum.WARN;
+        }
+        if (anyUp) {
+            return EstatSalutEnum.UP;
+        }
         return EstatSalutEnum.UNKNOWN;
     }
+
 
     @Getter
     @Builder

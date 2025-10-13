@@ -26,12 +26,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import es.caib.comanda.ms.salut.model.ContextInfo;
 import es.caib.comanda.ms.salut.model.DetallSalut;
 import es.caib.comanda.ms.salut.model.EstatSalut;
 import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioInfo;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.comanda.ms.salut.model.IntegracioSalut;
+import es.caib.comanda.ms.salut.model.Manual;
 import es.caib.comanda.ms.salut.model.MissatgeSalut;
 import es.caib.comanda.ms.salut.model.SalutInfo;
 import es.caib.comanda.ms.salut.model.SubsistemaInfo;
@@ -96,7 +98,8 @@ public class SalutServiceImpl implements SalutService {
         SubsistemesHelper.SubsistemesInfo subsistemesInfo = SubsistemesHelper.getSubsistemesInfo();
         var subsistemes = subsistemesInfo.getSubsistemesSalut();  // Subsistemes
         var estatGlobalSubsistemes = subsistemesInfo.getEstatGlobal();
-        if (EstatSalutEnum.UP.equals(estatSalut.getEstat()) && !EstatSalutEnum.UP.equals(estatGlobalSubsistemes)) {
+        
+        if (EstatSalutEnum.UP.equals(estatSalut.getEstat()) && !EstatSalutEnum.UP.equals(estatGlobalSubsistemes) && !EstatSalutEnum.UNKNOWN.equals(estatGlobalSubsistemes)) {
             estatSalut = EstatSalut.builder()
                     .estat(estatGlobalSubsistemes)
                     .latencia(estatSalut.getLatencia())
@@ -116,21 +119,46 @@ public class SalutServiceImpl implements SalutService {
                 .build();
 	}
 	
+    @Override
+    public List<ContextInfo> getContexts(String baseUrl) {
+        return List.of(
+                ContextInfo.builder()
+                        .codi("BACK")
+                        .nom("Backoffice")
+                        .path(baseUrl + "/distribucioback")
+                        .manuals(List.of(
+                                Manual.builder().nom("Manual d'usuari").path("https://github.com/GovernIB/distribucio/blob/dis-1.0/doc/pdf/02_Distribucio_Manual_Usuari.pdf").build(),
+                                Manual.builder().nom("Manual d'administració").path("https://github.com/GovernIB/distribucio/blob/dis-1.0/doc/pdf/02_Distribucio_Manual_Administrador.pdf").build()))
+                        .build(),
+                ContextInfo.builder()
+                        .codi("INT")
+                        .nom("API interna")
+                        .path(baseUrl + "/distribucioapi/interna")
+                        .manuals(List.of(Manual.builder().nom("Manual d'integració").path("https://github.com/GovernIB/distribucio/blob/dis-1.0/doc/pdf/03_Distribucio_Manual_Integració.pdf").build()))
+                        .api(baseUrl + "/distribucioapi/interna")
+                        .build(),
+                ContextInfo.builder()
+                        .codi("EXT")
+                        .nom("API externa")
+                        .path(baseUrl + "/distribucioapi/externa")
+                        .api(baseUrl + "/distribucioapi/externa")
+                        .build()
+        );
+    }
+	
     private EstatSalut checkEstatSalut(String performanceUrl) {
 
         Instant start = Instant.now();
         EstatSalutEnum estat = EstatSalutEnum.UP;
-        try {
-            executePerformanceTest();
-        } catch (Exception e) {}
+        
         for (int i = 1; i <= MAX_CONNECTION_RETRY; i++) {
             try {
                 restTemplate.getForObject(performanceUrl, String.class);
                 break;
             } catch (Exception e) {
-                if (i == MAX_CONNECTION_RETRY) {
-                    estat = EstatSalutEnum.UNKNOWN; // After 3 connection failed attempts
-                }
+//                if (i == MAX_CONNECTION_RETRY) {
+//                    estat = EstatSalutEnum.DOWN; // After 3 connection failed attempts
+//                }
             }
         }
         Instant end = Instant.now();

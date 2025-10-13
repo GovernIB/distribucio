@@ -122,24 +122,21 @@ public class AbstractSalutPlugin  implements SalutPlugin {
     }
 
     private EstatSalutEnum calculaEstat(Long totalPeticionsOk, Long totalPeticionsError) {
-
-    	var totalPeticions = totalPeticionsOk + totalPeticionsError;
+        var totalPeticions = totalPeticionsOk + totalPeticionsError;
+        if (totalPeticions == 0L) {
+            return darrerEstat;
+        }
         long peticionsOkSegures;
         long peticionsErrorSegures;
-        
-        if (totalPeticions < 20) {
+        if (totalPeticions >= 20) {
             peticionsOkSegures = totalPeticionsOk;
             peticionsErrorSegures = totalPeticionsError;
         } else {
             peticionsOkSegures = !cuaPeticions.isEmpty() ? cuaPeticions.getOk() : 0L;
             peticionsErrorSegures = !cuaPeticions.isEmpty() ? cuaPeticions.getError() : 0L;
         }
-        
         final long totalOperacions = peticionsOkSegures + peticionsErrorSegures;
-        if (totalOperacions == 0L) {
-            return darrerEstat;
-        }
-
+        // Percentatge d'errors arrodonit correctament evitant divisió d'enters
         final int errorRatePct = (int) Math.round((peticionsErrorSegures * 100.0) / totalOperacions);
         return EstatByPercent.calculaEstat(errorRatePct);
     }

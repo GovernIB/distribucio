@@ -12,8 +12,11 @@ import java.util.jar.Manifest;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.boot.actuate.health.Health;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import es.caib.comanda.ms.salut.model.AppInfo;
 import es.caib.comanda.ms.salut.model.SalutInfo;
@@ -32,7 +35,7 @@ public class SalutController {
     private ManifestInfo manifestInfo;
 
     @GetMapping("/appInfo")
-    public AppInfo appInfo() throws IOException {
+    public AppInfo appInfo(HttpServletRequest request) throws IOException {
 
         ManifestInfo manifestInfo = getManifestInfo();
 
@@ -41,9 +44,21 @@ public class SalutController {
                 .nom("Distribució")
                 .data(manifestInfo.getBuildDate())
                 .versio(manifestInfo.getVersion())
+                .revisio(manifestInfo.getBuildScmRevision())
+                .jdkVersion(manifestInfo.getBuildJDK())
+                .versio(manifestInfo.getVersion())
                 .integracions(salutService.getIntegracions())
                 .subsistemes(salutService.getSubsistemes())
+                .contexts(salutService.getContexts(getBaseUrl(request)))
                 .build();
+    }
+    
+    public String getBaseUrl(HttpServletRequest request) {
+        return ServletUriComponentsBuilder
+                .fromRequestUri(request)
+                .replacePath(null)
+                .build()
+                .toUriString();
     }
 
     @GetMapping("/salut")
@@ -57,8 +72,9 @@ public class SalutController {
     }
 
     @GetMapping("/salutPerformance")
-    public String healthCheck() {
-        return "OK";
+    @ResponseBody
+    public Health healthCheck() {
+    	return Health.up().build();
     }
 
     private ManifestInfo getManifestInfo() throws IOException {

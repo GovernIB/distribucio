@@ -41,7 +41,10 @@ public class BaseWebSecurityConfig {
 				new AntPathRequestMatcher("/apidocs/**/*"),
 				new AntPathRequestMatcher("/appInfo"),
 				new AntPathRequestMatcher("/salut"),
-				new AntPathRequestMatcher("/salutPerformance")
+				new AntPathRequestMatcher("/salutPerformance"),
+				new AntPathRequestMatcher("/estadistiquesInfo"),
+				new AntPathRequestMatcher("/estadistiques"),
+				new AntPathRequestMatcher("/estadistiques/**/*"),
 		};
 	}
 
