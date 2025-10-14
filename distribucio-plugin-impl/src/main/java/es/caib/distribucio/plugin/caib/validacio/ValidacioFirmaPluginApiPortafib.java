@@ -112,6 +112,7 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
 		} catch (Exception e) {
 			salutPluginComponent.incrementarOperacioError();
 			e.printStackTrace();
+			throw new es.caib.distribucio.plugin.SistemaExternException(e);
 		}		
 		return resposta;
 	}
