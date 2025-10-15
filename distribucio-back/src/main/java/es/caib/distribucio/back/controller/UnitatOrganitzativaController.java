@@ -63,8 +63,10 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 	public String get(
 			HttpServletRequest request,
 			Model model) {
+        EntitatDto entitat = getEntitatActual(request);
 		UnitatOrganitzativaFiltreCommand unitatOrganitzativaFiltreCommand = getFiltreCommand(request);
 		model.addAttribute("unitatOrganitzativaFiltreCommand", unitatOrganitzativaFiltreCommand);
+		model.addAttribute("unitatArrel", entitat);
 		return "unitatOrganitzativaList";
 	}
 	

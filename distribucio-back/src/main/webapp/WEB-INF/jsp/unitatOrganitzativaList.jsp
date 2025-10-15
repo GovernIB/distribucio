@@ -4,6 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%
 	pageContext.setAttribute(
 			"isRolActualAdministrador",
@@ -117,7 +118,7 @@
 				data-filter="#unitatOrganitzativaFiltreCommand" 
 				data-default-order="1" 
 				data-default-dir="asc" 
-				data-botons-template="#botonsTemplate" 
+				data-botons-template="#botonsTemplate"
 				class="table table-bordered table-striped">
 		<thead>
 			<tr>
@@ -170,12 +171,17 @@
 		</thead>
 	</table>
 	<script id="botonsTemplate" type="text/x-jsrender">
-		<div style="float: right">
-			<a href="<c:url value="/unitatOrganitzativa/mostrarArbre"/>" data-toggle="modal"  class="btn btn-default"><span class="fa fa-sitemap"></span> <spring:message code="unitat.list.boto.mostrarArbre"/></a>
+        <div style="float: right">
+            <a href="<c:url value="/unitatOrganitzativa/mostrarArbre"/>" data-toggle="modal"  class="btn btn-default"><span class="fa fa-sitemap"></span> <spring:message code="unitat.list.boto.mostrarArbre"/></a>
 			<c:if test="${isRolActualAdministrador}">
 				<a href="<c:url value="/unitatOrganitzativa/synchronizeGet"/>" data-toggle="modal" class="btn btn-default"><span class="fa fa-refresh"></span> <spring:message code="unitat.list.boto.synchronize"/></a>
 			</c:if>
 		</div>
+		<div style="float: right">
+            <strong><spring:message code="entitat.list.columna.codiEntitatDir3"/>: </strong>${unitatArrel.codiDir3}
+            <strong><spring:message code="entitat.list.columna.fechaSincronizacion"/>: </strong><fmt:formatDate value="${unitatArrel.fechaSincronizacion}" pattern="dd/MM/yyyy HH:mm:ss"/>
+            <strong><spring:message code="entitat.list.columna.fechaActualizacion"/>: </strong><fmt:formatDate value="${unitatArrel.fechaActualizacion}" pattern="dd/MM/yyyy HH:mm:ss"/>
+        </div>
 	</script>
 
 </body>
