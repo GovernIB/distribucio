@@ -78,9 +78,10 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 		long start = System.currentTimeMillis();
 		String entitatOArrel;
 		if (entitat == null || entitat.isEmpty()) {
-			UnitatOrganitzativaDto unitatOrganitzativaDto = unitatOrganitzativaHelper.findAmbCodi(unitatAdministrativa);
-			entitatOArrel = unitatOrganitzativaDto.getCodiUnitatArrel();
-			registreEntrada.setEntitatCodi(entitatOArrel);
+//			UnitatOrganitzativaDto unitatOrganitzativaDto = unitatOrganitzativaHelper.findAmbCodi(unitatAdministrativa);
+//			entitatOArrel = unitatOrganitzativaDto.getCodiUnitatArrel();
+//			registreEntrada.setEntitatCodi(entitatOArrel);
+            throw new ValidationException("Entitat no pot ser buida");
 		} else {
 			entitatOArrel = entitat;
 		}
@@ -186,7 +187,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					System.currentTimeMillis() - t0,
 					"Error al processar registre d'entrada al servei web de bústia",
 					ex);
-			SubsistemesHelper.addErrorOperation(SubsistemesEnum.AWS, System.currentTimeMillis() - start);
+			SubsistemesHelper.addErrorOperation(SubsistemesEnum.AWS);
 			throw new RuntimeException(ex);
 		}
 	}

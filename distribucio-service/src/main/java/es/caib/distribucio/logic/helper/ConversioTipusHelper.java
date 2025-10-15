@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.caib.comanda.ms.salut.model.MissatgeSalut;
+import es.caib.comanda.ms.salut.model.SalutNivell;
 import es.caib.distribucio.logic.intf.dto.AlertaDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.ContingutComentariDto;
@@ -268,9 +269,23 @@ public class ConversioTipusHelper {
 		mapperFactory.getConverterFactory().registerConverter(
 				new CustomConverter<AvisEntity, MissatgeSalut>() {
 					public MissatgeSalut convert(AvisEntity source, Type<? extends MissatgeSalut>destinationClass, MappingContext mappingContext) {
+						SalutNivell avisNivell = null;
+						switch (source.getAvisNivell()){
+						case INFO:
+							avisNivell = SalutNivell.INFO;
+							break;
+						case WARNING:
+							avisNivell = SalutNivell.WARN;
+							break;
+						case ERROR:
+							avisNivell = SalutNivell.ERROR;
+							break;
+						default:
+							break;
+						}
 						MissatgeSalut target = new MissatgeSalut(
 								source.getDataInici(), 
-								source.getAvisNivell().name(), 
+								avisNivell, 
 								source.getMissatge());
 						return target;
 					}

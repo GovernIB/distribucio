@@ -31,6 +31,7 @@ import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.utils.TemporalThreadStorage;
 import es.caib.pluginsib.arxiu.api.Document;
 import es.caib.pluginsib.arxiu.api.DocumentContingut;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -50,8 +51,9 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 	public DistribucioPluginHelper(
 			IntegracioHelper integracioHelper, 
 			ConfigHelper configHelper,
-			EntitatRepository entitatRepository) {
-		super(integracioHelper, configHelper, entitatRepository);
+			EntitatRepository entitatRepository,
+			MeterRegistry meterRegistry) {
+		super(integracioHelper, configHelper, entitatRepository, meterRegistry);
 	}
 	
 	@Override
@@ -332,10 +334,14 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 		if (pluginClass != null && pluginClass.length() > 0) {
 			try {
 				Class<?> clazz = Class.forName(pluginClass);
+				var configuracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, getConfigGrup());
+				var arxiuConfiguracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, "ARXIU");
+				var gdcConfiguracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, "GES_DOC");
+				var sigConfiguracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, "SIGNATURA");
 				Properties properties = configHelper.getAllEntityProperties(codiEntitat);
 				plugin = (DistribucioPlugin)clazz.
-						getDeclaredConstructor(Properties.class).
-						newInstance(properties);
+						getDeclaredConstructor(MeterRegistry.class, Properties.class, boolean.class, boolean.class, boolean.class, boolean.class).
+						newInstance(meterRegistry, properties, configuracioEspecifica, arxiuConfiguracioEspecifica, gdcConfiguracioEspecifica, sigConfiguracioEspecifica);
 				
 				plugin.configurar(
 						new IntegracioManager() {
@@ -377,6 +383,7 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 						IntegracioHelper.INTCODI_SIGNATURA,
 						GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
 						GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP);
+				plugin.init(meterRegistry, getCodiApp().name());
 			} catch (Exception ex) {
 				throw new SistemaExternException(
 						DISTRIBUCIO.name(),

@@ -670,14 +670,12 @@ public class ContingutController extends BaseUserController {
 			break;
 		case BACK_REBUTJADA:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_REBUTJADA"));
-			if (registre.getMotiuRebuig() != null && ! registre.getMotiuRebuig().isEmpty()) {
+			String motiuRebuig = log.getParams() != null && log.getParams().size() > 0 ? 
+					log.getParams().get(0)
+					:null;
+			if (motiuRebuig != null && !motiuRebuig.trim().isEmpty()) {
 				sb.append(" ");
-				sb.append(this.getMessage(request, "contingut.log.resum.msg.motiu", new Object[] {registre.getMotiuRebuig()}));
-			} else {
-				if (registre.getBackObservacions() != null && ! registre.getBackObservacions().isEmpty()) {
-					sb.append(" ");
-					sb.append(this.getMessage(request, "contingut.log.resum.msg.motiu", new Object[] {registre.getBackObservacions()}));
-				}
+				sb.append(this.getMessage(request, "contingut.log.resum.msg.motiu", new Object[] {motiuRebuig}));
 			}
 			break;
 		case BACK_ERROR:

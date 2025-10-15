@@ -20,6 +20,7 @@ import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.plugin.servei.Servei;
 import es.caib.distribucio.plugin.servei.ServeiPlugin;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -36,8 +37,9 @@ public class ServeiPluginHelper extends AbstractPluginHelper<ServeiPlugin> {
 	public ServeiPluginHelper(
 			IntegracioHelper integracioHelper, 
 			ConfigHelper configHelper,
-			EntitatRepository entitatRepository) {
-		super(integracioHelper, configHelper, entitatRepository);
+			EntitatRepository entitatRepository,
+			MeterRegistry meterRegistry) {
+		super(integracioHelper, configHelper, entitatRepository, meterRegistry);
 	}
 
 	@Override
@@ -140,10 +142,12 @@ public class ServeiPluginHelper extends AbstractPluginHelper<ServeiPlugin> {
 		if (pluginClass != null && pluginClass.length() > 0) {
 			try {
 				Class<?> clazz = Class.forName(pluginClass);
+				var configuracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, getConfigGrup());
 				Properties properties = configHelper.getAllEntityProperties(codiEntitat);
 				plugin = (ServeiPlugin)clazz.
-						getDeclaredConstructor(Properties.class).
-						newInstance(properties);
+						getDeclaredConstructor(Properties.class, boolean.class).
+						newInstance(properties, configuracioEspecifica);
+				plugin.init(meterRegistry, getCodiApp().name() + "_SERVEIS");
 			} catch (Exception ex) {
 				throw new SistemaExternException(
 						PROCEDIMENT.name(),

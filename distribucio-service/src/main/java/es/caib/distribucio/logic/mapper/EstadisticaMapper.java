@@ -1,6 +1,7 @@
 package es.caib.distribucio.logic.mapper;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
@@ -48,13 +49,19 @@ public class EstadisticaMapper {
                 .flatMap(s -> s)
                 .collect(Collectors.toList());
    
-        // Agrupar per dimensions i sumar els fets
-        Map<List<Dimensio>, List<RegistreEstadistic>> groupedByDim = registresEstadistics.stream()
-                .collect(Collectors.groupingBy(RegistreEstadistic::getDimensions));
+//        // Agrupar per dimensions i sumar els fets
+//        Map<List<Dimensio>, List<RegistreEstadistic>> groupedByDim = registresEstadistics.stream()
+//                .collect(Collectors.groupingBy(RegistreEstadistic::getDimensions));
+        
+        // Dimensio no té el mètode equals i hashcode per agrupar les dimensions iguals
+        Map<String, List<RegistreEstadistic>> groupedByDim = registresEstadistics
+        		.stream()
+        		.collect(Collectors.groupingBy(r -> buildKey(r.getDimensions())));
 
         List<RegistreEstadistic> mergedRegistresEstadistics = groupedByDim.entrySet().stream()
                 .map(entry -> {
-                    List<Dimensio> dimensions = entry.getKey();
+                	// Agafam les dimensions del primer registre (totes son iguals dins d'un grup de registres)
+        	        List<Dimensio> dimensions = entry.getValue().get(0).getDimensions();
                     List<RegistreEstadistic> fets = entry.getValue();
                     
                     Map<FetEnum, Double> sumFets = new EnumMap<>(FetEnum.class);
@@ -88,6 +95,16 @@ public class EstadisticaMapper {
                 .fets(mergedRegistresEstadistics)
                 .build();
     }
+    
+    // Generar una clau única de les dimensions
+    private String buildKey(List<Dimensio> dimensions) {
+        return dimensions.stream()
+                .sorted(Comparator.comparing(Dimensio::getCodi))
+                .map(d -> d.getCodi() + "=" + (d.getValor() == null ? "" : d.getValor()))
+                .collect(Collectors.joining("|"));
+        // Resultat: ENT=CAIB|UNT=A04027007|TIP=DIARI
+    }
+
 
     private RegistreEstadistic registreFromAnotacio(HistoricAnotacioEntity anotacio) {
     	if (HibernateHelper.isProxy(anotacio)) anotacio = HibernateHelper.deproxy(anotacio);

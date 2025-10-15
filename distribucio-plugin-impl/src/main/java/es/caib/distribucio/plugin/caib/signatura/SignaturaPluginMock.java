@@ -13,11 +13,13 @@ import org.apache.commons.io.IOUtils;
 import es.caib.comanda.ms.salut.model.EstatSalut;
 import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
 import es.caib.pluginsib.arxiu.api.FirmaPerfil;
+import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Implementació mock del plugin de signatura. Retorna una signatura falsa 
@@ -32,8 +34,9 @@ public class SignaturaPluginMock extends DistribucioAbstractPluginProperties imp
 		super();
 	}
 	
-	public SignaturaPluginMock(Properties properties) {
+	public SignaturaPluginMock(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 
 	
@@ -81,7 +84,11 @@ public class SignaturaPluginMock extends DistribucioAbstractPluginProperties imp
 	
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
-
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
+    }
+    
 	@Override
 	public boolean teConfiguracioEspecifica() {
 		return false;

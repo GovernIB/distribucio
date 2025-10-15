@@ -19,6 +19,7 @@ import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
 import es.caib.distribucio.plugin.validacio.ValidacioSignaturaPlugin;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -30,13 +31,14 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class ValidaSignaturaPluginHelper extends AbstractPluginHelper<ValidacioSignaturaPlugin> {
 	
-	public static final String GRUP = "VALID_SIGNATURE";
+	public static final String GRUP = "VALID_SIGN";
 	
 	public ValidaSignaturaPluginHelper(
 			IntegracioHelper integracioHelper, 
 			ConfigHelper configHelper,
-			EntitatRepository entitatRepository) {
-		super(integracioHelper, configHelper, entitatRepository);
+			EntitatRepository entitatRepository,
+			MeterRegistry meterRegistry) {
+		super(integracioHelper, configHelper, entitatRepository, meterRegistry);
 	}
 
 	@Override
@@ -143,10 +145,12 @@ public class ValidaSignaturaPluginHelper extends AbstractPluginHelper<ValidacioS
 		if (pluginClass != null && pluginClass.length() > 0) {
 			try {
 				Class<?> clazz = Class.forName(pluginClass);
+				var configuracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, getConfigGrup());
 				Properties properties = configHelper.getAllProperties(codiEntitat);
 				plugin = (ValidacioSignaturaPlugin)clazz.
-						getDeclaredConstructor(Properties.class).
-						newInstance(properties);
+						getDeclaredConstructor(Properties.class, boolean.class).
+						newInstance(properties, configuracioEspecifica);
+				plugin.init(meterRegistry, getCodiApp().name());
 			} catch (Exception ex) {
 				throw new SistemaExternException(
 						VALIDASIG.name(),

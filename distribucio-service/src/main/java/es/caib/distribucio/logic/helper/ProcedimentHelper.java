@@ -106,7 +106,7 @@ public class ProcedimentHelper {
 			UnitatOrganitzativaEntity unitatOrganitzativa = this.resoldreUnitatOrganitzativa(
 					unitatsOrganitzatives, 
 					procediment,
-					entitatEntity.getCodiDir3());		
+					entitatEntity.getCodiDir3());
 			// Consulta el procediment a la BBDD
 			ProcedimentEntity procedimentEntity = procedimentRepository.findByCodi(entitatEntity.getId(), procediment.getCodigo());
 			if (procedimentEntity == null) {
@@ -198,7 +198,7 @@ public class ProcedimentHelper {
 					if (unitatAdministrativa != null) {
 						if (unitatAdministrativa.getCodiDir3() != null ) {
 							codiDir3 = unitatAdministrativa.getCodiDir3();
-							uo = unitatOrganitzativaRepository.findByCodi(codiDir3);
+							uo = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(codiUnitatArrel, codiDir3);
 							if (uo == null && unitatAdministrativa.getPareCodi() != null) {
 								codi = unitatAdministrativa.getPareCodi();
 							} else {
@@ -219,7 +219,7 @@ public class ProcedimentHelper {
 				
 				if (uo == null) {
 					try {					
-						uo = unitatOrganitzativaRepository.findByCodi(codiUnitatArrel);						
+						uo = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(codiUnitatArrel, codiUnitatArrel);
 					}catch(Exception e) {
 						logger.debug("No s'ha trobat el paràmetre amb codi "+ codiUnitatArrel);
 					}

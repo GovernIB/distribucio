@@ -3,6 +3,10 @@
  */
 package es.caib.distribucio.back.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -193,11 +197,28 @@ public class BustiaAdminController extends BaseAdminController {
 	}
 	
 	
+//	@RequestMapping(value = "/excelUsuarisPerBustiaAntic", method = RequestMethod.GET)
+//	public void excelUsuarisPermissionsPerBustia(
+//			HttpServletRequest request,
+//			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
+//		
+//		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
+//		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
+//		
+//		BustiaFiltreOrganigramaDto filtre = omplirFiltreExcelUsuarisPermissionsPerBustia(bustiaFiltreCommand);
+//		
+//		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
+//				entitatActual.getId(),
+//				filtre);
+//
+//		bustiaHelper.generarExcelUsuarisPermissionsPerBustia(
+//				response,
+//				busties);
+//	}
+	
 	@RequestMapping(value = "/excelUsuarisPerBustia", method = RequestMethod.GET)
-	public void excelUsuarisPermissionsPerBustia(
-			HttpServletRequest request,
-			HttpServletResponse response) throws IllegalAccessException, NoSuchMethodException  {
-		
+    @ResponseBody
+	public String startExcelGeneration(HttpServletRequest request) {		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
 		
@@ -205,13 +226,31 @@ public class BustiaAdminController extends BaseAdminController {
 				entitatActual.getId(),
                 BustiaFiltreCommand.asDto(bustiaFiltreCommand));
 
-		bustiaHelper.generarExcelUsuarisPermissionsPerBustia(
-				response,
-				busties);
+        // Arranca la generación en segundo plano
+        return bustiaHelper.generateExcelAsync(busties);        
 	}
 	
+	@RequestMapping(value = "/excelStatus/{taskId}", method = RequestMethod.GET)
+    @ResponseBody
+    public boolean checkStatus(@PathVariable String taskId) {
+        return bustiaHelper.isReady(taskId);
+    }
 
+    @RequestMapping(value = "/excelDownload/{taskId}", method = RequestMethod.GET)
+    public void downloadExcel(@PathVariable String taskId, HttpServletResponse response) throws IOException {
+        File file = bustiaHelper.getFile(taskId);
+        if (file == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
 
+        response.setHeader("Content-Disposition", "attachment; filename=UsuarisPerBustia.xls");
+        response.setContentType("application/vnd.ms-excel");
+
+        try (InputStream is = new FileInputStream(file)) {
+            is.transferTo(response.getOutputStream());
+        }
+    }
 
 	@RequestMapping(value = "/{bustiaId}", method = RequestMethod.GET)
 	public String formGet(

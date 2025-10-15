@@ -852,7 +852,7 @@ public class ReglaServiceImpl implements ReglaService {
 					System.currentTimeMillis() - t0,
 					errorDescripcio,
 					ex);
-			SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKE, System.currentTimeMillis() - start);
+			SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKE);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					errorDescripcio,

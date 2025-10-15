@@ -5,8 +5,6 @@ package es.caib.distribucio.plugin.caib.signatura;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.Properties;
 
@@ -24,13 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.signatura.SignaturaPlugin;
 import es.caib.distribucio.plugin.signatura.SignaturaResposta;
-import lombok.Synchronized;
+import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Implementació del plugin de signatura emprant el portafirmes
@@ -44,8 +42,9 @@ public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperti
 		super();
 	}
 	
-	public FirmaSimplePluginPortafib(Properties properties) {
+	public FirmaSimplePluginPortafib(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 
 	@Override
@@ -57,6 +56,7 @@ public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperti
 			String mime,
 			String tipusDocumental) {
 		
+		long start = System.currentTimeMillis();
 		SignaturaResposta resposta = new SignaturaResposta();
 
 		ApiFirmaEnServidorSimple api = new ApiFirmaEnServidorSimpleJersey(
@@ -89,10 +89,10 @@ public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperti
 				resposta.setTipusFirmaEni(result.getSignedFileInfo().getEniTipoFirma());
 				resposta.setPerfilFirmaEni(result.getSignedFileInfo().getEniPerfilFirma());
 			}
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return resposta;
 		} catch (Exception e) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException("No s'ha pogut signar el document.", e);
 		}
 	}  
@@ -222,55 +222,24 @@ public class FirmaSimplePluginPortafib extends DistribucioAbstractPluginProperti
 	
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
-
-	private boolean configuracioEspecifica = false;
-	private int operacionsOk = 0;
-	private int operacionsError = 0;
-
-	@Synchronized
-	private void incrementarOperacioOk() {
-		operacionsOk++;
-	}
-
-	@Synchronized
-	private void incrementarOperacioError() {
-		operacionsError++;
-	}
-
-	@Synchronized
-	private void resetComptadors() {
-		operacionsOk = 0;
-		operacionsError = 0;
-	}
-
-	@Override
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
+    }
+    
+    @Override
 	public boolean teConfiguracioEspecifica() {
-		return this.configuracioEspecifica;
+		return salutPluginComponent.teConfiguracioEspecifica();
 	}
 
 	@Override
 	public EstatSalut getEstatPlugin() {
-		try {
-			Instant start = Instant.now();
-			ApiFirmaEnServidorSimple api = new ApiFirmaEnServidorSimpleJersey(getPropertyEndpoint(), getPropertyUsername(), getPropertyPassword());
-			api.getAvailableProfiles("ca");
-			return EstatSalut.builder()
-					.latencia((int) Duration.between(start, Instant.now()).toMillis())
-					.estat(EstatSalutEnum.UP)
-					.build();
-		} catch (Exception ex) {
-			return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
-		}
+		return salutPluginComponent.getEstatPlugin();
 	}
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		IntegracioPeticions integracioPeticions = IntegracioPeticions.builder()
-				.totalOk(operacionsOk)
-				.totalError(operacionsError)
-				.build();
-		resetComptadors();
-		return integracioPeticions;
+		return salutPluginComponent.getPeticionsPlugin();
 	}
 	
 }

@@ -7,9 +7,11 @@ import java.util.Properties;
 
 import es.caib.comanda.ms.salut.model.EstatSalut;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.validacio.ValidaSignaturaResposta;
 import es.caib.distribucio.plugin.validacio.ValidacioSignaturaPlugin;
+import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Implementació mock del plugin de signatura. Retorna una signatura falsa 
@@ -24,8 +26,9 @@ public class ValidacioSignaturaPluginMock extends DistribucioAbstractPluginPrope
 		super();
 	}
 	
-	public ValidacioSignaturaPluginMock(Properties properties) {
+	public ValidacioSignaturaPluginMock(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 
 	
@@ -52,6 +55,13 @@ public class ValidacioSignaturaPluginMock extends DistribucioAbstractPluginPrope
 		return "Mock";
 	}
 
+	// Mètodes de SALUT
+	// /////////////////////////////////////////////////////////////////////////////////////////////
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
+    }
+    
 	@Override
 	public boolean teConfiguracioEspecifica() {
 		// TODO Auto-generated method stub

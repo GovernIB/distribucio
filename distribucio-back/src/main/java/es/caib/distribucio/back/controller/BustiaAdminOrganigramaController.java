@@ -135,8 +135,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
                 BustiaFiltreCommand.asDto(bustiaFiltreOrganigramaCommand));
 
         // Arranca la generación en segundo plano
-        String taskId = bustiaHelper.generateExcelAsync(busties);
-        return taskId; // el cliente recibe este ID
+        return bustiaHelper.generateExcelAsync(busties);        
     }
     
     @RequestMapping(value = "/excelStatus/{taskId}", method = RequestMethod.GET)

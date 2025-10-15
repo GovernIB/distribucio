@@ -587,7 +587,7 @@ public class HistoricHelper {
 			// Completa la informació de la unitat
 			EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
 			UnitatOrganitzativaDto unitat = conversioTipusHelper.convertir(
-					unitatOrganitzativaRepository.findByCodi(entitat.getCodiDir3()), 
+					unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), entitat.getCodiDir3()),
 					UnitatOrganitzativaDto.class);
 			if (dades.getDadesAnotacions() != null) {
 				for  (HistoricAnotacioDto anotacio : dades.getDadesAnotacions())

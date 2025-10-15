@@ -36,6 +36,31 @@
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 	
 	<script type="text/javascript">
+	
+	function generarExcel() {
+	    fetch('${unitatCodiUrlPrefix}bustiaAdmin/excelUsuarisPerBustia')
+	        .then(r => r.text())
+	        .then(taskId => {
+	            document.getElementById("msg").innerHTML = 
+	                '<span class="text-info"><i class="fa fa-spinner fa-spin"></i> Generando Excel...</span>';
+
+	            let interval = setInterval(() => {
+	                fetch('${unitatCodiUrlPrefix}bustiaAdmin/excelStatus/' + taskId)
+	                    .then(r => r.json())
+	                    .then(ready => {
+	                        if (ready) {
+	                            clearInterval(interval);
+
+	                            // 👉 Lanzamos la descarga automáticamente
+	                            window.location.href = '${unitatCodiUrlPrefix}bustiaAdmin/excelDownload/' + taskId;
+
+	                            // 👉 Limpiamos inmediatamente el mensaje
+	                            document.getElementById("msg").innerHTML = '';
+	                        }
+	                    });
+	            }, 2000);
+	        });
+	}
 
 	function formatSelectUnitatItem(select, item) {
 		if (!item.id) {
@@ -128,10 +153,19 @@
 			</div>
 			<div class="col-md-3 pull-right">
 				<div class="pull-right">
-					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
-					<a href="${unitatCodiUrlPrefix}bustiaAdmin/excelUsuarisPerBustia" class="btn btn-success"> 
-						<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="bustia.usuaris" />
-					</a>
+				
+				
+					<div id="msg" style="min-height:20px; margin-top:10px;"></div>		
+<!-- 						<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button> -->
+<%-- 						<a href="${unitatCodiUrlPrefix}bustiaAdmin/excelUsuarisPerBustia" class="btn btn-success">  --%>
+<%-- 							<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="bustia.usuaris" /> --%>
+<!-- 						</a> -->
+					<button type="button" class="btn btn-success" onclick="generarExcel()">
+    					<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="bustia.usuaris" />
+					</button>	
+					
+					
+					
 					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 					<button type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 				</div>

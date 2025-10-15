@@ -97,8 +97,6 @@ public class RegistreDto extends ContingutDto {
 	private boolean procesAutomatic;
 	private long numComentaris;
 	private boolean isBustiaActiva;
-	private boolean permisLecturaBustia;
-	// == BustiaContingutDto
 	
 	private boolean enviatPerEmail;
 	private List<String> enviamentsPerEmail = new ArrayList<String>();
@@ -200,14 +198,7 @@ public class RegistreDto extends ContingutDto {
 	}
 	public void setBustiaActiva(boolean isBustiaActiva) {
 		this.isBustiaActiva = isBustiaActiva;
-	}	
-	public boolean isPermisLecturaBustia() {
-		return permisLecturaBustia;
 	}
-	public void setPermisLecturaBustia(boolean permisLecturaBustia) {
-		this.permisLecturaBustia = permisLecturaBustia;
-	}
-
 	public String getBackCodi() {
 		return backCodi;
 	}

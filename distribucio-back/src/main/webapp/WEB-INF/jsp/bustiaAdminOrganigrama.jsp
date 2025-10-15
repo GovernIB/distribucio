@@ -398,7 +398,10 @@
 				</div>					
 			</div>
 			<div class="col-md-6 pull-right">				
-				<div class="pull-right">									
+				<div class="pull-right">		
+				
+				
+											
 					<div id="msg" style="min-height:20px; margin-top:10px;"></div>		
 <!-- 					<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button> -->
 <%-- 					<a href="${unitatCodiUrlPrefix}bustiaAdminOrganigrama/excelUsuarisPerBustiaAntic" class="btn btn-success">  --%>
@@ -407,6 +410,10 @@
 					<button type="button" class="btn btn-success" onclick="generarExcel()">
     					<span class="fa fa-file-excel-o"></span>&nbsp;<spring:message code="bustia.usuaris" />
 					</button>					
+					
+					
+					
+					
 					<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
 					<button type="submit" name="accio" value="filtrar" class="btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 				</div>

@@ -289,7 +289,7 @@ public class BustiaHelper {
 	 * @return
 	 */
 	public BustiaEntity findBustiaPerDefecte(EntitatEntity entitat, String codiUnitat) {
-		UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatRepository.findByCodi(codiUnitat);
+		UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatRepository.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), codiUnitat);
 		BustiaEntity bustaPerDefecte = null;
 		List<BustiaEntity> bustiesPerDefecte = bustiaRepository.findPerDefecte(
 				entitat,

@@ -4,8 +4,6 @@
 package es.caib.distribucio.plugin.caib.procediment;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.Properties;
 
@@ -23,9 +21,9 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.RespostaUnitatAdministrativa;
 import es.caib.distribucio.plugin.SistemaExternException;
@@ -34,7 +32,7 @@ import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
 import es.caib.distribucio.plugin.procediment.UnitatAdministrativa;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
-import lombok.Synchronized;
+import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Implementació del plugin de consulta de procediments emprant ROLSAC.
@@ -50,8 +48,9 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 		super();
 	}
 	
-	public ProcedimentPluginRolsac(Properties properties) {
+	public ProcedimentPluginRolsac(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override
@@ -60,13 +59,14 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 		logger.debug("Consulta dels procediments de l'unitat organitzativa (" +
 				"codiDir3=" + codiDir3 + ")");
 		ProcedimientosResponse response = null;
+		long start = System.currentTimeMillis();
 		try {
 			StringBuilder sb = new StringBuilder(getServiceUrl());
 			response = findProcedimentsRolsac(
 					sb.toString(),
 					"lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}&filtroPaginacion={\"page\":\"1\", \"size\":\"9999\"}");
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			logger.error("No s'han pogut consultar els procediments de ROLSAC (" +
 					"codiDir3=" + codiDir3 + ")",
 					ex);
@@ -77,10 +77,10 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 		}
 		
 		if (response != null && response.getStatus().equals("200")) {
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return response.getResultado();
 		} else {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			logger.error("No s'han pogut consultar els procediments de ROLSAC (" +
 					"codiDir3=" + codiDir3 + "). Resposta rebuda amb el codi " + response.getStatus());
 			throw new SistemaExternException(
@@ -137,6 +137,7 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 		logger.debug("Consulta del procediment pel codi SIA (" +
 			"codiSia=" + codiSia + ")");
 		ProcedimientosResponse response = null;
+		long start = System.currentTimeMillis();
 		try {
 			StringBuilder sb = new StringBuilder(getServiceUrl());			
 			String params = "?lang=ca&filtro={\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}";
@@ -144,9 +145,9 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 			response = findProcedimentsRolsac(
 					sb.toString(),
 					params);
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			logger.error("Error consultant el procediment de ROLSAC (" +
 					"codiSia=" + codiSia + "): " + ex.getMessage(),
 					ex);
@@ -193,6 +194,7 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 
 		UnitatAdministrativa unitatAdministrativa = null;
 		try {
+			long start = System.currentTimeMillis();
 			String urlAmbMetode = getRolsacServiceUrl() + "/unidades_administrativas/" + codi;
 			
 			Client jerseyClient = getJerseyClient();
@@ -212,9 +214,9 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 					unitatAdministrativa.setPareCodi(unitatAdministrativaRolsac.getPadre().getCodigo());					
 				}
 			}
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					"No s'ha pogut consultar la unitat administrativa amb codi " + codi + " via REST: " + ex.toString(),
 					ex);
@@ -291,53 +293,26 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
-
-	private boolean configuracioEspecifica = false;
-	private int operacionsOk = 0;
-	private int operacionsError = 0;
-
-	@Synchronized
-	private void incrementarOperacioOk() {
-		operacionsOk++;
-	}
-
-	@Synchronized
-	private void incrementarOperacioError() {
-		operacionsError++;
-	}
-
-	@Synchronized
-	private void resetComptadors() {
-		operacionsOk = 0;
-		operacionsError = 0;
-	}
-
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
+    }
+    
 	@Override
 	public boolean teConfiguracioEspecifica() {
-		return this.configuracioEspecifica;
+		return salutPluginComponent.teConfiguracioEspecifica();
 	}
 
 	@Override
 	public EstatSalut getEstatPlugin() {
-		try {
-			Instant start = Instant.now();
-			findAmbCodiDir3("000000000");
-			return EstatSalut.builder()
-					.latencia((int) Duration.between(start, Instant.now()).toMillis())
-					.estat(EstatSalutEnum.UP)
-					.build();
-		} catch (Exception ex) {
-			return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
-		}
+		return salutPluginComponent.getEstatPlugin();
 	}
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		IntegracioPeticions integracioPeticions = IntegracioPeticions.builder()
-				.totalOk(operacionsOk)
-				.totalError(operacionsError)
-				.build();
-		resetComptadors();
-		return integracioPeticions;
+		IntegracioPeticions peticions = salutPluginComponent.getPeticionsPlugin();
+		peticions.setEndpoint(getServiceUrl());
+		return peticions;
 	}
+	
 }

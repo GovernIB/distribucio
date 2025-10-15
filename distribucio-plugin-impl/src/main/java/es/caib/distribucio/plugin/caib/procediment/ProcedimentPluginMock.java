@@ -11,10 +11,12 @@ import es.caib.comanda.ms.salut.model.EstatSalut;
 import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
 import es.caib.distribucio.plugin.procediment.UnitatAdministrativa;
+import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Implementació del plugin de consulta de procediments emprant MOCK.
@@ -60,7 +62,11 @@ public class ProcedimentPluginMock implements ProcedimentPlugin {
 
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
-
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
+    }
+    
 	@Override
 	public boolean teConfiguracioEspecifica() {
 		return false;

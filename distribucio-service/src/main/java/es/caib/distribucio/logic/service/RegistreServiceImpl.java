@@ -258,7 +258,7 @@ public class RegistreServiceImpl implements RegistreService {
 			boolean isVistaMoviments,
 			String rolActual) throws NotFoundException {
 		
-		return registreHelper.findOne(entitatId, registreId, isVistaMoviments, rolActual, true);
+		return registreHelper.findOne(entitatId, registreId, isVistaMoviments, rolActual);
 	}
 
 	@Transactional(readOnly = true)
@@ -269,7 +269,7 @@ public class RegistreServiceImpl implements RegistreService {
 			boolean isVistaMoviments,
 			String rolActual) throws NotFoundException {
 		
-		RegistreDto registre = registreHelper.findOne(entitatId, registreId, isVistaMoviments, rolActual, false);
+		RegistreDto registre = registreHelper.findOne(entitatId, registreId, isVistaMoviments, rolActual);
 		
 		List<DadaEntity> dades = dadaRepository.findByRegistreId(registre.getId());
 		
@@ -1751,6 +1751,14 @@ public class RegistreServiceImpl implements RegistreService {
 			// L'obté amb bloqueig per si s'està actualitzant
 			RegistreEntity registre = registreRepository.findOneAmbBloqueig(registreId);
 			EntitatDto entitatDto = new EntitatDto();
+			
+			// Si el backoffice comunica que està rebuda i l'anotació està pendent de regla o processada llavors no es canvia l'estat
+			if (estat.equals(Estat.REBUDA)) {
+				if (registre.getProcesEstat().equals(RegistreProcesEstatEnum.REGLA_PENDENT) || 
+						registre.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_PROCESSADA)) {
+					return;
+				}
+			}
 
             // Si el backoffice comunica que està rebuda i l'anotació està pendent de regla o processada llavors no es canvia l'estat
             if (estat.equals(Estat.REBUDA)) {
@@ -1798,6 +1806,8 @@ public class RegistreServiceImpl implements RegistreService {
 						false);
 				break;
 			case REBUTJADA:
+				List<String> params = new ArrayList<>();
+				params.add(observacions);
 				registre.updateBackEstat(
 						RegistreProcesEstatEnum.BACK_REBUTJADA,
 						observacions);
@@ -1805,7 +1815,7 @@ public class RegistreServiceImpl implements RegistreService {
 				contingutLogHelper.log(
 						registre,
 						LogTipusEnumDto.BACK_REBUTJADA,
-						null,
+						params,
 						false);
 				break;
 			case ERROR:
@@ -2004,7 +2014,7 @@ public class RegistreServiceImpl implements RegistreService {
 				"entitatId=" + entitatId + ", " +
 				"registreId=" + registreId + ")");
 		
-		RegistreDto anotacio = registreHelper.findOne(entitatId, registreId, false, null, true);
+		RegistreDto anotacio = registreHelper.findOne(entitatId, registreId, false, null);
 		entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
@@ -2831,16 +2841,15 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 	
 	@Transactional
-	private String getCodiUnitatOrganitzativaArrel(String codiUnitat) {
-		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodi(codiUnitat);
+	private String getCodiUnitatOrganitzativaArrel(String codiDir3Entitat, String codiUnitat) {
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(codiDir3Entitat, codiUnitat);
 		if (unitatOrganitzativa == null) {
 			return codiUnitat;		
 		} 
 		if (!unitatOrganitzativa.getCodi().equals(unitatOrganitzativa.getCodiUnitatArrel())) {
-			return getCodiUnitatOrganitzativaArrel(unitatOrganitzativa.getCodiUnitatSuperior());
+			return getCodiUnitatOrganitzativaArrel(codiDir3Entitat, unitatOrganitzativa.getCodiUnitatSuperior());
 		}
 		return unitatOrganitzativa.getCodi();
-		
 	}
 	
 	
@@ -3394,7 +3403,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 	private Throwable processarAnotacioPendent(long entitatId, long anotacioId) {
 		
-		RegistreDto anotacio = registreHelper.findOne(entitatId, anotacioId, false, null, true);
+		RegistreDto anotacio = registreHelper.findOne(entitatId, anotacioId, false, null);
 		entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,

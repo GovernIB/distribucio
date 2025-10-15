@@ -8,8 +8,6 @@ import java.net.URL;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,19 +16,16 @@ import java.util.Properties;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 
 import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
-import lombok.Synchronized;
+import io.micrometer.core.instrument.MeterRegistry;
 
 
 /**
@@ -44,8 +39,9 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 		super();
 	}
 	
-	public UnitatsOrganitzativesPluginDir3(Properties properties) {
+	public UnitatsOrganitzativesPluginDir3(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override
@@ -54,20 +50,21 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 			Timestamp fechaActualizacion, 
 			Timestamp fechaSincronizacion) throws SistemaExternException {
 		try {
+			long start = System.currentTimeMillis();
 	        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
 			UnidadRest unidad = getUnitatsOrganitzativesRestClient().obtenerUnidad(
 					pareCodi,
 					fechaActualizacion != null ? dateFormat.format(fechaActualizacion) : null,
 					fechaSincronizacion != null ? dateFormat.format(fechaSincronizacion) : null, false);
 			if (unidad != null) {
-				incrementarOperacioOk();
+				salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 				return toUnitatOrganitzativa(unidad);
 			} else {
-				incrementarOperacioError();
+				salutPluginComponent.incrementarOperacioError();
 				return null;
 			}
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					"No s'han pogut consultar la unitat organitzativa via WS (" +
 					"pareCodi=" + pareCodi + ")",
@@ -82,6 +79,7 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 			Timestamp fechaActualizacion,
 			Timestamp fechaSincronizacion) throws SistemaExternException {
 		try {
+			long start = System.currentTimeMillis();
 			List<UnitatOrganitzativa> unitatOrganitzativa = new ArrayList<UnitatOrganitzativa>();
 			
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");  
@@ -95,10 +93,10 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
                 	unitatOrganitzativa.add(toUnitatOrganitzativa(unidad));
                 }
             }
-            incrementarOperacioOk();
+            salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return unitatOrganitzativa;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					"No s'han pogut consultar les unitats organitzatives via WS (" +
 					"pareCodi=" + pareCodi + ")",
@@ -118,6 +116,7 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 			Long provincia, 
 			String municipi) throws SistemaExternException {
 		try {
+			long start = System.currentTimeMillis();
 			URL url = new URL(getServiceCercaUrl()
 					+ "?codigo=" + codi
 					+ "&denominacion=" + denominacio
@@ -140,10 +139,10 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 							List.class,  
 							UnitatOrganitzativa.class));
 			Collections.sort(unitats);
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return unitats;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					"No s'han pogut consultar les unitats organitzatives via REST (" +
 					"codi=" + codi + ", " +
@@ -225,58 +224,26 @@ public class UnitatsOrganitzativesPluginDir3 extends DistribucioAbstractPluginPr
 	
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
-
-	private boolean configuracioEspecifica = false;
-	private int operacionsOk = 0;
-	private int operacionsError = 0;
-
-	@Synchronized
-	private void incrementarOperacioOk() {
-		operacionsOk++;
-	}
-
-	@Synchronized
-	private void incrementarOperacioError() {
-		operacionsError++;
-	}
-
-	@Synchronized
-	private void resetComptadors() {
-		operacionsOk = 0;
-		operacionsError = 0;
-	}
-
-	@Override
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
+    }
+    
+    @Override
 	public boolean teConfiguracioEspecifica() {
-		return this.configuracioEspecifica;
+		return salutPluginComponent.teConfiguracioEspecifica();
 	}
 
 	@Override
 	public EstatSalut getEstatPlugin() {
-		try {
-			Instant start = Instant.now();
-			String url = getServiceCercaUrl() + "?codigo=fakeUnitat&denominacion=&codNivelAdministracion=-1&codComunidadAutonoma=-1&conOficinas=false&unidadRaiz=false&provincia=-1&localidad=-1&vigentes=true";
-			WebResource webResource = Client.create().resource(url);
-			ClientResponse response = webResource.get(ClientResponse.class);
-//			cercaUnitats("fakeUnitat", null, null, null, null, null, null, null);
-			if (response.getStatus() == 204 || response.getStatus() == 200) {
-				return EstatSalut.builder()
-						.latencia((int) Duration.between(start, Instant.now()).toMillis())
-						.estat(EstatSalutEnum.UP)
-						.build();
-			}
-		} catch (Exception ex) {}
-		return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
+		return salutPluginComponent.getEstatPlugin();
 	}
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		IntegracioPeticions integracioPeticions = IntegracioPeticions.builder()
-				.totalOk(operacionsOk)
-				.totalError(operacionsError)
-				.build();
-		resetComptadors();
-		return integracioPeticions;
+		IntegracioPeticions peticions = salutPluginComponent.getPeticionsPlugin();
+		peticions.setEndpoint(getServiceUrl());
+		return peticions;
 	}
 
 }

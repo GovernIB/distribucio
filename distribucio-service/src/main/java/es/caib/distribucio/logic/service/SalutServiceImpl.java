@@ -6,11 +6,13 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -24,15 +26,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import es.caib.comanda.ms.salut.model.AppInfo;
+import es.caib.comanda.ms.salut.model.ContextInfo;
 import es.caib.comanda.ms.salut.model.DetallSalut;
 import es.caib.comanda.ms.salut.model.EstatSalut;
 import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioInfo;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
 import es.caib.comanda.ms.salut.model.IntegracioSalut;
+import es.caib.comanda.ms.salut.model.Manual;
 import es.caib.comanda.ms.salut.model.MissatgeSalut;
 import es.caib.comanda.ms.salut.model.SalutInfo;
+import es.caib.comanda.ms.salut.model.SubsistemaInfo;
 import es.caib.comanda.ms.salut.model.SubsistemaSalut;
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.MonitorHelper;
@@ -62,20 +66,24 @@ public class SalutServiceImpl implements SalutService {
     
 	@Override
 	public List<IntegracioInfo> getIntegracions() {
-        return pluginHelper.getPluginHelpers().stream()
-                .flatMap(pluginHelper -> pluginHelper.getIntegracionsInfo().stream())
-                .collect(Collectors.toList());
+		List<IntegracioInfo> integracionsInfo = pluginHelper.getPluginHelpers().stream()
+	            .flatMap(helper -> helper.getIntegracionsInfo().stream())
+	            .collect(Collectors.collectingAndThen(
+	                    Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(IntegracioInfo::getCodi))),
+	                    ArrayList::new));
+		
+		return integracionsInfo;
 	}
 
 	@Override
-	public List<AppInfo> getSubsistemes() {
+	public List<SubsistemaInfo> getSubsistemes() {
 		return List.of(
-				AppInfo.builder().codi("AWS").nom("Alta Registre WS").build(),
-				AppInfo.builder().codi("BKC").nom("Backoffice consulta").build(), 
-				AppInfo.builder().codi("BKE").nom("Backoffice canvi estat").build(),
-				AppInfo.builder().codi("BKL").nom("Backoffice llistar").build(),
-				AppInfo.builder().codi("RGB").nom("Aplicar Regla tipus Backoffice").build(),
-				AppInfo.builder().codi("GDO").nom("Gestió documental FileSystem").build()
+				SubsistemaInfo.builder().codi("AWS").nom("Alta Registre WS").build(),
+				SubsistemaInfo.builder().codi("BKC").nom("Backoffice consulta").build(), 
+				SubsistemaInfo.builder().codi("BKE").nom("Backoffice canvi estat").build(),
+				SubsistemaInfo.builder().codi("BKL").nom("Backoffice llistar").build(),
+				SubsistemaInfo.builder().codi("RGB").nom("Aplicar Regla tipus Backoffice").build(),
+				SubsistemaInfo.builder().codi("GDO").nom("Gestió documental FileSystem").build()
 		);
 	}
 
@@ -90,7 +98,8 @@ public class SalutServiceImpl implements SalutService {
         SubsistemesHelper.SubsistemesInfo subsistemesInfo = SubsistemesHelper.getSubsistemesInfo();
         var subsistemes = subsistemesInfo.getSubsistemesSalut();  // Subsistemes
         var estatGlobalSubsistemes = subsistemesInfo.getEstatGlobal();
-        if (EstatSalutEnum.UP.equals(estatSalut.getEstat()) && !EstatSalutEnum.UP.equals(estatGlobalSubsistemes)) {
+        
+        if (EstatSalutEnum.UP.equals(estatSalut.getEstat()) && !EstatSalutEnum.UP.equals(estatGlobalSubsistemes) && !EstatSalutEnum.UNKNOWN.equals(estatGlobalSubsistemes)) {
             estatSalut = EstatSalut.builder()
                     .estat(estatGlobalSubsistemes)
                     .latencia(estatSalut.getLatencia())
@@ -110,21 +119,46 @@ public class SalutServiceImpl implements SalutService {
                 .build();
 	}
 	
+    @Override
+    public List<ContextInfo> getContexts(String baseUrl) {
+        return List.of(
+                ContextInfo.builder()
+                        .codi("BACK")
+                        .nom("Backoffice")
+                        .path(baseUrl + "/distribucioback")
+                        .manuals(List.of(
+                                Manual.builder().nom("Manual d'usuari").path("https://github.com/GovernIB/distribucio/blob/dis-1.0/doc/pdf/02_Distribucio_Manual_Usuari.pdf").build(),
+                                Manual.builder().nom("Manual d'administració").path("https://github.com/GovernIB/distribucio/blob/dis-1.0/doc/pdf/02_Distribucio_Manual_Administrador.pdf").build()))
+                        .build(),
+                ContextInfo.builder()
+                        .codi("INT")
+                        .nom("API interna")
+                        .path(baseUrl + "/distribucioapi/interna")
+                        .manuals(List.of(Manual.builder().nom("Manual d'integració").path("https://github.com/GovernIB/distribucio/blob/dis-1.0/doc/pdf/03_Distribucio_Manual_Integració.pdf").build()))
+                        .api(baseUrl + "/distribucioapi/interna")
+                        .build(),
+                ContextInfo.builder()
+                        .codi("EXT")
+                        .nom("API externa")
+                        .path(baseUrl + "/distribucioapi/externa")
+                        .api(baseUrl + "/distribucioapi/externa")
+                        .build()
+        );
+    }
+	
     private EstatSalut checkEstatSalut(String performanceUrl) {
 
         Instant start = Instant.now();
         EstatSalutEnum estat = EstatSalutEnum.UP;
-        try {
-            executePerformanceTest();
-        } catch (Exception e) {}
+        
         for (int i = 1; i <= MAX_CONNECTION_RETRY; i++) {
             try {
                 restTemplate.getForObject(performanceUrl, String.class);
                 break;
             } catch (Exception e) {
-                if (i == MAX_CONNECTION_RETRY) {
-                    estat = EstatSalutEnum.UNKNOWN; // After 3 connection failed attempts
-                }
+//                if (i == MAX_CONNECTION_RETRY) {
+//                    estat = EstatSalutEnum.DOWN; // After 3 connection failed attempts
+//                }
             }
         }
         Instant end = Instant.now();
@@ -177,33 +211,109 @@ public class SalutServiceImpl implements SalutService {
             return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
         }
     }
-
+    
     private List<IntegracioSalut> checkIntegracions() {
 
         List<IntegracioSalut> integracionsSalut = new ArrayList<>();
         try {
             List<AbstractPluginHelper<?>> helpers = pluginHelper.getPluginHelpers();
             for (AbstractPluginHelper<?> helper : helpers) {
-                integracionsSalut.addAll(helper.getIntegracionsSalut());
+                integracionsSalut.add(helper.getIntegracionsSalut());
             }
         } catch (Exception e) {
+            log.error("Error checkIntegracions", e);
             return Collections.emptyList();
         }
-        
-        // Hi ha diferents pluginHelper que criden al mateix sistma extern
-        Map<String, IntegracioSalut> integracionsSalutUnificades = new HashMap<>();
-        for (IntegracioSalut integracio : integracionsSalut) {
-        	integracionsSalutUnificades.merge(
-                integracio.getCodi(),
-                integracio,
-                (a, b) -> mergeIntegracions(a, b)
-            );
+
+        // Agrupar per codiapp (sistema extern)
+        Map<String, List<IntegracioSalut>> agrupades = integracionsSalut.stream()
+                .collect(Collectors.groupingBy(IntegracioSalut::getCodi));
+
+        List<IntegracioSalut> result = new ArrayList<>();
+
+        for (Map.Entry<String, List<IntegracioSalut>> entry : agrupades.entrySet()) {
+            String codiApp = entry.getKey();
+            List<IntegracioSalut> llista = entry.getValue();
+
+            if (llista.size() == 1) {
+                // Si només hi ha un plugin del sistema extern: retornar tal qual
+                result.add(llista.get(0));
+            } else {
+                // Si hi ha múltiples plugins (serveis/procediments): combinar
+                var totalOk = 0L;
+                var totalError = 0L;
+                var peticionsOkUltimPeriode = 0L;
+                var peticionsErrorUltimPeriode = 0L;
+                var totalTempsMig = 0;
+                var tempsMigUltimPeriode = 0;
+                EstatSalutEnum estat = null;
+                var maxLatencia = 0;
+
+                Map<String, IntegracioPeticions> peticionsPerEntorn = new HashMap<>();
+
+                for (IntegracioSalut pluginIntegracio : llista) {
+                    IntegracioPeticions p = pluginIntegracio.getPeticions();
+
+                    totalOk += p.getTotalOk();
+                    totalError += p.getTotalError();
+                    totalTempsMig += p.getTotalTempsMig();
+                    peticionsOkUltimPeriode += p.getPeticionsOkUltimPeriode();
+                    peticionsErrorUltimPeriode += p.getPeticionsErrorUltimPeriode();
+                    tempsMigUltimPeriode += p.getTempsMigUltimPeriode();
+
+                    if (pluginIntegracio.getLatencia() != null)
+                    	maxLatencia = Math.max(maxLatencia, pluginIntegracio.getLatencia());
+
+                    if (pluginIntegracio.getEstat() != null) {
+	                    //Clau por endpoint: Serveis o Procediments
+	                    String key = getKeyFromEndpoint(p.getEndpoint());
+	                    peticionsPerEntorn.put(key, p);
+                    }
+                }
+                
+                // Combinar estats: si hi ha un UP retornar UP, si hi ha un DOWN retornar DOWN
+                if (!peticionsPerEntorn.isEmpty()) {
+                    estat = llista.stream()
+                                  .map(IntegracioSalut::getEstat)
+                                  .filter(e -> e != null && e != EstatSalutEnum.UNKNOWN)
+                                  .reduce(this::recuperarEstat)
+                                  .orElse(null);
+                }
+                
+                IntegracioPeticions combinada = IntegracioPeticions.builder()
+                        .totalOk(totalOk)
+                        .totalError(totalError)
+                        .totalTempsMig(totalTempsMig)
+                        .peticionsOkUltimPeriode(peticionsOkUltimPeriode)
+                        .peticionsErrorUltimPeriode(peticionsErrorUltimPeriode)
+                        .tempsMigUltimPeriode(tempsMigUltimPeriode)
+                        .peticionsPerEntorn(peticionsPerEntorn)
+                        .build();
+
+                IntegracioSalut combinadaSalut = IntegracioSalut.builder()
+                        .codi(codiApp)
+                        .estat(estat)
+                        .latencia(maxLatencia)
+                        .peticions(combinada)
+                        .build();
+
+                result.add(combinadaSalut);
+            }
         }
 
-        return new ArrayList<>(integracionsSalutUnificades.values());
-        
-//        return integracionsSalut;
+        return result;
     }
+
+    // Helper para identificar la key de cada plugin por endpoint
+    private String getKeyFromEndpoint(String endpoint) {
+        if (endpoint == null) return "UNKNOWN";
+        if (endpoint.contains("/servicios")) return "Serveis";
+        if (endpoint.contains("/procedimientos")) return "Procediments";
+        if (endpoint.contains("Catalogos")) return "Dades externes";
+        if (endpoint.contains("/unidades")) return "Unitats";
+        return "UNKNOWN";
+    }
+
 
     public List<SubsistemaSalut> checkSubsistemes() {
         try {
@@ -254,43 +364,11 @@ public class SalutServiceImpl implements SalutService {
             return null;
         }
     }
-    
-    private IntegracioSalut mergeIntegracions(IntegracioSalut a, IntegracioSalut b) {
-        return IntegracioSalut.builder()
-                .codi(a.getCodi())
-                .estat(recuperarEstat(a.getEstat(), b.getEstat()))
-                .latencia(mergeLatencia(a.getLatencia(), b.getLatencia()))
-                .peticions(mergePeticions(a.getPeticions(), b.getPeticions()))
-                .build();
-    }
 
     private EstatSalutEnum recuperarEstat(EstatSalutEnum e1, EstatSalutEnum e2) {
-        if (e1 == EstatSalutEnum.DOWN || e2 == EstatSalutEnum.DOWN) return EstatSalutEnum.DOWN;
         if (e1 == EstatSalutEnum.UP   || e2 == EstatSalutEnum.UP)   return EstatSalutEnum.UP;
-        return EstatSalutEnum.UNKNOWN;
+        if (e1 == EstatSalutEnum.DOWN || e2 == EstatSalutEnum.DOWN) return EstatSalutEnum.DOWN;
+        return null;
     }
 
-    private Integer mergeLatencia(Integer l1, Integer l2) {
-        if (l1 == null) return l2;
-        if (l2 == null) return l1;
-        return Math.max(l1, l2);
-    }
-
-    private IntegracioPeticions mergePeticions(IntegracioPeticions p1, IntegracioPeticions p2) {
-        if (p1 == null) return p2;
-        if (p2 == null) return p1;
-
-        p1.setTotalOk(p1.getTotalOk() + p2.getTotalOk());
-        p1.setTotalError(p1.getTotalError() + p2.getTotalError());
-
-        if (p2.getOrganOk() != null) {
-            p2.getOrganOk().forEach((k,v) -> p1.getOrganOk().merge(k, v, Long::sum));
-        }
-        if (p2.getOrganError() != null) {
-            p2.getOrganError().forEach((k,v) -> p1.getOrganError().merge(k, v, Long::sum));
-        }
-
-        return p1;
-    }
-    
 }

@@ -65,9 +65,21 @@ pageContext.setAttribute(
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('#netejarFiltre').click(function(e) {
-				$('#arxiuEstat').val('ESBORRANY').change();
-			});
+		
+		    $('#filtrarBtn').on('click', function(e){
+		        $('#accioHidden').val('filtrar');
+		        $('#annexosFiltreCommand')[0].submit();
+		    });
+
+		    $('#netejarFiltre').on('click', function(e){
+		        $('#accioHidden').val('netejar');
+		        var $form = $('#annexosFiltreCommand');
+		        $form.find('input, textarea').val('');
+		        $form.find('select').val('').trigger('change');
+		        $('#arxiuEstat').val('ESBORRANY').trigger('change');
+		        $form[0].submit();
+		    });
+		    
 			$(document).on('hidden.bs.modal', function (event) {				
 				var data = sessionStorage.getItem('selectedElements');
 				if (data != null) {
@@ -79,12 +91,12 @@ pageContext.setAttribute(
 				}
 			});
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();			
-// 			$("#taulaDades").dataTable();
 
 			$('form').submit(function() {				
 				$.get(
 						"annexosAdmin/deselect",
 						function(data) {
+							console.log("DATA: " + data);
 							$("#seleccioCount").html(data);
 							$('#taulaDades').webutilDatatable('select-none');
 						}
@@ -96,8 +108,7 @@ pageContext.setAttribute(
 			$('#taulaDades').on( 'draw.dt', function () {
 				if (!selectButtonsInitialized) {					
 					selectButtonsInitialized = true;
-					$('#seleccioAll').on('click', function(e) {
-						debugger;
+					$('#seleccioAll').on('click', function(e) {						
 						$.get(
 								"annexosAdmin/select",
 								function(data) {
@@ -227,10 +238,15 @@ pageContext.setAttribute(
 				<dis:inputText name="fitxerNom" inline="true" placeholderKey="annex.admin.filtre.fitxerNom"/>
 			</div>	
 			<div class="col-md-2 d-flex justify-content-end">
-				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-				<button type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+			    <button id="netejarFiltre" type="button" class="btn btn-default">
+			        <spring:message code="comu.boto.netejar"/>
+			    </button>
+			    <button id="filtrarBtn" type="button" class="ml-2 btn btn-primary">
+			        <span class="fa fa-filter"></span> 
+			        <spring:message code="comu.boto.filtrar"/>
+			    </button>
 			</div>
-		</div>
+		</div>		
 	</form:form>
 	<c:set var="rol" value="admin"/>
 	

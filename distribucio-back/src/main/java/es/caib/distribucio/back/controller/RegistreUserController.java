@@ -414,18 +414,16 @@ public class RegistreUserController extends BaseUserController {
 			String ordreColumn,
 			String ordreDir,
 			Model model) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		
 		try {
+
+			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
+
 			RegistreDto registre = registreService.findOneAmbDades(
 							entitatActual.getId(),
 							registreId,
 							isVistaMoviments,
-							RolHelper.getRolActual(request));
-			
-			if (!registre.isPermisLecturaBustia() ) {
-				return crearErrorPermisLectura(model);				
-			}
+							RolHelper.getRolActual(request));			
 						
 			//recupera la ruta del destí lògic del moviment o no l'actual
 			if (isVistaMoviments && destiLogic != null) {
@@ -480,6 +478,12 @@ public class RegistreUserController extends BaseUserController {
 			model.addAttribute("metadadesActives", isMetadadesActives());
 			model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
 			model.addAttribute("copies", emplenarModelCopies(request, entitatActual, registre));
+		} catch (SecurityException se) {
+			// Error de permís sobre l'entitat
+			return errorPermisLecturaEntitat(request, model);
+		} catch (PermissionDeniedException pde) {
+			// Error de permís sobre la bústia
+			return errorPermisLecturaBustia(request, model);
 		} catch (Exception e) {
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(e);
 			if (thr.getClass() == NotFoundException.class) {
@@ -507,15 +511,29 @@ public class RegistreUserController extends BaseUserController {
 		return "registreDetall";
 	}
 	
-	private String crearErrorPermisLectura(Model model) {
+	/** Retorna una vista amb el detall de l'error de permís sobre la bústia. 
+	 * @param request */
+	private String errorPermisLecturaBustia(HttpServletRequest request, Model model) {
 		ErrorDto errorDto = new ErrorDto();
 		errorDto.setData(new Date());
-		errorDto.setTitol("Usuari sense permís de lectura");
-		errorDto.setTipus("Permisos");
-		errorDto.setDescripcio("L'usuari que vol consultar el registre no té permisos de lectura sobre la bústia");		
+		errorDto.setTitol(getMessage(request, "registre.user.controller.error.permis.bustia.titol"));
+		errorDto.setTipus(getMessage(request, "registre.user.controller.error.permis.bustia.tipus"));
+		errorDto.setDescripcio(getMessage(request, "registre.user.controller.error.permis.bustia.descripcio"));		
 		model.addAttribute("error", errorDto);
 		return "errorDetall";		
 	}
+
+	/** Retorna una vista amb el detall de l'error de permís sobre l'entitat. */
+	private String errorPermisLecturaEntitat(HttpServletRequest request, Model model) {
+		ErrorDto errorDto = new ErrorDto();
+		errorDto.setData(new Date());
+		errorDto.setTitol(getMessage(request, "registre.user.controller.error.permis.entitat.titol"));
+		errorDto.setTipus(getMessage(request, "registre.user.controller.error.permis.entitat.tipus"));
+		errorDto.setDescripcio(getMessage(request, "registre.user.controller.error.permis.entitat.descripcio"));		
+		model.addAttribute("error", errorDto);
+		return "errorDetall";		
+	}
+
 	
 	/** Mètode per determinar la direcció d'un registre i redireccionar cap al seu detall. S'invoca des
 	 * dels botons "Anterior" i "Següent" de la pàgina del detall.

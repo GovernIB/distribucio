@@ -161,6 +161,7 @@ public class AnnexosServiceImpl implements AnnexosService {
 				false,
 				false);
 		
+		
 		String tipusFirma = "";
 		ArxiuFirmaTipusEnumDto arxiuFirmaTipusEnumDto = filtre.getTipusFirma();
 		if (arxiuFirmaTipusEnumDto!=null) {

@@ -74,7 +74,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
             logger.error(
                     "Error al processar nou registre d'entrada en el servei web de backoffice integració (" + "id=" + id + ")",
                     ex);
-            SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKC, System.currentTimeMillis() - start);
+            SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKC);
             String errorDescripcio = "Error  al processar nou registre d'entrada en el servei web de backoffice integració";
             integracioHelper.addAccioError(
                     IntegracioHelper.INTCODI_BACKOFFICE,
@@ -145,7 +145,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 					System.currentTimeMillis() - t0,
 					errorDescripcio,
 					ex);
-	        SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKL, System.currentTimeMillis() - start);
+	        SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKL);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					errorDescripcio,
@@ -167,7 +167,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			SubsistemesHelper.addSuccessOperation(SubsistemesEnum.BKC, System.currentTimeMillis() - start);
     	} catch (Exception ex) {
     		logger.error("Error al canviar estat de registre d'entrada en el servei web de backoffice integració (" + "id="+ id + ex);
-			SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKC, System.currentTimeMillis() - start);
+			SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKC);
     	}
     }
     
@@ -223,7 +223,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
                     System.currentTimeMillis() - t0,
                     errorDescripcio,
                     ex);
-			SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKE, System.currentTimeMillis() - start);
+			SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKE);
             throw new SistemaExternException(
                     IntegracioHelper.INTCODI_BACKOFFICE,
                     errorDescripcio,

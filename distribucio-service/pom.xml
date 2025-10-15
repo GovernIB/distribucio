@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>es.caib.distribucio</groupId>
 		<artifactId>distribucio</artifactId>
-		<version>1.0.4.2</version>
+		<version>1.0.6</version>
 	</parent>
 	<artifactId>distribucio-service</artifactId>
 	<dependencies>
@@ -130,6 +130,11 @@
 			<version>1.36</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+        </dependency>
 	</dependencies>
 	<repositories>
 		<repository>

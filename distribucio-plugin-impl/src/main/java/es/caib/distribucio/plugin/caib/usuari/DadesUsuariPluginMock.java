@@ -3,19 +3,17 @@
  */
 package es.caib.distribucio.plugin.caib.usuari;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.Properties;
 
 import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
-import lombok.Synchronized;
+import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Implementació de test del plugin de consulta de dades d'usuaris.
@@ -28,8 +26,9 @@ public class DadesUsuariPluginMock extends DistribucioAbstractPluginProperties i
 		super();
 	}
 	
-	public DadesUsuariPluginMock(Properties properties) {
+	public DadesUsuariPluginMock(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override
@@ -58,54 +57,24 @@ public class DadesUsuariPluginMock extends DistribucioAbstractPluginProperties i
 	
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
-
-	private boolean configuracioEspecifica = false;
-	private int operacionsOk = 0;
-	private int operacionsError = 0;
-
-	@Synchronized
-	private void incrementarOperacioOk() {
-		operacionsOk++;
-	}
-
-	@Synchronized
-	private void incrementarOperacioError() {
-		operacionsError++;
-	}
-
-	@Synchronized
-	private void resetComptadors() {
-		operacionsOk = 0;
-		operacionsError = 0;
-	}
-
-	@Override
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
+    }
+    
+    @Override
 	public boolean teConfiguracioEspecifica() {
-		return this.configuracioEspecifica;
+		return salutPluginComponent.teConfiguracioEspecifica();
 	}
 
 	@Override
 	public EstatSalut getEstatPlugin() {
-		try {
-			Instant start = Instant.now();
-			findAmbCodi("fakeUser");
-			return EstatSalut.builder()
-					.latencia((int) Duration.between(start, Instant.now()).toMillis())
-					.estat(EstatSalutEnum.UP)
-					.build();
-		} catch (Exception ex) {
-			return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
-		}
+		return salutPluginComponent.getEstatPlugin();
 	}
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		IntegracioPeticions integracioPeticions = IntegracioPeticions.builder()
-				.totalOk(operacionsOk)
-				.totalError(operacionsError)
-				.build();
-		resetComptadors();
-		return integracioPeticions;
+		return salutPluginComponent.getPeticionsPlugin();
 	}
 	
 }

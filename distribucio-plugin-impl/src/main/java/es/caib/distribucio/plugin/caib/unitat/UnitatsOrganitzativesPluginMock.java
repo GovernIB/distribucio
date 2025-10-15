@@ -12,10 +12,12 @@ import java.util.Properties;
 import es.caib.comanda.ms.salut.model.EstatSalut;
 import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.unitat.UnitatOrganitzativa;
 import es.caib.distribucio.plugin.unitat.UnitatsOrganitzativesPlugin;
+import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Implementació de proves del plugin d'unitats organitzatives.
@@ -31,8 +33,9 @@ public class UnitatsOrganitzativesPluginMock extends DistribucioAbstractPluginPr
 		super();
 	}
 	
-	public UnitatsOrganitzativesPluginMock(Properties properties) {
+	public UnitatsOrganitzativesPluginMock(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override
@@ -114,7 +117,11 @@ public class UnitatsOrganitzativesPluginMock extends DistribucioAbstractPluginPr
 	
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
-
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
+    }
+    
 	@Override
 	public boolean teConfiguracioEspecifica() {
 		return false;

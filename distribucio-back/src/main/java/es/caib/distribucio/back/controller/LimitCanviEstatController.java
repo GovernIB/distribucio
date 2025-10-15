@@ -1,13 +1,7 @@
 package es.caib.distribucio.back.controller;
 
-import es.caib.distribucio.back.command.LimitCanviEstatCommand;
-import es.caib.distribucio.back.helper.DatatablesHelper;
-import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.distribucio.back.helper.MissatgesHelper;
-import es.caib.distribucio.logic.helper.ConfigHelper;
-import es.caib.distribucio.logic.intf.dto.LimitCanviEstatDto;
-import es.caib.distribucio.logic.intf.service.LimitCanviEstatService;
-import lombok.RequiredArgsConstructor;
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -18,7 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
+import es.caib.distribucio.back.command.LimitCanviEstatCommand;
+import es.caib.distribucio.back.helper.DatatablesHelper;
+import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
+import es.caib.distribucio.back.helper.MissatgesHelper;
+import es.caib.distribucio.logic.intf.dto.LimitCanviEstatDto;
+import es.caib.distribucio.logic.intf.service.ConfigService;
+import es.caib.distribucio.logic.intf.service.LimitCanviEstatService;
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class LimitCanviEstatController extends BaseAdminController {
     private static final Logger logger = LoggerFactory.getLogger(LimitCanviEstatController.class);
 
     private final LimitCanviEstatService limitCanviEstatService;
-    private final ConfigHelper configHelper;
+    private final ConfigService configService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String get(HttpServletRequest request, Model model) {
@@ -66,14 +67,23 @@ public class LimitCanviEstatController extends BaseAdminController {
         else
             command = new LimitCanviEstatCommand();
         model.addAttribute(command);
-        model.addAttribute("placeholderLimitMinutLaboral", configHelper.getConfig("es.caib.distribucio.limit.minut.laboral", "4"));
-        model.addAttribute("placeholderLimitMinutNoLaboral", configHelper.getConfig("es.caib.distribucio.limit.minut.no.laboral", "8"));
-        model.addAttribute("placeholderLimitDiaLaboral", configHelper.getConfig("es.caib.distribucio.limit.dia.laboral", "8000"));
-        model.addAttribute("placeholderLimitDiaNoLaboral", configHelper.getConfig("es.caib.distribucio.limit.dia.no.laboral", "1000"));
+        model.addAttribute("placeholderLimitMinutLaboral", this.getConfigOrDefault("es.caib.distribucio.limit.minut.laboral", "4"));
+        model.addAttribute("placeholderLimitMinutNoLaboral", this.getConfigOrDefault("es.caib.distribucio.limit.minut.no.laboral", "8"));
+        model.addAttribute("placeholderLimitDiaLaboral", this.getConfigOrDefault("es.caib.distribucio.limit.dia.laboral", "8000"));
+        model.addAttribute("placeholderLimitDiaNoLaboral", this.getConfigOrDefault("es.caib.distribucio.limit.dia.no.laboral", "1000"));
         return "limitCanviEstatForm";
     }
 
-    @RequestMapping(value = "/newOrModify", method = RequestMethod.POST)
+    private String getConfigOrDefault(String key, String defaultValue) {
+    	
+    	String value = configService.getConfig(key);
+    	if (value == null) {
+    		value = defaultValue;
+    	}
+		return value;
+	}
+
+	@RequestMapping(value = "/newOrModify", method = RequestMethod.POST)
     public String save(
             HttpServletRequest request,
             LimitCanviEstatCommand command,

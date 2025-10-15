@@ -22,6 +22,7 @@ import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
 import es.caib.distribucio.plugin.procediment.UnitatAdministrativa;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -38,8 +39,9 @@ public class ProcedimentPluginHelper extends AbstractPluginHelper<ProcedimentPlu
 	public ProcedimentPluginHelper(
 			IntegracioHelper integracioHelper, 
 			ConfigHelper configHelper,
-			EntitatRepository entitatRepository) {
-		super(integracioHelper, configHelper, entitatRepository);
+			EntitatRepository entitatRepository,
+			MeterRegistry meterRegistry) {
+		super(integracioHelper, configHelper, entitatRepository, meterRegistry);
 	}
 
 	@Override
@@ -258,10 +260,12 @@ public class ProcedimentPluginHelper extends AbstractPluginHelper<ProcedimentPlu
 		if (pluginClass != null && pluginClass.length() > 0) {
 			try {
 				Class<?> clazz = Class.forName(pluginClass);
+				var configuracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, getConfigGrup());
 				Properties properties = configHelper.getAllEntityProperties(codiEntitat);
 				plugin = (ProcedimentPlugin)clazz.
-						getDeclaredConstructor(Properties.class).
-						newInstance(properties);
+						getDeclaredConstructor(Properties.class, boolean.class).
+						newInstance(properties, configuracioEspecifica);
+				plugin.init(meterRegistry, getCodiApp().name() + "_PROCEDIMENTSS");
 			} catch (Exception ex) {
 				throw new SistemaExternException(
 						PROCEDIMENT.name(),

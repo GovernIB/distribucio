@@ -1,5 +1,6 @@
 package es.caib.distribucio.logic.helper.plugin;
 
+import static es.caib.distribucio.logic.helper.SubsistemesHelper.SubsistemesEnum.GDO;
 import static es.caib.distribucio.logic.intf.dto.IntegracioCodi.GESDOC;
 
 import java.io.ByteArrayInputStream;
@@ -18,11 +19,13 @@ import es.caib.comanda.ms.salut.model.IntegracioApp;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.GestioDocumentalHelper;
 import es.caib.distribucio.logic.helper.IntegracioHelper;
+import es.caib.distribucio.logic.helper.SubsistemesHelper;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioDiagnostic;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.plugin.gesdoc.GestioDocumentalPlugin;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -39,8 +42,9 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 	public GestioDocumentalPluginHelper(
 			IntegracioHelper integracioHelper, 
 			ConfigHelper configHelper,
-			EntitatRepository entitatRepository) {
-		super(integracioHelper, configHelper, entitatRepository);
+			EntitatRepository entitatRepository,
+			MeterRegistry meterRegistry) {
+		super(integracioHelper, configHelper, entitatRepository, meterRegistry);
 	}
 
 	@Override
@@ -76,6 +80,7 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
+			SubsistemesHelper.addSuccessOperation(GDO, System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al consultar document a dins la gestió documental";
 			integracioHelper.addAccioError(
@@ -88,6 +93,7 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 					System.currentTimeMillis() - t0,
 					errorDescripcio,
 					ex);
+			SubsistemesHelper.addErrorOperation(GDO);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_GESDOC,
 					errorDescripcio,
@@ -122,6 +128,7 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
+			SubsistemesHelper.addSuccessOperation(GDO, System.currentTimeMillis() - t0);
 			return gestioDocumentalId;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al crear document a dins la gestió documental";
@@ -135,6 +142,7 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 					System.currentTimeMillis() - t0,
 					errorDescripcio,
 					ex);
+			SubsistemesHelper.addErrorOperation(GDO);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_GESDOC,
 					errorDescripcio,
@@ -165,6 +173,7 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
+			SubsistemesHelper.addSuccessOperation(GDO, System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al esborrar document a dins la gestió documental";
 			integracioHelper.addAccioError(
@@ -176,6 +185,7 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 					System.currentTimeMillis() - t0,
 					errorDescripcio,
 					ex);
+			SubsistemesHelper.addErrorOperation(GDO);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_GESDOC,
 					errorDescripcio,
@@ -209,10 +219,12 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 		if (pluginClass != null && pluginClass.length() > 0) {
 			try {
 				Class<?> clazz = Class.forName(pluginClass);
+				var configuracioEspecifica = configHelper.hasEntityGroupPropertiesModified(codiEntitat, getConfigGrup());
 				Properties properties = configHelper.getAllEntityProperties(codiEntitat);
 				plugin = (GestioDocumentalPlugin)clazz.
-						getDeclaredConstructor(Properties.class).
-						newInstance(properties);
+						getDeclaredConstructor(Properties.class, boolean.class).
+						newInstance(properties, configuracioEspecifica);
+				plugin.init(meterRegistry, getCodiApp().name());
 			} catch (Exception ex) {
 				throw new SistemaExternException(
 						GESDOC.name(),

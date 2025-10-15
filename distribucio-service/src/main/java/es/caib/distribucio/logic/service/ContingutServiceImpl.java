@@ -784,7 +784,7 @@ public class ContingutServiceImpl implements ContingutService {
 			{
 				// Cerca recursiva
 				String codiUoSuperior = uo.getCodiUnitatSuperior();
-				UnitatOrganitzativaEntity uoPare = unitatOrganitzativaRepository.findByCodi(codiUoSuperior);
+				UnitatOrganitzativaEntity uoPare = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(uo.getCodiDir3Entitat(), codiUoSuperior);
 				if (uoPare != null) {					
 					// Crida recursiva per trobar el pare fins l'arrel que retorna null
 					uoSuperior = getUoSuperior(uosSuperiors, uoPare);
@@ -812,17 +812,16 @@ public class ContingutServiceImpl implements ContingutService {
 	private boolean findCodisUosSuperiors(String uo, String uoSuperior, List<String> codisUosSuperiors) {
 		// Crea la llista d'unitats orgàniques superiors
 		boolean isCodisUoSuperiorsEmpty = false;
-		UnitatOrganitzativaEntity uoEntity = null;
 		if (uo != null && !uo.isEmpty()) {
-			uoEntity = unitatOrganitzativaRepository.findByCodi(uo);
-			if (uoEntity != null) {
+            List<UnitatOrganitzativaEntity> uoEntityList = unitatOrganitzativaRepository.findAllByCodi(uo);
+			for(UnitatOrganitzativaEntity uoEntity :uoEntityList) {
 				codisUosSuperiors.add(uoEntity.getCodi());
 			}
 		} else if (uoSuperior != null && !uoSuperior.isEmpty()) {
 			// Arbre d'unitats superiors
-			UnitatOrganitzativaEntity uoSuperiorEntity = unitatOrganitzativaRepository.findByCodi(uoSuperior);
-			if (uoSuperiorEntity != null) {
-				EntitatEntity entitat = entitatRepository.findByCodiDir3(uoSuperiorEntity.getCodiUnitatArrel());
+            List<UnitatOrganitzativaEntity> uoSuperiorEntityList = unitatOrganitzativaRepository.findAllByCodi(uoSuperior);
+            for(UnitatOrganitzativaEntity uoSuperiorEntity :uoSuperiorEntityList) {
+				EntitatEntity entitat = entitatRepository.findByCodiDir3(uoSuperiorEntity.getCodiDir3Entitat());
 				codisUosSuperiors.addAll(bustiaHelper.getCodisUnitatsSuperiors(entitat, uoSuperior)); 
 			}
 		} else {

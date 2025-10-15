@@ -385,11 +385,12 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 	public List<UsuariDadesObertesDto> findBustiesUsuarisPerDadesObertes(
 			String usuari,
 			Long id,
+			String uoDir3Entitat, 
 			String uo,
 			String uoSuperior,
 			Boolean rol,
 			Boolean permis) {
-		return delegateService.findBustiesUsuarisPerDadesObertes(usuari, id, uo, uoSuperior, rol, permis);
+		return delegateService.findBustiesUsuarisPerDadesObertes(usuari, id, uoDir3Entitat, uo, uoSuperior, rol, permis);
 	}
 
 	protected void setDelegateService(BustiaService delegateService) {

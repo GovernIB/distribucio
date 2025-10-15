@@ -44,8 +44,8 @@ public interface UnitatOrganitzativaService {
 	 *             Si no s'ha trobat l'objecte amb el codi especificat.
 	 */
 	@PreAuthorize("isAuthenticated()")
-	public UnitatOrganitzativaDto findByCodi(
-			String codi);
+	public UnitatOrganitzativaDto findByCodiDir3EntitatAndCodi(
+            String codiDir3Entitat, String codi);
 
 	/**
 	 * Consulta les unitats organitzatives segons el filtre.

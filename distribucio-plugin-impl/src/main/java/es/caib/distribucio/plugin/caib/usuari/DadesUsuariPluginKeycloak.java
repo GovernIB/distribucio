@@ -3,8 +3,6 @@
  */
 package es.caib.distribucio.plugin.caib.usuari;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,12 +30,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
+import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.SistemaExternException;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import es.caib.distribucio.plugin.usuari.DadesUsuariPlugin;
-import lombok.Synchronized;
+import io.micrometer.core.instrument.MeterRegistry;
 
 /**
  * Implementació del plugin de consulta de dades d'usuaris emprant el plugin de Keycloak. Les propietats necessàries són les següents a partir
@@ -55,8 +53,9 @@ import lombok.Synchronized;
  */
 public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin implements DadesUsuariPlugin {
 
-	public DadesUsuariPluginKeycloak(String propertyKeyBase, Properties properties) {
+	public DadesUsuariPluginKeycloak(String propertyKeyBase, Properties properties, boolean configuracioEspecifica) {
 		super(propertyKeyBase, properties);
+		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 
 	public DadesUsuariPluginKeycloak(String propertyKeyBase) {
@@ -68,11 +67,13 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 			String usuariCodi) throws SistemaExternException {
 		LOGGER.debug("Consulta de les dades de l'usuari (usuariCodi=" + usuariCodi + ")");
 		try {
+			long start = System.currentTimeMillis();
 			UserInfo userInfo = getUserInfoByUserName(usuariCodi);
-			incrementarOperacioOk();
-			return toDadesUsuari(userInfo);
+			DadesUsuari dadesUsuari = toDadesUsuari(userInfo);
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
+			return dadesUsuari;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					"Error al consultar l'usuari amb codi " + usuariCodi,
 					ex);
@@ -84,10 +85,11 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 			String grupCodi) throws SistemaExternException {
 		LOGGER.debug("Consulta dels usuaris del grup (grupCodi=" + grupCodi + ")");
 		try {
+			long start = System.currentTimeMillis();
+			List<DadesUsuari> dadesUsuaris = Arrays.asList(new DadesUsuari[0]);
 			Collection<UserRepresentation> usuaris = internalGetUserNamesByRol(grupCodi);
-			incrementarOperacioOk();
 			if (usuaris != null) {
-				return usuaris.stream().
+				dadesUsuaris = usuaris.stream().
 						map(ur -> {
 							return DadesUsuari.builder().
 									codi(ur.getUsername()).
@@ -96,11 +98,12 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 									build();
 						}).
 						collect(Collectors.toList());
-			} else {
-				return Arrays.asList(new DadesUsuari[0]);
 			}
+			
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
+			return dadesUsuaris;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					"Error al consultar els usuaris del grup " + grupCodi,
 					ex);
@@ -110,17 +113,18 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 	@Override
 	public String[] getUsernamesByRol(String rol) throws Exception {
 		try {
+			long start = System.currentTimeMillis();
+			String[] usuaris = new String[0];
 			Collection<UserRepresentation> users = internalGetUserNamesByRol(rol);
-			incrementarOperacioOk();
 			if (users != null) {
-				return users.stream().
+				usuaris = users.stream().
 						map(ur -> ur.getUsername()).
 						toArray(String[]::new);
-			} else {
-				return new String[0];
-			}
+			} 
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
+			return usuaris;
 		} catch (Exception ex) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			throw new SistemaExternException(
 					"Error al consultar els usuaris del rol " + rol,
 					ex);
@@ -202,6 +206,7 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 	}
 
 	private Set<UserRepresentation> getUsernamesByRolOfClient(String rol, String client) throws Exception {
+		long start = System.currentTimeMillis();
 		Keycloak keycloak = this.getKeyCloakConnection();
 		ClientsResource clientsApi = keycloak.realm(this.getPropertyRequired("pluginsib.userinformation.keycloak.realm")).clients();
 		List<ClientRepresentation> crList = clientsApi.findByClientId(client);
@@ -212,10 +217,10 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 		RolesResource rrs = c.roles();
 		try {
 			RoleResource rr = rrs.get(rol);
-			incrementarOperacioOk();
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			return rr.getRoleUserMembers();
 		} catch (NotFoundException var13) {
-			incrementarOperacioError();
+			salutPluginComponent.incrementarOperacioError();
 			return null;
 		}
 	}
@@ -238,56 +243,27 @@ public class DadesUsuariPluginKeycloak extends KeyCloakUserInformationPlugin imp
 	
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
-
-	private boolean configuracioEspecifica = false;
-	private int operacionsOk = 0;
-	private int operacionsError = 0;
-
-	@Synchronized
-	private void incrementarOperacioOk() {
-		operacionsOk++;
-	}
-
-	@Synchronized
-	private void incrementarOperacioError() {
-		operacionsError++;
-	}
-
-	@Synchronized
-	private void resetComptadors() {
-		operacionsOk = 0;
-		operacionsError = 0;
-	}
-
-	@Override
+    private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
+    public void init(MeterRegistry registry, String codiPlugin) {
+        salutPluginComponent.init(registry, codiPlugin);
+    }
+    
+    @Override
 	public boolean teConfiguracioEspecifica() {
-		return this.configuracioEspecifica;
+		return salutPluginComponent.teConfiguracioEspecifica();
 	}
 
 	@Override
 	public EstatSalut getEstatPlugin() {
-		try {
-			Instant start = Instant.now();
-			findAmbCodi("fakeUser");
-			return EstatSalut.builder()
-					.latencia((int) Duration.between(start, Instant.now()).toMillis())
-					.estat(EstatSalutEnum.UP)
-					.build();
-		} catch (Exception ex) {
-			return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
-		}
+		return salutPluginComponent.getEstatPlugin();
 	}
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		IntegracioPeticions integracioPeticions = IntegracioPeticions.builder()
-				.totalOk(operacionsOk)
-				.totalError(operacionsError)
-				.build();
-		resetComptadors();
-		return integracioPeticions;
+		return salutPluginComponent.getPeticionsPlugin();
 	}
-
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DadesUsuariPluginKeycloak.class);
+	
 
 }
