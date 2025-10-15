@@ -3,7 +3,7 @@
   <parent>
     <groupId>es.caib.distribucio</groupId>
     <artifactId>distribucio</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
   </parent>
   <artifactId>distribucio-ws</artifactId>
   <packaging>war</packaging>
