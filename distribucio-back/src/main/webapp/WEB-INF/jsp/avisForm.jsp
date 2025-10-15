@@ -39,7 +39,7 @@
 		<dis:inputText name="assumpte" textKey="avis.form.camp.assumpte" required="true"/>
 		<dis:inputTextarea name="missatge" textKey="avis.form.camp.missatge" required="true"/>
 		<dis:inputDate name="dataInici" textKey="avis.form.camp.dataInici" required="true"/>
-		<dis:inputDate name="dataFinal" textKey="avis.form.camp.dataFinal" required="true"/>
+		<dis:inputDate name="dataFinal" textKey="avis.form.camp.dataFinal"/>
 		<dis:inputSelect name="avisNivell" textKey="avis.form.camp.avisNivell" optionEnum="AvisNivellEnumDto" required="true"/>
 		
 		<div id="modal-botons">
