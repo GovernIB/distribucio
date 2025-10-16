@@ -180,7 +180,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					ex);
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_BUSTIAWS,
-					accioDescripcio,
+					accioDescripcio + " de l'anotació " + registreEntrada.getNumero(),
 					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,
