@@ -108,6 +108,9 @@ function esborrarEntrades() {
 			<div class="col-md-3">
 				<dis:inputSelect name="estat" inline="true" placeholderKey="integracio.list.filtre.estat" optionEnum="IntegracioAccioEstatEnumDto" emptyOption="true"/>
 			</div>
+            <div class="col-md-3">
+                <dis:inputText name="entitat" inline="true" placeholderKey="integracio.list.filtre.entitat"/>
+            </div>
 			<div class="col-md-4 pull-right">
 				<div class="pull-right">
 					<a href="<c:url value='/integracio'/>/diagnostic" class="btn btn-success" data-toggle="modal" data-maximized="true"><span class="fa fa-th-list"></span> <spring:message code="integracio.boto.diagnostic"/></a>

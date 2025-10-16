@@ -3,6 +3,8 @@ package es.caib.distribucio.logic.intf.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -11,6 +13,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter
+@Setter
 public class IntegracioFiltreDto implements Serializable {
 	
 	private String codi;
@@ -18,39 +22,7 @@ public class IntegracioFiltreDto implements Serializable {
 	private String descripcio;
 	private String usuari;
 	private IntegracioAccioEstatEnumDto estat;
-	
-	
-	public String getCodi() {
-		return codi;
-	}
-	public void setCodi(String codi) {
-		this.codi = codi;
-	}
-	public Date getData() {
-		return data;
-	}
-	public void setData(Date data) {
-		this.data = data;
-	}
-	public String getDescripcio() {
-		return descripcio;
-	}
-	public void setDescripcio(String descripcio) {
-		this.descripcio = descripcio;
-	}
-	public String getUsuari() {
-		return usuari;
-	}
-	public void setUsuari(String usuari) {
-		this.usuari = usuari;
-	}
-	public IntegracioAccioEstatEnumDto getEstat() {
-		return estat;
-	}
-	public void setEstat(IntegracioAccioEstatEnumDto estat) {
-		this.estat = estat;
-	}
-	
+    private String entitat;
 
 	@Override
 	public String toString() {
