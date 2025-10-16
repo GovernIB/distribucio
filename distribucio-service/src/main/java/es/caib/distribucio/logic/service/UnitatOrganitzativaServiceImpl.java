@@ -105,20 +105,32 @@ public class UnitatOrganitzativaServiceImpl implements UnitatOrganitzativaServic
 	@Override
 	@Transactional
 	public void synchronize(Long entitatId) {
-		EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
-		unitatOrganitzativaHelper.sincronizarOActualizar(entitat);		
-		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		// if this is first synchronization set current date as a date of first
-		// sinchronization and the last actualization
-		if (entitat.getFechaSincronizacion() == null) {
-			entitat.updateFechaActualizacion(timestamp);
-			entitat.updateFechaSincronizacion(timestamp);
-		// if this is not the first synchronization only change date of actualization
-		} else {
-			entitat.updateFechaActualizacion(timestamp);
-		}
-		cacheHelper.evictUnitatsOrganitzativesFindArbreByPare(entitat.getCodiDir3());
+        EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
+        synchronize(entitat);
 	}
+
+	@Override
+	@Transactional
+	public void forcedSynchronize(Long entitatId) {
+		EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
+        entitat.updateFechaSincronizacion(null);
+        synchronize(entitat);
+	}
+
+    private void synchronize(EntitatEntity entitat) {
+        unitatOrganitzativaHelper.sincronizarOActualizar(entitat);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        // if this is first synchronization set current date as a date of first
+        // sinchronization and the last actualization
+        if (entitat.getFechaSincronizacion() == null) {
+            entitat.updateFechaActualizacion(timestamp);
+            entitat.updateFechaSincronizacion(timestamp);
+            // if this is not the first synchronization only change date of actualization
+        } else {
+            entitat.updateFechaActualizacion(timestamp);
+        }
+        cacheHelper.evictUnitatsOrganitzativesFindArbreByPare(entitat.getCodiDir3());
+    }
 
 	@Override
 	@Transactional(readOnly = true)

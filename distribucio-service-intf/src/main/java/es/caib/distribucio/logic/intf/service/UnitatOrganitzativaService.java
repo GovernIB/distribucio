@@ -94,6 +94,9 @@ public interface UnitatOrganitzativaService {
 	void synchronize(Long entitatId);
 
 	@PreAuthorize("isAuthenticated()")
+	void forcedSynchronize(Long entitatId);
+
+	@PreAuthorize("isAuthenticated()")
 	ArbreDto<UnitatOrganitzativaDto> findTree(Long id);
 
 	@PreAuthorize("isAuthenticated()")

@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import es.caib.distribucio.logic.intf.service.EntitatService;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.slf4j.Logger;
@@ -59,14 +60,18 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 	@Autowired
 	private ReglaService reglaService;
 
+	@Autowired
+	private EntitatService entitatService;
+
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
 			Model model) {
         EntitatDto entitat = getEntitatActual(request);
+        EntitatDto entitatActual = entitatService.findById(entitat.getId());
 		UnitatOrganitzativaFiltreCommand unitatOrganitzativaFiltreCommand = getFiltreCommand(request);
 		model.addAttribute("unitatOrganitzativaFiltreCommand", unitatOrganitzativaFiltreCommand);
-		model.addAttribute("unitatArrel", entitat);
+		model.addAttribute("unitatArrel", entitatActual);
 		return "unitatOrganitzativaList";
 	}
 	
@@ -170,10 +175,15 @@ public class UnitatOrganitzativaController extends BaseAdminController{
 	
 	@RequestMapping(value = "/saveSynchronize", method = RequestMethod.POST)
 	public String synchronizePost(
-			HttpServletRequest request) {
+			HttpServletRequest request,
+            @RequestParam(value = "action", required = false) String action) {
 		
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		unitatOrganitzativaService.synchronize(entitatActual.getId());
+        if ("force".equals(action)) {
+            unitatOrganitzativaService.forcedSynchronize(entitatActual.getId());
+        } else {
+            unitatOrganitzativaService.synchronize(entitatActual.getId());
+        }
 
 		return getModalControllerReturnValueSuccess(
 				request,
