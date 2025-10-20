@@ -504,7 +504,10 @@
 					var numRows = api.data().length;
 					var selectedRowsData = api.rows({
 						search: 'applied',
-						selected: true}).data();
+						selected: true}).data().filter(function (rowData, index) {
+						    var $row = $(api.row(index).node());
+						    return !$row.hasClass('fila-desactivada');
+						});
 					var numSelected = selectedRowsData.length;
 					var $row = headerTrFunction();
 					var $cell = $('th:first', $row);
@@ -529,28 +532,38 @@
 				};
 				$taula.on('select.dt', function (e, dt, type, indexes) {
 					if (indexes) {
+						var validIndexes = [];
+						
 						for (var i = 0; i < indexes.length; i++) {
 							var $row = $taula.dataTable().api()[type](indexes[i]).nodes().to$();
-							var $cell = $('td:first', $row);
-							$cell.html('<span class="fa fa-check-square-o"></span>');
-							$('span', $cell).click(function() {
-								$(this).parent().trigger('click');
-							});
+							if (!$row.hasClass('fila-desactivada')) {
+								validIndexes.push(indexes[i]);
+								var $cell = $('td:first', $row);
+								$cell.html('<span class="fa fa-check-square-o"></span>');
+								$('span', $cell).click(function() {
+									$(this).parent().trigger('click');
+								});
+							}
 						}
-						triggerSelectionChangeFunction('select', indexes);
+						triggerSelectionChangeFunction('select', validIndexes);
 					}
 				});
 				$taula.on('deselect.dt', function (e, dt, type, indexes) {
 					if (indexes) {
+						var validIndexes = [];
+						
 						for (var i = 0; i < indexes.length; i++) {
 							var $row = $taula.dataTable().api()[type](indexes[i]).nodes().to$();
-							var $cell = $('td:first', $row);
-							$cell.html('<span class="fa fa-square-o"></span>');
-							$('span', $cell).click(function() {
-								$(this).parent().trigger('click');
-							});
+							if (!$row.hasClass('fila-desactivada')) {
+								validIndexes.push(indexes[i]);
+								var $cell = $('td:first', $row);
+								$cell.html('<span class="fa fa-square-o"></span>');
+								$('span', $cell).click(function() {
+									$(this).parent().trigger('click');
+								});
+							}
 						}
-						triggerSelectionChangeFunction('deselect', indexes);
+						triggerSelectionChangeFunction('deselect', validIndexes);
 					}
 				});
 			}

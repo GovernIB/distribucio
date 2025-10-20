@@ -43,6 +43,8 @@ public abstract class ContingutDto extends AuditoriaDto {
 	
 	private boolean alerta;
 	
+	private boolean pendentExecucioMassiva;
+	
 	protected List<ContingutDto> pathInicial;
 	protected Long destiLogic;
 
