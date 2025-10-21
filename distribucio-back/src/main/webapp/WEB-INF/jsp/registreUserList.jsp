@@ -701,7 +701,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="16"
+		data-default-order="18"
 		data-default-dir="desc"
 		data-rowhref-template="#rowhrefTemplate" 
 		data-rowhref-toggle="modal"
