@@ -9,7 +9,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.xml.ws.soap.SOAPFaultException;
 
 import es.caib.distribucio.back.helper.ExceptionHelper;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -170,7 +169,7 @@ public class BackofficeController extends BaseAdminController {
 								new Object[] {
 										backoffice.getCodi()}));
 			} else {
-                if (ExceptionHelper.isExceptionOrCauseInstanceOf(exception, SOAPFaultException.class)) {
+                if (ExceptionHelper.isExceptionOrCauseInstanceOf(exception, "SOAPFaultException")) {
                     MissatgesHelper.warning(request, exception.getMessage());
                 } else {
                     MissatgesHelper.error(request, exception.getMessage());
@@ -201,7 +200,7 @@ public class BackofficeController extends BaseAdminController {
 			Exception exception = backofficeService.provar(entitatActual.getId(), backofficeId);
 
 			if (exception != null) {
-                if (ExceptionHelper.isExceptionOrCauseInstanceOf(exception, SOAPFaultException.class)) {
+                if (ExceptionHelper.isExceptionOrCauseInstanceOf(exception, "SOAPFaultException")) {
                     result.put("warning", exception.getMessage());
                 } else {
                     result.put("error", exception.getMessage());

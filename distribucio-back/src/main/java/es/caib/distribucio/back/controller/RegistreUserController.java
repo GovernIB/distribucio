@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import es.caib.distribucio.persist.repository.ProcedimentRepository;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,8 +130,6 @@ public class RegistreUserController extends BaseUserController {
 	private ProcedimentService procedimentService;
 	@Autowired
 	private ServeiService serveiService;
-    @Autowired
-    private ProcedimentRepository procedimentRepository;
 
     @RequestMapping(method = RequestMethod.GET)
 	public String registreUserGet(

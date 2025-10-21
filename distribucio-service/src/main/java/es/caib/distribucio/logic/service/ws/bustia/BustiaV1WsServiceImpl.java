@@ -23,12 +23,10 @@ import com.codahale.metrics.Timer;
 import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper.SubsistemesEnum;
-import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.logic.intf.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.SemaphoreDto;
-import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.logic.intf.registre.Firma;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnex;
@@ -62,8 +60,6 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	private MetricRegistry metricRegistry;
 	@Autowired
 	private ConfigService configService;
-	@Autowired
-	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	@Autowired
 	private EntitatService entitatService;
 
