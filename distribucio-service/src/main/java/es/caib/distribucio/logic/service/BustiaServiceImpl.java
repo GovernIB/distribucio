@@ -1234,15 +1234,7 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		//---- find estat of anotacio -----
 		Timer.Context contextfindEstat = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.findEstat")).time();
-		
-		// Si no hi ha cap bústia activa a la unitat, les anotacions s'envien a la unitat superior
-		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), unitatOrganitzativaCodi);
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndActivaTrueAndPareNotNull(entitat, unitatOrganitzativa);
-		
-		if (busties.isEmpty()) {
-			unitatOrganitzativaCodi = unitatOrganitzativa.getCodiUnitatSuperior();
-		}
-		
+				
 		BustiaEntity bustia = bustiaHelper.findBustiaDesti(
 				entitat,
 				unitatOrganitzativaCodi);

@@ -116,6 +116,17 @@
 		</resources>
 		<plugins>
 			<plugin>
+	            <groupId>pl.project13.maven</groupId>
+	            <artifactId>git-commit-id-plugin</artifactId>
+	            <executions>
+	                <execution>
+	                    <goals>
+	                        <goal>revision</goal>
+	                    </goals>
+	                </execution>
+	            </executions>
+	        </plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
@@ -125,6 +136,8 @@
 							<Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
 							<Implementation-Vendor>${implementation.vendor}</Implementation-Vendor>
 							<Implementation-Version>${project.version}</Implementation-Version>
+							<Implementation-SCM-Branch>${git.branch}</Implementation-SCM-Branch>
+                            <Implementation-SCM-Revision>${git.commit.id}</Implementation-SCM-Revision>
 						</manifestEntries>
 					</archive>
 					<attachClasses>true</attachClasses>
