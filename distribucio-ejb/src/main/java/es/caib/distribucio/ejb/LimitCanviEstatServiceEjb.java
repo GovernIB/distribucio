@@ -25,11 +25,13 @@ public class LimitCanviEstatServiceEjb extends AbstractServiceEjb<LimitCanviEsta
 	private LimitCanviEstatService delegateService = null;
 
 	@Override
+	@RolesAllowed("**")
 	public LimitCanviEstatDto findById(Long id) {
 		return delegateService.findById(id);
 	}
 
 	@Override
+	@RolesAllowed("**")
 	public LimitCanviEstatDto findByUsuariCodi(String usuariCodi) {
 		return delegateService.findByUsuariCodi(usuariCodi);
 	}

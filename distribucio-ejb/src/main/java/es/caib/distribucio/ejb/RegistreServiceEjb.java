@@ -172,6 +172,12 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 
 	@Override
 	@RolesAllowed("**")
+	public String getNumeroById(Long registreId) throws NotFoundException {
+		return delegateService.getNumeroById(registreId);
+	}
+	
+	@Override
+	@RolesAllowed("**")
 	public FitxerDto getAnnexFirmaFitxer(Long annexId,
 			int indexFirma) throws NotFoundException {
 		return delegateService.getAnnexFirmaFitxer(annexId, indexFirma);
