@@ -223,6 +223,19 @@ li[id^="anotacio_"] {
 	important
 }
 
+.registre-desactivat {
+	pointer-events: none;
+	opacity: 0.6;
+}
+
+.icona-rellotge {
+  font-size: 24px;
+  color: #f0ad4e;
+  cursor: help;
+  pointer-events: auto;
+  margin-right: 20px;
+}
+
 </style>
 <script type="text/javascript">
 	// <![CDATA[
@@ -762,6 +775,9 @@ li[id^="anotacio_"] {
 			<c:if test="${!isVistaMoviments && isEnviarConeixementActiu}">
 				<label class="${registre.perConeixement ? 'coneixement' : 'tramitacio'}"><spring:message code="${registre.perConeixement ? 'bustia.pendent.info.coneixement' : 'bustia.pendent.info.tramitacio'}"/></label>
 			</c:if>
+			<c:if test="${registre.pendentExecucioMassiva}">
+				<span class="fa fa-clock-o icona-rellotge" title="<spring:message code="accio.massiva.icona.pendent"/>"></span>
+			</c:if>
 			<button id="avanzarPagina" title="<spring:message code="bustia.pendent.accio.avansar"/>" class="btn btn-default btn-sm ${registreNumero >= registreTotal ? 'disabled' : 'active'}" data-toggle="button">
 				<span class="fa-stack" aria-hidden="true">
 					<i class="fa fa-forward"></i>
@@ -777,10 +793,10 @@ li[id^="anotacio_"] {
 		        }
 			</script>
 			&nbsp;
-			<a href="${urlComentaris}" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris${registre.id}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">${registre.numComentaris}</span></a>
+			<a href="${urlComentaris}" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris${registre.id}" class="btn btn-default ${registre.pendentExecucioMassiva ? 'registre-desactivat' : ''}"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">${registre.numComentaris}</span></a>
 			&nbsp;
 			
-			<button class="btn btn-primary accions ${(isVistaRegistresAndReservat ? 'alliberat' : '')}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+			<button class="btn btn-primary accions ${(isVistaRegistresAndReservat ? 'alliberat' : '')} ${registre.pendentExecucioMassiva ? 'registre-desactivat' : ''}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 			<ul class="dropdown-menu">
 				<%--<c:if test="${isVistaMoviments || isVistaRegistresAndNoReservat || isVistaRegistresAndReservatUsuariActual}"> --%>				
 					<%-- CLASSIFICAR --%>

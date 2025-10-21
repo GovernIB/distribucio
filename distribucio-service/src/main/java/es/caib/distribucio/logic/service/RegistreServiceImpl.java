@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -79,6 +81,7 @@ import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto.Classificacio
 import es.caib.distribucio.logic.intf.dto.ContingutDto;
 import es.caib.distribucio.logic.intf.dto.DadaDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
 import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.FitxerDto;
 import es.caib.distribucio.logic.intf.dto.HistogramPendentsEntryDto;
@@ -146,6 +149,7 @@ import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.ContingutLogRepository;
 import es.caib.distribucio.persist.repository.ContingutMovimentRepository;
 import es.caib.distribucio.persist.repository.DadaRepository;
+import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
 import es.caib.distribucio.persist.repository.MetaDadaRepository;
 import es.caib.distribucio.persist.repository.ProcedimentRepository;
 import es.caib.distribucio.persist.repository.RegistreAnnexFirmaRepository;
@@ -230,6 +234,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private MessageHelper messageHelper;
 	@Autowired
 	private ContingutMovimentRepository contingutMovimentRepository;
+	@Autowired
+	private ExecucioMassivaContingutRepository execucioMassivaContingutRepository;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -1266,7 +1272,19 @@ public class RegistreServiceImpl implements RegistreService {
 	
 
 		contextTotal.stop();
-		return ids;
+		
+		List<Long> execucionsMassivesPendents = execucioMassivaContingutRepository.findElementIdByEstatIn(
+				new ArrayList<> (
+						Arrays.asList(
+								ExecucioMassivaContingutEstatDto.PENDENT, 
+								ExecucioMassivaContingutEstatDto.PROCESSANT,
+								ExecucioMassivaContingutEstatDto.PAUSADA)
+						)
+				);
+		
+		return ids.stream()
+	              .filter(id -> !execucionsMassivesPendents.contains(id))
+	              .collect(Collectors.toList());
 	}
 
 	
