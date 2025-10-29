@@ -119,6 +119,11 @@ public class BustiaAdminPermisController extends BaseAdminController {
 			model.addAttribute(
 					"bustia",
 					bustiaService.findById(entitatActual.getId(), bustiaId));
+            model.addAttribute(
+                    "tipusPermis",
+                    EnumHelper.getOptionsForEnum(
+                            TipusPermisEnumDto.class,
+                            "tipus.permis.enum."));
 			return "bustiaAdminPermisForm";
 		}
 		bustiaService.updatePermis(
