@@ -207,5 +207,9 @@ public interface AplicacioService {
 
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public Long updateUsuariCodi(String codiAntic, String codiNou);
+
+	/** Consulta els rols de l'usuari actual amb el plugin de dades d'usuari. */
+	@PreAuthorize("isAuthenticated()")
+	public List<String> getRolsUsuariActual();
 	
 }
