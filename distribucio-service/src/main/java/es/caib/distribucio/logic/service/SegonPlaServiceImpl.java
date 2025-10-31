@@ -42,6 +42,7 @@ import es.caib.distribucio.logic.helper.HistoricHelper;
 import es.caib.distribucio.logic.helper.RegistreHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.SemaphoreDto;
+import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
@@ -260,13 +261,15 @@ public class SegonPlaServiceImpl implements SegonPlaService {
         logger.debug("Execució de tasca programada (" + startTime + "): canviar estat comunicat a pendent al backoffice");
 
         try {
-            Integer dies = Integer.valueOf(configHelper.getConfig("es.caib.distribucio.tasca.enviar.anotacions.backoffice.maxim.temps.estat.comunicada", "60"));
+            Integer dies = Integer.valueOf(configHelper.getConfig("es.caib.distribucio.tasca.enviar.anotacions.backoffice.maxim.temps.estat.comunicada", "30"));
             List<RegistreEntity> registres = registreHelper.findAmbLimitDiesEstatComunicadaBackoffice(dies);
 
             for (RegistreEntity registre : registres) {
                 String observacions = "S'ha canviat automàticament l'estat a \"Bústia pendent\" després d'estar "+
                         dies +" dies en estat \"Comunicada a "+ registre.getBackCodi() +"\" sense conformació de recepció";
-                registreServiceImpl.canviEstat(registre.getId(), Estat.PENDENT, observacions);
+                //TODO Aquesta crida és incorrecta, la posa a BACK_REBUDA, s'ha de fer un canvi a BÚSTIA_PENDENT i decidir com posar el missatge. 
+                //registreServiceImpl.canviEstat(registre.getId(), Estat.PENDENT, observacions);
+                registre.setNewProcesEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT);
             }
         } catch (Exception e) {
             logger.error("S'ha produit un error al intentar canviar els registres comunicats que han superat el limit de temps", e);
