@@ -17,8 +17,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import es.caib.distribucio.logic.helper.*;
+import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.Estat;
+import es.caib.distribucio.persist.entity.*;
+import es.caib.distribucio.persist.repository.ContingutComentariRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +37,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.logic.config.SchedulingConfig;
-import es.caib.distribucio.logic.helper.BustiaHelper;
-import es.caib.distribucio.logic.helper.ConfigHelper;
-import es.caib.distribucio.logic.helper.ConversioTipusHelper;
-import es.caib.distribucio.logic.helper.EmailHelper;
-import es.caib.distribucio.logic.helper.HistogramPendentsHelper;
-import es.caib.distribucio.logic.helper.HistoricHelper;
-import es.caib.distribucio.logic.helper.RegistreHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.SemaphoreDto;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
@@ -48,10 +45,6 @@ import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.SegonPlaService;
 import es.caib.distribucio.logic.intf.service.ServeiService;
-import es.caib.distribucio.persist.entity.ContingutMovimentEmailEntity;
-import es.caib.distribucio.persist.entity.EntitatEntity;
-import es.caib.distribucio.persist.entity.RegistreEntity;
-import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.UsuariRepository;
@@ -85,7 +78,11 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Autowired
 	private EntitatRepository entitatRepository;
 	@Autowired
-	private ConversioTipusHelper conversioTipusHelper;	
+	private ContingutComentariRepository contingutComentariRepository;
+	@Autowired
+	private ConversioTipusHelper conversioTipusHelper;
+	@Autowired
+	private ContingutLogHelper contingutLogHelper;
 	@Autowired
 	private ProcedimentService procedimentService;
 	@Autowired
@@ -266,10 +263,18 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 
             for (RegistreEntity registre : registres) {
                 String observacions = "S'ha canviat automàticament l'estat a \"Bústia pendent\" després d'estar "+
-                        dies +" dies en estat \"Comunicada a "+ registre.getBackCodi() +"\" sense conformació de recepció";
-                //TODO Aquesta crida és incorrecta, la posa a BACK_REBUDA, s'ha de fer un canvi a BÚSTIA_PENDENT i decidir com posar el missatge. 
-                //registreServiceImpl.canviEstat(registre.getId(), Estat.PENDENT, observacions);
+                        dies +" dies en estat \"Comunicada a "+ registre.getBackCodi() +"\" sense confirmació de recepció";
                 registre.setNewProcesEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT);
+                ContingutComentariEntity comentari = ContingutComentariEntity.getBuilder(registre, observacions).build();
+                contingutComentariRepository.save(comentari);
+                List<String> params = new ArrayList<>();
+                params.add(String.valueOf(dies));
+                params.add(registre.getBackCodi());
+                contingutLogHelper.log(
+                        registre,
+                        LogTipusEnumDto.CANVI_PENDENT,
+                        params,
+                        false);
             }
         } catch (Exception e) {
             logger.error("S'ha produit un error al intentar canviar els registres comunicats que han superat el limit de temps", e);
