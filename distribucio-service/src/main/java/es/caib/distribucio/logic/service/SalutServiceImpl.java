@@ -256,10 +256,14 @@ public class SalutServiceImpl implements SalutService {
 
                     totalOk += p.getTotalOk();
                     totalError += p.getTotalError();
-                    totalTempsMig += p.getTotalTempsMig();
                     peticionsOkUltimPeriode += p.getPeticionsOkUltimPeriode();
                     peticionsErrorUltimPeriode += p.getPeticionsErrorUltimPeriode();
-                    tempsMigUltimPeriode += p.getTempsMigUltimPeriode();
+
+                    if (p.getTempsMigUltimPeriode() != null)
+                    	tempsMigUltimPeriode = Math.max(tempsMigUltimPeriode, p.getTempsMigUltimPeriode());
+                    
+                    if (p.getTotalTempsMig() != null)
+                    	totalTempsMig = Math.max(totalTempsMig, p.getTotalTempsMig());
 
                     if (pluginIntegracio.getLatencia() != null)
                     	maxLatencia = Math.max(maxLatencia, pluginIntegracio.getLatencia());
