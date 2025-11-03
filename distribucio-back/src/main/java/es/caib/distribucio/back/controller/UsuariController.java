@@ -5,7 +5,9 @@ package es.caib.distribucio.back.controller;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -191,6 +193,21 @@ public class UsuariController  extends BaseAdminController {
 	}
 
 	public enum ResultatEstatEnum { OK, ERROR }
+	
+	/** Mètode per comprobar els rols de l'usuari autenticat i els que retorna el plugin d'usuaris. */
+	@RequestMapping(value = "/rols", method = RequestMethod.GET, produces = "application/json" )
+	@ResponseBody
+	public Map<String, Object> setCanviCodis(
+			HttpServletRequest request) {
+		
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UsuariDto usuari = aplicacioService.getUsuariActual();
+		ret.put("Rols auth", usuari.getRols());
+		ret.put("Rols ldap", aplicacioService.getRolsUsuariActual());
+		return ret;
+
+	}
+
 	
 	private static final Logger logger = LoggerFactory.getLogger(UsuariController.class);
 

@@ -160,6 +160,31 @@ button#filtrar {
 /*   padding-right: 2rem !important; */
 }
 
+.fila-desactivada {
+  position: relative;
+}
+
+.overlay-desactivada {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.icona-rellotge {
+  font-size: 24px;
+  color: #f0ad4e;
+  pointer-events: auto;
+  z-index: 10;
+  cursor: help;
+}
+
+.fila-desactivada.selected {
+	background-color: #f9f9f9 !important;
+}
 </style>
 <script>
 $.views.helpers({
@@ -216,7 +241,7 @@ $(document).ready(function() {
 
 	var selectButtonsInitialized = false;
 
-	$('#taulaDades').on( 'draw.dt', function () {
+	$('#taulaDades').on( 'draw.dt', function (datatable) {
 		$.get( "registreUser/getNumPendents").done(function( data ) {
 			$('#bustia-pendent-count').text(data);
 		})
@@ -278,6 +303,26 @@ $(document).ready(function() {
 				var isReactivat = $('#taulaDades').dataTable().api().row($(this)).data()['reactivat'];
 				if (isReactivat) {
 					$(this).css('background-color', '#c3c2c1');
+				}
+				
+				var isPendentExecucioMassiva = $('#taulaDades').dataTable().api().row($(this)).data()['pendentExecucioMassiva'];
+				if (isPendentExecucioMassiva) {
+					const $row = $(this);
+					
+					// Desactivam la fila
+					$row.addClass('fila-desactivada');
+
+					// Desactivam boyo i enllac
+					$row.find('button, a').attr('disabled', true).css('pointer-events', 'none');
+
+					var title = "<spring:message code="accio.massiva.icona.pendent"/>";
+					
+					// Afegir overlay i rellotge
+					if ($row.find('.overlay-desactivada').length === 0) {
+					  $row.append('<div class="overlay-desactivada"> ' +
+									'<span class="fa fa-clock-o icona-rellotge" title="' + title + '"></span> ' +
+								   '</div>');	
+					}
 				}
 			}
 		});
@@ -656,7 +701,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="16"
+		data-default-order="18"
 		data-default-dir="desc"
 		data-rowhref-template="#rowhrefTemplate" 
 		data-rowhref-toggle="modal"
@@ -672,6 +717,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 				<th data-col-name="enviamentsPerEmail" data-visible="false"></th>
 				<th data-col-name="procesEstatSimple"  data-visible="false"></th>
 				<th data-col-name="perConeixement"  data-visible="false"></th>
+				<th data-col-name="pendentExecucioMassiva"  data-visible="false"></th>
 				<th data-col-name="reactivat"  data-visible="false"></th>
 				<th data-col-name="agafat" data-visible="false"></th>
 				<th data-col-name="agafatPer.codi" data-visible="false"></th>

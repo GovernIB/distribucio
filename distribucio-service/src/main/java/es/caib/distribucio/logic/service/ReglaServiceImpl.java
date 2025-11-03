@@ -3,15 +3,16 @@
  */
 package es.caib.distribucio.logic.service;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
-import es.caib.distribucio.logic.intf.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,22 @@ import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.ReglaHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper;
-import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper.SubsistemesEnum;
+import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
+import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
+import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionEnumDto;
+import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
+import es.caib.distribucio.logic.intf.dto.ReglaDto;
+import es.caib.distribucio.logic.intf.dto.ReglaFiltreActivaEnumDto;
+import es.caib.distribucio.logic.intf.dto.ReglaFiltreDto;
+import es.caib.distribucio.logic.intf.dto.ReglaGestioTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
+import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
@@ -782,6 +797,14 @@ public class ReglaServiceImpl implements ReglaService {
         if (regla.getLastModifiedBy().isPresent())  {
             dto.setLastModifiedBy(conversioTipusHelper.convertir(regla.getLastModifiedBy().get(), UsuariDto.class));
         }
+        
+		regla.getCreatedDate()
+				.ifPresent(ldt -> 
+					dto.setCreatedDate(Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant())));
+
+		regla.getLastModifiedDate()
+				.ifPresent(ldt -> 
+					dto.setLastModifiedDate(Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant())));
 		
 		return dto;
 	}

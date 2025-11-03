@@ -142,6 +142,8 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 	
 	
     List<UnitatOrganitzativaEntity> findAllByCodi(String codi);
+    
+    List<UnitatOrganitzativaEntity> findByCodiUnitatSuperior(String codiUnitatSuperior);
 
 	List<UnitatOrganitzativaEntity> findByCodiUnitatArrel(String codiUnitatArrel);
 	

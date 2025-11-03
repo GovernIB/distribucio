@@ -21,7 +21,15 @@ public interface ExecucioMassivaContingutRepository extends JpaRepository<Execuc
 	public List<ExecucioMassivaContingutEntity> findByContingutsAndEstatIn(
 			@Param("continguts") List<Long> continguts,
 			@Param("estats") List<ExecucioMassivaContingutEstatDto> estats);
+	
+	public ExecucioMassivaContingutEntity findByElementIdAndEstatIn(
+			Long elementId,
+			List<ExecucioMassivaContingutEstatDto> estats);
 
+	@Query( "select emc.elementId from ExecucioMassivaContingutEntity emc " +
+			"where emc.estat in (:estats)")
+	public List<Long> findElementIdByEstatIn(@Param("estats") List<ExecucioMassivaContingutEstatDto> estats);
+	
 	@Query( "select emc.elementNom from ExecucioMassivaContingutEntity emc " +
 			"where emc.elementId in (:continguts) " +
 			"and emc.estat in (:estats)")

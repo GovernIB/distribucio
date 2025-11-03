@@ -42,7 +42,6 @@ import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controlador per al manteniment de bústies.

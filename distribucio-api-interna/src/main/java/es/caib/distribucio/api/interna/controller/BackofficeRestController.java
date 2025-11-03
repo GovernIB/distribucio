@@ -33,7 +33,6 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeIntegracio
 import es.caib.distribucio.logic.intf.service.ws.backoffice.Estat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
@@ -41,7 +40,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  *
  * @author Limit Tecnologies <limit@limit.es>
  */
-@SecurityRequirement(name = "basicScheme")
 @Controller
 @RequestMapping("/backoffice")
 @Tag(

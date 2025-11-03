@@ -84,6 +84,18 @@ public class ConfigServiceEjb extends AbstractServiceEjb<ConfigService> implemen
 	public String getTempsErrorsMonitorIntegracio() {
 		return delegateService.getTempsErrorsMonitorIntegracio();
 	}
+	
+	@Override
+	@RolesAllowed("**")
+	public String getConfig(String key) {
+		return delegateService.getConfig(key);
+	}
+
+	@Override
+	@RolesAllowed("**")
+	public Long getConfigAsLong(String key) {
+		return delegateService.getConfigAsLong(key);
+	}
 
 	protected void setDelegateService(ConfigService delegateService) {
 		this.delegateService = delegateService;

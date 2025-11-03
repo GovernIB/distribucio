@@ -1962,11 +1962,8 @@ public class RegistreHelper {
 	@Transactional
 	public List<RegistreEntity> findAmbLimitDiesEstatComunicadaBackoffice(int dies) {
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        cal.add(Calendar.DAY_OF_YEAR, -dies);
+		cal.setTime(new Date());
+        cal.add(Calendar.DATE, -dies);
         Date dataLimit = cal.getTime();
 		return registreRepository.findAmbLimitEstatComunicadaBackoffice(dataLimit);
 	}

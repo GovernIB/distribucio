@@ -7,7 +7,7 @@ public class ExceptionHelper {
 	/**
 	 * Defineix el nombre d'excepcions anidades que vols comprovar
 	 */
-	private static final int N_CHECKED_NESTED_EXCEPTIONS = 3;
+	private static final int N_CHECKED_NESTED_EXCEPTIONS = 10;
 	
 	public static boolean isExceptionOrCauseInstanceOf(Exception e, Class<? extends Exception> exceptionClass) {
 		
@@ -55,9 +55,25 @@ public class ExceptionHelper {
 
 		return ExceptionUtils.getRootCause(e) != null ? ExceptionUtils.getRootCause(e) : e;
 	}
-	
-	
-	
-	
-	
+
+	/** Comprova si l'excepció o alguna de les seves causes són del tipus passat per argument
+	 * 
+	 * @param exception
+	 * @param className
+	 * @return
+	 */
+	public static boolean isExceptionOrCauseInstanceOf(Throwable exception, String className) {
+		
+		int i = 0;
+		while (exception != null && i < N_CHECKED_NESTED_EXCEPTIONS) {
+	        String simpleName = exception.getClass().getSimpleName();
+	        if ("SOAPFaultException".equals(simpleName)) {
+	            return true;
+	        }
+	        exception = exception.getCause();
+	        i++;
+	    }
+	    return false;	
+	 }
+
 }

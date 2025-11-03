@@ -93,10 +93,10 @@ public class EstadisticaServiceImpl implements EstadisticaService {
 		Date data = Date.from(localData.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 		
 		// Històric anotacions
-		List<HistoricAnotacioEntity> historicAnotacions = historicAnotacioRepository.findByData(data);
+		List<HistoricAnotacioEntity> historicAnotacions = historicAnotacioRepository.findByDataAndUnitatNotNull(data);
 
 		// Històric anotacions per estat
-		List<HistoricEstatEntity> historicPerEstat = historicEstatRepository.findByData(data);
+		List<HistoricEstatEntity> historicPerEstat = historicEstatRepository.findByDataAndUnitatNotNull(data);
 
 		// Històric permisos per bústia
 		List<HistoricBustiaEntity> historicBusties = historicBustiaRepository.findByData(data);

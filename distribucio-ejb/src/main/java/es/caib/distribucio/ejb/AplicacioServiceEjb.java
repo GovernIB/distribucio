@@ -10,6 +10,8 @@ import javax.annotation.security.RolesAllowed;
 import javax.annotation.security.PermitAll;
 import javax.ejb.Stateless;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
@@ -152,6 +154,12 @@ public class AplicacioServiceEjb extends AbstractServiceEjb<AplicacioService> im
 	@RolesAllowed(BaseConfig.ROLE_SUPER)
 	public Long updateUsuariCodi(String codiAntic, String codiNou) {
 		return delegateService.updateUsuariCodi(codiAntic, codiNou);
+	}
+
+	@Override
+	@RolesAllowed("**")
+	public List<String> getRolsUsuariActual() {
+		return delegateService.getRolsUsuariActual();
 	}
 
 	protected void setDelegateService(AplicacioService delegateService) {

@@ -26,6 +26,7 @@ import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.EntityComprovarHelper;
 import es.caib.distribucio.logic.helper.ExcepcioLogHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
+import es.caib.distribucio.logic.helper.UsuariHelper;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.ExcepcioLogDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
@@ -95,6 +96,8 @@ public class AplicacioServiceImpl implements AplicacioService {
 	private BustiaDefaultRepository bustiaDefaultRepository;
 	@Autowired
 	private BustiaHelper bustiaHelper;
+	@Autowired
+	private UsuariHelper usuariHelper;
 	
 	@Autowired
 	private ContingutMovimentEmailRepository contingutMovimentEmailRepository;
@@ -676,6 +679,18 @@ public class AplicacioServiceImpl implements AplicacioService {
 		
 		return registresModificats;
 	}
+	
+	@Override
+	public List<String> getRolsUsuariActual() {
+		logger.trace("Consultant rols de l'usuari actual");
+		List<String> rolsUsuariActual = null;
+		UsuariEntity usuariActual = usuariHelper.getUsuariAutenticat();
+		if (usuariActual != null ) {
+			rolsUsuariActual = pluginHelper.findRolsPerUsuari(usuariActual.getCodi());
+		}
+		return rolsUsuariActual;
+	}
+
 	
 	private static final Logger logger = LoggerFactory.getLogger(AplicacioServiceImpl.class);
 }

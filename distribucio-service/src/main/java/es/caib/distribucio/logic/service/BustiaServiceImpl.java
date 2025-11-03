@@ -1234,15 +1234,7 @@ public class BustiaServiceImpl implements BustiaService {
 		
 		//---- find estat of anotacio -----
 		Timer.Context contextfindEstat = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.findEstat")).time();
-		
-		// Si no hi ha cap bústia activa a la unitat, les anotacions s'envien a la unitat superior
-		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), unitatOrganitzativaCodi);
-		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndUnitatOrganitzativaAndActivaTrueAndPareNotNull(entitat, unitatOrganitzativa);
-		
-		if (busties.isEmpty()) {
-			unitatOrganitzativaCodi = unitatOrganitzativa.getCodiUnitatSuperior();
-		}
-		
+				
 		BustiaEntity bustia = bustiaHelper.findBustiaDesti(
 				entitat,
 				unitatOrganitzativaCodi);
@@ -3336,12 +3328,14 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 			codisUosSuperiors.add(uo);
 		} else if (uoSuperior != null && !uoSuperior.isEmpty()) {
 			// Arbre d'unitats superiors
-            List<UnitatOrganitzativaEntity> uoSuperiorEntityList = unitatOrganitzativaRepository.findAllByCodi(uoSuperior);
+            List<UnitatOrganitzativaEntity> uoSuperiorEntityList = unitatOrganitzativaRepository.findByCodiUnitatSuperior(uoSuperior);
 			if (uoSuperiorEntityList.isEmpty())
 				return resultat;
             for(UnitatOrganitzativaEntity uoSuperiorEntity :uoSuperiorEntityList) {
                 EntitatEntity entitat = entitatRepository.findByCodiDir3(uoSuperiorEntity.getCodiDir3Entitat());
-                codisUosSuperiors.addAll(bustiaHelper.getCodisUnitatsSuperiors(entitat, uoSuperior));
+                if (entitat != null) { // No hi ha entitat per aquesta UO superior
+                	codisUosSuperiors.addAll(bustiaHelper.getCodisUnitatsSuperiors(entitat, uoSuperior));
+                }
             }
 		} else {
 			// no es filtra per UO
@@ -3390,8 +3384,10 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		bustiaDto.setUoNom(bustia.getUnitatOrganitzativa().getDenominacio());
 		bustiaDto.setUOsuperior(bustia.getUnitatOrganitzativa().getCodiUnitatSuperior());	
 		UnitatOrganitzativaEntity uoDtosuperiorEntity = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(bustia.getEntitat().getCodiDir3(), codiUOsuperior);
-		String nomUnitatSuperior = CercarNomUnitatSuperior(bustia.getEntitat().getCodiDir3(), uoDtosuperiorEntity.getCodi());
-		bustiaDto.setUOsuperiorNom(nomUnitatSuperior);
+		if (uoDtosuperiorEntity != null) {
+			String nomUnitatSuperior = CercarNomUnitatSuperior(bustia.getEntitat().getCodiDir3(), uoDtosuperiorEntity.getCodi());
+			bustiaDto.setUOsuperiorNom(nomUnitatSuperior);
+		}
 		bustiaDto.setPerDefecte(bustia.isPerDefecte());
 		
 		return bustiaDto;
@@ -3428,12 +3424,17 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		boolean continuaCercant = true;
 		UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(codiDir3Entitat, codi);
 		while(continuaCercant) {
-			if (unitatOrganitzativaEntity.getCodiUnitatSuperior().equals(unitatOrganitzativaEntity.getCodiDir3Entitat()) 
-				|| unitatOrganitzativaEntity.getCodiUnitatSuperior().contains("A99999")) {
+			if (unitatOrganitzativaEntity == null) {
+		        break;
+		    }
+			
+			String codiSuperior = unitatOrganitzativaEntity.getCodiUnitatSuperior();
+			
+			if (codiSuperior.equals(unitatOrganitzativaEntity.getCodiDir3Entitat()) 
+				|| codiSuperior.contains("A99999")) {
 				nomUnitatSuperior = unitatOrganitzativaEntity.getDenominacio();
 				continuaCercant = false;
-			}else {
-				String codiSuperior = unitatOrganitzativaEntity.getCodiUnitatSuperior();
+			} else {
 				unitatOrganitzativaEntity = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(codiDir3Entitat, codiSuperior);
 			}
 		}

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -266,7 +267,19 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 									break;
 								}
 							} catch (Exception e) {
-								logger.error("Hi ha hagut un error executant el contingut de l'acció massiva [id=" + emc.getId() + "]", e);
+								StringBuilder errMsg = new StringBuilder("Hi ha hagut un error executant el contingut de l'acció massiva [id=" + emc.getId());
+								Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+								errMsg.append(", tipus=" + em.getTipus());
+								errMsg.append(", auth=" + (auth != null ? auth.getPrincipal() : "-"));
+								if (auth != null) {
+									errMsg.append(", rols=[");
+									for (GrantedAuthority ga : auth.getAuthorities()) {
+										errMsg.append(ga.getAuthority()).append(" ");
+									}
+									errMsg.append("]");
+								}
+								errMsg.append("]");
+								logger.error(errMsg.toString(), e);
 								execucioMassivaHelper.updateErrorNewTransaction(
 										emc,
 										new Date(),
@@ -345,9 +358,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 		UsuariEntity usuariEmc = emc.getExecucioMassiva().getUsuari();
 		if (usuariActual == null && usuariEmc != null) {
 			List<String> rolsUsuariActual = pluginHelper.findRolsPerUsuari(usuariEmc.getCodi());
-			if (rolsUsuariActual.isEmpty())
-				rolsUsuariActual.add("tothom");
-	
+			rolsUsuariActual.add("tothom");
 			List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
 			for (String rol : rolsUsuariActual) {
 				SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(rol);
