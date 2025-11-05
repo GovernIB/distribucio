@@ -31,7 +31,7 @@
 	<c:set var="formAction"><dis:modalUrl value="/entitat"/></c:set>
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" modelAttribute="entitatCommand" role="form"  enctype="multipart/form-data">
 		<form:hidden path="id"/>
-		<form:hidden path="codi"/>
+		<form:hidden path="codi" disabled="${empty entitatCommand.id}"/>
 		<dis:inputText name="codi" textKey="entitat.form.camp.codi" disabled="${not empty entitatCommand.id}" required="true"/>
 		<dis:inputText name="nom" textKey="entitat.form.camp.nom" required="true"/>
 		<dis:inputText name="cif" textKey="entitat.form.camp.cif" required="true"/>
