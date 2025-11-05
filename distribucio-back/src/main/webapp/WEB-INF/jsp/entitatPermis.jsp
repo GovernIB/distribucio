@@ -21,19 +21,19 @@
 			<tr>
 				<th data-col-name="principalTipus" data-renderer="enum(PrincipalTipusEnumDto)"><spring:message code="entitat.permis.columna.tipus"/></th>
 				<th data-col-name="principalNom"><spring:message code="entitat.permis.columna.principal"/></th>
-				<th data-col-name="administration" data-template="#cellAdministrationTemplate">
+				<th data-col-name="administration" data-orderable="false" data-template="#cellAdministrationTemplate">
 					<spring:message code="entitat.permis.columna.administracio"/>
 					<script id="cellAdministrationTemplate" type="text/x-jsrender">
 						{{if administration}}<span class="fa fa-check"></span>{{/if}}
 					</script>
 				</th>
-				<th data-col-name="adminLectura" data-template="#cellAdminLecturaTemplate">
+				<th data-col-name="adminLectura" data-orderable="false" data-template="#cellAdminLecturaTemplate">
 					<spring:message code="entitat.permis.columna.adminLectura"/>
 					<script id="cellAdminLecturaTemplate" type="text/x-jsrender">
 						{{if adminLectura}}<span class="fa fa-check"></span>{{/if}}
 					</script>
 				</th>
-				<th data-col-name="read" data-template="#cellReadTemplate">
+				<th data-col-name="read" data-orderable="false" data-template="#cellReadTemplate">
 					<spring:message code="entitat.permis.columna.usuari"/>
 					<script id="cellReadTemplate" type="text/x-jsrender">
 						{{if read}}<span class="fa fa-check"></span>{{/if}}
