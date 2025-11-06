@@ -33,6 +33,7 @@ public class UsuariCommand implements Serializable {
 	private Boolean rebreEmailsAgrupats;
 	private Long bustiaPerDefecte;
     private Long entitatPerDefecteId;
+    private Long numElementsPagina;
 
 	public static UsuariCommand asCommand(UsuariDto dto) {
 		return ConversioTipusHelper.convertir(

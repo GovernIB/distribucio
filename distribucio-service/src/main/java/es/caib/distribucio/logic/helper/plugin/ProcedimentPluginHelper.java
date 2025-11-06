@@ -157,7 +157,7 @@ public class ProcedimentPluginHelper extends AbstractPluginHelper<ProcedimentPlu
 		}
 		return unitatAdministrativa;
 	}
-	
+
 	public UnitatAdministrativa serveiGetUnitatAdministrativa(String codi) {
 		String accioDescripcio = "Consulta de la unitat organitzativa per codi " + codi;
 		Map<String, String> accioParams = new HashMap<String, String>();
@@ -165,6 +165,7 @@ public class ProcedimentPluginHelper extends AbstractPluginHelper<ProcedimentPlu
 		
 		long t0 = System.currentTimeMillis();
 		UnitatAdministrativa unitatAdministrativa = null;
+        String usuariIntegracio = getPlugin().getUsuariIntegracio();
 		try {
 			unitatAdministrativa = getPlugin().findUnitatAdministrativaAmbCodi(codi);
 

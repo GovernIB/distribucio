@@ -75,6 +75,11 @@
 	<script src="<c:url value="/webjars/bootstrap/3.3.6/dist/js/bootstrap.min.js"/>"></script>
 	<link href="<c:url value="/css/bootstrap-colorpicker.min.css"/>" rel="stylesheet">
 	<script src="<c:url value="/js/bootstrap-colorpicker.min.js"/>"></script>
+    <script>
+        $(document).ready(function() {
+            $('table').data("page-length", ${dadesUsuariActual.numElementsPagina});
+        });
+    </script>
 	<decorator:head />
 <style>
 body {

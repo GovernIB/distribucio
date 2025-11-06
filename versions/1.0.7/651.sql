@@ -1,0 +1,1 @@
+ALTER TABLE DIS_USUARI ADD num_elements_pagina NUMERIC;

@@ -30,6 +30,7 @@ public class UsuariDto implements Serializable {
 	private Long bustiaPerDefecte;
 	private String rolActual;
     private Long entitatPerDefecteId;
+    private Long numElementsPagina;
 
 	public String getCodiAndNom() {
 		return nom + " (" + codi + ")";
