@@ -277,7 +277,7 @@ pageContext.setAttribute(
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
 		data-default-order="5"
-		data-default-dir="desc"		
+		data-default-dir="desc"
 		class="table table-bordered table-striped"	
 		data-rowhref-template="#rowhrefTemplate" 	
 		data-rowhref-toggle="modal"
@@ -312,7 +312,7 @@ pageContext.setAttribute(
            			 </script>
 				</th>
 				<th data-col-name="fitxerTipusMime" width="10%"><spring:message code="annexos.admin.columna.fitxerTipusMime"/></th>
-				<th data-col-name="signaturaInfo" width="10%"><spring:message code="annexos.admin.columna.signaturaInfo"/></th>
+				<th data-col-name="signaturaInfo" data-orderable="false" width="10%"><spring:message code="annexos.admin.columna.signaturaInfo"/></th>
 				<th data-col-name="tipusFirma" data-visible="false"></th>	
 				<th data-col-name="fitxerExtension" data-visible="false"></th>
 				<th data-col-name="firmaCsv" data-visible="false"></th>												
