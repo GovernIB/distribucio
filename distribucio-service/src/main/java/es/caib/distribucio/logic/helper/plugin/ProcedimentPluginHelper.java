@@ -125,6 +125,7 @@ public class ProcedimentPluginHelper extends AbstractPluginHelper<ProcedimentPlu
 		
 		long t0 = System.currentTimeMillis();
 		UnitatAdministrativa unitatAdministrativa = null;
+        String usuariIntegracio = getPlugin().getUsuariIntegracio();
 		try {
 			unitatAdministrativa = getPlugin().findUnitatAdministrativaAmbCodi(codi);
 
@@ -134,7 +135,7 @@ public class ProcedimentPluginHelper extends AbstractPluginHelper<ProcedimentPlu
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_PROCEDIMENT,
 					accioDescripcio,
-					"USUARI_INTEGRACIO",
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);							
@@ -142,9 +143,8 @@ public class ProcedimentPluginHelper extends AbstractPluginHelper<ProcedimentPlu
 			String errorDescripcio = "Error consultant la unitat organitzativa amb codi " + codi+ ": " + ex.getMessage();
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_PROCEDIMENT,
-					"NUMERO_REGISTRE",
 					accioDescripcio,
-					"USUARI_INTEGRACIO",
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
@@ -173,19 +173,18 @@ public class ProcedimentPluginHelper extends AbstractPluginHelper<ProcedimentPlu
 					unitatAdministrativa.getCodiDir3() + " " + unitatAdministrativa.getNom() 
 					: "(no trobada)");
 			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_PROCEDIMENT,
+					IntegracioHelper.INTCODI_SERVEI,
 					accioDescripcio,
-					"USUARI_INTEGRACIO",
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);							
 		} catch (Exception ex) {
 			String errorDescripcio = "Error consultant la unitat organitzativa amb codi " + codi+ ": " + ex.getMessage();
 			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_PROCEDIMENT,
-					"NUMERO_REGISTRE",
+					IntegracioHelper.INTCODI_SERVEI,
 					accioDescripcio,
-					"USUARI_INTEGRACIO",
+					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0,
