@@ -17,7 +17,6 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import es.caib.distribucio.logic.helper.ConfigHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,8 +74,6 @@ public class ContingutController extends BaseUserController {
 	private ContingutService contingutService;
 	@Autowired
 	private RegistreService registreService;
-	@Autowired
-	private ConfigHelper configHelper;
 
 	@RequestMapping(value = "/contingut/registre/{registreId}/registreJustificant", method = RequestMethod.GET)
 	public String registreJustific(
