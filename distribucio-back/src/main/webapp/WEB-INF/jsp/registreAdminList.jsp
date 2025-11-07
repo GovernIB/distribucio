@@ -598,6 +598,9 @@ $(document).ready(function() {
 							{{else}}
 								<span class="fa fa-exclamation-triangle text-danger" title="<spring:message code="registre.admin.list.icon.annexos.estat.pendent.regla.sense.regla"/>"> </span>
 							{{/if}}
+							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deProcessarRegla"/>">
+								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
+							</span>
 						{{else procesEstat == 'BUSTIA_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.BUSTIA_PENDENT"/>
 						{{else procesEstat == 'BUSTIA_PROCESSADA'}}

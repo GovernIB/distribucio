@@ -806,13 +806,33 @@ public class RegistreServiceImpl implements RegistreService {
 				parametres.put("backCodi", backCodi);
 			}
 		}
-		if (!esNullReintentsPendents && Boolean.TRUE.equals(reintentsPendents)) {
-		    sqlWhere.append("and r.procesIntents < :maxReintents ");
-		    parametres.put("maxReintents", maxReintents);
-		} else if (!esNullReintentsPendents && Boolean.FALSE.equals(reintentsPendents)) {
-		    sqlWhere.append("and r.procesIntents >= :maxReintents ");
-		    parametres.put("maxReintents", maxReintents);
-		}
+		if (!esNullReintentsPendents) {
+            EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
+            int maxBackoffice = registreHelper.getEnviarIdsAnotacionsMaxReintentsProperty(entitat);
+            int maxAnnex = this.getGuardarAnnexosMaxReintentsProperty(entitat);
+            String maxRegla = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.aplicar.regles.max.reintents");
+            String maxError = configHelper.getConfig("es.caib.distribucio.backoffice.reintentar.processament.max.reintents");
+
+            if (Boolean.TRUE.equals(reintentsPendents)) {
+                sqlWhere.append("and (");
+                sqlWhere.append(" (r.procesEstat = 'BACK_PENDENT' and r.procesIntents < :maxBackoffice)");
+                sqlWhere.append(" or (r.procesEstat = 'ARXIU_PENDENT' and r.procesIntents < :maxAnnex)");
+                sqlWhere.append(" or (r.procesEstat = 'REGLA_PENDENT' and r.procesIntents < :maxRegla)");
+                sqlWhere.append(" or (r.procesEstat = 'BACK_ERROR' and r.procesIntents < :maxError)");
+                sqlWhere.append(") ");
+            } else {
+                sqlWhere.append("and (");
+                sqlWhere.append(" (r.procesEstat = 'BACK_PENDENT' and r.procesIntents >= :maxBackoffice)");
+                sqlWhere.append(" or (r.procesEstat = 'ARXIU_PENDENT' and r.procesIntents >= :maxAnnex)");
+                sqlWhere.append(" or (r.procesEstat = 'REGLA_PENDENT' and r.procesIntents >= :maxRegla)");
+                sqlWhere.append(" or (r.procesEstat = 'BACK_ERROR' and r.procesIntents >= :maxError)");
+                sqlWhere.append(") ");
+            }
+            parametres.put("maxBackoffice", maxBackoffice);
+            parametres.put("maxAnnex", maxAnnex);
+            parametres.put("maxRegla", maxRegla!=null ?Integer.parseInt(maxRegla) :0);
+            parametres.put("maxError", maxError!=null ?Integer.parseInt(maxError) :0);
+        }
 		if (!esNullProcedimentCodi) {
 			sqlWhere.append("and r.procedimentCodi = :procedimentCodi ");
 			parametres.put("procedimentCodi", procedimentCodi);
