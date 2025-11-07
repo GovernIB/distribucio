@@ -253,6 +253,47 @@ $(document).ready(function() {
 			});
 	});
 	$('#mostrarInactives').change();
+
+    (function(){
+        const $procSelect = $('select[name="procesEstatSimple"]');
+        const $estatSelect = $('select[name="estat"]');
+
+        const $opcionsOriginals = $estatSelect.find('option').clone();
+
+        const pendents = [
+            <c:forEach var="e" items="${estatsPendents}" varStatus="s">
+                '${e}'<c:if test="${!s.last}">,</c:if>
+            </c:forEach>
+        ];
+        const processats = [
+            <c:forEach var="e" items="${estatsProcessats}" varStatus="s">
+                '${e}'<c:if test="${!s.last}">,</c:if>
+            </c:forEach>
+        ];
+
+        function actualitzarOpcionsEstat() {
+            const valorProc = $procSelect.val();
+            let valorsValids = [];
+
+            if (valorProc === 'PENDENT') valorsValids = pendents;
+            else if (valorProc === 'PROCESSAT') valorsValids = processats;
+            else valorsValids = pendents.concat(processats);
+
+            const valorActual = $estatSelect.val();
+            $estatSelect.empty().append(
+                $opcionsOriginals.filter(function() {
+                    const v = $(this).val();
+                    return v === '' || valorsValids.includes(v);
+                })
+            );
+            $estatSelect.val(valorActual);
+        }
+
+        $procSelect.on('change', actualitzarOpcionsEstat);
+
+        actualitzarOpcionsEstat();
+    })();
+
 	$('#showModalProcesEstatButton').click(function(e) {
 		$('#modalProcesEstat').modal();
 		e.stopPropagation();
