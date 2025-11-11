@@ -17,6 +17,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import es.caib.distribucio.logic.helper.*;
+import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.ReglaDto;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.Estat;
+import es.caib.distribucio.persist.entity.*;
+import es.caib.distribucio.persist.repository.ContingutComentariRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,25 +37,14 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import es.caib.distribucio.logic.config.SchedulingConfig;
-import es.caib.distribucio.logic.helper.BustiaHelper;
-import es.caib.distribucio.logic.helper.ConfigHelper;
-import es.caib.distribucio.logic.helper.ConversioTipusHelper;
-import es.caib.distribucio.logic.helper.EmailHelper;
-import es.caib.distribucio.logic.helper.HistogramPendentsHelper;
-import es.caib.distribucio.logic.helper.HistoricHelper;
-import es.caib.distribucio.logic.helper.RegistreHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.SemaphoreDto;
+import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.SegonPlaService;
 import es.caib.distribucio.logic.intf.service.ServeiService;
-import es.caib.distribucio.persist.entity.ContingutMovimentEmailEntity;
-import es.caib.distribucio.persist.entity.EntitatEntity;
-import es.caib.distribucio.persist.entity.RegistreEntity;
-import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.UsuariRepository;
@@ -83,7 +78,11 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	@Autowired
 	private EntitatRepository entitatRepository;
 	@Autowired
-	private ConversioTipusHelper conversioTipusHelper;	
+	private ContingutComentariRepository contingutComentariRepository;
+	@Autowired
+	private ConversioTipusHelper conversioTipusHelper;
+	@Autowired
+	private ContingutLogHelper contingutLogHelper;
 	@Autowired
 	private ProcedimentService procedimentService;
 	@Autowired
@@ -94,6 +93,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	private UsuariRepository usuariRepository;
 	@Autowired
 	private SchedulingConfig schedulingConfig;
+    @Autowired
+    private RegistreServiceImpl registreServiceImpl;
 
 	private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
 	/**
@@ -230,25 +231,58 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 		
 		// Obtenir la llista de pendents agrupats per regles
 		Map<ReglaDto, List<Long>> pendentsByRegla = registreHelper.getPendentsEnviarBackoffice();
-		
+
 		// Envia les anotacions pendents agrupades per regla
 		for (ReglaDto regla : pendentsByRegla.keySet()) {
-			
+
 			final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarIdsAnotacionsPendentsBackoffice"));
 			Timer.Context context = timer.time();
-			
+
 			List<Long> pendentsIdsGroupedByRegla = pendentsByRegla.get(regla);
 			logger.debug("Enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " + regla.getNom());
 			Throwable t = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
 			if (t != null) {
-				logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + " anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " + 
+				logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + " anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " +
 							regla.getNom() + ": " + t.getMessage());
 			}
 			context.stop();
 		}
+
 		long stopTime = new Date().getTime();
 		logger.debug("Fi de tasca programada (" + startTime + "): enviar ids del anotacions pendents al backoffice " + (stopTime - startTime) + "ms");
 	}
+
+    @Override
+    public void canviEstatComunicatAPendent(){
+        long startTime = new Date().getTime();
+        logger.debug("Execució de tasca programada (" + startTime + "): canviar estat comunicat a pendent al backoffice");
+
+        try {
+            Integer dies = Integer.valueOf(configHelper.getConfig("es.caib.distribucio.tasca.enviar.anotacions.backoffice.maxim.temps.estat.comunicada", "30"));
+            List<RegistreEntity> registres = registreHelper.findAmbLimitDiesEstatComunicadaBackoffice(dies);
+
+            for (RegistreEntity registre : registres) {
+                String observacions = "S'ha canviat automàticament l'estat a \"Bústia pendent\" després d'estar "+
+                        dies +" dies en estat \"Comunicada a "+ registre.getBackCodi() +"\" sense confirmació de recepció";
+                registre.setNewProcesEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT);
+                ContingutComentariEntity comentari = ContingutComentariEntity.getBuilder(registre, observacions).build();
+                contingutComentariRepository.save(comentari);
+                List<String> params = new ArrayList<>();
+                params.add(String.valueOf(dies));
+                params.add(registre.getBackCodi());
+                contingutLogHelper.log(
+                        registre,
+                        LogTipusEnumDto.CANVI_PENDENT,
+                        params,
+                        false);
+            }
+        } catch (Exception e) {
+            logger.error("S'ha produit un error al intentar canviar els registres comunicats que han superat el limit de temps", e);
+        }
+
+        long stopTime = new Date().getTime();
+        logger.debug("Fi de tasca programada (" + stopTime + "): canviar estat comunicat a pendent al backoffice " + (stopTime - startTime) + "ms");
+    }
 	
 	
 	@Override
@@ -578,36 +612,42 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 	
 	@Override
 	public void actualitzarProcediments() throws Exception {
-		List<EntitatEntity> llistaEntitats = entitatRepository.findAll();
-		List<String> entitatsError = new ArrayList<>();		
-		for (EntitatEntity entitat : llistaEntitats) {
-			try {
-				procedimentService.findAndUpdateProcediments(entitat.getId());
-			} catch (Exception e) {
-				entitatsError.add(entitat.getCodi());
-				logger.error("Error sincronitzant els procediments per l'entitat " + entitat.getCodi() + " - " + entitat.getNom() + ": " + e.getMessage()); 
-			}			
-		}
-		if (!entitatsError.isEmpty()) {
-			throw new Exception("No s'han pogut sincronitzar tots els procediments per les següents entitats: " + entitatsError);
-		}
+        List<EntitatEntity> llistaEntitats = entitatRepository.findAll();
+        List<String> entitatsError = new ArrayList<>();
+        for (EntitatEntity entitat : llistaEntitats) {
+            try {
+                String disabledEntitat = configHelper.getConfigForEntitat(entitat.getCodi(), "es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments.disable");
+                if (!"true".equals(disabledEntitat)) {
+                    procedimentService.findAndUpdateProcediments(entitat.getId());
+                }
+            } catch (Exception e) {
+                entitatsError.add(entitat.getCodi());
+                logger.error("Error sincronitzant els procediments per l'entitat " + entitat.getCodi() + " - " + entitat.getNom() + ": " + e.getMessage());
+            }
+        }
+        if (!entitatsError.isEmpty()) {
+            throw new Exception("No s'han pogut sincronitzar tots els procediments per les següents entitats: " + entitatsError);
+        }
 	}
 	
 	@Override
 	public void actualitzarServeis() throws Exception {
-		List<EntitatEntity> llistaEntitats = entitatRepository.findAll();
-		List<String> entitatsError = new ArrayList<>();		
-		for (EntitatEntity entitat : llistaEntitats) {
-			try {
-				serveiService.findAndUpdateServeis(entitat.getId());
-			} catch (Exception e) {
-				entitatsError.add(entitat.getCodi());
-				logger.error("Error sincronitzant els serveis per l'entitat " + entitat.getCodi() + " - " + entitat.getNom() + ": " + e.getMessage()); 
-			}			
-		}
-		if (!entitatsError.isEmpty()) {
-			throw new Exception("No s'han pogut sincronitzar tots els serveis per les següents entitats: " + entitatsError);
-		}
+        List<EntitatEntity> llistaEntitats = entitatRepository.findAll();
+        List<String> entitatsError = new ArrayList<>();
+        for (EntitatEntity entitat : llistaEntitats) {
+            try {
+                String disabledEntitat = configHelper.getConfigForEntitat(entitat.getCodi(), "es.caib.distribucio.tasca.monitor.integracio.actualitzar.serveis.disable");
+                if (!"true".equals(disabledEntitat)) {
+                    serveiService.findAndUpdateServeis(entitat.getId());
+                }
+            } catch (Exception e) {
+                entitatsError.add(entitat.getCodi());
+                logger.error("Error sincronitzant els serveis per l'entitat " + entitat.getCodi() + " - " + entitat.getNom() + ": " + e.getMessage());
+            }
+        }
+        if (!entitatsError.isEmpty()) {
+            throw new Exception("No s'han pogut sincronitzar tots els serveis per les següents entitats: " + entitatsError);
+        }
 	}
 	
 	@Override

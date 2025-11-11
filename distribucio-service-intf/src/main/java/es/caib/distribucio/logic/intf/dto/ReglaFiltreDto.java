@@ -5,6 +5,8 @@ package es.caib.distribucio.logic.intf.dto;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 
@@ -13,6 +15,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter
+@Setter
 public class ReglaFiltreDto implements Serializable {
 
 	private String unitatCodi;
@@ -28,79 +32,9 @@ public class ReglaFiltreDto implements Serializable {
 	private ReglaFiltreActivaEnumDto activa;
 	private ReglaPresencialEnumDto presencial;
 
-	
-	public ReglaTipusEnumDto getTipus() {
-		return tipus;
-	}
-	public void setTipus(ReglaTipusEnumDto tipus) {
-		this.tipus = tipus;
-	}
-	public Long getUnitatId() {
-		return unitatId;
-	}
-	public void setUnitatId(Long unitatId) {
-		this.unitatId = unitatId;
-	}
-	public String getUnitatCodi() {
-		return unitatCodi;
-	}
-	public void setUnitatCodi(String unitatCodi) {
-		this.unitatCodi = unitatCodi;
-	}
-	public String getNom() {
-		return nom;
-	}
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-	public String getCodiSIA() {
-		return codiSIA;
-	}
-	public void setCodiSIA(String codiSIA) {
-		this.codiSIA = codiSIA;
-	}	
-	public String getCodiServei() {
-		return codiServei;
-	}
-	public void setCodiServei(String codiServei) {
-		this.codiServei = codiServei;
-	}
-	public Long getBackofficeId() {
-		return backofficeId;
-	}
-	public void setBackofficeId(Long backofficeId) {
-		this.backofficeId = backofficeId;
-	}
-	public String getCodiAssumpte() {
-		return codiAssumpte;
-	}
-	public void setCodiAssumpte(String codiAssumpte) {
-		this.codiAssumpte = codiAssumpte;
-	}
-	public Long getBustiaId() {
-		return bustiaId;
-	}
-	public void setBustiaId(Long bustiaId) {
-		this.bustiaId = bustiaId;
-	}
-	public ReglaFiltreActivaEnumDto getActiva() {
-		return activa;
-	}
-	public void setActiva(ReglaFiltreActivaEnumDto activa) {
-		this.activa = activa;
-	}
-	public ReglaPresencialEnumDto getPresencial() {
-		return presencial;
-	}
-	public void setPresencial(ReglaPresencialEnumDto presencial) {
-		this.presencial = presencial;
-	}
-	//	public boolean isActiva() {
-//		return activa;
-//	}
-//	public void setActiva(boolean activa) {
-//		this.activa = activa;
-//	}
+    private Long unitatDestiId;
+    private Long bustiaDestiId;
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ attribute name="id" required="false" rtexprvalue="true"%>
 <%@ attribute name="name" required="true" rtexprvalue="true"%>
 <%@ attribute name="required" required="false" rtexprvalue="true"%>
 <%@ attribute name="text" required="false" rtexprvalue="true"%>
@@ -23,6 +24,7 @@
 
 <c:set var="multiple"><c:choose><c:when test="${not empty multiple}">${multiple}</c:when><c:otherwise>false</c:otherwise></c:choose></c:set>
 <c:set var="campPath" value="${name}"/>
+<c:set var="id"><c:choose><c:when test="${not empty id}">${id}</c:when><c:otherwise>${campPath}</c:otherwise></c:choose></c:set>
 <c:set var="campErrors"><form:errors path="${campPath}"/></c:set>
 <c:set var="minimumInputLength"><c:choose><c:when test="${not empty minimumInputLength}">${minimumInputLength}</c:when><c:otherwise>${3}</c:otherwise></c:choose></c:set>
 <c:set var="suggestValue"><c:choose><c:when test="${not empty suggestValue}">${suggestValue}</c:when><c:otherwise>id</c:otherwise></c:choose></c:set>
@@ -49,7 +51,7 @@
 				<c:if test="${required}">*</c:if>
 			</label>
 			<div class="controls col-xs-${campInputSize}">
-				<form:select path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}" style="width:100%" data-toggle="suggest" data-netejar="${netejar}" data-placeholder="${placeholderText}" data-minimum-input-length="${minimumInputLength}" data-url-llistat="${urlConsultaLlistat}" data-url-inicial="${urlConsultaInicial}" data-current-value="${campValue}" data-suggest-value="${suggestValue}" data-suggest-text="${suggestText}" data-option-template-function="${optionTemplateFunction}" 
+				<form:select path="${campPath}" cssClass="form-control" id="${id}" disabled="${disabled}" style="width:100%" data-toggle="suggest" data-netejar="${netejar}" data-placeholder="${placeholderText}" data-minimum-input-length="${minimumInputLength}" data-url-llistat="${urlConsultaLlistat}" data-url-inicial="${urlConsultaInicial}" data-current-value="${campValue}" data-suggest-value="${suggestValue}" data-suggest-text="${suggestText}" data-option-template-function="${optionTemplateFunction}"
 					multiple="${multiple}"
 					data-url-param-addicional="${urlParamAddicional}"
 					/>
@@ -58,7 +60,7 @@
 		</div>
 	</c:when>
 	<c:otherwise>
-		<form:select path="${campPath}" cssClass="form-control" id="${campPath}" disabled="${disabled}" style="width:100%" data-toggle="suggest" data-netejar="${netejar}" data-placeholder="${placeholderText}" data-minimum-input-length="${minimumInputLength}" data-url-llistat="${urlConsultaLlistat}" data-url-inicial="${urlConsultaInicial}" data-current-value="${campValue}" data-suggest-value="${suggestValue}" data-suggest-text="${suggestText}" data-option-template-function="${optionTemplateFunction}" 
+		<form:select path="${campPath}" cssClass="form-control" id="${id}" disabled="${disabled}" style="width:100%" data-toggle="suggest" data-netejar="${netejar}" data-placeholder="${placeholderText}" data-minimum-input-length="${minimumInputLength}" data-url-llistat="${urlConsultaLlistat}" data-url-inicial="${urlConsultaInicial}" data-current-value="${campValue}" data-suggest-value="${suggestValue}" data-suggest-text="${suggestText}" data-option-template-function="${optionTemplateFunction}"
 			multiple="${multiple}"
 			data-url-param-addicional="${urlParamAddicional}"
 			/>

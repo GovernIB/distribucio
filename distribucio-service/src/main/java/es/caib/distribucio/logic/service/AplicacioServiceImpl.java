@@ -265,7 +265,8 @@ public class AplicacioServiceImpl implements AplicacioService {
 		usuari.update(
 				dto.getRebreEmailsBustia(), 
 				dto.getRebreEmailsAgrupats(),
-				dto.getIdioma());
+				dto.getIdioma(),
+                dto.getEntitatPerDefecteId() != null ? entitatRepository.getOne(dto.getEntitatPerDefecteId()) : null);
 		BustiaDefaultEntity bustiaDefaultEntity = bustiaDefaultRepository.findByEntitatAndUsuari(
 				entitatActual, 
 				usuari);
@@ -447,6 +448,7 @@ public class AplicacioServiceImpl implements AplicacioService {
 				dto.setRols(rols);
 			}
 		}
+        dto.setEntitatPerDefecteId(usuari.getEntitatPerDefecte() != null ? usuari.getEntitatPerDefecte().getId() : null);
 		return dto;
 	}
 

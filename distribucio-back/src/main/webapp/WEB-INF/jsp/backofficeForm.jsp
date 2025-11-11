@@ -59,7 +59,7 @@
 				 $("button[name='btn-provar']", window.parent.document).find('#fa-refresh').addClass('fa-spin');		
 				 $("button[name='btn-provar']", window.parent.document).attr('disabled', true).find('.fa-refresh').addClass("fa-spin");		
 				 //webutilClearMissatges('#modal-missatges');
-				
+
 				// Consulta les dades
 				$.ajax({
 					url: webutilContextPath() + "/backoffice/" + e.target.value + "/provarajax", 
@@ -67,12 +67,19 @@
 		            dataType : 'json',
 		            success : function(data) {
 						 //webutilClearMissatges('#modal-missatges');
+                        console.log(">>> data", data)
 						 $("#div-alert").css("display", "block");
-		    			 if (data == false) {
+		    			 if (!!data.warning || !!data.error) {
 		    				 $("#div-alert").removeClass("alert-success");
-		    				 $("#div-alert").addClass("alert-danger");
-		    			     $("#div-alert").html("<spring:message code='backoffice.controller.provar.error' arguments='${backofficeCommand.codi};- url: ${backofficeCommand.url}' htmlEscape='false' argumentSeparator=';'/>");
-		    			 }else if (data == true) {
+
+                             if (!!data.warning) {
+                                 $("#div-alert").addClass("alert-warning");
+                                 $("#div-alert").html(data.warning);
+                             } else if (!!data.error) {
+                                 $("#div-alert").addClass("alert-danger");
+                                 $("#div-alert").html(data.error);
+                             }
+		    			 }else {
 		    				 $("#div-alert").removeClass("alert-danger");
 		    				 $("#div-alert").addClass("alert-success");
 		    			     $("#div-alert").html("<spring:message code='backoffice.controller.provar.ok' arguments='${backofficeCommand.nom}'/>");		    				 

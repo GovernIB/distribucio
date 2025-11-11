@@ -67,6 +67,8 @@
 <xs:element minOccurs="0" name="usuariCodi" type="xs:string" />
 <xs:element minOccurs="0" name="usuariContacte" type="xs:string" />
 <xs:element minOccurs="0" name="usuariNom" type="xs:string" />
+<xs:element minOccurs="0" name="tramitCodi" type="xs:string" />
+<xs:element minOccurs="0" name="tramitNom" type="xs:string" />
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="registreAnnex">

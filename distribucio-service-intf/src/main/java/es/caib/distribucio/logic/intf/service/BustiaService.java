@@ -391,7 +391,7 @@ public interface BustiaService {
 	public List<BustiaDto> findAmbEntitat(Long entitatId);
 
 	@PreAuthorize("isAuthenticated()")
-	public List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, BustiaFiltreOrganigramaDto bustiaFiltreOrganigramaDto);
+	public List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, BustiaFiltreDto bustiaFiltreDto);
 
 	@PreAuthorize("isAuthenticated()")
 	public List<BustiaContingutDto> findAmbEntitatAndFiltrePerInput(Long entitatId, ContingutTipusEnumDto tipus, String filtre);

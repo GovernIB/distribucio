@@ -1,0 +1,5 @@
+Insert INTO DIS_CONFIG (KEY,VALUE, description, group_code, jboss_property, type_code, entitat_codi, configurable, lastmodifiedby_codi, lastmodifieddate, position) VALUES('es.caib.distribucio.tasca.monitor.integracio.actualitzar.serveis.disable', NULL, 'Deshabilitar la sincronització de serveis', 'SCHEDULLED_SERVEI', 0, 'BOOL', NULL, 1, NULL, NULL, 1);
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.tasca.monitor.integracio.actualitzar.serveis.disable';
+
+Insert INTO DIS_CONFIG (KEY,VALUE, description, group_code, jboss_property, type_code, entitat_codi, configurable, lastmodifiedby_codi, lastmodifieddate, position) VALUES('es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments.disable', NULL, 'Deshabilitar la sincronització de procediments', 'SCHEDULLED_PROCEDIMENT', 0, 'BOOL', NULL, 1, NULL, NULL, 8);
+UPDATE DIS_CONFIG SET CONFIGURABLE = 1 WHERE KEY LIKE 'es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments.disable';

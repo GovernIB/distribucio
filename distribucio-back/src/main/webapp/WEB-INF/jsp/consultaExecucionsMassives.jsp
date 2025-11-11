@@ -166,8 +166,15 @@ pageContext.setAttribute(
 				}
 			} else if (contingut.estat == "FINALITZADA"){
 				estat = "<span class='fa fa-check-circle'></span><label style='padding-left: 10px'><spring:message code='accio.massiva.estat.FINALITZADA'/></label>";
-				estat += contingut.missatge != null ? "<span style='padding-left: 10px' class='fa fa-info-circle text-info' title='" + contingut.missatge + "'/>" : "";
-			} else if (contingut.estat == "PROCESSANT"){
+
+                if (contingut.missatge) {
+                    if (contingut.execucioMassiva.tipus === "BACKOFFICE") {
+                        estat += "<br/><span style='padding-right: 10px' class='fa fa-info-circle text-info' title='" + contingut.missatge + "'/>" + contingut.missatge;
+                    } else {
+                        estat += "<span style='padding-left: 10px' class='fa fa-info-circle text-info' title='" + contingut.missatge + "'/>";
+                    }
+                }
+            } else if (contingut.estat == "PROCESSANT"){
 				estat = "<span class='fa fa-circle-o-notch fa-spin'></span><label style='padding-left: 10px'><spring:message code='accio.massiva.estat.PROCESSANT'/>";
 			} else if (contingut.estat == "PENDENT"){
 				estat = "<span class='fa fa-circle-o-notch fa-spin'></span><label style='padding-left: 10px'><spring:message code='accio.massiva.estat.PENDENT'/>";

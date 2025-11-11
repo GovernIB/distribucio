@@ -247,15 +247,28 @@ public class ContingutController extends BaseUserController {
 	}
 	
 	/** Recupera el contingut de tots els annexos i crea un ZIP per descarregar */
-	@RequestMapping(value = "/contingut/registre/{registreId}/descarregarZip", method = RequestMethod.GET)
+	@RequestMapping(value = "/contingut/registre/{registreId}/descarregarZip/{tipus}", method = RequestMethod.GET)
 	public String descarregarZipDocumentacio(
 			HttpServletRequest request,
 			HttpServletResponse response,
-			@PathVariable Long registreId) throws IOException {
+			@PathVariable Long registreId,
+			@PathVariable String tipus) throws IOException {
 		String rolActual = RolHelper.getRolActual(request);
 		try {
+			boolean ambVersioImprimible;
+			switch (tipus) {
+				case "DOCUMENT_ORIGINAL":
+					ambVersioImprimible = false;
+					break;
+				case "DOCUMENT": 
+					ambVersioImprimible = true;
+					break;				
+				default:
+					ambVersioImprimible = true;
+					break;				
+			}
 			getEntitatActualComprovantPermisUsuari(request);
-			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, rolActual);
+			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, rolActual, ambVersioImprimible);
 			writeFileToResponse(
 					fitxer.getNom(),
 					fitxer.getContingut(),
@@ -284,7 +297,7 @@ public class ContingutController extends BaseUserController {
 		try {
 			String clau = registreService.obtenirRegistreIdDesencriptat(key);
 			Long registreId = Long.valueOf(clau);
-			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, null);
+			FitxerDto fitxer = registreService.getZipDocumentacio(registreId, null, true);
 			writeFileToResponse(
 					fitxer.getNom(),
 					fitxer.getContingut(),
@@ -584,7 +597,13 @@ public class ContingutController extends BaseUserController {
 			break;
 		case MOVIMENT:
 		case REENVIAMENT:
-			sb.append(this.getMessage(request, "contingut.log.resum.msg.reenviar"));
+            if (log.getParams().contains("ORIGINAL")) {
+                sb.append(this.getMessage(request, "contingut.log.resum.msg.reenviar"));
+            } else if (log.getParams().contains("ORIGINAL_AMB_COPIA")) {
+                sb.append(this.getMessage(request, "contingut.log.resum.msg.reenviar.original"));
+            } else if (log.getParams().contains("COPIA")) {
+                sb.append(this.getMessage(request, "contingut.log.resum.msg.reenviar.copia"));
+            }
 			if (log.getContenidorMoviment() != null) {
 				if (log.getContingutMoviment().getOrigenId() != null) {
 					sb.append(" ").append(this.getMessage(request, "contingut.log.resum.msg.deLaBustia")).append(" \"");
@@ -677,6 +696,9 @@ public class ContingutController extends BaseUserController {
 		case CLASSIFICAR:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.CLASSIFICAR", new Object[] {usuari, registre.getProcedimentCodi()}));
 			break;
+		case CANVI_PENDENT:
+            sb.append(this.getMessage(request, "contingut.log.resum.msg.CANVI_PENDENT", new Object[] {log.getParams().get(0), log.getParams().get(1)}));
+            break;
 		default:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.accio")).append(": \"");
 			sb.append(this.getMessage(request, "log.tipus.enum." + log.getTipus().name())).append("\"");

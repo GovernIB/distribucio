@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -15,6 +17,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter
+@Setter
 public abstract class ContingutDto extends AuditoriaDto {
 
 	protected Long id;
@@ -34,96 +38,16 @@ public abstract class ContingutDto extends AuditoriaDto {
 
 	protected boolean perConvertirJson;
 	protected boolean perConeixement;
+
+    private boolean potModificar;
 	
 	private boolean alerta;
 	
+	private boolean pendentExecucioMassiva;
+	
 	protected List<ContingutDto> pathInicial;
 	protected Long destiLogic;
-	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getMovimentId() {
-		return movimentId;
-	}
-	public void setMovimentId(String movimentId) {
-		this.movimentId = movimentId;
-	}
-	public String getNom() {
-		return nom;
-	}
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-	public List<ContingutDto> getFills() {
-		return fills;
-	}
-	public void setFills(List<ContingutDto> fills) {
-		this.fills = fills;
-	}
-	public List<ContingutDto> getPath() {
-		return path;
-	}
-	public void setPath(List<ContingutDto> path) {
-		this.path = path;
-	}
-	public EntitatDto getEntitat() {
-		return entitat;
-	}
-	public void setEntitat(EntitatDto entitat) {
-		this.entitat = entitat;
-	}
-	public boolean isEsborrat() {
-		return esborrat > 0;
-	}
-	public void setEsborrat(int esborrat) {
-		this.esborrat = esborrat;
-	}
-	public String getArxiuUuid() {
-		return arxiuUuid;
-	}
-	public void setArxiuUuid(String arxiuUuid) {
-		this.arxiuUuid = arxiuUuid;
-	}
-	public Date getArxiuDataActualitzacio() {
-		return arxiuDataActualitzacio;
-	}
-	public void setArxiuDataActualitzacio(Date arxiuDataActualitzacio) {
-		this.arxiuDataActualitzacio = arxiuDataActualitzacio;
-	}
-	public Date getDarrerMovimentData() {
-		return darrerMovimentData;
-	}
-	public void setDarrerMovimentData(Date darrerMovimentData) {
-		this.darrerMovimentData = darrerMovimentData;
-	}
-	public UsuariDto getDarrerMovimentUsuari() {
-		return darrerMovimentUsuari;
-	}
-	public void setDarrerMovimentUsuari(UsuariDto darrerMovimentUsuari) {
-		this.darrerMovimentUsuari = darrerMovimentUsuari;
-	}
-	public String getDarrerMovimentComentari() {
-		return darrerMovimentComentari;
-	}
-	public void setDarrerMovimentComentari(String darrerMovimentComentari) {
-		this.darrerMovimentComentari = darrerMovimentComentari;
-	}
-	public String getDarrerMovimentOrigenUo() {
-		return darrerMovimentOrigenUo;
-	}
-	public void setDarrerMovimentOrigenUo(String darrerMovimentOrigenUo) {
-		this.darrerMovimentOrigenUo = darrerMovimentOrigenUo;
-	}
-	public String getDarrerMovimentOrigenBustia() {
-		return darrerMovimentOrigenBustia;
-	}
-	public void setDarrerMovimentOrigenBustia(String darrerMovimentOrigenBustia) {
-		this.darrerMovimentOrigenBustia = darrerMovimentOrigenBustia;
-	}
+
 	public String getDarrerMovimentOrigenUoAndBustia() {
 		if (this.darrerMovimentOrigenUo != null && !this.darrerMovimentOrigenUo.isEmpty()
 				&& this.darrerMovimentOrigenBustia != null && !this.darrerMovimentOrigenBustia.isEmpty())
@@ -131,27 +55,6 @@ public abstract class ContingutDto extends AuditoriaDto {
 		else 
 			return null;
 		
-	}
-	public boolean isPerConvertirJson() {
-		return perConvertirJson;
-	}
-	public List<ContingutDto> getPathInicial() {
-		return pathInicial;
-	}
-	public void setPathInicial(List<ContingutDto> pathInicial) {
-		this.pathInicial = pathInicial;
-	}
-	public boolean isPerConeixement() {
-		return perConeixement;
-	}
-	public void setPerConeixement(boolean perConeixement) {
-		this.perConeixement = perConeixement;
-	}
-	public Long getDestiLogic() {
-		return destiLogic;
-	}
-	public void setDestiLogic(Long destiLogic) {
-		this.destiLogic = destiLogic;
 	}
 	public void setPerConvertirJson(boolean perConvertirJson) {
 		this.perConvertirJson = perConvertirJson;
@@ -293,13 +196,6 @@ public abstract class ContingutDto extends AuditoriaDto {
 		} else {
 			return null;
 		}
-	}
-	
-	public boolean isAlerta() {
-		return alerta;
-	}
-	public void setAlerta(boolean alerta) {
-		this.alerta = alerta;
 	}
 	
 	@Override

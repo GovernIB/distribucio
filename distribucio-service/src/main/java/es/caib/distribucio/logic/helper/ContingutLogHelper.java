@@ -111,6 +111,14 @@ public class ContingutLogHelper {
 			LogTipusEnumDto tipus,
 			ContingutMovimentEntity contingutMoviment,
 			boolean logContingutPare) {
+		return logMoviment(contingut, tipus, contingutMoviment, logContingutPare, null);
+	}
+    public ContingutLogEntity logMoviment(
+			ContingutEntity contingut,
+			LogTipusEnumDto tipus,
+			ContingutMovimentEntity contingutMoviment,
+			boolean logContingutPare,
+            List<String> params) {
 		return log(
 				contingut,
 				tipus,
@@ -118,7 +126,7 @@ public class ContingutLogHelper {
 				null,
 				null,
 				null,
-				null,
+				params,
 				logContingutPare);
 	}
 
@@ -324,8 +332,8 @@ public class ContingutLogHelper {
 		Builder logBuilder = ContingutLogEntity.getBuilder(
 				tipus,
 				contingut).
-				param1(params != null && params.size() > 0? params.get(0) : null).
-				param2(params != null && params.size() > 2 ? params.get(1) : null).
+                param1(params != null && !params.isEmpty() ? params.get(0) : null).
+                param2(params != null && params.size() > 1 ? params.get(1) : null).
 				pare(pare).
 				contingutMoviment(contingutMoviment);
 		if (objecte != null) {

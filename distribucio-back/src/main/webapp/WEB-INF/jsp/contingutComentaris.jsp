@@ -210,14 +210,14 @@
 				
 				var fons = "";
 				var pull = "left";
-				var propi = comentari.createdBy.codi == "${usuariActual.codi}"; 
+				var propi = comentari.createdBy != null && comentari?.createdBy?.codi == "${usuariActual.codi}";
 				if (propi) {
 					pull = "right"
 					fons = "comentari-propi";
 				}
 					
 				var comentariHtml = '<div class="well comentari-bocata pull-' + pull + ' ' + fons + '">';
-				if (!propi)
+				if (!propi && comentari.createdBy != null)
 					comentariHtml += '<div class="comentari-autor"><strong>' + comentari.createdBy.nom + '</strong></div>';
 				
 				comentariHtml +='<p>' + comentari.text + '</p>' +

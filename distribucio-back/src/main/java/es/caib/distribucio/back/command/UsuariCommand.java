@@ -5,6 +5,8 @@ package es.caib.distribucio.back.command;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.back.helper.ConversioTipusHelper;
@@ -16,6 +18,8 @@ import es.caib.distribucio.logic.intf.dto.UsuariDto;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter
+@Setter
 public class UsuariCommand implements Serializable {
 
 	private String codi;
@@ -28,68 +32,8 @@ public class UsuariCommand implements Serializable {
 	private Boolean rebreEmailsBustia;
 	private Boolean rebreEmailsAgrupats;
 	private Long bustiaPerDefecte;
-	
-	public String getCodi() {
-		return codi;
-	}
-	public void setCodi(String codi) {
-		this.codi = codi;
-	}
-	public String getNom() {
-		return nom;
-	}
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-	public String getNif() {
-		return nif;
-	}
-	public void setNif(String nif) {
-		this.nif = nif;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	public String getEmailAlternatiu() {
-		return emailAlternatiu;
-	}
-	public void setEmailAlternatiu(String emailAlternatiu) {
-		this.emailAlternatiu = emailAlternatiu;
-	}
-	public String[] getRols() {
-		return rols;
-	}
-	public void setRols(String[] rols) {
-		this.rols = rols;
-	}
-	public String getIdioma() {
-		return idioma;
-	}
-	public void setIdioma(String idioma) {
-		this.idioma = idioma;
-	}
-	public Boolean getRebreEmailsBustia() {
-		return rebreEmailsBustia;
-	}
-	public void setRebreEmailsBustia(Boolean rebreEmailsBustia) {
-		this.rebreEmailsBustia = rebreEmailsBustia;
-	}
-	public Boolean getRebreEmailsAgrupats() {
-		return rebreEmailsAgrupats;
-	}
-	public void setRebreEmailsAgrupats(Boolean rebreEmailsAgrupats) {
-		this.rebreEmailsAgrupats = rebreEmailsAgrupats;
-	}
-	public Long getBustiaPerDefecte() {
-		return bustiaPerDefecte;
-	}
-	public void setBustiaPerDefecte(Long bustiaPerDefecte) {
-		this.bustiaPerDefecte = bustiaPerDefecte;
-	}
-	
+    private Long entitatPerDefecteId;
+
 	public static UsuariCommand asCommand(UsuariDto dto) {
 		return ConversioTipusHelper.convertir(
 				dto,

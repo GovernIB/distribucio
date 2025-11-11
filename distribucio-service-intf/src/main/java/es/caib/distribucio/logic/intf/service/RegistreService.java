@@ -186,6 +186,10 @@ public interface RegistreService {
 			Long registreId) throws NotFoundException;
 
 	@PreAuthorize("isAuthenticated()")
+	public String getNumeroById(
+			Long registreId) throws NotFoundException;
+
+	@PreAuthorize("isAuthenticated()")
 	public FitxerDto getAnnexFirmaFitxer(
 			Long annexId,
 			int indexFirma) throws NotFoundException;
@@ -199,7 +203,8 @@ public interface RegistreService {
 	 */	
 	public FitxerDto getZipDocumentacio(
 			Long registreId, 
-			String rolActual) throws Exception;
+			String rolActual,
+			boolean ambVersioImprimible) throws Exception;
 
 	/**
 	 * Marca com a llegida una anotació de registre

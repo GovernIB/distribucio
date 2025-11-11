@@ -8,6 +8,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import es.caib.distribucio.back.command.RegistreClassificarTipusEnum;
+import es.caib.distribucio.back.helper.EnumHelper;
+import es.caib.distribucio.logic.intf.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,10 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.back.command.PermisCommand;
 import es.caib.distribucio.back.helper.DatatablesHelper;
 import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.distribucio.logic.intf.dto.BustiaDto;
-import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
-import es.caib.distribucio.logic.intf.dto.PermisDto;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 
 /**
@@ -92,10 +91,19 @@ public class BustiaAdminPermisController extends BaseAdminController {
 				}
 			}
 		}
-		if (permis != null)
-			model.addAttribute(PermisCommand.asCommand(permis));
-		else
-			model.addAttribute(new PermisCommand());
+		if (permis != null) {
+            model.addAttribute(PermisCommand.asCommand(permis));
+        } else {
+            PermisCommand permisCommand = new PermisCommand();
+            permisCommand.setTipusPermis(TipusPermisEnumDto.COMPLET);
+            model.addAttribute(permisCommand);
+        }
+
+        model.addAttribute(
+                "tipusPermis",
+                EnumHelper.getOptionsForEnum(
+                        TipusPermisEnumDto.class,
+                        "tipus.permis.enum."));
 		return "bustiaAdminPermisForm";
 	}
 
@@ -111,6 +119,11 @@ public class BustiaAdminPermisController extends BaseAdminController {
 			model.addAttribute(
 					"bustia",
 					bustiaService.findById(entitatActual.getId(), bustiaId));
+            model.addAttribute(
+                    "tipusPermis",
+                    EnumHelper.getOptionsForEnum(
+                            TipusPermisEnumDto.class,
+                            "tipus.permis.enum."));
 			return "bustiaAdminPermisForm";
 		}
 		bustiaService.updatePermis(

@@ -176,6 +176,9 @@ function formatServeiSelect(item) {
 				<h3 class="panel-title" role="button" data-toggle="collapse" data-parent="#registres-list" data-target="#registre-info-${registre.id}" aria-expanded="false" aria-controls="registre-info-${registre.id}">
 					<span class="state-icon fa"></span>
 					${registre.numero}
+                    <c:if test="${!registre.potModificar}">
+                        <span class="fa fa-warning alert-warning" title="<spring:message code='registresSeleccionats.anotacions.seleccionades.permisos'/>"></span>
+                    </c:if>
 					<span class="regla-backoffice text-muted text-hide"> - <span class="fa fa-paper-plane"></span> <spring:message code="bustia.pendent.classificar.multiple.regla.backoffice.aplicada"/></span>
 					<span class="regla-bustia text-muted text-hide"> - <span class="fa fa-paper-plane"></span> <spring:message code="bustia.pendent.classificar.multiple.regla.bustia.aplicada"/></span>
 					<span class="fa fa-caret-down pull-right"></span>

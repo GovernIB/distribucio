@@ -41,6 +41,8 @@ public interface SegonPlaService {
 	 */
 	void enviarIdsAnotacionsPendentsBackoffice();
 
+	void canviEstatComunicatAPendent();
+
 
 	void addNewEntryToHistogram();
 	

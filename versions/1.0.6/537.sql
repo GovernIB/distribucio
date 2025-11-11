@@ -1,0 +1,3 @@
+-- Afegir informació del tràmit del procediment en l'anotació #537
+ALTER TABLE DIS_REGISTRE ADD TRAMIT_CODI VARCHAR2(64);
+ALTER TABLE DIS_REGISTRE ADD TRAMIT_NOM VARCHAR2(255);

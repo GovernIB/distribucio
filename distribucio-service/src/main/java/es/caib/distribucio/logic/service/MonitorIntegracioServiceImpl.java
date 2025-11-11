@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -92,8 +94,8 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 	@Transactional
 	@Override
 	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio) {
-		logger.trace("Creant una nova monitorIntegracio (" +
-				"monitorIntegracio=" + monitorIntegracio + ")");
+//		logger.trace("Creant una nova monitorIntegracio (" +
+//				"monitorIntegracio=" + monitorIntegracio + ")");
 		MonitorIntegracioEntity entity = monitorIntegracioRepository.save(
 				MonitorIntegracioEntity.getBuilder(
 						monitorIntegracio.getCodi(),
@@ -188,8 +190,31 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 		}
 		return errors;
 	}
-	
-	@Transactional
+
+    public static Date toDate(LocalDateTime ldt) {
+        return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    @Override
+    public Map<String, Integer> countCanvisEstatFromUser(String user) {
+        Map<String, Integer> result = new HashMap<String, Integer>();
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime inicioMinuto = now.withSecond(0).withNano(0);
+        LocalDateTime finMinuto = inicioMinuto.plusMinutes(1).minusNanos(1);
+
+        Integer conteoMinuto = monitorIntegracioRepository.countBackofficeCanvisEstatFromUser(user, toDate(inicioMinuto), toDate(finMinuto));
+        result.put("minut", conteoMinuto);
+
+        LocalDateTime inicioDia = now.toLocalDate().atStartOfDay();
+        LocalDateTime finDia = inicioDia.plusDays(1).minusNanos(1);
+
+        Integer conteoDia = monitorIntegracioRepository.countBackofficeCanvisEstatFromUser(user, toDate(inicioDia), toDate(finDia));
+        result.put("dia", conteoDia);
+        return result;
+    }
+
+    @Transactional
 	@Override
 	public int esborrarDadesAntigues(Date data) {
 		logger.trace("Esborrant dades del monitor d'integració anteriors a : " + data);

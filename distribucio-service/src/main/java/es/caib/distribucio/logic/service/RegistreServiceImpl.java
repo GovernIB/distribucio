@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -79,6 +81,7 @@ import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto.Classificacio
 import es.caib.distribucio.logic.intf.dto.ContingutDto;
 import es.caib.distribucio.logic.intf.dto.DadaDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
 import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.FitxerDto;
 import es.caib.distribucio.logic.intf.dto.HistogramPendentsEntryDto;
@@ -146,6 +149,7 @@ import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.ContingutLogRepository;
 import es.caib.distribucio.persist.repository.ContingutMovimentRepository;
 import es.caib.distribucio.persist.repository.DadaRepository;
+import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
 import es.caib.distribucio.persist.repository.MetaDadaRepository;
 import es.caib.distribucio.persist.repository.ProcedimentRepository;
 import es.caib.distribucio.persist.repository.RegistreAnnexFirmaRepository;
@@ -230,6 +234,8 @@ public class RegistreServiceImpl implements RegistreService {
 	private MessageHelper messageHelper;
 	@Autowired
 	private ContingutMovimentRepository contingutMovimentRepository;
+	@Autowired
+	private ExecucioMassivaContingutRepository execucioMassivaContingutRepository;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -1266,7 +1272,19 @@ public class RegistreServiceImpl implements RegistreService {
 	
 
 		contextTotal.stop();
-		return ids;
+		
+		List<Long> execucionsMassivesPendents = execucioMassivaContingutRepository.findElementIdByEstatIn(
+				new ArrayList<> (
+						Arrays.asList(
+								ExecucioMassivaContingutEstatDto.PENDENT, 
+								ExecucioMassivaContingutEstatDto.PROCESSANT,
+								ExecucioMassivaContingutEstatDto.PAUSADA)
+						)
+				);
+		
+		return ids.stream()
+	              .filter(id -> !execucionsMassivesPendents.contains(id))
+	              .collect(Collectors.toList());
 	}
 
 	
@@ -1760,6 +1778,16 @@ public class RegistreServiceImpl implements RegistreService {
 				}
 			}
 
+            // Si el backoffice comunica que està rebuda i l'anotació està pendent de regla o processada llavors no es canvia l'estat
+            if (estat.equals(Estat.REBUDA)) {
+                if (RegistreProcesEstatEnum.REGLA_PENDENT.equals(registre.getProcesEstat())
+                        || RegistreProcesEstatEnum.BACK_PROCESSADA.equals(registre.getProcesEstat())
+                        || (RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(registre.getProcesEstat()) && registre.getArxiuTancat())
+                ) {
+                    return;
+                }
+            }
+
 			entitatDto.setCodi(registre.getEntitat().getCodi());
 			ConfigHelper.setEntitat(entitatDto);
 			switch (estat) {
@@ -2118,11 +2146,7 @@ public class RegistreServiceImpl implements RegistreService {
 				entitatId,
 				registreId,
 				text).isPublicat();
-	}
-	
-	
-	
-	
+	}	
 
 	@Transactional(readOnly = true)
 	@Override
@@ -2180,7 +2204,8 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional(readOnly = true)
 	public FitxerDto getZipDocumentacio(
 			Long registreId,
-			String rolActual) throws Exception {
+			String rolActual,
+			boolean ambVersioImprimible) throws Exception {
 
 		FitxerDto zip = new FitxerDto();
 
@@ -2222,7 +2247,8 @@ public class RegistreServiceImpl implements RegistreService {
 								zos,
 								zipItems,
 								executor,
-								errors);
+								errors,
+								ambVersioImprimible);
 						
 						wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
 						executor.execute(wrappedRunnable);					}
@@ -2241,7 +2267,17 @@ public class RegistreServiceImpl implements RegistreService {
 				}
 				
 		        if (!errors.isEmpty()) {
-		        	throw new Exception(errors.size() + " errors generant el .zip " + errors.get(0));
+		        	// throw new Exception(errors.size() + " errors generant el .zip " + errors.get(0));
+		        	StringBuilder avisosContent = new StringBuilder();
+		        	for(String error : errors) {
+						avisosContent.append("- " + error + "\n");
+					}		        	
+		        	ZipEntry entry = new ZipEntry("errors.txt");
+		        	byte[] contingut = avisosContent.toString().getBytes();		        	
+		        	entry.setSize(contingut.length);
+		        	zos.putNextEntry(entry);
+		        	zos.write(contingut);
+		        	zos.closeEntry();		        	
 		        }
 		        
 		        for (FitxerDto fitxer: zipItems) {
@@ -2271,14 +2307,14 @@ public class RegistreServiceImpl implements RegistreService {
 			
 			zos.close();
 			
-			if (!errors.isEmpty()) {
-				throw new Exception(errors.size() + " errors generant el .zip " + errors.get(0));
-			} else {	
+//			if (!errors.isEmpty()) {
+//				throw new Exception(errors.size() + " errors generant el .zip " + errors.get(0));
+//			} else {	
 				zip.setNom(revisarContingutNom(registre.getNumero()) + ".zip");
 				zip.setContingut(baos.toByteArray());
 				zip.setContentType("application/zip");
 				return zip;
-			}
+//			}
 
 		} catch (Exception ex) {
 			String errMsg = "Error generant el .zip de documentació pel registre " + registre.getNumero() + " amb ID " + registreId + " : " + ex.getMessage();
@@ -2302,7 +2338,8 @@ public class RegistreServiceImpl implements RegistreService {
 		private ZipOutputStream zip;
 		private List<FitxerDto> zipItems;
 		ExecutorService executor;
-		private List<String> errors;		
+		private List<String> errors;
+		private boolean ambVersioImprimible;
 		
 		/** Constructor amb els objectes de consulta i el zip per actualitzar. 
 		 * @param registreHelper 
@@ -2320,7 +2357,8 @@ public class RegistreServiceImpl implements RegistreService {
 				ZipOutputStream zip, 
 				List<FitxerDto> zipItems,
 				ExecutorService executor, 
-				List<String> errors) {
+				List<String> errors,
+				boolean ambVersioImprimible) {
 			this.entitatActual = entitatActual;
 			this.justificantId = justificantId;
 			this.registreNumero = registreNumero;
@@ -2331,7 +2369,8 @@ public class RegistreServiceImpl implements RegistreService {
 			this.zip = zip;
 			this.zipItems = zipItems;
 			this.executor = executor;
-			this.errors = errors;			
+			this.errors = errors;
+			this.ambVersioImprimible = ambVersioImprimible;
 		}
 
 		@Transactional(readOnly = true)
@@ -2340,14 +2379,22 @@ public class RegistreServiceImpl implements RegistreService {
 			ConfigHelper.setEntitat(this.entitatActual);
 			try {		
 				String nom;
-				FitxerDto fitxer = new FitxerDto();
-				try {
-					fitxer = registreHelper.getAnnexFitxer(annexID, true);
-				} catch (Exception e) {
-					logger.warn("Error obtenint la versió imprimible del l'annex " + this.annexID + "\"" + annexTitol + "\", es procedeix a consultar l'original. Error: "
-								+ e.getClass() + " " + e.getMessage());
-					fitxer = registreHelper.getAnnexFitxer(annexID, false);
+				FitxerDto fitxer = null;
+				
+				if (ambVersioImprimible) {
+					try {
+						fitxer = registreHelper.getAnnexFitxerImprimible(annexID);
+					} catch (Exception e) {
+						String errMsg = "Error obtenint la versió imprimible del l'annex " + this.annexID + "\"" + annexTitol + "\", es procedeix a consultar l'original. Error: "
+								+ e.getClass() + " " + e.getMessage();
+						logger.warn(errMsg);
+						errors.add(errMsg);						
+					}					
 				}
+				
+				if (fitxer==null) {
+					fitxer = registreHelper.getAnnexFitxer(annexID, false);
+				}								
 						
 				String fitxerNom = annexFitxerNom;
 				if (justificantId == null || annexID != justificantId) {
@@ -2416,6 +2463,14 @@ public class RegistreServiceImpl implements RegistreService {
 			}
 		}
 		return arxiu;
+	}
+
+    @Transactional(readOnly = true)
+	@Override
+	public String getNumeroById(
+			Long registreId) {
+		RegistreEntity registre = registreRepository.getReferenceById(registreId);
+		return registre.getNumero();
 	}
 
 	@Override
@@ -2681,6 +2736,7 @@ public class RegistreServiceImpl implements RegistreService {
 							unitatOrganitzativaHelper.toDto(novaBustia.getUnitatOrganitzativa()));
 					
 				} else if (ReglaTipusEnumDto.BACKOFFICE.equals(lastReglaApplied.getTipus())) {
+                    classificacioResultat.setBackofficeDesti(lastReglaApplied.getBackofficeDesti().getNom());
 					classificacioResultat.setResultat(ClassificacioResultatEnumDto.REGLA_BACKOFFICE);
 				}
 			} else {

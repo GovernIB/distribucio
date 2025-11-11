@@ -306,7 +306,7 @@
 		function() {
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 
-			if ($('#nomFiltre').val() || $('#unitatIdFiltre').val()) {
+			if ($('#nom').val() || $('#unitatIdFiltre').val()) {
 				$('#arbreUnitatsOrganitzatives').jstree('open_all');
 			}
 
@@ -315,6 +315,34 @@
 		$("#canviVistaBusties").click(function(){
 			window.location.replace(webutilContextPath() + "/bustiaAdmin");
 		});
+
+        var bustiaModifiedId = ${empty bustiaModifiedId ? 'null' : bustiaModifiedId};
+        if (bustiaModifiedId != null) {
+            var $arbre = $('#arbreUnitatsOrganitzatives');
+
+            function openAndSelectNode() {
+                var tree = $arbre.jstree(true);
+                if (tree && tree.get_node(bustiaModifiedId)) {
+                    tree.open_node(bustiaModifiedId, function () {
+                        tree.activate_node(bustiaModifiedId);
+                    });
+                    console.log("Nodo abierto y seleccionado:", bustiaModifiedId);
+                } else {
+                    console.warn("No se encontró el nodo con ID:", bustiaModifiedId);
+                }
+            }
+
+            // Si jsTree ya está inicializado
+            if ($arbre.hasClass("jstree")) {
+                console.log("Árbol ya inicializado — ejecutando directamente");
+                openAndSelectNode();
+            } else {
+                console.log("Esperando evento ready.jstree");
+                $arbre.on('ready.jstree', function (e, data) {
+                    openAndSelectNode();
+                })
+            }
+        }
 	});
 	</script>
 	
@@ -329,7 +357,7 @@
 	<form:form action="" method="post" cssClass="well" modelAttribute="bustiaFiltreOrganigramaCommand">
 		<div class="row">
 			<div class="col-md-4">
-				<dis:inputText name="nomFiltre" inline="true" placeholderKey="bustia.list.filtre.nom"/>
+				<dis:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
 			</div>
 						
 			<div class="col-md-4">			
@@ -346,7 +374,8 @@
 			</div>
 			<div class="col-md-4">
 				<dis:inputSuggest
-					name="unitatIdFiltre" 
+                    id="unitatIdFiltre"
+					name="unitatId"
 					urlConsultaInicial="${urlConsultaInicial}" 
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="true"
@@ -483,12 +512,7 @@
 											<th data-col-name="principalTipus" data-renderer="enum(PrincipalTipusEnumDto)"><spring:message code="permis.list.columna.tipus"/></th>
 											<th data-col-name="principalNom"><spring:message code="entitat.permis.columna.principal"/></th>
 											<th data-col-name="principalDescripcio"><spring:message code="entitat.permis.columna.descripcio"/></th>
-											<th data-col-name="read" data-template="#cellReadTemplate">
-												<spring:message code="bustia.permis.columna.acces"/>
-												<script id="cellReadTemplate" type="text/x-jsrender">
-														{{if read}}<span class="fa fa-check"></span>{{/if}}
-												</script>
-											</th>
+                                            <th data-col-name="tipusPermis" data-orderable="false" data-renderer="enum(TipusPermisEnumDto)"><spring:message code="bustia.permis.columna.acces"/></th>
 											<c:if test="${isRolActualAdministrador}">
 											<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 												<script id="cellAccionsTemplate" type="text/x-jsrender">

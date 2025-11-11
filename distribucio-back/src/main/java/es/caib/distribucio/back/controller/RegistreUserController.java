@@ -130,8 +130,8 @@ public class RegistreUserController extends BaseUserController {
 	private ProcedimentService procedimentService;
 	@Autowired
 	private ServeiService serveiService;
-	
-	@RequestMapping(method = RequestMethod.GET)
+
+    @RequestMapping(method = RequestMethod.GET)
 	public String registreUserGet(
 			@CookieValue(value = COOKIE_SENSE_ASSIGNAR, defaultValue = "false") boolean mostrarSenseAssignar,
 			HttpServletRequest request,
@@ -866,13 +866,14 @@ public class RegistreUserController extends BaseUserController {
 			bustiaService.registreAnotacioEnviarPerEmail(
 					entitatActual.getId(),
 					command.getContingutId(),
-					adreces, 
+					adreces,
 					command.getMotiu(),
 					isVistaMoviments,
 					RolHelper.getRolActual(request));
 			MissatgesHelper.success(
 					request,
-					getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));
+					getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok",
+                            new Object[] {registreDto.getNumero()}));
 			return modalUrlTancar();
 		} catch (Exception exception) {
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(exception);
@@ -976,7 +977,7 @@ public class RegistreUserController extends BaseUserController {
 				RolHelper.getRolActual(request));
 		this.revisarEstatPerEnviarViaEmail(request, entitatActual, registreDto, bindingResult);
 		this.revisarEstatPerMarcarProcessat(request, entitatActual, registreDto, bindingResult);
-		
+
 		if (bindingResult.hasErrors()) {
 			response = AjaxHelper.generarAjaxFormErrors(command, bindingResult);
 			response.setMissatge(getMessage(request, "processamentMultiple.error.validacio"));
@@ -991,11 +992,12 @@ public class RegistreUserController extends BaseUserController {
 			bustiaService.registreAnotacioEnviarPerEmail(
 					entitatActual.getId(),
 					registreDto.getId(),
-					adreces, 
+					adreces,
 					null,
 					isVistaMoviments,
 					RolHelper.getRolActual(request));
-			missatge.append(getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok"));	
+			missatge.append(getMessage(request, "bustia.controller.pendent.contingut.enviat.email.ok",
+                    new Object[]{registreDto.getNumero()}));
 		} catch (Exception exception) {
 			Throwable thr = ExceptionHelper.getRootCauseOrItself(exception);
 			correcte = false;
@@ -1015,15 +1017,19 @@ public class RegistreUserController extends BaseUserController {
 			try {
 				String rolActual = RolHelper.getRolActual(request);
 				contingutService.marcarProcessat(
-						entitatActual.getId(), 
+						entitatActual.getId(),
 						registreId,
-						"<span class='label label-default'>" + 
+						"<span class='label label-default'>" +
 						getMessage(
-								request, 
-								"bustia.pendent.accio.marcat.processat") + 
-						"</span> " + command.getMotiu(), 
+								request,
+								"bustia.pendent.accio.marcat.processat") +
+						"</span> " + command.getMotiu(),
 						rolActual);
-				missatge.append(getMessage(request, "bustia.controller.pendent.contingut.marcat.processat.ok"));	
+
+                String numero = registreService.getNumeroById(registreId);
+				missatge.append(getMessage(request,
+                        "bustia.controller.pendent.contingut.marcat.processat.ok",
+                        new Object[] {numero}));
 			} catch (Exception exception) {
 				correcte = false;
 				Throwable thr = ExceptionHelper.getRootCauseOrItself(exception);
@@ -1644,18 +1650,20 @@ public class RegistreUserController extends BaseUserController {
 		}
 		try {
 			contingutService.marcarProcessat(
-					entitatActual.getId(), 
+					entitatActual.getId(),
 					registreId,
-					"<span class='label label-default'>" + 
+					"<span class='label label-default'>" +
 					getMessage(
-							request, 
-							"bustia.pendent.accio.marcat.processat") + 
-					"</span> " + command.getMotiu(), 
+							request,
+							"bustia.pendent.accio.marcat.processat") +
+					"</span> " + command.getMotiu(),
 					rolActual);
+            String numero = registreService.getNumeroById(registreId);
 			return getModalControllerReturnValueSuccess(
 					request,
 					"redirect:/registreUser/registre/" + registreId,
-					"bustia.controller.pendent.contingut.marcat.processat.ok");
+					"bustia.controller.pendent.contingut.marcat.processat.ok",
+                    new Object[] {numero});
 		} catch (RuntimeException re) {
 			MissatgesHelper.error(
 					request,
@@ -1850,6 +1858,10 @@ public class RegistreUserController extends BaseUserController {
 					model);
 			return "registreClassificar";
 		}
+        RegistreDto registreDto = registreService.findOne(
+                entitatActual.getId(),
+                registreId,
+                false);
 		String codiProcediment = null;
 		if (command.getTipus() != null && RegistreClassificarTipusEnum.PROCEDIMENT.name().equals(command.getTipus()) ) {
 				codiProcediment = command.getCodiProcediment();
@@ -1870,9 +1882,9 @@ public class RegistreUserController extends BaseUserController {
 		case REGLA_BUSTIA:
 		case REGLA_UNITAT:
 			MissatgesHelper.info(
-					request, 
+					request,
 					getMessage(
-							request, 
+							request,
 							"bustia.controller.pendent.contingut.classificat.mogut",
 							new Object[] {
 									resultat.getBustiaNom(),
@@ -1881,33 +1893,65 @@ public class RegistreUserController extends BaseUserController {
 			break;
 		case REGLA_BACKOFFICE:
 			MissatgesHelper.info(
-					request, 
+					request,
 					getMessage(
-							request, 
+							request,
 							"bustia.controller.pendent.contingut.classificat.backoffice",
-							null));
+							new Object[]{ resultat.getBackofficeDesti() }));
 			break;
 		case REGLA_ERROR:
 			MissatgesHelper.warning(
-					request, 
+					request,
 					getMessage(
-							request, 
+							request,
 							"bustia.controller.pendent.contingut.classificat.error",
 							null));
 			break;
 		case TITOL_MODIFICAT:
 			MissatgesHelper.info(
-					request, 
+					request,
 					getMessage(
-							request, 
+							request,
 							"bustia.controller.pendent.contingut.classificat.titol",
 							null));
 			break;
 		}
-		return getModalControllerReturnValueSuccess(
-				request,
-				"redirect:/registreUser/registre/" + registreId,
-				"bustia.controller.pendent.contingut.classificat.ok");
+        if (command.getCodiProcediment() != null) {
+            ProcedimentDto procediment = procedimentService.findByCodiSia(
+                    entitatActual.getId(),
+                    command.getCodiProcediment()
+            );
+
+            return getModalControllerReturnValueSuccess(
+                    request,
+                    "redirect:/registreUser/registre/" + registreId,
+                    "bustia.controller.pendent.contingut.classificat.ok.procediment",
+                    new Object[]{
+                            registreDto.getNumero(),
+                            procediment.getCodiSia() + " - " + procediment.getNom()
+                    });
+        } else if (command.getCodiServei() != null) {
+            ServeiDto servei = serveiService.findByCodiSia(
+                    entitatActual.getId(),
+                    command.getCodiServei()
+            );
+            return getModalControllerReturnValueSuccess(
+                    request,
+                    "redirect:/registreUser/registre/" + registreId,
+                    "bustia.controller.pendent.contingut.classificat.ok.servei",
+                    new Object[]{
+                            registreDto.getNumero(),
+                            servei.getCodiSia() + " - " + servei.getNom()
+                    });
+        } else {
+            return getModalControllerReturnValueSuccess(
+                    request,
+                    "redirect:/registreUser/registre/" + registreId,
+                    "bustia.controller.pendent.contingut.classificat.ok",
+                    new Object[]{
+                            registreDto.getNumero(),
+                    });
+        }
 	}	
 	
 	//Gestió bústies favorits

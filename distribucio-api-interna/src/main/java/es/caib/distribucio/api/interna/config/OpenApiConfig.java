@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -40,7 +41,9 @@ public class OpenApiConfig {
 		} catch (IOException ex) {
 			log.error("No s'ha pogut obtenir la versió del fitxer MANIFEST.MF", ex);
 		}
-		OpenAPI openapi = new OpenAPI().info(
+		OpenAPI openapi = new OpenAPI()
+                .addSecurityItem(new SecurityRequirement().addList("basicAuth"))
+				.info(
 				new Info().
 				title("API interna de Distribució").
 				description("API REST interna de Distribució").

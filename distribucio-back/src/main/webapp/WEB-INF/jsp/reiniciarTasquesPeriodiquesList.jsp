@@ -68,6 +68,8 @@
 						<spring:message code="monitor.tasques.tasca.codi.guardarAnotacionsPendents"/>
 					{{else codi == 'enviarAlBackoffice'}}
 						<spring:message code="monitor.tasques.tasca.codi.enviarAlBackoffice"/>
+					{{else codi == 'canviarAPendent'}}
+						<spring:message code="monitor.tasques.tasca.codi.canviarAPendent"/>
 					{{else codi == 'aplicarReglesBackoffice'}}
 						<spring:message code="monitor.tasques.tasca.codi.aplicarReglesBackoffice"/>
 					{{else codi == 'tancarContenidors'}}

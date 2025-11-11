@@ -11,13 +11,17 @@ import org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.BackofficeService;
+import es.caib.distribucio.logic.intf.service.ConfigService;
 import es.caib.distribucio.logic.intf.service.EntitatService;
 import es.caib.distribucio.logic.intf.service.EstadisticaService;
+import es.caib.distribucio.logic.intf.service.LimitCanviEstatService;
+import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.ReglaService;
 import es.caib.distribucio.logic.intf.service.SalutService;
 import es.caib.distribucio.logic.intf.service.ServeiService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeIntegracioWsService;
+import es.caib.distribucio.logic.intf.service.ws.bustia.BustiaV1WsService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -75,17 +79,41 @@ public class EjbClientConfig {
 	}
 
 	@Bean
-	@ConditionalOnWarDeployment
+    @ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean salutService() {
 		return getLocalEjbFactoyBean(SalutService.class);
 	}
 	
 	@Bean
-	@ConditionalOnWarDeployment
+    @ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean estadisticaService() {
 		return getLocalEjbFactoyBean(EstadisticaService.class);
 	}
 	
+	@Bean
+    @ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean bustiaV1WsService() {
+		return getLocalEjbFactoyBean(BustiaV1WsService.class);
+	}
+	
+	@Bean
+    @ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean limitCanviEstatService() {
+		return getLocalEjbFactoyBean(LimitCanviEstatService.class);
+	}
+	
+	@Bean
+    @ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean monitorIntegracioService() {
+		return getLocalEjbFactoyBean(MonitorIntegracioService.class);
+	}
+	
+	@Bean
+    @ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean configService() {
+		return getLocalEjbFactoyBean(ConfigService.class);
+	}
+
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {
 		String jndiName = jndiServiceName(serviceClass, false);
 		log.info("Creating EJB proxy for " + serviceClass.getSimpleName() + " with JNDI name " + jndiName);

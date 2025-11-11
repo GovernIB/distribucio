@@ -3,35 +3,21 @@
  */
 package es.caib.distribucio.logic.intf.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Resutat de la classificació d'una anotació de registre.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter @Setter
 public class ClassificacioResultatDto {
 
 	private ClassificacioResultatEnumDto resultat;
 	private String bustiaNom;
 	private UnitatOrganitzativaDto bustiaUnitatOrganitzativa;
-
-	public ClassificacioResultatEnumDto getResultat() {
-		return resultat;
-	}
-	public void setResultat(ClassificacioResultatEnumDto resultat) {
-		this.resultat = resultat;
-	}
-	public String getBustiaNom() {
-		return bustiaNom;
-	}
-	public void setBustiaNom(String bustiaNom) {
-		this.bustiaNom = bustiaNom;
-	}
-	public UnitatOrganitzativaDto getBustiaUnitatOrganitzativa() {
-		return bustiaUnitatOrganitzativa;
-	}
-	public void setBustiaUnitatOrganitzativa(UnitatOrganitzativaDto bustiaUnitatOrganitzativa) {
-		this.bustiaUnitatOrganitzativa = bustiaUnitatOrganitzativa;
-	}
+    private String backofficeDesti;
 
 	public static enum ClassificacioResultatEnumDto {
 		SENSE_CANVIS,

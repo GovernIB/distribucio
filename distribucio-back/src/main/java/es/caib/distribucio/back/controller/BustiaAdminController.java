@@ -53,6 +53,7 @@ import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
 public class BustiaAdminController extends BaseAdminController {
 	
 	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaAdminController.session.filtre";
+    private static final String SESSION_ATTRIBUTE_MODIFIED_ID = "BustiaAdminController.session.bustiaModifiedId";
 
 	@Autowired
 	private BustiaService bustiaService;
@@ -126,19 +127,26 @@ public class BustiaAdminController extends BaseAdminController {
 			
 			// if it is modified
 			if (command.getId() != null) {
-				bustiaService.update(
+                BustiaDto bustiaDto = bustiaService.update(
 						entitatActual.getId(),
 						BustiaCommand.asDto(command));
-				
+                RequestSessionHelper.actualitzarObjecteSessio(
+                        request,
+                        SESSION_ATTRIBUTE_MODIFIED_ID,
+                        bustiaDto.getId());
 				return getModalControllerReturnValueSuccess(
 						request,
 						"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
 						"bustia.controller.modificat.ok");
 			//if it is new	
 			} else {
-				bustiaService.create(
+				BustiaDto bustiaDto = bustiaService.create(
 						entitatActual.getId(),
 						BustiaCommand.asDto(command));
+                RequestSessionHelper.actualitzarObjecteSessio(
+                        request,
+                        SESSION_ATTRIBUTE_MODIFIED_ID,
+                        bustiaDto.getId());
 				return getModalControllerReturnValueSuccess(
 						request,
 						"true".equals(isOrganigrama) ? "redirect:bustiaAdminOrganigrama" : "redirect:bustiaAdmin",
@@ -213,11 +221,9 @@ public class BustiaAdminController extends BaseAdminController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		BustiaFiltreCommand bustiaFiltreCommand = getFiltreCommand(request);
 		
-		BustiaFiltreOrganigramaDto filtre = omplirFiltreExcelUsuarisPermissionsPerBustia(bustiaFiltreCommand);
-		
 		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
 				entitatActual.getId(),
-				filtre);
+                BustiaFiltreCommand.asDto(bustiaFiltreCommand));
 
         // Arranca la generación en segundo plano
         return bustiaHelper.generateExcelAsync(busties);        

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -305,36 +306,20 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		}
 		
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
 			
-			if (! registresSeleccionats.isEmpty()) {
-				Map<String, Object> params = new HashMap<String, Object>();
-				params.put("titol", titol);
-				params.put("codiProcediment", codiProcediment);
-				params.put("codiServei", codiServei);
-				
-				crearExecucioMassivaRegistres(
-						request, 
-						registresSeleccionats, 
-						entitatActual, 
-						ExecucioMassivaTipusDto.CLASSIFICAR, 
-						construirParametres(params));
-			} else {
-				return getModalControllerReturnValueError(
-						request,
-						"redirect:../registreUser",
-						"accio.massiva.controller.registre.seleccio.buida");
-			}
-			
-			MissatgesHelper.success(
+			Map<String, Object> params = new HashMap<>();
+		    params.put("titol", titol);
+		    params.put("codiProcediment", codiProcediment);
+		    params.put("codiServei", codiServei);
+		    
+			return executarAccioMassivaRegistres(
 					request, 
-					getMessage(
-							request, 
-							"accio.massiva.controller.accion.crear.ok")
-					);
-
-			return "redirect:/modal/massiva/consulta/0";
+					rol, 
+					registresSeleccionats, 
+					ExecucioMassivaTipusDto.CLASSIFICAR, 
+					params, 
+					"redirect:../registreUser");
 		} catch (Exception e) {
 			MissatgesHelper.error(
 					request, 
@@ -428,36 +413,21 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		try {
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, isVistaMoviments);
 			
-			if (! registresSeleccionats.isEmpty()) {
-				Map<String, Object> params = new HashMap<String, Object>();
-				params.put("isVistaMoviments", isVistaMoviments);
-				params.put("destins", command.getDestins());
-				params.put("destinsUsuari", command.getDestinsUsuari());
-				params.put("deixarCopia", command.isDeixarCopia());
-				params.put("comentari", command.getComentariEnviar());
-				params.put("perConeixement", command.getPerConeixement());
-				
-				crearExecucioMassivaRegistres(
-						request, 
-						registresSeleccionats, 
-						entitatActual, 
-						ExecucioMassivaTipusDto.REENVIAR, 
-						construirParametres(params));
-			} else {
-				return getModalControllerReturnValueError(
-						request,
-						"redirect:../registreUser",
-						"accio.massiva.controller.registre.seleccio.buida");
-			}
-			
-			MissatgesHelper.success(
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("isVistaMoviments", isVistaMoviments);
+			params.put("destins", command.getDestins());
+			params.put("destinsUsuari", command.getDestinsUsuari());
+			params.put("deixarCopia", command.isDeixarCopia());
+			params.put("comentari", command.getComentariEnviar());
+			params.put("perConeixement", command.getPerConeixement());
+		    
+			return executarAccioMassivaRegistres(
 					request, 
-					getMessage(
-							request, 
-							"accio.massiva.controller.accion.crear.ok")
-					);
-
-			return "redirect:/modal/massiva/consulta/0";
+					rol, 
+					registresSeleccionats, 
+					ExecucioMassivaTipusDto.REENVIAR, 
+					params, 
+					"redirect:../registreUser");
 		} catch (Exception e) {
 			MissatgesHelper.error(
 					request, 
@@ -507,34 +477,19 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 				omplirModelAmbRegistres(request, rol, model);
 				return "registreUserMarcarProcessat";
 			}
-			EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
+			
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
 			
-			if (! registresSeleccionats.isEmpty()) {
-				Map<String, Object> params = new HashMap<String, Object>();
-				params.put("motiu", command.getMotiu());
-				
-				crearExecucioMassivaRegistres(
-						request, 
-						registresSeleccionats, 
-						entitatActual, 
-						ExecucioMassivaTipusDto.MARCAR_PROCESSAT, 
-						construirParametres(params));
-			} else {
-				return getModalControllerReturnValueError(
-						request,
-						"redirect:../registreUser",
-						"accio.massiva.controller.registre.seleccio.buida");
-			}
-			
-			MissatgesHelper.success(
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("motiu", command.getMotiu());
+		    
+			return executarAccioMassivaRegistres(
 					request, 
-					getMessage(
-							request, 
-							"accio.massiva.controller.accion.crear.ok")
-					);
-	
-			return "redirect:/modal/massiva/consulta/0";
+					rol, 
+					registresSeleccionats, 
+					ExecucioMassivaTipusDto.MARCAR_PROCESSAT, 
+					params, 
+					"redirect:../registreUser");
 		} catch (Exception e) {
 			MissatgesHelper.error(
 					request, 
@@ -584,34 +539,18 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 				return "registreUserMarcarPendent";
 			}
 			
-			EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
 			
-			if (! registresSeleccionats.isEmpty()) {
-				Map<String, Object> params = new HashMap<String, Object>();
-				params.put("motiu", command.getMotiu());
-				
-				crearExecucioMassivaRegistres(
-						request, 
-						registresSeleccionats, 
-						entitatActual, 
-						ExecucioMassivaTipusDto.MARCAR_PENDENT,
-						construirParametres(params));
-			} else {
-				return getModalControllerReturnValueError(
-						request,
-						"redirect:../registreUser",
-						"accio.massiva.controller.registre.seleccio.buida");
-			}
-			
-			MissatgesHelper.success(
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("motiu", command.getMotiu());
+		    
+			return executarAccioMassivaRegistres(
 					request, 
-					getMessage(
-							request, 
-							"accio.massiva.controller.accion.crear.ok")
-					);
-	
-			return "redirect:/modal/massiva/consulta/0";
+					rol, 
+					registresSeleccionats, 
+					ExecucioMassivaTipusDto.MARCAR_PENDENT, 
+					params, 
+					"redirect:../registreUser");
 		} catch (Exception e) {
 			MissatgesHelper.error(
 					request, 
@@ -662,36 +601,20 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 				return "registreViaEmail";
 			}
 			
-			EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, isVistaMoviments);
 			
-			if (! registresSeleccionats.isEmpty()) {
-				Map<String, Object> params = new HashMap<String, Object>();
-				params.put("isVistaMoviments", isVistaMoviments);
-				params.put("destinataris", command.getAddresses());
-				params.put("motiu", command.getMotiu());
-				
-				crearExecucioMassivaRegistres(
-						request, 
-						registresSeleccionats, 
-						entitatActual, 
-						ExecucioMassivaTipusDto.ENVIAR_VIA_EMAIL, 
-						construirParametres(params));
-			} else {
-				return getModalControllerReturnValueError(
-						request,
-						"redirect:../registreUser",
-						"accio.massiva.controller.registre.seleccio.buida");
-			}
-			
-			MissatgesHelper.success(
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("isVistaMoviments", isVistaMoviments);
+			params.put("destinataris", command.getAddresses());
+			params.put("motiu", command.getMotiu());
+		    
+			return executarAccioMassivaRegistres(
 					request, 
-					getMessage(
-							request, 
-							"accio.massiva.controller.accion.crear.ok")
-					);
-	
-			return "redirect:/modal/massiva/consulta/0";
+					rol, 
+					registresSeleccionats, 
+					ExecucioMassivaTipusDto.ENVIAR_VIA_EMAIL, 
+					params, 
+					"redirect:../registreUser");
 		} catch (Exception e) {
 			MissatgesHelper.error(
 					request, 
@@ -740,35 +663,19 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 				return "registreUserEnviarIProcessar";
 			}
 			
-			EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
 			
-			if (! registresSeleccionats.isEmpty()) {
-				Map<String, Object> params = new HashMap<String, Object>();
-				params.put("destinataris", command.getAddresses());
-				params.put("motiu", command.getMotiu());
-				
-				crearExecucioMassivaRegistres(
-						request, 
-						registresSeleccionats, 
-						entitatActual, 
-						ExecucioMassivaTipusDto.ENVIAR_VIA_EMAIL_PROCESSAR, 
-						construirParametres(params));
-			} else {
-				return getModalControllerReturnValueError(
-						request,
-						"redirect:../registreUser",
-						"accio.massiva.controller.registre.seleccio.buida");
-			}
-			
-			MissatgesHelper.success(
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("destinataris", command.getAddresses());
+			params.put("motiu", command.getMotiu());
+		    
+			return executarAccioMassivaRegistres(
 					request, 
-					getMessage(
-							request, 
-							"accio.massiva.controller.accion.crear.ok")
-					);
-	
-			return "redirect:/modal/massiva/consulta/0";
+					rol, 
+					registresSeleccionats, 
+					ExecucioMassivaTipusDto.ENVIAR_VIA_EMAIL_PROCESSAR, 
+					params, 
+					"redirect:../registreUser");
 		} catch (Exception e) {
 			MissatgesHelper.error(
 					request, 
@@ -819,31 +726,15 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		}
 		
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, "admin", false);
 			
-			if (! registresSeleccionats.isEmpty()) {
-				crearExecucioMassivaRegistres(
-						request, 
-						registresSeleccionats, 
-						entitatActual, 
-						ExecucioMassivaTipusDto.PROCESSAR, 
-						null);
-			} else {
-				return getModalControllerReturnValueError(
-						request,
-						"redirect:../registreUser",
-						"accio.massiva.controller.registre.seleccio.buida");
-			}
-			
-			MissatgesHelper.success(
+			return executarAccioMassivaRegistres(
 					request, 
-					getMessage(
-							request, 
-							"accio.massiva.controller.accion.crear.ok")
-					);
-	
-			return "redirect:/modal/massiva/consulta/0";
+					"admin", 
+					registresSeleccionats, 
+					ExecucioMassivaTipusDto.PROCESSAR, 
+					null, 
+					"redirect:../registreUser");
 		} catch (Exception e) {
 			MissatgesHelper.error(
 					request, 
@@ -893,31 +784,15 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		}
 		
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, "admin", false);
 			
-			if (! registresSeleccionats.isEmpty()) {
-				crearExecucioMassivaRegistres(
-						request, 
-						registresSeleccionats, 
-						entitatActual, 
-						ExecucioMassivaTipusDto.BACKOFFICE, 
-						null);
-			} else {
-				return getModalControllerReturnValueError(
-						request,
-						"redirect:../registreUser",
-						"accio.massiva.controller.registre.seleccio.buida");
-			}
-			
-			MissatgesHelper.success(
+			return executarAccioMassivaRegistres(
 					request, 
-					getMessage(
-							request, 
-							"accio.massiva.controller.accion.crear.ok")
-					);
-	
-			return "redirect:/modal/massiva/consulta/0";
+					"admin", 
+					registresSeleccionats, 
+					ExecucioMassivaTipusDto.BACKOFFICE, 
+					null, 
+					"redirect:../registreUser");
 		} catch (Exception e) {
 			MissatgesHelper.error(
 					request, 
@@ -967,31 +842,15 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		}
 		
 		try {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, "admin", false);
 			
-			if (! registresSeleccionats.isEmpty()) {
-				crearExecucioMassivaRegistres(
-						request, 
-						registresSeleccionats, 
-						entitatActual, 
-						ExecucioMassivaTipusDto.SOBREESCRIURE, 
-						null);
-			} else {
-				return getModalControllerReturnValueError(
-						request,
-						"redirect:../registreUser",
-						"accio.massiva.controller.registre.seleccio.buida");
-			}
-			
-			MissatgesHelper.success(
+			return executarAccioMassivaRegistres(
 					request, 
-					getMessage(
-							request, 
-							"accio.massiva.controller.accion.crear.ok")
-					);
-	
-			return "redirect:/modal/massiva/consulta/0";
+					"admin", 
+					registresSeleccionats, 
+					ExecucioMassivaTipusDto.SOBREESCRIURE, 
+					null, 
+					"redirect:../registreUser");
 		} catch (Exception e) {
 			MissatgesHelper.error(
 					request, 
@@ -1232,6 +1091,47 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 						registresSeleccionats,
 						"admin".equals(rol)));
 	}
+	
+	private String executarAccioMassivaRegistres(
+	        HttpServletRequest request,
+	        String rol,
+	        List<RegistreDto> registresSeleccionats,
+	        ExecucioMassivaTipusDto tipus,
+	        Map<String, Object> params,
+	        String vistaError) {
+
+	    EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
+
+	    List<RegistreDto> registresModificables = registresSeleccionats.stream()
+	            .filter(RegistreDto::isPotModificar)
+	            .collect(Collectors.toList());
+
+	    if (registresSeleccionats.isEmpty()) {
+	        return getModalControllerReturnValueError(
+	                request,
+	                vistaError,
+	                "accio.massiva.controller.registre.seleccio.buida");
+	    }
+
+	    if (registresModificables.isEmpty()) {
+	        return getModalControllerReturnValueError(
+	                request,
+	                vistaError,
+	                "accio.massiva.controller.error.permis.bustia.descripcio");
+	    }
+
+	    crearExecucioMassivaRegistres(
+	            request,
+	            registresModificables,
+	            entitatActual,
+	            tipus,
+	            construirParametres(params)
+	    );
+
+	    MissatgesHelper.success(request, getMessage(request, "accio.massiva.controller.accion.crear.ok"));
+	    return "redirect:/modal/massiva/consulta/0";
+	}
+
 
 	private void omplirModelAmbRegistres(HttpServletRequest request, String rol, Model model) {
 		List<RegistreDto> registres = obtenirSeleccioRegistres(request, rol, false);

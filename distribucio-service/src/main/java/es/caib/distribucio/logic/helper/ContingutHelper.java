@@ -6,6 +6,7 @@ package es.caib.distribucio.logic.helper;
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.ContingutDto;
 import es.caib.distribucio.logic.intf.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
 import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.PermisDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
@@ -53,6 +55,7 @@ import es.caib.distribucio.persist.entity.ContingutLogEntity;
 import es.caib.distribucio.persist.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.persist.entity.ContingutMovimentEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
+import es.caib.distribucio.persist.entity.ExecucioMassivaContingutEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
@@ -67,6 +70,7 @@ import es.caib.distribucio.persist.repository.ContingutLogRepository;
 import es.caib.distribucio.persist.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.persist.repository.ContingutMovimentRepository;
 import es.caib.distribucio.persist.repository.ContingutRepository;
+import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
 import es.caib.distribucio.persist.repository.RegistreRepository;
 import es.caib.distribucio.persist.repository.UsuariRepository;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
@@ -121,6 +125,10 @@ public class ContingutHelper {
 	private UsuariRepository usuariRepository;
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;
+	@Autowired
+	private PermisosContingutHelper permisosContingutHelper;
+	@Autowired
+	private ExecucioMassivaContingutRepository execucioMassivaContingutRepository;
 
 	public ContingutDto toContingutDto(
 			ContingutEntity contingut) {
@@ -193,7 +201,9 @@ public class ContingutHelper {
 			// toBustiaContingut 
 			if (registreEntity.getPare() != null) {
 				ContingutEntity contingutPareDeproxied = HibernateHelper.deproxy(registreEntity.getPare());
-				registreDto.setBustiaActiva(((BustiaEntity)contingutPareDeproxied).isActiva());				
+                BustiaEntity bustiaEntity = ((BustiaEntity)contingutPareDeproxied);
+				registreDto.setBustiaActiva(bustiaEntity.isActiva());
+                permisosContingutHelper.omplirPermisosPerContingut(registreDto, bustiaEntity.getId());
 			}
 			if (RegistreProcesEstatEnum.isPendent(registreEntity.getProcesEstat())) {
 				registreDto.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PENDENT);
@@ -235,6 +245,20 @@ public class ContingutHelper {
 			registreDto.setMaxReintents(maxReintents);
 			registreDto.setMotiuRebuig(registreEntity.getMotiuRebuig());
 			registreDto.setBackObservacions(registreEntity.getBackObservacions());
+			registreDto.setTramitCodi(registreEntity.getTramitCodi());
+			registreDto.setTramitNom(registreEntity.getTramitNom());
+			
+			ExecucioMassivaContingutEntity execucioMassivaPendent = execucioMassivaContingutRepository.findByElementIdAndEstatIn(
+					contingut.getId(), 
+					new ArrayList<> (
+					Arrays.asList(
+							ExecucioMassivaContingutEstatDto.PENDENT, 
+							ExecucioMassivaContingutEstatDto.PROCESSANT,
+							ExecucioMassivaContingutEstatDto.PAUSADA)
+					)
+			);
+			
+			registreDto.setPendentExecucioMassiva(execucioMassivaPendent != null ? true : false);
 			
 			contingutDto = registreDto;
 		}
@@ -903,6 +927,8 @@ public class ContingutHelper {
 				regla(null).
 				oficinaOrigen(registreOriginal.getDataOrigen(), registreOriginal.getOficinaOrigenCodi(), registreOriginal.getOficinaOrigenDescripcio()).
 				presencial(registreOriginal.getPresencial()).
+				tramitCodi(registreOriginal.getTramitCodi()).
+				tramitNom(registreOriginal.getTramitNom()).
 				build();
 		// Copia els interessats
 		if (registreOriginal.getInteressats() != null) {

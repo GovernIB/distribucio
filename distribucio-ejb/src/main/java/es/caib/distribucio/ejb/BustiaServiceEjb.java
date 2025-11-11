@@ -246,8 +246,8 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 
 	@Override
 	@RolesAllowed("**")
-	public List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, BustiaFiltreOrganigramaDto bustiaFiltreOrganigramaDto) {
-		return delegateService.findAmbEntitatAndFiltre(entitatId, bustiaFiltreOrganigramaDto);
+	public List<BustiaDto> findAmbEntitatAndFiltre(Long entitatId, BustiaFiltreDto bustiaFiltreDto) {
+		return delegateService.findAmbEntitatAndFiltre(entitatId, bustiaFiltreDto);
 	}
 
 	@Override

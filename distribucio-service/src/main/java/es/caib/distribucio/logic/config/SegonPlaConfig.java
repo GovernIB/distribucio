@@ -81,7 +81,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 						} catch (Exception e) {
 							log.warn("Error consultant la propietat per la propera execució de guardar annexos: " + e.getMessage(), e);
 						}
-						if (value == null) 
+						if (value == null)
 							value = Long.valueOf("60000");
 						PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
 						trigger.setInitialDelay(value);
@@ -100,7 +100,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 					@Override
 					public void run() {
 						monitorTasquesService.inici(codiEnviarBackoffice);
-						try { 
+						try {
 							segonPlaService.enviarIdsAnotacionsPendentsBackoffice();
 							monitorTasquesService.fi(codiEnviarBackoffice);
 						} catch(Throwable th) {
@@ -117,7 +117,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 						} catch (Exception e) {
 							log.warn("Error consultant la propietat per la propera execució d'enviar anotacions pendents als backoffices: " + e.getMessage());
 						}
-						if (value == null) 
+						if (value == null)
 							value = Long.valueOf("60000");
 						PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
 						trigger.setInitialDelay(value);
@@ -128,6 +128,42 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 					}
 				});
 		monitorTasquesService.addTasca(codiEnviarBackoffice);
+        // Aplicar canvi d'estat a pendent els registres comunicats amb limit de temps
+		final String codiCanviarAPendent = "canviarAPendent";
+		monitorTasquesService.addTasca(codiCanviarAPendent);
+		taskRegistrar.addTriggerTask(
+				new Runnable() {
+					@Override
+					public void run() {
+						monitorTasquesService.inici(codiCanviarAPendent);
+						try {
+							segonPlaService.canviEstatComunicatAPendent();
+							monitorTasquesService.fi(codiCanviarAPendent);
+						} catch(Throwable th) {
+							tractarErrorTascaSegonPla(th, codiCanviarAPendent);
+						}
+					}
+				},
+				new Trigger() {
+					@Override
+					public Date nextExecutionTime(TriggerContext triggerContext) {
+						Long value = null;
+						try {
+							value = configService.getConfigAsLong("es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.comunicada");
+						} catch (Exception e) {
+							log.warn("Error consultant la propietat per la propera execució canviar estat comunicat a pendent: " + e.getMessage());
+						}
+						if (value == null)
+							value = Long.valueOf("60000");
+						PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
+						trigger.setInitialDelay(value);
+						Date nextExecution = trigger.nextExecutionTime(triggerContext);
+						Long longNextExecution = nextExecution.getTime() - System.currentTimeMillis();
+						monitorTasquesService.updateProperaExecucio(codiCanviarAPendent, longNextExecution);
+						return nextExecution;
+					}
+				});
+		monitorTasquesService.addTasca(codiCanviarAPendent);
 		//Aplicar regles de tipus backoffice
 		final String codiAplicarReglesBackoffice = "aplicarReglesBackoffice";
 		monitorTasquesService.addTasca(codiAplicarReglesBackoffice);
@@ -153,7 +189,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 						} catch (Exception e) {
 							log.warn("Error consultant la propietat per la propera execució d'aplicar regles: " + e.getMessage());
 						}
-						if (value == null) 
+						if (value == null)
 							value = Long.valueOf("60000");
 						PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
 						trigger.setInitialDelay(value);
@@ -172,7 +208,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 					@Override
 					public void run() {
 						monitorTasquesService.inici(codiTancarContenidors);
-						try { 
+						try {
 							segonPlaService.tancarContenidorsArxiuPendents();
 							monitorTasquesService.fi(codiTancarContenidors);
 						} catch(Throwable th) {
@@ -225,7 +261,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 						} catch (Exception e) {
 							log.warn("Error consultant la propietat per la propera execució d'enviar emails no agrupats: " + e.getMessage());
 						}
-						if (value == null) 
+						if (value == null)
 							value = Long.valueOf("60000");
 						PeriodicTrigger trigger = new PeriodicTrigger(value, TimeUnit.MILLISECONDS);
 						trigger.setInitialDelay(value);
@@ -261,7 +297,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 						} catch (Exception e) {
 							log.warn("Error consultant la propietat per la propera execució d'enviar emails agrupats: " + e.getMessage());
 						}
-						if (value == null) 
+						if (value == null)
 							value = "* * * * * *";
 						CronTrigger trigger = new CronTrigger(value);
 						Date nextExecution = trigger.nextExecutionTime(triggerContext);
@@ -296,7 +332,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 						//    0 0 20-06 * * *
 						// Cada 1min entre les 11h i les 12h
 						// 0 0/1 11 * * *
-						//                    	String value = "0 0 20-06 * * *"; 
+						//                    	String value = "0 0 20-06 * * *";
 						String value = "0 0 20 * * *";
 						CronTrigger trigger = new CronTrigger(value);
 						Date nextExecution = trigger.nextExecutionTime(triggerContext);
@@ -310,7 +346,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 					}
 				});
 		monitorTasquesService.addTasca(codiCalularDadesHistoriques);
-		
+
 		// Esborra les dades antigues del monitor d'integracions
 		final String codiEsborrarDadesAntigues = "esborrarDadesAntigues";
 		monitorTasquesService.addTasca(codiEsborrarDadesAntigues);
@@ -363,7 +399,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 							tractarErrorTascaSegonPla(th, codiReintentarProcessament);
 						}
 					}
-				}, 
+				},
 				new Trigger() {
 					@Override
 					public Date nextExecutionTime(TriggerContext triggerContext) {
@@ -401,7 +437,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 							tractarErrorTascaSegonPla(th, codiActualitzarProcediments);
 						}
 					}
-				}, 
+				},
 				new Trigger() {
 					@Override
 					public Date nextExecutionTime(TriggerContext triggerContext) {
@@ -438,7 +474,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 							tractarErrorTascaSegonPla(th, codiActualitzarServeis);
 						}
 					}
-				}, 
+				},
 				new Trigger() {
 					@Override
 					public Date nextExecutionTime(TriggerContext triggerContext) {
@@ -485,7 +521,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 						} catch (Exception e) {
 							log.warn("Error consultant la propietat per la propera execució de les massives: " + e.getMessage());
 						}
-						if (value == null) 
+						if (value == null)
 							value = "0 */15 * * * *"; // Cada 15 min
 						CronTrigger trigger = new CronTrigger(value);
 						Date nextExecution = trigger.nextExecutionTime(triggerContext);

@@ -223,6 +223,19 @@ li[id^="anotacio_"] {
 	important
 }
 
+.registre-desactivat {
+	pointer-events: none;
+	opacity: 0.6;
+}
+
+.icona-rellotge {
+  font-size: 24px;
+  color: #f0ad4e;
+  cursor: help;
+  pointer-events: auto;
+  margin-right: 20px;
+}
+
 </style>
 <script type="text/javascript">
 	// <![CDATA[
@@ -762,6 +775,9 @@ li[id^="anotacio_"] {
 			<c:if test="${!isVistaMoviments && isEnviarConeixementActiu}">
 				<label class="${registre.perConeixement ? 'coneixement' : 'tramitacio'}"><spring:message code="${registre.perConeixement ? 'bustia.pendent.info.coneixement' : 'bustia.pendent.info.tramitacio'}"/></label>
 			</c:if>
+			<c:if test="${registre.pendentExecucioMassiva}">
+				<span class="fa fa-clock-o icona-rellotge" title="<spring:message code="accio.massiva.icona.pendent"/>"></span>
+			</c:if>
 			<button id="avanzarPagina" title="<spring:message code="bustia.pendent.accio.avansar"/>" class="btn btn-default btn-sm ${registreNumero >= registreTotal ? 'disabled' : 'active'}" data-toggle="button">
 				<span class="fa-stack" aria-hidden="true">
 					<i class="fa fa-forward"></i>
@@ -777,13 +793,14 @@ li[id^="anotacio_"] {
 		        }
 			</script>
 			&nbsp;
-			<a href="${urlComentaris}" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris${registre.id}" class="btn btn-default"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">${registre.numComentaris}</span></a>
+			<a href="${urlComentaris}" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris${registre.id}" class="btn btn-default ${registre.pendentExecucioMassiva ? 'registre-desactivat' : ''}"><span class="fa fa-lg fa-comments"></span>&nbsp;<span class="badge">${registre.numComentaris}</span></a>
 			&nbsp;
 			
-			<button class="btn btn-primary accions ${(isVistaRegistresAndReservat ? 'alliberat' : '')}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
+			<button class="btn btn-primary accions ${(isVistaRegistresAndReservat ? 'alliberat' : '')} ${registre.pendentExecucioMassiva ? 'registre-desactivat' : ''}" data-toggle="dropdown"><span class="fa fa-cog"></span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 			<ul class="dropdown-menu">
 				<%--<c:if test="${isVistaMoviments || isVistaRegistresAndNoReservat || isVistaRegistresAndReservatUsuariActual}"> --%>				
 					<%-- CLASSIFICAR --%>
+                    <c:if test="${registre.potModificar}">
 					<c:choose>
 						<c:when test="${registre.procesEstat != 'ARXIU_PENDENT'}">
 							<li class="<c:if test="${isVistaMoviments}">hidden opt_classificar_${registre.id}</c:if>"><a id="accioClassificar" href="#"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
@@ -792,7 +809,7 @@ li[id^="anotacio_"] {
 							<li class="<c:if test="${isVistaMoviments}">hidden opt_classificar_${registre.id} disabled</c:if>"><a><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 						</c:otherwise>
 					</c:choose>
-					
+                    </c:if>
 					
 					<!-- ENVIAR VIA EMAIL -->
 					<c:choose>
@@ -810,6 +827,7 @@ li[id^="anotacio_"] {
 					</c:choose>
 					
 					<%-- REENVIAR --%>
+                    <c:if test="${registre.potModificar}">
 					<li class="<c:if test="${isAccioVisible}">hidden opt_reenviar_${registre.id}</c:if>"><a id="accioReenviar" href="#"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 					<c:if test="${registre.procesEstatSimple == 'PENDENT'}">
 						<%-- PROCESSAR --%>
@@ -822,10 +840,16 @@ li[id^="anotacio_"] {
 							</c:otherwise>
 						</c:choose>	
 					</c:if>
+                    </c:if>
 				<%--</c:if>--%>
 				<li>
-					<a href="<c:url value="/contingut/registre/${registre.id}/descarregarZip"/>">
-						<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
+					<a href="<c:url value="/contingut/registre/${registre.id}/descarregarZip/DOCUMENT_ORIGINAL"/>">
+						<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip.vo"/>
+					</a>
+				</li>
+				<li>
+					<a href="<c:url value="/contingut/registre/${registre.id}/descarregarZip/DOCUMENT"/>">
+						<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip.cai"/>
 					</a>
 				</li>
 				<li role="separator" class="divider"></li>
@@ -990,7 +1014,17 @@ li[id^="anotacio_"] {
 					</td>
 					<td><strong><spring:message code="registre.detalls.camp.numexp"/></strong></td>
 					<td>${registre.expedientNumero}</td>
-				</tr>				
+				</tr>
+				<tr>
+					<td>
+						<strong><spring:message code="registre.detalls.camp.tramit"/></strong>
+					</td>
+					<td colspan="5">
+						<c:if test="${not empty registre.tramitCodi && not empty registre.tramitNom}">
+							${registre.tramitCodi} - ${registre.tramitNom}
+						</c:if>
+					</td>
+				</tr>			
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.observacions"/></strong></td>
 					<td colspan="5">${registre.observacions}</td>
@@ -1459,12 +1493,25 @@ li[id^="anotacio_"] {
 						<table class="table table-bordered">
 							<tbody>
 								<tr>
-									<td colspan="2"><strong><spring:message code="registre.detalls.camp.assumpte.codi"/></strong></td>
-									<td colspan="2">(${registre.assumpteCodi})</td>
+									<td colspan="2"><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
+									<td colspan="2">
+									<c:choose>
+										<c:when test="${procedimentDades != null }">
+											${procedimentDades.codiSia} - ${procedimentDades.nom}
+										</c:when>
+										<c:otherwise>
+											${registre.procedimentCodi}
+										</c:otherwise>
+									</c:choose>
+									</td>
 								</tr>
 								<tr>
-									<td colspan="2"><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
-									<td colspan="2">${registre.procedimentCodi}</td>
+									<td colspan="2"><strong><spring:message code="registre.detalls.camp.tramit"/></strong></td>
+									<td colspan="2">
+										<c:if test="${not empty registre.tramitCodi && not empty registre.tramitNom}">
+										${registre.tramitCodi} - ${registre.tramitNom}
+										</c:if>
+									</td>
 								</tr>
 								<tr>
 									<td><strong><spring:message code="registre.detalls.camp.refext"/></strong></td>
@@ -1479,8 +1526,10 @@ li[id^="anotacio_"] {
 									<td>${registre.transportNumero}</td>
 								</tr>
 								<tr>
-									<td colspan="2"><strong><spring:message code="registre.detalls.camp.origen.oficina"/></strong></td>
-									<td colspan="2">${registre.oficinaOrigenDescripcio} ${registre.oficinaOrigenCodi!=null?'(':''}${registre.oficinaOrigenCodi}${registre.oficinaOrigenCodi!=null?')':''}</td>
+									<td><strong><spring:message code="registre.detalls.camp.origen.oficina"/></strong></td>
+									<td>${registre.oficinaOrigenDescripcio} ${registre.oficinaOrigenCodi!=null?'(':''}${registre.oficinaOrigenCodi}${registre.oficinaOrigenCodi!=null?')':''}</td>
+									<td><strong><spring:message code="registre.detalls.camp.assumpte.codi"/></strong></td>
+									<td>(${registre.assumpteCodi})</td>
 								</tr>
 								<tr>
 									<td><strong><spring:message code="registre.detalls.camp.origen.num"/></strong></td>

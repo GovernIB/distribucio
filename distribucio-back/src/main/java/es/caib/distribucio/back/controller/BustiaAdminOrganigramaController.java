@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import es.caib.distribucio.back.command.BustiaFiltreCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.back.command.BustiaCommand;
 import es.caib.distribucio.back.command.BustiaCommand.CreateUpdate;
-import es.caib.distribucio.back.command.BustiaFiltreOrganigramaCommand;
 import es.caib.distribucio.back.helper.BustiaHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.logic.intf.dto.ArbreDto;
@@ -41,6 +41,7 @@ import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.dto.UsuariPermisDto;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controlador per al manteniment de bústies.
@@ -51,7 +52,8 @@ import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
 @RequestMapping("/bustiaAdminOrganigrama")
 public class BustiaAdminOrganigramaController extends BaseAdminController {
 	
-	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaAdminOrganigramaController.session.filtre";
+	private static final String SESSION_ATTRIBUTE_FILTRE = "BustiaAdminController.session.filtre";
+	private static final String SESSION_ATTRIBUTE_MODIFIED_ID = "BustiaAdminController.session.bustiaModifiedId";
 
 	@Autowired
 	private BustiaService bustiaService;
@@ -63,10 +65,20 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
-			Model model,
-			Long bustiaId) {
+			Model model) {
 		
 		omplirModel(request, model);
+
+        Long bustiaId = (Long) RequestSessionHelper.obtenirObjecteSessio(
+                request,
+                SESSION_ATTRIBUTE_MODIFIED_ID);
+        if (bustiaId != null) {
+            RequestSessionHelper.esborrarObjecteSessio(
+                    request,
+                    SESSION_ATTRIBUTE_MODIFIED_ID);
+
+            model.addAttribute("bustiaModifiedId", bustiaId);
+        }
 		
 		return "bustiaAdminOrganigrama";
 	}
@@ -74,7 +86,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	@RequestMapping(method = RequestMethod.POST)
 	public String post(
 			HttpServletRequest request,
-			@Valid BustiaFiltreOrganigramaCommand filtreCommand,
+			@Valid BustiaFiltreCommand filtreCommand,
 			BindingResult bindingResult,
 			Model model,
 			@RequestParam(value = "accio", required = false) String accio) {
@@ -116,11 +128,11 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
     @ResponseBody
     public String startExcelGeneration(HttpServletRequest request) {
         EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
-        BustiaFiltreOrganigramaCommand bustiaFiltreOrganigramaCommand = getFiltreOrganigramaCommand(request);
+        BustiaFiltreCommand bustiaFiltreOrganigramaCommand = getFiltreOrganigramaCommand(request);
 
         List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
                 entitatActual.getId(),
-                BustiaFiltreOrganigramaCommand.asDto(bustiaFiltreOrganigramaCommand));
+                BustiaFiltreCommand.asDto(bustiaFiltreOrganigramaCommand));
 
         // Arranca la generación en segundo plano
         return bustiaHelper.generateExcelAsync(busties);        
@@ -159,13 +171,13 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 				entitatActual.getId());
 	}
 	
-	private BustiaFiltreOrganigramaCommand getFiltreOrganigramaCommand(
+	private BustiaFiltreCommand getFiltreOrganigramaCommand(
 			HttpServletRequest request) {
-		BustiaFiltreOrganigramaCommand bustiaFiltreCommand = (BustiaFiltreOrganigramaCommand)RequestSessionHelper.obtenirObjecteSessio(
+		BustiaFiltreCommand bustiaFiltreCommand = (BustiaFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
 				request,
 				SESSION_ATTRIBUTE_FILTRE);
 		if (bustiaFiltreCommand == null) {
-			bustiaFiltreCommand = new BustiaFiltreOrganigramaCommand();
+			bustiaFiltreCommand = new BustiaFiltreCommand();
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,
@@ -228,11 +240,10 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletRequest request,
 			@Validated(CreateUpdate.class) BustiaCommand command,
 			BindingResult bindingResult,
-			Model model) {
+            RedirectAttributes redirectAttributes) {
 		try {
 			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 			if (bindingResult.hasErrors()) {
-				omplirModel(request, model);
 				List<String> errorMsgs = new ArrayList<>();
 				for(ObjectError objectError: bindingResult.getAllErrors()){
 					String field = "";
@@ -248,10 +259,14 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 						"bustia.controller.modificat.error.validacio",
 						new Object[] {errorMsgs});	
 			}
-			bustiaService.update(
+			BustiaDto bustiaDto = bustiaService.update(
 					entitatActual.getId(),
 					BustiaCommand.asDto(command));
-			
+            RequestSessionHelper.actualitzarObjecteSessio(
+                    request,
+                    SESSION_ATTRIBUTE_MODIFIED_ID,
+                    bustiaDto.getId());
+
 			return getAjaxControllerReturnValueSuccess(
 					request,
 					"redirect:/bustiaAdminOrganigrama",
@@ -265,7 +280,6 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 					new Object[] {e.getMessage()});			
 		}
 	}
-	
 	
 	@RequestMapping(value = "/{bustiaId}/delete", method = RequestMethod.GET)
 	public String delete(
@@ -394,13 +408,13 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			HttpServletRequest request,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		
-		BustiaFiltreOrganigramaCommand bustiaFiltreOrganigramaCommand = getFiltreOrganigramaCommand(request);
+
+        BustiaFiltreCommand bustiaFiltreOrganigramaCommand = getFiltreOrganigramaCommand(request);
 		
 		
 		List<BustiaDto> busties = bustiaService.findAmbEntitatAndFiltre(
 				entitatActual.getId(),
-				BustiaFiltreOrganigramaCommand.asDto(bustiaFiltreOrganigramaCommand));
+                BustiaFiltreCommand.asDto(bustiaFiltreOrganigramaCommand));
 		
 		model.addAttribute(
 				"busties",

@@ -3,8 +3,10 @@
  */
 package es.caib.distribucio.logic.service;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,15 +15,22 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.logic.helper.BustiaHelper;
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.EntityComprovarHelper;
+import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.ReglaHelper;
+import es.caib.distribucio.logic.helper.SubsistemesHelper;
+import es.caib.distribucio.logic.helper.SubsistemesHelper.SubsistemesEnum;
 import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
+import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
@@ -30,10 +39,13 @@ import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
 import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.ReglaFiltreActivaEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaFiltreDto;
+import es.caib.distribucio.logic.intf.dto.ReglaGestioTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.service.ReglaService;
@@ -80,6 +92,8 @@ public class ReglaServiceImpl implements ReglaService {
 	private BustiaHelper bustiaHelper;
 	@Resource
 	private BustiaRepository bustiaRepository;
+    @Autowired
+    private IntegracioHelper integracioHelper;
 
 	@Override
 	@Transactional
@@ -128,7 +142,13 @@ public class ReglaServiceImpl implements ReglaService {
 			break;
 		}
 		reglaEntity.setAturarAvaluacio(reglaDto.isAturarAvaluacio());
-		return toReglaDto(reglaRepository.save(reglaEntity));
+		ReglaDto novaReglaDto = toReglaDto(reglaRepository.save(reglaEntity));
+		this.monitoritzarRegla(
+				ReglaGestioTipusEnumDto.Alta,
+				entitat.getNom(),
+				reglaDto.getProcedimentCodiFiltre(),
+				reglaDto.getBackofficeDestiNom());				
+		return novaReglaDto;
 	}
 
 	@Override
@@ -182,8 +202,14 @@ public class ReglaServiceImpl implements ReglaService {
 			UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatOrganitzativaRepository.findById(reglaDto.getUnitatDestiId()).orElse(null);
 			reglaEntity.updatePerTipusUnitat(unitatOrganitzativaEntity);
 			break;
-		}
-		return toReglaDto(reglaRepository.save(reglaEntity));
+		}		
+		ReglaDto novaReglaDto = toReglaDto(reglaRepository.save(reglaEntity));
+		this.monitoritzarRegla(
+				ReglaGestioTipusEnumDto.Modificacio,
+				entitat.getNom(),
+				reglaDto.getProcedimentCodiFiltre(),
+				reglaDto.getBackofficeDestiNom());				
+		return novaReglaDto;
 	}
 
 	@Override
@@ -191,6 +217,7 @@ public class ReglaServiceImpl implements ReglaService {
 	public ReglaDto updateActiva(
 			Long entitatId,
 			Long reglaId,
+			String sia,
 			boolean activa) throws NotFoundException {
 		logger.debug("Modificant propietat activa de la regla ("
 				+ "entitatId=" + entitatId + ", "
@@ -205,12 +232,19 @@ public class ReglaServiceImpl implements ReglaService {
 				entitat,
 				reglaId);
 		regla.updateActiva(activa);
-		return toReglaDto(reglaRepository.save(regla));
+		
+		ReglaDto novaReglaDto = toReglaDto(reglaRepository.save(regla));
+		this.monitoritzarRegla(
+				activa?ReglaGestioTipusEnumDto.Activacio:ReglaGestioTipusEnumDto.Desactivacio,
+				entitat.getNom(),
+				sia,
+				null);				
+		return novaReglaDto;
 	}
 	
 	@Override
 	@Transactional
-	public ReglaDto updateActivaPresencial(Long entitatId, Long reglaId, boolean activa, ReglaPresencialEnumDto presencial)
+	public ReglaDto updateActivaPresencial(Long entitatId, Long reglaId, boolean activa, ReglaPresencialEnumDto presencial, String sia)
 			throws NotFoundException {
 			logger.debug("Modificant propietats activa i presencial de la regla ("
 				+ "entitatId=" + entitatId + ", "
@@ -226,7 +260,14 @@ public class ReglaServiceImpl implements ReglaService {
 					reglaId);
 			regla.updateActiva(activa);
 			regla.updatePresencial(presencial);
-			return toReglaDto(reglaRepository.save(regla));
+			
+			ReglaDto novaReglaDto = toReglaDto(reglaRepository.save(regla));
+			this.monitoritzarRegla(
+					ReglaGestioTipusEnumDto.Modificacio,
+					entitat.getNom(),
+					sia,
+					null);				
+			return novaReglaDto;
 	}
 
 	@Override
@@ -469,8 +510,10 @@ public class ReglaServiceImpl implements ReglaService {
 		
 		
 		UnitatOrganitzativaEntity unitat = filtre.getUnitatId() == null ? null : unitatOrganitzativaRepository.findById(filtre.getUnitatId()).orElse(null);
-		
+		UnitatOrganitzativaEntity unitatDesti = filtre.getUnitatDestiId() == null ? null : unitatOrganitzativaRepository.findById(filtre.getUnitatDestiId()).orElse(null);
+
 		BustiaEntity bustia = filtre.getBustiaId() == null ? null : bustiaRepository.findById(filtre.getBustiaId()).orElse(null);
+		BustiaEntity bustiaDesti = filtre.getBustiaDestiId() == null ? null : bustiaRepository.findById(filtre.getBustiaDestiId()).orElse(null);
 
 		BackofficeEntity backoffice = filtre.getBackofficeId() == null ? null : backofficeRepository.findById(filtre.getBackofficeId()).orElse(null);
 		
@@ -500,9 +543,13 @@ public class ReglaServiceImpl implements ReglaService {
 						filtre.getPresencial() == null,
 						filtre.getPresencial(),
 						bustia == null, 
-						bustia, 
-						backoffice == null ,
+						bustia,
+                        !ReglaTipusEnumDto.BACKOFFICE.equals(filtre.getTipus()) || backoffice == null,
 						backoffice,
+                        !ReglaTipusEnumDto.UNITAT.equals(filtre.getTipus()) || filtre.getUnitatDestiId() == null,
+                        unitatDesti,
+                        !ReglaTipusEnumDto.BUSTIA.equals(filtre.getTipus()) || filtre.getBustiaDestiId() == null,
+                        bustiaDesti,
 //						filtre.isActiva(),
 						totes,
 						activa, 
@@ -742,7 +789,22 @@ public class ReglaServiceImpl implements ReglaService {
 		if (busitaFiltre != null) {
 			dto.setBustiaFiltreId(busitaFiltre.getId());
 		}
-	
+
+        if (regla.getCreatedBy().isPresent())  {
+            dto.setCreatedBy(conversioTipusHelper.convertir(regla.getCreatedBy().get(), UsuariDto.class));
+        }
+
+        if (regla.getLastModifiedBy().isPresent())  {
+            dto.setLastModifiedBy(conversioTipusHelper.convertir(regla.getLastModifiedBy().get(), UsuariDto.class));
+        }
+        
+		regla.getCreatedDate()
+				.ifPresent(ldt -> 
+					dto.setCreatedDate(Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant())));
+
+		regla.getLastModifiedDate()
+				.ifPresent(ldt -> 
+					dto.setLastModifiedDate(Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant())));
 		
 		return dto;
 	}
@@ -751,6 +813,11 @@ public class ReglaServiceImpl implements ReglaService {
 	@Transactional(readOnly = true)
 	public List<ReglaDto> findReglaBackofficeByProcediment (String procedimentCodi) {
 		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiProcediment(procedimentCodi);
+		this.monitoritzarRegla(
+				ReglaGestioTipusEnumDto.Consulta,
+				null,
+				procedimentCodi,
+				null);				
 		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
 	}
 	
@@ -760,6 +827,70 @@ public class ReglaServiceImpl implements ReglaService {
 	public List<ReglaDto> findReglaByProcediment (String procedimentCodi) {
 		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaByCodiProcediment(procedimentCodi);
 		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
+	}
+	
+//  @Override
+	public void monitoritzarRegla(
+			ReglaGestioTipusEnumDto reglaGestioTipusEnumDto,
+			String entitat,
+			String sia,
+			String backoffice
+			) {
+		long start = System.currentTimeMillis();
+		String accioDescripcio = reglaGestioTipusEnumDto.name() + " de la regla amb codi SIA " + sia;
+		String usuariIntegracio = this.getUsuariIntegracio();
+		Map<String, String> accioParams = new HashMap<String, String>();
+		accioParams.put("Accio sobre la regla", reglaGestioTipusEnumDto.name());
+		accioParams.put("Codi SIA", sia);
+		accioParams.put("Backoffice", backoffice);		
+      
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth!=null) {
+			String usuariCodi = auth.getName();
+			accioParams.put("Usuari", usuariCodi);
+		}
+		long t0 = System.currentTimeMillis();
+		try {
+			logger.trace(">>> Abans de cridar el servei de la gestió de la regla");
+			integracioHelper.addAccioOk (
+					IntegracioHelper.INTCODI_BACKOFFICE,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0
+			);
+			SubsistemesHelper.addSuccessOperation(SubsistemesEnum.BKE, System.currentTimeMillis() - start);
+			logger.trace(">>> Despres de cridar el servei de la gestió de la regla");
+		} catch (Exception ex) {
+			logger.error("Error al gestionar la regla en el servei web de backoffice integració (" + "sia="
+					+ sia + ex);
+			String errorDescripcio = "Error al gestionar la regla en el servei web de backoffice integració";
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_BACKOFFICE,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.RECEPCIO,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKE);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_BACKOFFICE,
+					errorDescripcio,
+					ex);
+		}
+		logger.debug("");
+	}
+  
+	private String getUsuariIntegracio() {
+		String usuari = null;
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			usuari = auth.getName();
+		}
+		return usuari;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaServiceImpl.class);

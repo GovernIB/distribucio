@@ -88,6 +88,12 @@ public class MonitorIntegracioServiceEjb extends AbstractServiceEjb<MonitorInteg
 	public IntegracioDiagnosticDto diagnostic(String codiIntegracio, UsuariDto usuari) {
 		return delegateService.diagnostic(codiIntegracio, usuari);
 	}
+	
+	@Override
+	@RolesAllowed("**")
+	public Map<String, Integer> countCanvisEstatFromUser(String user) {
+		return delegateService.countCanvisEstatFromUser(user);
+	}
 
 	protected void setDelegateService(MonitorIntegracioService delegateService) {
 		this.delegateService = delegateService;

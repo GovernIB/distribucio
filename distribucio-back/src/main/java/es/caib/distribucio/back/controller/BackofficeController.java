@@ -3,11 +3,14 @@
  */
 package es.caib.distribucio.back.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import es.caib.distribucio.back.helper.ExceptionHelper;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -127,7 +130,8 @@ public class BackofficeController extends BaseAdminController {
 				return getModalControllerReturnValueSuccess(
 						request,
 						"redirect:../../backoffice",
-						"backoffice.controller.modificat.ok");
+						"backoffice.controller.modificat.ok",
+                        new Object[]{command.getCodi()});
 			} else {
 				backofficeService.create(
 						entitatActual.getId(), 
@@ -135,7 +139,8 @@ public class BackofficeController extends BaseAdminController {
 				return getModalControllerReturnValueSuccess(
 						request,
 						"redirect:../../backoffice",
-						"backoffice.controller.creat.ok");
+						"backoffice.controller.creat.ok",
+                        new Object[]{command.getCodi()});
 			}
 		} catch (Exception e) {
 			return getAjaxControllerReturnValueErrorMessage(
@@ -153,30 +158,23 @@ public class BackofficeController extends BaseAdminController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		BackofficeDto backoffice = backofficeService.findById(entitatActual.getId(), backofficeId);
 		try {
-			
-			Exception exception = backofficeService.provar(
-					entitatActual.getId(), 
-					backofficeId);
-			
+			Exception exception = backofficeService.provar(entitatActual.getId(), backofficeId);
+
 			if (exception == null) {
 				MissatgesHelper.success(
-						request, 
+						request,
 						getMessage(
-								request, 
+								request,
 								"backoffice.controller.provar.ok",
 								new Object[] {
 										backoffice.getCodi()}));
 			} else {
-				MissatgesHelper.error(
-				request,
-				getMessage(
-						request, 
-						"backoffice.controller.provar.error",
-						new Object[] {
-								backoffice.getCodi(),
-								exception.getMessage()}));				
-			}
-			
+                if (ExceptionHelper.isExceptionOrCauseInstanceOf(exception, "SOAPFaultException")) {
+                    MissatgesHelper.warning(request, exception.getMessage());
+                } else {
+                    MissatgesHelper.error(request, exception.getMessage());
+                }
+            }
 		} catch (Exception e) {
 			MissatgesHelper.error(
 			request,
@@ -186,41 +184,37 @@ public class BackofficeController extends BaseAdminController {
 					new Object[] {
 							backoffice.getCodi(),
 							e.getMessage()}));
-
 		}
 		return "redirect:../../backoffice";
 	}
 	
 	@RequestMapping(value = "/{backofficeId}/provarajax", method = RequestMethod.GET)
 	@ResponseBody
-	public boolean provarajax(
+	public Map<String, Object> provarajax(
 			HttpServletRequest request, 
 			@PathVariable Long backofficeId) {
+        Map<String, Object> result = new HashMap<>();
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		BackofficeDto backoffice = backofficeService.findById(entitatActual.getId(), backofficeId);
-		boolean response = false;
+        BackofficeDto backoffice = backofficeService.findById(entitatActual.getId(), backofficeId);
 		try {
-			
-			Exception exception = backofficeService.provar(
-					entitatActual.getId(), 
-					backofficeId);
-			
-			if (exception == null) {
-				response = true;
+			Exception exception = backofficeService.provar(entitatActual.getId(), backofficeId);
+
+			if (exception != null) {
+                if (ExceptionHelper.isExceptionOrCauseInstanceOf(exception, "SOAPFaultException")) {
+                    result.put("warning", exception.getMessage());
+                } else {
+                    result.put("error", exception.getMessage());
+                }
 			}
 		} catch (Exception e) {
-			MissatgesHelper.error(
-					request,
-					getMessage(
-							request, 
-							"backoffice.controller.provar.error",
-							new Object[] {
-									backoffice.getCodi(),
-									e.getMessage()}));
+            result.put("error", getMessage(
+                    request,
+                    "backoffice.controller.provar.error",
+                    new Object[] {
+                            backoffice.getCodi(),
+                            e.getMessage()}));
 		}
-		
-		
-		return response;
+		return result;
 	}
 	
 	@RequestMapping(value = "/{backofficeId}/delete", method = RequestMethod.GET)
@@ -237,13 +231,15 @@ public class BackofficeController extends BaseAdminController {
 									"backoffice.controller.esborrat.ko.constraintviolation",
 									new Object[] {reglesBackoffice.size()}));
 			}
+            BackofficeDto command = backofficeService.findById(entitatActual.getId(), backofficeId);
 			backofficeService.delete(
 					entitatActual.getId(),
 					backofficeId);
 			return getAjaxControllerReturnValueSuccess(
 					request,
 					"redirect:../../backoffice",
-					"backoffice.controller.esborrat.ok");
+					"backoffice.controller.esborrat.ok",
+                    new Object[]{command.getCodi()});
 		} catch (Exception e) {
 			return getAjaxControllerReturnValueErrorMessage(
 					request,

@@ -10,6 +10,8 @@
 <%@ attribute name="itemKey" required="true" rtexprvalue="true"%>
 <%@ attribute name="itemText" required="true" rtexprvalue="true"%>
 <%@ attribute name="missatgeHeader" required="true" rtexprvalue="true"%>
+<%@ attribute name="itemError" required="false" rtexprvalue="true"%>
+<%@ attribute name="missatgeError" required="false" rtexprvalue="true"%>
 
 <c:set var="nItems">${fn:length(items)}</c:set>
 
@@ -25,7 +27,7 @@
 				</h3>
 			</div>
 			<div class="col-sm-7">
-				<!-- Barra de progrés -->
+				<!-- Barra de progrï¿½s -->
 				<div id="items-progress" class="progress" style="height: 25px; margin-bottom: 0; display:none;">
 					<div id="items-progress-success" class="progress-bar progress-bar-success progress-bar-striped" style="width: 0%">
 						<strong><span class="valor text-success"></span></strong>
@@ -61,7 +63,17 @@
 			<tbody>
 				<c:forEach var="item" items="${items}">
 					<tr id="tr_item_${item[itemId]}" data-id="${item[itemId]}" class='itemTr'>
-						<td>[<a href="<c:url value="${itemUrl}/${item[itemUrlParam1]}/${not empty itemUrlParam2 ? item[itemUrlParam2] : ''}"/>" target="blank">${item[itemKey]}</a>] ${item[itemText]}</td>
+						<td>
+                            [<a href="<c:url value="${itemUrl}/${item[itemUrlParam1]}/${not empty itemUrlParam2 ? item[itemUrlParam2] : ''}"/>" target="blank">${item[itemKey]}</a>]
+                            ${item[itemText]}
+
+                            <c:if test="${ itemError != null && !item[itemError] }">
+                                <c:choose>
+                                    <c:when test="${missatgeError != null}"><span class="fa fa-warning alert-warning" title="<spring:message code='${missatgeError}'/>"></span></c:when>
+                                    <c:otherwise><span class="fa fa-warning alert-warning"></span></c:otherwise>
+                                </c:choose>
+                            </c:if>
+                        </td>
 					</tr>
 				</c:forEach>
 			</tbody>

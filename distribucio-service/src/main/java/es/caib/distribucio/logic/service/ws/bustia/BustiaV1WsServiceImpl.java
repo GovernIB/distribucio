@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -22,12 +23,10 @@ import com.codahale.metrics.Timer;
 import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper.SubsistemesEnum;
-import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.logic.intf.dto.DocumentNtiTipoFirmaEnumDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.SemaphoreDto;
-import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.logic.intf.registre.Firma;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnex;
@@ -62,11 +61,10 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	@Autowired
 	private ConfigService configService;
 	@Autowired
-	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
-	@Autowired
 	private EntitatService entitatService;
 
 	@Override
+	@Transactional
 	public void enviarAnotacioRegistreEntrada(
 			String entitat,
 			String unitatAdministrativa,

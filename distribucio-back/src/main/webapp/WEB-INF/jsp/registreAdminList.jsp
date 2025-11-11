@@ -50,6 +50,33 @@
 	tbody tr.selectable td span.caret {
 		margin: 8px 0 0 2px; 
 	}	
+	
+.fila-desactivada {
+  position: relative;
+}
+
+.overlay-desactivada {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.icona-rellotge {
+  font-size: 24px;
+  color: #f0ad4e;
+  pointer-events: auto;
+  z-index: 10;
+  cursor: help;
+}
+
+.fila-desactivada.selected {
+	background-color: #f9f9f9 !important;
+}
+
 </style>
 	
 <script>
@@ -121,7 +148,7 @@ $(document).ready(function() {
 		$('#nomesAmbEsborranys').val(nomesAmbEsborranys);
 	})
 	var selectButtonsInitialized = false;
-	$('#taulaDades').on( 'draw.dt', function () {
+	$('#taulaDades').on( 'draw.dt', function (datatable) {
 		if (!selectButtonsInitialized) {
 			selectButtonsInitialized = true;
 			$('#seleccioAll').on('click', function(e) {
@@ -164,6 +191,26 @@ $(document).ready(function() {
 				$a.attr('href', $a.attr('href') + '?' + params.toString());
 				// Afegeix els paràmetres a l'enllaç de la fila
 				$(this).data('href', $(this).data('href') + '?' + params.toString());
+				
+				var isPendentExecucioMassiva = $('#taulaDades').dataTable().api().row($(this)).data()['pendentExecucioMassiva'];
+				if (isPendentExecucioMassiva) {
+					const $row = $(this);
+					
+					// Desactivam la fila
+					$row.addClass('fila-desactivada');
+
+					// Desactivam boyo i enllac
+					$row.find('button, a').attr('disabled', true).css('pointer-events', 'none');
+
+					var title = "<spring:message code="accio.massiva.icona.pendent"/>";
+					
+					// Afegir overlay i rellotge
+					if ($row.find('.overlay-desactivada').length === 0) {
+					  $row.append('<div class="overlay-desactivada"> ' +
+									'<span class="fa fa-clock-o icona-rellotge" title="' + title + '"></span> ' +
+								   '</div>');	
+					}
+				}
 			}
 		});
 	} ).on('selectionchange.dataTable', function (e, accio, ids) {
@@ -449,7 +496,7 @@ $(document).ready(function() {
 		data-filter="#registreFiltreCommand"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="true"
-		data-default-order="15"
+		data-default-order="16"
 		data-default-dir="desc"
 		class="table table-bordered table-striped"
 		data-rowhref-template="#rowhrefTemplate" 
@@ -463,6 +510,7 @@ $(document).ready(function() {
 				<th data-col-name="enviatPerEmail" data-visible="false"></th>
 				<th data-col-name="enviamentsPerEmail" data-visible="false"></th>
 				<th data-col-name="procesEstatSimple"  data-visible="false"></th>
+				<th data-col-name="pendentExecucioMassiva"  data-visible="false"></th>
 				<th data-col-name="procesError" data-visible="false"></th>
 				<th data-col-name="sobreescriure" data-visible="false"></th>
 				<th data-col-name="motiuRebuig" data-visible="false"></th>
@@ -680,8 +728,13 @@ $(document).ready(function() {
 								{{/if}}
 								</c:if>
 								<li>
-									<a data-refresh-tancar="true" href="<c:url value="/contingut/registre/{{:id}}/descarregarZip"/>">
-										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
+									<a data-refresh-tancar="true" href="<c:url value="/contingut/registre/{{:id}}/descarregarZip/DOCUMENT_ORIGINAL"/>">
+										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip.vo"/>
+									</a>
+								</li>
+								<li>
+									<a data-refresh-tancar="true" href="<c:url value="/contingut/registre/{{:id}}/descarregarZip/DOCUMENT"/>">
+										<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip.cai"/>
 									</a>
 								</li>
 							</ul>

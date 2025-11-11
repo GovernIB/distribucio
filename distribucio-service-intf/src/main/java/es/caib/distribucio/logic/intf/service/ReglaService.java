@@ -73,6 +73,7 @@ public interface ReglaService {
 	public ReglaDto updateActiva(
 			Long entitatId,
 			Long reglaId,
+			String sia,
 			boolean activa) throws NotFoundException;
 
 	/**
@@ -98,7 +99,8 @@ public interface ReglaService {
 			Long entitatId,
 			Long reglaId,
 			boolean activa,
-			ReglaPresencialEnumDto presencial) throws NotFoundException;
+			ReglaPresencialEnumDto presencial,
+			String sia) throws NotFoundException;
 
 	/**
 	 * Esborra una regla.

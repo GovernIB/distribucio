@@ -17,8 +17,12 @@ import es.caib.comanda.ms.estadistica.model.EstadistiquesInfo;
 import es.caib.comanda.ms.estadistica.model.IndicadorDesc;
 import es.caib.comanda.ms.estadistica.model.RegistresEstadistics;
 import es.caib.distribucio.logic.intf.service.EstadisticaService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
+@Tag(
+		name = "Estadístiques",
+		description = "API REST de consulta de les estadístiques per mostrar l'aplicació Comanda.")
 public class EstadistiquesController {
 
 	@Autowired

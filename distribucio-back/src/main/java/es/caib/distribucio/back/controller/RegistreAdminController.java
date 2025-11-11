@@ -384,9 +384,9 @@ public class RegistreAdminController extends BaseAdminController {
 			@RequestParam(required = false) Long unitatId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
-		BustiaFiltreOrganigramaDto filtre = new BustiaFiltreOrganigramaDto();
+        BustiaFiltreDto filtre = new BustiaFiltreDto();
 		filtre.setActiva(!mostrarInactives);
-		filtre.setUnitatIdFiltre(unitatId);
+		filtre.setUnitatId(unitatId);
 		return bustiaService.findAmbEntitatAndFiltre(entitatActual.getId(), filtre);
 	}
 
@@ -557,11 +557,12 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long registreId) {
 		try {
 			registreService.marcarSobreescriure(getEntitatActualComprovantPermisAdmin(request).getId(), registreId);
+            String numero = registreService.getNumeroById(registreId);
 			return getAjaxControllerReturnValueSuccess(
 					request,
 					"redirect:../../registreAdmin",
 					"registre.admin.controller.marcar.sobreescriure.ok",
-					new Object[] {registreId});
+					new Object[] {numero});
 		} catch (Exception e) {
 			return getAjaxControllerReturnValueError(
 					request,

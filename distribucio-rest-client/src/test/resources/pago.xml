@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:PAGO xmlns:ns2="urn:es:caib:sistra2:xml:pago:v1:model">
+	<IDENTIFICADOR>identificador</IDENTIFICADOR>
+	<DATOS_PAGO>
+		<SIMULADO>false</SIMULADO>
+		<CONTRIBUYENTE>
+			<NIF>00000000R</NIF>
+			<NOMBRE>Contribuyente</NOMBRE>
+		</CONTRIBUYENTE>
+		<CONCEPTO>concepto</CONCEPTO>
+		<IMPORTE>0</IMPORTE>
+	</DATOS_PAGO>
+	<CONFIRMACION_PAGO>
+		<FECHA_PAGO>01/01/1970</FECHA_PAGO>
+		<LOCALIZADOR>localitzador</LOCALIZADOR>
+	</CONFIRMACION_PAGO>
+</ns2:PAGO>
