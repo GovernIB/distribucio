@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.caib.distribucio</groupId>
 	<artifactId>distribucio</artifactId>
-	<version>1.0.6</version>
+	<version>1.0.5.2</version>
 	<packaging>pom</packaging>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -35,7 +35,7 @@
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
 		<skipTests>true</skipTests>
-		<version.date>2025.11.07 10:00h</version.date>
+		<version.date>2025.11.12 12:00h</version.date>
 	</properties>
 	<modules>
 		<module>distribucio-api-externa</module>

@@ -186,10 +186,9 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 					execucioMassivaHelper.updateProcessantNewTransaction(em, new Date());
 					
 					for (ExecucioMassivaContingutEntity emc: em.getContinguts()) {
-						setAuthentication(emc);
-						execucioMassivaHelper.updateProcessantNewTransaction(emc, new Date());
-						
 						if (execucioMassivaHelper.isEmcDisponibleNewTransaction(emc)) {
+                            setAuthentication(emc);
+                            execucioMassivaHelper.updateProcessantNewTransaction(emc, new Date());
 							
 							entrarSemafor(emc.getElementId());
 							
@@ -289,11 +288,11 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 								sortirSemafor(emc.getElementId());
 								removeAuthentication();
 							}
+                            execucioMassivaHelper.updateFinalitzatNewTransaction(emc, new Date());
 						} else {
 							// Si s'ha cancel·lat pausat abans d'acabar
 							continue;
 						}
-						execucioMassivaHelper.updateFinalitzatNewTransaction(emc, new Date());
 					}
 					execucioMassivaHelper.updateFinalitzatNewTransaction(em, new Date());
 				}
