@@ -11,13 +11,7 @@ import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.PaginaDto;
-import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
-import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
-import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
-import es.caib.distribucio.logic.intf.dto.ReglaDto;
-import es.caib.distribucio.logic.intf.dto.ReglaFiltreDto;
-import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
+import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.ReglaService;
 import lombok.experimental.Delegate;
@@ -132,7 +126,17 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 				reglaId);
 	}
 
-	@Override
+    @Override
+    @RolesAllowed(BaseConfig.ROLE_ADMIN)
+    public List<RegistreDto> consultaRegistresAplicaRegla(
+            Long entitatId,
+            Long reglaId) throws NotFoundException {
+        return delegateService.consultaRegistresAplicaRegla(
+                entitatId,
+                reglaId);
+    }
+
+    @Override
 	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public ReglaDto findOne(
 			Long entitatId,

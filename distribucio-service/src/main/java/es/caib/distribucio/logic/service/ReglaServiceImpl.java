@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import es.caib.distribucio.logic.intf.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,20 +31,6 @@ import es.caib.distribucio.logic.helper.ReglaHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper.SubsistemesEnum;
 import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
-import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.PaginaDto;
-import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
-import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
-import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionEnumDto;
-import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
-import es.caib.distribucio.logic.intf.dto.ReglaDto;
-import es.caib.distribucio.logic.intf.dto.ReglaFiltreActivaEnumDto;
-import es.caib.distribucio.logic.intf.dto.ReglaFiltreDto;
-import es.caib.distribucio.logic.intf.dto.ReglaGestioTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
-import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
@@ -451,6 +438,67 @@ public class ReglaServiceImpl implements ReglaService {
 
 		return numerosRegistres;
 	}
+
+    @Override
+    @Transactional
+    public List<RegistreDto> consultaRegistresAplicaRegla(
+            Long entitatId,
+            Long reglaId) {
+        logger.debug("Consultant els registres per aplicar la regla manualment ("
+                + "entitatId=" + entitatId + ", "
+                + "reglaId=" + reglaId + ")");
+
+        List<RegistreDto> numerosRegistres = new ArrayList<>();
+
+        EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+                entitatId,
+                false,
+                true,
+                false);
+
+        ReglaEntity regla = entityComprovarHelper.comprovarRegla(
+                entitat,
+                reglaId);
+
+        List<String> codisProcediments;
+        if(regla.getProcedimentCodiFiltre() != null && !regla.getProcedimentCodiFiltre().trim().isEmpty()) {
+            codisProcediments = Arrays.asList(regla.getProcedimentCodiFiltre().split(" "));
+        } else {
+            codisProcediments = new ArrayList<>();
+            codisProcediments.add("-");
+        }
+
+        List<Long> bustiesUnitatOrganitzativaIds = new ArrayList<>();
+        if (regla.getUnitatOrganitzativaFiltre() != null) {
+            for (BustiaEntity bustia : bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNotNull(entitat, regla.getUnitatOrganitzativaFiltre())) {
+                bustiesUnitatOrganitzativaIds.add(bustia.getId());
+            }
+        }
+        if (bustiesUnitatOrganitzativaIds.isEmpty()) {
+            bustiesUnitatOrganitzativaIds.add(0L);
+        }
+
+        Boolean registrePresencial = null;
+        if (regla.getPresencial() != null) {
+            registrePresencial = ReglaPresencialEnumDto.SI.equals(regla.getPresencial());
+        }
+
+        List<RegistreEntity> registres = reglaRepository.findRegistres(
+                entitat,
+                regla.getUnitatOrganitzativaFiltre() == null,
+                bustiesUnitatOrganitzativaIds,
+                registrePresencial == null,
+                registrePresencial != null ? registrePresencial.booleanValue() : false,
+                regla.getBustiaFiltre() == null,
+                regla.getBustiaFiltre() != null ? regla.getBustiaFiltre().getId() : 0L,
+                regla.getProcedimentCodiFiltre() == null || regla.getProcedimentCodiFiltre().trim().isEmpty(),
+                codisProcediments,
+                regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(),
+                regla.getAssumpteCodiFiltre() != null && !regla.getAssumpteCodiFiltre().trim().isEmpty() ?
+                        regla.getAssumpteCodiFiltre() : "-");
+
+        return conversioTipusHelper.convertirList(registres, RegistreDto.class);
+    }
 
 	@Override
 	@Transactional(readOnly = true)

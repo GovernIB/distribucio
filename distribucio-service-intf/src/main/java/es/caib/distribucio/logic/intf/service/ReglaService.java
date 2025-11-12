@@ -6,16 +6,10 @@ package es.caib.distribucio.logic.intf.service;
 import java.util.List;
 import java.util.Map;
 
+import es.caib.distribucio.logic.intf.dto.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.PaginaDto;
-import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
-import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
-import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
-import es.caib.distribucio.logic.intf.dto.ReglaDto;
-import es.caib.distribucio.logic.intf.dto.ReglaFiltreDto;
-import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 
 
@@ -185,7 +179,24 @@ public interface ReglaService {
 			Long entitatId, 
 			Long reglaId);
 
-	/**
+    /**
+     * Mètode per consultar els registres als quals aplicarà manualment una regla. Avalua les anotacions pendents de bústia
+     * sense regla assignada i en cas de complir amb les condicions assigna la regla per a que
+     * s'apliqui en segon pla.
+     *
+     * @param entitatId
+     * @param reglaId
+     *
+     * @return Retorna la llista dels números dels registres als quals s'ha assignat la regla per a que se'ls apliqui.
+     *
+     */
+    @PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
+    public List<RegistreDto> consultaRegistresAplicaRegla(
+            Long entitatId,
+            Long reglaId);
+
+
+    /**
 	 * Consulta una regla donat el seu id.
 	 * 
 	 * @param entitatId

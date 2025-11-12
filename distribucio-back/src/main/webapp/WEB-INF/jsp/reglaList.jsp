@@ -505,7 +505,7 @@
 								{{if !activa}}
 								<li><a href="#" class="inactiva" title="Acció no disponible si està inactiva"><span class="fa fa-cog"></span>&nbsp;&nbsp;<spring:message code="regla.list.accio.aplicar.manualment"/></a></li>
 								{{else}}
-								<li><a href="regla/{{:id}}/aplicar" data-confirm="<spring:message code="regla.list.accio.aplicar.manualment.confirm"/>"><span class="fa fa-cog"></span>&nbsp;&nbsp;<spring:message code="regla.list.accio.aplicar.manualment"/></a></li>
+								<li><a href="regla/{{:id}}/aplicarPreview" data-toggle="modal" data-maximized="true"><span class="fa fa-cog"></span>&nbsp;&nbsp;<spring:message code="regla.list.accio.aplicar.manualment"/></a></li>
 								{{/if}}
 								<li><a href="regla/{{:id}}/up" data-toggle="ajax"><span class="fa fa-arrow-up"></span>&nbsp;&nbsp;<spring:message code="comu.boto.amunt"/></a></li>
 								<li><a href="regla/{{:id}}/down" data-toggle="ajax"><span class="fa fa-arrow-down"></span>&nbsp;&nbsp;<spring:message code="comu.boto.avall"/></a></li>
