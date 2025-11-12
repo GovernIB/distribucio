@@ -281,6 +281,17 @@ public class ExecucioMassivaHelper {
 		em.updateProcessant(dataInici);
 		execucioMassivaRepository.saveAndFlush(em);
 	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public boolean isFinalitzableNewTransaction(ExecucioMassivaEntity em) {
+        Optional<ExecucioMassivaEntity> emNewTransaction = execucioMassivaRepository.findById(em.getId());
+
+        if (emNewTransaction.isPresent()) {
+            em.setEstat(emNewTransaction.get().getEstat());
+            return ExecucioMassivaEstatDto.PROCESSANT.equals(emNewTransaction.get().getEstat());
+        }
+        return false;
+	}
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateProcessantNewTransaction(ExecucioMassivaContingutEntity emc, Date dataInici) {

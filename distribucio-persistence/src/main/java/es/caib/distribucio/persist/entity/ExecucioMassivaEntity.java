@@ -18,15 +18,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaEstatDto;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaTipusDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @Entity
@@ -40,7 +38,8 @@ public class ExecucioMassivaEntity extends DistribucioAuditable<Long> {
 	@Column(name = "tipus", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private ExecucioMassivaTipusDto tipus;
-	
+
+    @Setter
 	@Column(name = "estat", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private ExecucioMassivaEstatDto estat;
@@ -56,7 +55,7 @@ public class ExecucioMassivaEntity extends DistribucioAuditable<Long> {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "data_final")
 	private Date dataFi;
-	
+
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "entitat_id")
 	private EntitatEntity entitat;
@@ -85,12 +84,15 @@ public class ExecucioMassivaEntity extends DistribucioAuditable<Long> {
 	}
 
 	public void updateCancelat() {
-		this.estat = ExecucioMassivaEstatDto.CANCELADA;
-		
-		for (ExecucioMassivaContingutEntity execucioMassivaContingutEntity : continguts) {
-			if (execucioMassivaContingutEntity.getError() == null)
-				execucioMassivaContingutEntity.updateCancelat();
-		}
+        if (!ExecucioMassivaEstatDto.FINALITZADA.equals(estat)) {
+            this.estat = ExecucioMassivaEstatDto.CANCELADA;
+
+            for (ExecucioMassivaContingutEntity execucioMassivaContingutEntity : continguts) {
+                if (execucioMassivaContingutEntity.getError() == null
+                        && !ExecucioMassivaContingutEstatDto.FINALITZADA.equals(execucioMassivaContingutEntity.getEstat()))
+                    execucioMassivaContingutEntity.updateCancelat();
+            }
+        }
 	}
 
 	public void updateProcessant(Date dataInici) {
@@ -99,21 +101,27 @@ public class ExecucioMassivaEntity extends DistribucioAuditable<Long> {
 	}
 
 	public void updatePausat() {
-		this.estat = ExecucioMassivaEstatDto.PAUSADA;
-		
-		for (ExecucioMassivaContingutEntity execucioMassivaContingutEntity : continguts) {
-			if (execucioMassivaContingutEntity.getError() == null)
-				execucioMassivaContingutEntity.updatePausat();
-		}
+        if (!ExecucioMassivaEstatDto.FINALITZADA.equals(estat)) {
+            this.estat = ExecucioMassivaEstatDto.PAUSADA;
+
+            for (ExecucioMassivaContingutEntity execucioMassivaContingutEntity : continguts) {
+                if (execucioMassivaContingutEntity.getError() == null
+                        && !ExecucioMassivaContingutEstatDto.FINALITZADA.equals(execucioMassivaContingutEntity.getEstat()))
+                    execucioMassivaContingutEntity.updatePausat();
+            }
+        }
 	}
 
 	public void updatePendent() {
-		this.estat = ExecucioMassivaEstatDto.PENDENT;
-		
-		for (ExecucioMassivaContingutEntity execucioMassivaContingutEntity : continguts) {
-			if (execucioMassivaContingutEntity.getError() == null)
-				execucioMassivaContingutEntity.updatePendent();
-		}
+        if (!ExecucioMassivaEstatDto.FINALITZADA.equals(estat)) {
+            this.estat = ExecucioMassivaEstatDto.PENDENT;
+
+            for (ExecucioMassivaContingutEntity execucioMassivaContingutEntity : continguts) {
+                if (execucioMassivaContingutEntity.getError() == null
+                        && !ExecucioMassivaContingutEstatDto.FINALITZADA.equals(execucioMassivaContingutEntity.getEstat()))
+                    execucioMassivaContingutEntity.updatePendent();
+            }
+        }
 	}
 	
 }
