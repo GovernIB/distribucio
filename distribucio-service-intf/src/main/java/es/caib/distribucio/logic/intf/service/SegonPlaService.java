@@ -77,6 +77,6 @@ public interface SegonPlaService {
 	 **/
 	public void executeNextMassiveScheduledTask() throws Exception;
 	
+	/** Reinicia una tasca concreta o "totes". */
 	public void restartSchedulledTasks(String taskCodi);
-	
 }

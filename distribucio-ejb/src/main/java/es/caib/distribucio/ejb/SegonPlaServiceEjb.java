@@ -91,6 +91,12 @@ public class SegonPlaServiceEjb extends AbstractServiceEjb<SegonPlaService> impl
 		delegateService.actualitzarServeis();
 	}
 
+	@Override
+	@RolesAllowed("**")
+	public void restartSchedulledTasks(String taskCodi) {
+		delegateService.restartSchedulledTasks(taskCodi);
+	}
+
 	protected void setDelegateService(SegonPlaService delegateService) {
 		this.delegateService = delegateService;
 	}
