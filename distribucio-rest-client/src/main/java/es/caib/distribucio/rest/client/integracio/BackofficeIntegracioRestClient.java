@@ -65,7 +65,7 @@ public class BackofficeIntegracioRestClient extends RestClientBase{
         Client jerseyClient = generarClient(urlAmbMetode);
         String json = jerseyClient.
                 resource(urlAmbMetode).
-                queryParam("indetificador", URLEncoder.encode(id.getIndetificador(), "UTF-8")).
+                queryParam("identificador", URLEncoder.encode(id.getIdentificador(), "UTF-8")).
                 queryParam("clauAcces", URLEncoder.encode(id.getClauAcces(), "UTF-8")).
                 type("application/json").
                 get(String.class);

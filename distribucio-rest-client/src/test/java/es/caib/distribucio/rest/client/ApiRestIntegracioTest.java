@@ -25,7 +25,7 @@ public class ApiRestIntegracioTest {
 		
 		// Crea l'objecte id per la consulta
 		AnotacioRegistreId id = new AnotacioRegistreId();
-		id.setIndetificador("GOIBE1708001141307/2024");
+		id.setIdentificador("GOIBE1708001141307/2024");
 		id.setClauAcces("BYlMBmFPLGJSytavAH325Yjbwqo9xfXhM+wM0vzHxL4=");
 
 		// Consulta l'anotació

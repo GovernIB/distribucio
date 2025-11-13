@@ -3,26 +3,22 @@
  */
 package es.caib.distribucio.logic.intf.service.ws.backoffice;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * Classe que representa id del anotació de registre.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AnotacioRegistreId {
-	private String indetificador;
+	private String identificador;
 	private String clauAcces;
-	
-	public String getIndetificador() {
-		return indetificador;
-	}
-	public void setIndetificador(String indetificador) {
-		this.indetificador = indetificador;
-	}
-	public String getClauAcces() {
-		return clauAcces;
-	}
-	public void setClauAcces(String clauAcces) {
-		this.clauAcces = clauAcces;
-	}
 	
 }

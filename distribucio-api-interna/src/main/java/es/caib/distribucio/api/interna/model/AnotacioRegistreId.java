@@ -23,7 +23,7 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AnotacioRegistreId {
 
-	private String indetificador;
+	private String identificador;
 	private String clauAcces;
 
 }

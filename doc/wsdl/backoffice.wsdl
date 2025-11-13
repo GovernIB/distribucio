@@ -11,7 +11,7 @@
 <xs:complexType name="anotacioRegistreId">
 <xs:sequence>
 <xs:element minOccurs="0" name="clauAcces" type="xs:string" />
-<xs:element minOccurs="0" name="indetificador" type="xs:string" />
+<xs:element minOccurs="0" name="identificador" type="xs:string" />
 </xs:sequence>
 </xs:complexType>
 <xs:complexType name="comunicarAnotacionsPendentsResponse">

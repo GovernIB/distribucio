@@ -42,7 +42,7 @@ public class BackofficeIntegracioTest {
 		try {
 			
 			AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
-			anotacioRegistreId.setIndetificador(IDENTIFICADOR);
+			anotacioRegistreId.setIdentificador(IDENTIFICADOR);
 			anotacioRegistreId.setClauAcces(CLAU_ACCESS);		
 			
 			
@@ -64,7 +64,7 @@ public class BackofficeIntegracioTest {
 
 		try {
 			AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
-			anotacioRegistreId.setIndetificador(IDENTIFICADOR);
+			anotacioRegistreId.setIdentificador(IDENTIFICADOR);
 			anotacioRegistreId.setClauAcces(CLAU_ACCESS);			
 			
 			getBustiaServicePort().canviEstat(

@@ -49,7 +49,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -114,11 +113,9 @@ import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
-import es.caib.distribucio.logic.permission.ExtendedPermission;
 import es.caib.distribucio.logic.service.RegistreServiceImpl;
 import es.caib.distribucio.logic.service.SegonPlaServiceImpl.GuardarAnotacioPendentThread;
 import es.caib.distribucio.persist.entity.BackofficeEntity;
-import es.caib.distribucio.persist.entity.BustiaEntity;
 import es.caib.distribucio.persist.entity.ContingutEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
@@ -1358,7 +1355,7 @@ public class RegistreHelper {
 			for (RegistreEntity pendent : pendentsByRegla) {
 				
 				AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
-				anotacioRegistreId.setIndetificador(pendent.getNumero());			
+				anotacioRegistreId.setIdentificador(pendent.getNumero());
 				
 				try {
 					anotacioRegistreId.setClauAcces(RegistreHelper.encrypt(pendent.getNumero() + "_" + pendent.getId(),
@@ -1371,7 +1368,7 @@ public class RegistreHelper {
 							ex);
 				}
 				ids.add(anotacioRegistreId);
-				accioParams.put(anotacioRegistreId.getIndetificador(), anotacioRegistreId.getClauAcces());
+				accioParams.put(anotacioRegistreId.getIdentificador(), anotacioRegistreId.getClauAcces());
 			}
 			
 			exception = comunicarAnotacionsAlBackoffice(backofficeDesti, ids, accioParams);
@@ -1407,7 +1404,7 @@ public class RegistreHelper {
 		long t0 = System.currentTimeMillis();
 		String accioDescripcio = "Comunicar ";
 		if (ids.size() == 1) {
-			accioDescripcio += " l'anotació " + ids.get(0).getIndetificador();
+			accioDescripcio += " l'anotació " + ids.get(0).getIdentificador();
 		} else {
 			accioDescripcio +=  ids.size() + " anotacions";
 		}
@@ -1461,7 +1458,7 @@ public class RegistreHelper {
 				
 				// RegistreNumero sí si només n'hi ha 1				
 				if (ids.size()==1) {					
-					String identificador = ids.get(0).getIndetificador();
+					String identificador = ids.get(0).getIdentificador();
 					integracioHelper.addAccioOk(
 							IntegracioHelper.INTCODI_BACKOFFICE,
 							identificador,

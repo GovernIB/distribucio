@@ -68,15 +68,15 @@ public class BackofficeRestController {
 			description = "Retorna totes les dades de l'anotació de registre pendents d'enviar al Backoffice consultada")
 	public ResponseEntity<Object> consulta(
 			HttpServletRequest request,
-			@Parameter(name = "indetificador", description = "Identificador de la anotació de registre, sol ser el número de registre", required = true)
-			String indetificador,
+			@Parameter(name = "identificador", description = "Identificador de la anotació de registre, sol ser el número de registre", required = true)
+			String identificador,
 			@Parameter(name = "clauAcces", description = "Clau de caràcters alfanumèrics proporcionada per Distribucio per poder consultar l'anotació", required = true)
 			String clauAcces) throws SistemaExternException {
 		if (!hasRole())
 			return responseUnautorized();
 		try {
 			AnotacioRegistreId id = new AnotacioRegistreId();
-			id.setIndetificador(indetificador);
+			id.setIdentificador(identificador);
 			id.setClauAcces(clauAcces);
 			AnotacioRegistreEntrada anotacio = backofficeIntegracioWsService.consulta(id);
 			
@@ -86,7 +86,7 @@ public class BackofficeRestController {
 					"Canvi a nivell de consulta des de l'estat comunicada a rebuda pel backoffice");
 				return new ResponseEntity<Object>(anotacio, HttpStatus.OK);
 		} catch(Exception e) {
-			String errMsg = "Error no controlat consultant l'anotació amb id " + indetificador + " i clau " + clauAcces + ": " + e.getMessage();
+			String errMsg = "Error no controlat consultant l'anotació amb id " + identificador + " i clau " + clauAcces + ": " + e.getMessage();
 			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -127,7 +127,7 @@ public class BackofficeRestController {
 			return new ResponseEntity<Object>("No s'ha rebut en el cos de la petició la informació pel canvi d'estat", HttpStatus.BAD_REQUEST);
 		}
 		if (infoCanviEstat.getId() == null 
-				|| infoCanviEstat.getId().getIndetificador() == null 
+				|| infoCanviEstat.getId().getIdentificador() == null
 				|| infoCanviEstat.getId().getClauAcces() == null) {
 			return new ResponseEntity<Object>("Falta informació de l'identificador de l'anotació.", HttpStatus.BAD_REQUEST);		
 		}
@@ -165,7 +165,7 @@ public class BackofficeRestController {
 
 		try {
 			AnotacioRegistreId id = new AnotacioRegistreId();
-			id.setIndetificador(infoCanviEstat.getId().getIndetificador());
+			id.setIdentificador(infoCanviEstat.getId().getIdentificador());
 			id.setClauAcces(infoCanviEstat.getId().getClauAcces());
 			backofficeIntegracioWsService.canviEstat(
 					id,
@@ -187,8 +187,8 @@ public class BackofficeRestController {
 					description = "Retorna en un llistat les dades de les anotacions del número i data de registre especificats")
 	public ResponseEntity<Object> llistarAnotacions(
 	        HttpServletRequest request,
-	        @Parameter(name = "indetificador", description = "Identificador de la anotació de registre, sol ser el número de registre", required = true)
-			String indetificador,
+	        @Parameter(name = "identificador", description = "Identificador de la anotació de registre, sol ser el número de registre", required = true)
+			String identificador,
 			@Parameter(name = "dataRegistre", description = "La data de registre en format dd/MM/yyyy HH:mm:ss", required = true)
 			String dataRegistreStr) throws SistemaExternException {
 
@@ -201,11 +201,11 @@ public class BackofficeRestController {
             
 	        // Lógica para consultar la anotación usando los parámetros proporcionados en el objeto consultaParams
 	        List<AnotacioRegistreEntrada> anotacions = backofficeIntegracioWsService.llistar(
-	        		indetificador, 
+	        		identificador,
 	        		dataRegistre);
 	        return new ResponseEntity<Object>(anotacions, HttpStatus.OK);
 	    } catch(Exception e) {
-	        String errMsg = "Error no controlat al consultar les anotacions del registre " + indetificador + " i la data " + dataRegistreStr + ": " + e.getMessage();
+	        String errMsg = "Error no controlat al consultar les anotacions del registre " + identificador + " i la data " + dataRegistreStr + ": " + e.getMessage();
 	        return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	}

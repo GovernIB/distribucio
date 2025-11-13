@@ -1884,7 +1884,7 @@ public class RegistreServiceImpl implements RegistreService {
 		List<Long> registresId = new ArrayList<Long>();
 		String clauSecreta = registreHelper.getClauSecretaProperty();
 		// Cerca el registre per clau i identificador encriptades tenint en compte que pot haver anotacions reenviades
-		List<RegistreEntity> registres = registreRepository.findByNumero(id.getIndetificador());
+		List<RegistreEntity> registres = registreRepository.findByNumero(id.getIdentificador());
 		if (registres.isEmpty()) {
 			throw new NotFoundException(
 					id,
@@ -1893,7 +1893,7 @@ public class RegistreServiceImpl implements RegistreService {
 		String encryptedIdentificator = "";
 		for(RegistreEntity r : registres) {
 			encryptedIdentificator = RegistreHelper.encrypt(
-					id.getIndetificador() + "_" + Long.valueOf(r.getId()),
+					id.getIdentificador() + "_" + Long.valueOf(r.getId()),
 					clauSecreta);
 			if (encryptedIdentificator.equals(id.getClauAcces())) {
 				registresId.add(r.getId());
@@ -1901,10 +1901,10 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		if (registresId.isEmpty() && registres.size() > 0) {
 			// Codifica només l'identificador com es feia fins la versió 0.9.43.1 
-			encryptedIdentificator = RegistreHelper.encrypt(id.getIndetificador(), clauSecreta);
+			encryptedIdentificator = RegistreHelper.encrypt(id.getIdentificador(), clauSecreta);
 			if (encryptedIdentificator.equals(id.getClauAcces())) {
-				logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + id.getIndetificador() + " en la consulta pel backoffice");
-				registres = contingutLogRepository.findByNumeroAndComunidaBackoffice(id.getIndetificador());
+				logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + id.getIdentificador() + " en la consulta pel backoffice");
+				registres = contingutLogRepository.findByNumeroAndComunidaBackoffice(id.getIdentificador());
 				if (registres != null && !registres.isEmpty()) {
 					for (RegistreEntity r : registres) {
 						registresId.add(r.getId());
