@@ -22,4 +22,5 @@ public class PropertyConfig {
 	public static final String PERSISTENCE_CONTAINER_TRANSACTIONS_DISABLED = PROPERTY_PREFIX + "persist.container-transactions-disabled";
 	public static final String PERSISTENCE_TRANSACTION_MANAGER_ENABLED = PROPERTY_PREFIX + "persist.transaction-manager.enabled";
 
+    public static final String DADESEXT_PLUGIN_DIR3_REST_URL = PROPERTY_PREFIX + "plugin.dadesext.dir3.rest.url";
 }
