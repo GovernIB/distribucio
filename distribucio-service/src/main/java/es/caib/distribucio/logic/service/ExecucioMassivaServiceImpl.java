@@ -45,14 +45,14 @@ import es.caib.distribucio.persist.repository.UsuariRepository;
 
 /**
  * Implementació del servei per gestionar les execucions massives.
- * 
+ *
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Service
 public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 
 	private Map<Long, Semaphore> semafors = new HashMap<Long, Semaphore>();
-	
+
 	@Autowired
 	private UsuariHelper usuariHelper;
 	@Autowired
@@ -61,7 +61,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 	private EntityComprovarHelper entityComprovarHelper;
 	@Autowired
 	private ExecucioMassivaHelper execucioMassivaHelper;
-	
+
 	@Autowired
 	private ExecucioMassivaRepository execucioMassivaRepository;
 	@Autowired
@@ -70,7 +70,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 	private UsuariRepository usuariRepository;
 	@Autowired
 	private PluginHelper pluginHelper;
-	
+
 	@Transactional
 	@Override
 	public void crearExecucioMassiva(Long entitatId, ExecucioMassivaDto dto)
@@ -82,7 +82,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 				false,
 				false);
 		UsuariEntity usuari = usuariRepository.findByCodi(auth.getName());
-		
+
 		ExecucioMassivaEntity execucioMassiva = ExecucioMassivaEntity.hiddenBuilder()
 				.entitat(entitat)
 				.usuari(usuari)
@@ -91,7 +91,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 				.dataCreacio(dto.getDataCreacio())
 				.parametres(dto.getParametres())
 				.build();
-				
+
 		int ordre = 0;
 		for (ExecucioMassivaContingutDto execucioMassivaContingutDto : dto.getContinguts()) {
 			ExecucioMassivaContingutEntity execucioMassivaContingut = ExecucioMassivaContingutEntity.hiddenBuilder()
@@ -103,10 +103,10 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 					.elementTipus(execucioMassivaContingutDto.getElementTipus())
 					.ordre(ordre++)
 					.build();
-			
+
 			execucioMassiva.addContingut(execucioMassivaContingut);
 		}
-		
+
 		execucioMassivaRepository.save(execucioMassiva);
 	}
 
@@ -116,7 +116,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 		ExecucioMassivaEntity execucioMassiva = execucioMassivaRepository.findById(exm_id).orElse(null);
 		if (execucioMassiva == null)
 			throw new NotFoundException(exm_id, ExecucioMassivaEntity.class);
-		
+
 		switch (accio) {
 		case CANCELAR:
 			execucioMassivaHelper.updateCancelatNewTransaction(execucioMassiva);
@@ -128,9 +128,9 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 			execucioMassivaHelper.updatePendentNewTransaction(execucioMassiva);
 			break;
 		}
-		
+
 	}
-	
+
 	@Override
 	public List<ExecucioMassivaDto> findExecucionsMassivesPerUsuari(Long entitatId, UsuariDto usuari, int pagina) throws NotFoundException {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
@@ -138,22 +138,22 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 				true,
 				false,
 				false);
-		
+
 		Pageable paginacio = PageRequest.of(pagina, 8, Direction.DESC, "dataInici");
-		
+
 		List<ExecucioMassivaEntity> exmEntities = new ArrayList<ExecucioMassivaEntity>();
 		if (usuari == null) {
 			exmEntities = execucioMassivaRepository.findByEntitatIdOrderByCreatedDateDesc(
-					entitat.getId(), 
+					entitat.getId(),
 					paginacio);
 		} else {
 			UsuariEntity usuariEntity = usuariRepository.findByCodi(usuari.getCodi());
 			exmEntities = execucioMassivaRepository.findByUsuariAndEntitatIdOrderByCreatedDateDesc(
-					usuariEntity, 
-					entitat.getId(), 
+					usuariEntity,
+					entitat.getId(),
 					paginacio);
 		}
-		
+
 		return recompteErrors(exmEntities);
 	}
 
@@ -163,10 +163,10 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 		ExecucioMassivaEntity execucioMassiva = execucioMassivaRepository.findById(exm_id).orElse(null);
 		if (execucioMassiva == null)
 			throw new NotFoundException(exm_id, ExecucioMassivaEntity.class);
-		
+
 		List<ExecucioMassivaContingutEntity> continguts = execucioMassivaContingutRepository.findByExecucioMassivaOrderByOrdreAsc(execucioMassiva);
 		List<ExecucioMassivaContingutDto> dtos = conversioTipusHelper.convertirList(continguts, ExecucioMassivaContingutDto.class);
-		
+
 		return dtos;
 	}
 
@@ -179,90 +179,89 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 			EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(entitatId, false, false, false);
 			List<ExecucioMassivaEntity> ems = execucioMassivaRepository.findMassivesAmbPendentsByEntitatPerProcessar(new Date(), entitatId);
 			String missatge = null;
-			
+
 			if (ems != null && ems.size() > 0) {
 				ExecucioMassivaEntity em = ems.get(0);
 				if (em.getContinguts() != null) {
 					execucioMassivaHelper.updateProcessantNewTransaction(em, new Date());
-					
+
 					for (ExecucioMassivaContingutEntity emc: em.getContinguts()) {
-						setAuthentication(emc);
-						execucioMassivaHelper.updateProcessantNewTransaction(emc, new Date());
-						
 						if (execucioMassivaHelper.isEmcDisponibleNewTransaction(emc)) {
-							
+                            setAuthentication(emc);
+                            execucioMassivaHelper.updateProcessantNewTransaction(emc, new Date());
+
 							entrarSemafor(emc.getElementId());
-							
+
 							try {
 								switch (em.getTipus()) {
 								case CLASSIFICAR:
 									execucioMassivaHelper.classificarNewTransaction(
-											entitat.getId(), 
+											entitat.getId(),
 											emc.getElementId(),
 											em.getParametres());
 									break;
 								case REENVIAR:
 									execucioMassivaHelper.reenviarNewTransaction(
-											entitat.getId(), 
+											entitat.getId(),
 											emc.getElementId(),
 											em.getParametres());
 									break;
 								case MARCAR_PROCESSAT:
 									execucioMassivaHelper.marcarProcessatNewTransaction(
-											entitat.getId(), 
+											entitat.getId(),
 											emc.getElementId(),
 											em.getParametres());
 									break;
 								case MARCAR_PENDENT:
 									execucioMassivaHelper.marcarPendentNewTransaction(
-											entitat.getId(), 
+											entitat.getId(),
 											emc.getElementId(),
 											em.getParametres());
 									break;
 								case ENVIAR_VIA_EMAIL:
 									execucioMassivaHelper.enviarViaEmailNewTransaction(
-											entitat.getId(), 
+											entitat.getId(),
 											emc.getElementId(),
 											em.getParametres());
 									break;
 								case ENVIAR_VIA_EMAIL_PROCESSAR:
 									execucioMassivaHelper.enviarViaEmailNewTransaction(
-											entitat.getId(), 
+											entitat.getId(),
 											emc.getElementId(),
 											em.getParametres());
-									
+
 									execucioMassivaHelper.marcarProcessatNewTransaction(
-											entitat.getId(), 
+											entitat.getId(),
 											emc.getElementId(),
 											em.getParametres());
 									break;
 								case CUSTODIAR:
 									missatge = execucioMassivaHelper.custodiarAnnexosNewTransaction(emc.getElementId());
-									
+
 									emc.updateMissatge(missatge);
 									break;
 								case PROCESSAR:
 									missatge = execucioMassivaHelper.reintentarProcessamentNewTransaction(
-											entitat.getId(), 
+											entitat.getId(),
 											emc.getElementId());
-									
+
 									emc.updateMissatge(missatge);
 									break;
 								case BACKOFFICE:
 									missatge = execucioMassivaHelper.reintentarBackofficeNewTransaction(
-											entitat.getId(), 
+											entitat.getId(),
 											emc.getElementId());
-									
+
 									emc.updateMissatge(missatge);
 									break;
 								case SOBREESCRIURE:
 									missatge = execucioMassivaHelper.sobreescriureNewTransaction(
-											entitat.getId(), 
+											entitat.getId(),
 											emc.getElementId());
-									
+
 									emc.updateMissatge(missatge);
 									break;
-									
+
 								default:
 									break;
 								}
@@ -289,13 +288,13 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 								sortirSemafor(emc.getElementId());
 								removeAuthentication();
 							}
-						} else {
-							// Si s'ha cancel·lat pausat abans d'acabar
-							continue;
+                            execucioMassivaHelper.updateFinalitzatNewTransaction(emc, new Date());
 						}
-						execucioMassivaHelper.updateFinalitzatNewTransaction(emc, new Date());
 					}
-					execucioMassivaHelper.updateFinalitzatNewTransaction(em, new Date());
+
+                    if (execucioMassivaHelper.isFinalitzableNewTransaction(em)) {
+                        execucioMassivaHelper.updateFinalitzatNewTransaction(em, new Date());
+                    }
 				}
 			}
 		} catch (Exception e) {
@@ -306,7 +305,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<ExecucioMassivaContingutDto> findExecucioPerContingut(List<Long> continguts) throws NotFoundException {
-		
+
 		List<ExecucioMassivaContingutEntity> execucioMassivaContinguts = new ArrayList<> ();
 		if (continguts != null) {
 			// Consulta de 1000 en 1000 els que estan en el llistat.
@@ -316,24 +315,24 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 						continguts.subList(i, Math.min(continguts.size(), i+1000)),
 						new ArrayList<> (
 								Arrays.asList(
-										ExecucioMassivaContingutEstatDto.PENDENT, 
+										ExecucioMassivaContingutEstatDto.PENDENT,
 										ExecucioMassivaContingutEstatDto.PROCESSANT)
 								)
 						));
-				
+
 			}
 		}
-		
+
 		return conversioTipusHelper.convertirList(
-				execucioMassivaContinguts, 
+				execucioMassivaContinguts,
 				ExecucioMassivaContingutDto.class);
 	}
-	
+
 	@Transactional(readOnly = true)
 	@Override
 	public List<String> findElementNomExecucioPerContingut(List<Long> continguts) throws NotFoundException {
-		
-		List<String> elementsNom = new ArrayList<>();		
+
+		List<String> elementsNom = new ArrayList<>();
 		if (continguts != null) {
 			// Consulta de 1000 en 1000 els que estan en el llistat.
 			for (int i = 0; i < continguts.size(); i += 1000) {
@@ -342,17 +341,17 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 								continguts.subList(i, Math.min(continguts.size(), i+1000)),
 								new ArrayList<> (
 										Arrays.asList(
-												ExecucioMassivaContingutEstatDto.PENDENT, 
+												ExecucioMassivaContingutEstatDto.PENDENT,
 												ExecucioMassivaContingutEstatDto.PROCESSANT)
 										)
 								));
 			}
 		}
 
-		
+
 		return elementsNom;
 	}
-	
+
 	private void setAuthentication(ExecucioMassivaContingutEntity emc) {
 		UsuariEntity usuariActual = usuariHelper.getUsuariAutenticat();
 		UsuariEntity usuariEmc = emc.getExecucioMassiva().getUsuari();
@@ -364,19 +363,19 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 				SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(rol);
 				authorities.add(simpleGrantedAuthority);
 			}
-			
+
 			Authentication authentication =  new UsernamePasswordAuthenticationToken(
-					usuariEmc.getCodi(), 
+					usuariEmc.getCodi(),
 					"N/A",
 					authorities);
 	        SecurityContextHolder.getContext().setAuthentication(authentication);
 		}
 	}
-	
+
 	private void removeAuthentication() {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
-	
+
 	private List<ExecucioMassivaDto> recompteErrors(List<ExecucioMassivaEntity> exmEntities) {
 		List<ExecucioMassivaDto> dtos = new ArrayList<ExecucioMassivaDto>();
 		for (ExecucioMassivaEntity exm: exmEntities) {
@@ -397,7 +396,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 		}
 		return dtos;
 	}
-	
+
 	private double getPercent(Long value, Long total) {
 		if (total == 0)
 			return 100L;
@@ -418,7 +417,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 		}
 		semafor.acquire();
 	}
-	
+
 	private void sortirSemafor(Long registreId) {
 		synchronized(semafors) {
 			Semaphore semafor = semafors.get(registreId);
@@ -430,7 +429,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 			}
 		}
 	}
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ExecucioMassivaServiceImpl.class);
 
 }

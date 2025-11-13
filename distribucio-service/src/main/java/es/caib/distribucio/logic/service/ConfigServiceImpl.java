@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import es.caib.distribucio.logic.config.SchedulingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.logic.config.SegonPlaConfig;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.LoadedPropertiesHelper;
@@ -48,7 +48,7 @@ public class ConfigServiceImpl implements ConfigService {
 	@Autowired
 	private ConfigHelper configHelper;
 	@Autowired
-	private SegonPlaConfig segonPlaConfig;
+	private SchedulingConfig schedulingConfig;
 	@Autowired
 	private LoadedPropertiesHelper loadedPropertiesHelper;
 
@@ -155,7 +155,7 @@ public class ConfigServiceImpl implements ConfigService {
 	@Override
 	@Transactional
 	public void reiniciarTasquesEnSegonPla() {
-		segonPlaConfig.reiniciarTasquesSegonPla();
+        schedulingConfig.restartSchedulledTasks("totes");
 	}
 
 	@Override
