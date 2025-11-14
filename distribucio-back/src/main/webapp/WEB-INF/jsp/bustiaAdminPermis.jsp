@@ -30,7 +30,7 @@
 				<th data-col-name="principalTipus" data-renderer="enum(PrincipalTipusEnumDto)"><spring:message code="bustia.permis.columna.tipus"/></th>
 				<th data-col-name="principalNom"><spring:message code="bustia.permis.columna.principal"/></th>
 				<th data-col-name="principalDescripcio"><spring:message code="bustia.permis.columna.descripcio"/></th>
-                <th data-col-name="tipusPermis" data-renderer="enum(TipusPermisEnumDto)"><spring:message code="bustia.permis.columna.acces"/></th>
+                <th data-col-name="tipusPermis" data-orderable="false" data-renderer="enum(TipusPermisEnumDto)"><spring:message code="bustia.permis.columna.acces"/></th>
 				<c:if test="${isRolActualAdministrador}">
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">

@@ -47,7 +47,8 @@ public class AlertaHelper {
 			Long contingutId) {
 		String error = null;
 		if (ex != null) {
-			error = ExceptionUtils.getStackTrace(ex).substring(0, 2048);
+			String stackTrace = ExceptionUtils.getStackTrace(ex);
+			error = stackTrace.substring(0, Math.min(stackTrace.length(), 2048));
 		}
 		return crearAlerta(
 				text,

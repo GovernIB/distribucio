@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.mail.MessagingException;
 
+import es.caib.distribucio.logic.intf.dto.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
-import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
-import es.caib.distribucio.logic.intf.dto.RegistreDto;
-import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
@@ -284,6 +281,17 @@ public class ExecucioMassivaHelper {
 		em.updateProcessant(dataInici);
 		execucioMassivaRepository.saveAndFlush(em);
 	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public boolean isFinalitzableNewTransaction(ExecucioMassivaEntity em) {
+        Optional<ExecucioMassivaEntity> emNewTransaction = execucioMassivaRepository.findById(em.getId());
+
+        if (emNewTransaction.isPresent()) {
+            em.setEstat(emNewTransaction.get().getEstat());
+            return ExecucioMassivaEstatDto.PROCESSANT.equals(emNewTransaction.get().getEstat());
+        }
+        return false;
+	}
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateProcessantNewTransaction(ExecucioMassivaContingutEntity emc, Date dataInici) {
@@ -330,8 +338,7 @@ public class ExecucioMassivaHelper {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public boolean isEmcDisponibleNewTransaction(ExecucioMassivaContingutEntity emc) {
 		Optional<ExecucioMassivaContingutEntity> emcNewTransaction = execucioMassivaContingutRepository.findById(emc.getId());
-		
-		return emcNewTransaction.isPresent() && (!emcNewTransaction.get().isCancelat() && ! emcNewTransaction.get().isPausat());
+		return emcNewTransaction.isPresent() && ExecucioMassivaContingutEstatDto.PENDENT.equals(emcNewTransaction.get().getEstat());
 	}
 	
 	/** Realitza les següents accions:

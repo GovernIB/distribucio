@@ -696,6 +696,9 @@ public class ContingutController extends BaseUserController {
 		case CLASSIFICAR:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.CLASSIFICAR", new Object[] {usuari, registre.getProcedimentCodi()}));
 			break;
+		case CANVI_PENDENT:
+            sb.append(this.getMessage(request, "contingut.log.resum.msg.CANVI_PENDENT", new Object[] {log.getParams().get(0), log.getParams().get(1)}));
+            break;
 		default:
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.accio")).append(": \"");
 			sb.append(this.getMessage(request, "log.tipus.enum." + log.getTipus().name())).append("\"");
