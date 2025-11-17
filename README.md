@@ -2,7 +2,7 @@
 
 # DISTRIBUCIO
 
-> - Versió Estable: __1.0.5.1__ (tag [Distribucio_1.0.5.1](https://github.com/GovernIB/distribucio/tree/Distribucio_1.0.5.1))
+> - Versió Estable: __1.0.5.2__ (tag [Distribucio_1.0.5.2](https://github.com/GovernIB/distribucio/tree/Distribucio_1.0.5.2))
 > - Versió Desenvolupament: __1.0.6__ (branca [dis-dev](https://github.com/GovernIB/distribucio/tree/dis-dev))
 
 ## <a name="desc"></a> Descripció
@@ -22,7 +22,7 @@ DISTRIBUCIO ofereix un servei web per donar d'altra anotacions de registre i que
 
 
 ## <a name="v_estable"></a> Versió estable
-### [1.0.5.1](https://github.com/GovernIB/distribucio/releases/tag/Distribucio_1.0.5.1)
+### [1.0.5.2](https://github.com/GovernIB/distribucio/releases/tag/Distribucio_1.0.5.2)
 
 ## <a name="v_jars"></a> Llibreries d'integració i utilitats
 Per projectes amb Java 7:
@@ -32,6 +32,7 @@ Per projectes amb Java 7:
 Per projectes amb Java 11:
 >- [distribucio-backoffice-utils-1.0.1](https://github.com/GovernIB/maven/tree/gh-pages/maven/es/caib/distribucio/distribucio-backoffice-utils/1.0.1): Llibreria d'utilitats per a backoffices de Distribucio.
 >- [distribucio-rest-client-1.0.1](https://github.com/GovernIB/maven/tree/gh-pages/maven/es/caib/distribucio/distribucio-rest-client/1.0.1): Client REST per a backoffices de Distribucio.
+
 
 
 
