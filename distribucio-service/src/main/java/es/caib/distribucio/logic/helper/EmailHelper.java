@@ -213,7 +213,7 @@ public class EmailHelper {
             }
 
             missatge.setText(mssg);
-//            mailSender.send(missatge);
+            mailSender.send(missatge);
         } catch (Exception e) {
             logger.error("S'ha produit un error al intentar enviar correu de les anotacions amb error de processament a l'usuari " + user.getNom(), e.getMessage());
         }
