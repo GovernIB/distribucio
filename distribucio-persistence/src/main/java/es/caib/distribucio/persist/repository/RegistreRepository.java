@@ -84,6 +84,17 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("maxReintents") int maxReintents,
 			Pageable pageable);
 
+	@Query(
+			"from" +
+			"    RegistreEntity r " +
+			"where " +
+			"    r.procesEstat = es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum.BACK_ERROR " +
+			"and r.procesIntents >= :maxReintents " +
+			"and r.entitat = :entitat ")
+	List<RegistreEntity> findEstatErrorProcesament(
+			@Param("entitat") EntitatEntity entitat,
+			@Param("maxReintents") int maxReintents);
+
 	
 	@Query(
 			"from" +

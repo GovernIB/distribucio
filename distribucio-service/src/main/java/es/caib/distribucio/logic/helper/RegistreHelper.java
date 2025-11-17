@@ -1949,6 +1949,10 @@ public class RegistreHelper {
 		return pagina.getContent();
 	}
 
+    public List<RegistreEntity> findEstatErrorProcesament(EntitatEntity entitat, int maxReintents) {
+        return registreRepository.findEstatErrorProcesament(entitat, maxReintents);
+    }
+
 	/** Consulta els registres pendents d'enviar al backoffice ordenats per regla. */
 	@Transactional
 	public List<RegistreEntity> findAmbEstatPendentEnviarBackoffice(EntitatEntity entitat, Date date, int maxReintents) {

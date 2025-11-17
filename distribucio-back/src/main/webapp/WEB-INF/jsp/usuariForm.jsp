@@ -60,6 +60,7 @@ $(document).ready(function() {
 
         <dis:inputSelect name="entitatPerDefecteId" optionItems="${entitats}" optionMinimumResultsForSearch="1" optionValueAttribute="id" emptyOption="true" optionTextAttribute="nom" textKey="usuari.form.camp.entitatPerDefecte" placeholder="Selecciona..."/>
         <dis:inputSelect name="numElementsPagina" optionItems="${numElementsPagina}" optionValueAttribute="id" optionTextAttribute="nom" textKey="usuari.form.camp.numElementsPagina"/>
+        <dis:inputCheckbox name="emailErrorAnotacio" textKey="usuari.form.camp.emails.error.anotacio"/>
 
         <div id="modal-botons">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>

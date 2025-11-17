@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.logic.intf.dto;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +17,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
+@EqualsAndHashCode
 public class UsuariDto implements Serializable {
 
 	private String codi;
@@ -31,6 +33,7 @@ public class UsuariDto implements Serializable {
 	private String rolActual;
     private Long entitatPerDefecteId;
     private Long numElementsPagina;
+    private Boolean emailErrorAnotacio;
 
 	public String getCodiAndNom() {
 		return nom + " (" + codi + ")";

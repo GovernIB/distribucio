@@ -3,10 +3,7 @@
  */
 package es.caib.distribucio.logic.helper;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,6 +188,36 @@ public class EmailHelper {
 		}
 		return prefix;
 	}
+
+    public void sendEmailsAnotacionsErrorProcessament (Map<UsuariDto, Map<BustiaEntity, List<RegistreEntity>>> content) {
+        for (UsuariDto usuariDto : content.keySet()) {
+            if (usuariDto.getEmailErrorAnotacio()!=null && usuariDto.getEmailErrorAnotacio()) {
+                sendEmailAnotacionsErrorProcessament(usuariDto, content.get(usuariDto));
+            }
+        }
+    }
+    public void sendEmailAnotacionsErrorProcessament (UsuariDto user, Map<BustiaEntity, List<RegistreEntity>> content) {
+        try {
+            SimpleMailMessage missatge = new SimpleMailMessage();
+            missatge.setTo(user.getEmailAlternatiu() != null ? user.getEmailAlternatiu() : user.getEmail());
+            missatge.setFrom(getRemitent());
+            missatge.setSubject(this.getPrefixDistribucio() + " Anotacións amb error de processament");
+
+            String mssg = "";
+            for (BustiaEntity bustia: content.keySet()) {
+                mssg += "Anotacions amb error de la bustia '" + bustia.getNom() + "': \n";
+                for (RegistreEntity registre: content.get(bustia)) {
+                    mssg += " - " + registre.getNom() + "\n";
+                }
+                mssg += "\n";
+            }
+
+            missatge.setText(mssg);
+//            mailSender.send(missatge);
+        } catch (Exception e) {
+            logger.error("S'ha produit un error al intentar enviar correu de les anotacions amb error de processament a l'usuari " + user.getNom(), e.getMessage());
+        }
+    }
 
 	/** Envia un email d'avís amb un contingut pendent de notificar per email. Es diferencia del mètode agrupat perquè només envia
 	 * un moviment i canvia l'assumpte i el cos del missatge.

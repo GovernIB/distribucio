@@ -81,6 +81,16 @@ public class SegonPlaServiceEjb extends AbstractServiceEjb<SegonPlaService> impl
 		delegateService.reintentarProcessamentBackoffice();
 	}
 
+    @Override
+	public void enviarEmailsAnotacionsErrorProcessament() {
+		delegateService.enviarEmailsAnotacionsErrorProcessament();
+	}
+
+    @Override
+	public void canviEstatComunicatAPendent() {
+		delegateService.canviEstatComunicatAPendent();
+	}
+
 	@Override
 	public void actualitzarProcediments() throws Exception {
 		delegateService.actualitzarProcediments();

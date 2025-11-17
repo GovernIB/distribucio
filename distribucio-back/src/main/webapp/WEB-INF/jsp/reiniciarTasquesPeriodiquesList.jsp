@@ -88,6 +88,8 @@
 						<spring:message code="monitor.tasques.tasca.codi.actualitzarProcediments"/>
 					{{else codi == 'actualitzarServeis'}}
 						<spring:message code="monitor.tasques.tasca.codi.actualitzarServeis"/>
+					{{else codi == 'enviarEmailsAnotacionsErrorProcessament'}}
+						<spring:message code="monitor.tasques.tasca.codi.enviarEmailsAnotacionsErrorProcessament"/>
 					{{else codi == 'execucionsMassives'}}
 						<spring:message code="monitor.tasques.tasca.codi.execucionsMassives"/>
 					{{/if}}
