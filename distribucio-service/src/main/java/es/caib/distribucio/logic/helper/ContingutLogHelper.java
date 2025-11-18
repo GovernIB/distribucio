@@ -85,27 +85,7 @@ public class ContingutLogHelper {
 				params,
 				logContingutPare);
 	}
-//	public ContingutLogEntity log(
-//			ContingutEntity contingut,
-//			LogTipusEnumDto tipus,
-//			Persistable<? extends Serializable> objecte,
-//			LogObjecteTipusEnumDto objecteTipus,
-//			LogTipusEnumDto objecteLogTipus,
-//			String param1,
-//			String param2,
-//			boolean logContingutPare) {
-//		return log(
-//				contingut,
-//				tipus,
-//				null,
-//				objecte,
-//				objecteTipus,
-//				objecteLogTipus,
-//				param1,
-//				param2,
-//				logContingutPare);
-//	}
-
+	
 	public ContingutLogEntity logMoviment(
 			ContingutEntity contingut,
 			LogTipusEnumDto tipus,

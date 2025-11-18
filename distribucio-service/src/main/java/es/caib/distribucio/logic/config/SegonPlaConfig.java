@@ -4,8 +4,6 @@ import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +20,6 @@ import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import es.caib.distribucio.logic.intf.service.ConfigService;
-import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import es.caib.distribucio.logic.intf.service.MonitorTasquesService;
 import es.caib.distribucio.logic.intf.service.SegonPlaService;
 import lombok.SneakyThrows;
@@ -32,33 +29,24 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @EnableAsync
 @EnableScheduling
-public class SchedulingConfig implements SchedulingConfigurer {
+public class SegonPlaConfig implements SchedulingConfigurer {
 
     @Autowired
-    private ExecucioMassivaService execucioMassivaService;
-    @Autowired
     private SegonPlaService segonPlaService;
-    //    @Autowired private AplicacioService aplicacioService;
     @Autowired
     private MonitorTasquesService monitorTasquesService;
-    //    @Autowired private ConfigHelper configHelper;
     @Autowired
     private ConfigService configService;
-    //
-//    private Boolean[] primeraVez = {
-//            Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE, Boolean.TRUE
-//    };
-//
-//    private static final long DEFAULT_INITIAL_DELAY_MS = 30000L;
+
     private ScheduledTaskRegistrar taskRegistrar;
-    //    //Mantenir un registre de les tasques que s'han enregistrat
+    // Mantenir un registre de les tasques que s'han enregistrat
     private final Map<String, Runnable> tasks = new HashMap<>();
     private final Map<String, ScheduledFuture<?>> scheduledTasks = new HashMap<>();
-//
 
     // CONFIGURAR LES DE DISTRIBUCIO    
     private final String codiGuardarAnotacionsPendents = "guardarAnotacionsPendents";
     private final String codiEnviarBackoffice = "enviarAlBackoffice";
+    private final String codiCanviarAPendent = "canviarAPendent";
     private final String codiAplicarReglesBackoffice = "aplicarReglesBackoffice";
     private final String codiTancarContenidors = "tancarContenidors";
     private final String codiEnviarEmailsNoAgrupats = "enviarEmailsNoAgrupats";
@@ -70,7 +58,6 @@ public class SchedulingConfig implements SchedulingConfigurer {
     private final String codiActualitzarServeis = "actualitzarServeis";
     private final String codiExecucionMassives = "execucionsMassives";
 
-
     @Bean
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
@@ -80,9 +67,6 @@ public class SchedulingConfig implements SchedulingConfigurer {
 
     public void restartSchedulledTasks(String taskCodi) {
         if (taskRegistrar != null) {
-            //taskRegistrar.destroy();
-            //taskRegistrar.afterPropertiesSet();
-
             if ("totes".equals(taskCodi)) {
                 for (String task : tasks.keySet()) {
                     rescheduleTask(task, getTrigger(task));
@@ -159,6 +143,26 @@ public class SchedulingConfig implements SchedulingConfigurer {
                 getTrigger(codiEnviarBackoffice)
         );
 
+        addTask(
+        		codiCanviarAPendent,
+                new Runnable() {
+                    @SneakyThrows
+                    @Override
+                    public void run() {
+						monitorTasquesService.inici(codiCanviarAPendent);
+						try {
+							segonPlaService.canviEstatComunicatAPendent();
+							monitorTasquesService.fi(codiCanviarAPendent);
+						} catch(Throwable th) {
+							tractarErrorTascaSegonPla(th, codiCanviarAPendent);
+                        } finally {
+                            SecurityContextHolder.clearContext();
+                        }
+                    }
+                },
+                getTrigger(codiCanviarAPendent)
+        );
+        
         addTask(
                 codiAplicarReglesBackoffice,
                 new Runnable() {
@@ -565,6 +569,21 @@ public class SchedulingConfig implements SchedulingConfigurer {
                     return getCronTriggerNextExecutionTime(triggerContext, taskCodi, value);
                 }
             };
+        } else if (taskCodi.equals(codiCanviarAPendent)) {
+            return new Trigger() {
+                @Override
+                public Date nextExecutionTime(TriggerContext triggerContext) {
+					Long value = null;
+                    try {
+                        value = configService.getConfigAsLong("es.caib.distribucio.tasca.canviarAPendent.temps.espera.execucio");
+                    } catch (Exception e) {
+						log.warn("Error consultant la propietat per la propera execució canviar estat comunicat a pendent: " + e.getMessage());
+                    }
+					if (value == null)
+						value = Long.valueOf("60000");
+                    return getPeriodicTriggerNextExecutionTime(triggerContext, taskCodi, value);
+                }
+            };
         }
         return null;
     }
@@ -575,6 +594,4 @@ public class SchedulingConfig implements SchedulingConfigurer {
         log.error("Error no controlat a l'execució de la tasca en segon pla amb codi \"" + codiTasca + "\": " + errMsg, th);
         monitorTasquesService.error(codiTasca, errMsg);
     }
-
-    private static final Logger logger = LoggerFactory.getLogger(SchedulingConfig.class);
 }

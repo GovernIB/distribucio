@@ -49,7 +49,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -114,11 +113,10 @@ import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
-import es.caib.distribucio.logic.permission.ExtendedPermission;
 import es.caib.distribucio.logic.service.RegistreServiceImpl;
 import es.caib.distribucio.logic.service.SegonPlaServiceImpl.GuardarAnotacioPendentThread;
 import es.caib.distribucio.persist.entity.BackofficeEntity;
-import es.caib.distribucio.persist.entity.BustiaEntity;
+import es.caib.distribucio.persist.entity.ContingutComentariEntity;
 import es.caib.distribucio.persist.entity.ContingutEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
@@ -128,6 +126,7 @@ import es.caib.distribucio.persist.entity.RegistreFirmaDetallEntity;
 import es.caib.distribucio.persist.entity.RegistreInteressatEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
 import es.caib.distribucio.persist.entity.UsuariEntity;
+import es.caib.distribucio.persist.repository.ContingutComentariRepository;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
@@ -173,6 +172,8 @@ public class RegistreHelper {
 	private RegistreFirmaDetallRepository registreFirmaDetallRepository;
 	@Autowired
 	private EntitatRepository entitatRepository;
+	@Autowired
+	private ContingutComentariRepository contingutComentariRepository;
 	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	@Autowired
@@ -2562,5 +2563,27 @@ public class RegistreHelper {
 		return pendentsByRegla;
 	}
 
+	/** Mètode per modificar l'estat d'una anotació a pendent i afegir un comentari i una entrada als logs. */
+	@Transactional
+	public void canviEstatComunicatAPendent(Long registreId, Integer dies) {
+
+		RegistreEntity registre = registreRepository.getReferenceById(registreId);
+        String observacions = "S'ha canviat automàticament l'estat a \"Bústia pendent\" després d'estar "+
+                dies +" dies en estat \"Comunicada a "+ registre.getBackCodi() +"\" sense confirmació de recepció";
+        registre.setNewProcesEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT);
+        ContingutComentariEntity comentari = ContingutComentariEntity.getBuilder(registre, observacions).build();
+        contingutComentariRepository.save(comentari);
+        List<String> params = new ArrayList<>();
+        params.add(String.valueOf(dies));
+        params.add(registre.getBackCodi());
+        contingutLogHelper.log(
+                registre,
+                LogTipusEnumDto.CANVI_PENDENT,
+                params,
+                false);
+
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
+
 }
