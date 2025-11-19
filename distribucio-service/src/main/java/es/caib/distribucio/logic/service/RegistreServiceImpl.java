@@ -3033,7 +3033,7 @@ public class RegistreServiceImpl implements RegistreService {
 					if(annexList.getArxiuEstat()== AnnexEstat.ESBORRANY) {
 						numEsborrany++;
 					}					
-				}			
+				}
 				
 				// Modificar 
 				if (annex.getFitxerArxiuUuid() != null) {
