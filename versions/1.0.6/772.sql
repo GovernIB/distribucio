@@ -1,4 +1,4 @@
-
+-- Si una anotació roman massa temps en estat COMUNICADA AL BACKOFFICE que torni a estat PENDENT  #772
 ALTER TABLE DIS_REGISTRE ADD BACK_COMUNICADA_DATA TIMESTAMP;
 
 -- Posa la data de comunicada als registres existents a partir dels logs

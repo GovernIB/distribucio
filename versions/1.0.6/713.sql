@@ -1,3 +1,5 @@
+-- Permetre escollir l'entitat per defecte #713
+
 ALTER TABLE DIS_USUARI ADD COLUMN entitat_defecte_id BIGINT;
 
 ALTER TABLE DIS_USUARI

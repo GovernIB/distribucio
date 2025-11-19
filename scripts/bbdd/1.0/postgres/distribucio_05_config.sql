@@ -172,6 +172,49 @@ Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.security.resourceAcces.api-interna','null','Codi del client per agafar els rols en l''autenticació de l''API REST interna. Per ex. goib-ws.','GENERAL','24',true,'TEXT',null,null);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.security.resourceAcces.api-externa','null','Codi del client per agafar els rols en l''autenticació de l''API REST externa. Per ex. goib-ws.','GENERAL','25',true,'TEXT',null,null);
 
+INSERT INTO dis_config_group (code, parent_code, position, description)
+VALUES ('GENERAL_LIMIT_CANVI_ESTAT', 'GENERAL', 26,
+        'Configuració de limit de canvis d''estat');
+INSERT INTO dis_config (key, value, description, group_code, position, jboss_property, type_code)
+VALUES ('es.caib.distribucio.horari.laboral', '* * 7-16 * * MON-FRI',
+        'Horari laboral', 'GENERAL_LIMIT_CANVI_ESTAT', 1, false, 'CRON');
+INSERT INTO dis_config (key, value, description, group_code, position, jboss_property, type_code)
+VALUES ('es.caib.distribucio.limit.minut.laboral', '4',
+        'Limit canvi d''estat per minut en horari laboral', 'GENERAL_LIMIT_CANVI_ESTAT', 2, false, 'INT');
+INSERT INTO dis_config (key, value, description, group_code, position, jboss_property, type_code)
+VALUES ('es.caib.distribucio.limit.minut.no.laboral', '8',
+        'Limit canvi d''estat per minut en horari no laboral', 'GENERAL_LIMIT_CANVI_ESTAT', 3, false, 'INT');
+INSERT INTO dis_config (key, value, description, group_code, position, jboss_property, type_code)
+VALUES ('es.caib.distribucio.limit.dia.laboral', '8000',
+        'Limit canvi d''estat per dia en horari laboral', 'GENERAL_LIMIT_CANVI_ESTAT', 4, false, 'INT');
+INSERT INTO dis_config (key, value, description, group_code, position, jboss_property, type_code)
+VALUES ('es.caib.distribucio.limit.dia.no.laboral', '10000',
+        'Limit canvi d''estat per dia en horari no laboral', 'GENERAL_LIMIT_CANVI_ESTAT', 5, false, 'INT');
+
+        INSERT INTO dis_config (key, value, description, group_code, jboss_property, type_code,
+                        entitat_codi, configurable, lastmodifiedby_codi, lastmodifieddate, position)
+VALUES ('es.caib.distribucio.tasca.monitor.integracio.actualitzar.serveis.disable',
+        NULL, 'Deshabilitar la sincronització de serveis',
+        'SCHEDULLED_SERVEI', 0, 'BOOL', NULL, 1, NULL, NULL, 1);
+
+INSERT INTO dis_config (key, value, description, group_code, jboss_property, type_code,
+                        entitat_codi, configurable, lastmodifiedby_codi, lastmodifieddate, position)
+VALUES ('es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments.disable',
+        NULL, 'Deshabilitar la sincronització de procediments',
+        'SCHEDULLED_PROCEDIMENT', 0, 'BOOL', NULL, 1, NULL, NULL, 8);
+
+        INSERT INTO dis_config_group (code, parent_code, position, description)
+VALUES ('SCHEDULLED_COMUNICAT_A_PENDENT', 'SCHEDULLED', 20,
+        'Tasca periòdica de canvi d''estat anotacions comunicades a pendents');
+INSERT INTO dis_config (key, value, description, group_code, position, jboss_property, type_code)
+VALUES ('es.caib.distribucio.tasca.canviarAPendent.temps.espera.execucio',
+        NULL, 'Interval de temps entre les execucions de la tasca (ms). Per defecte 60000',
+        'SCHEDULLED_COMUNICAT_A_PENDENT', 1, false, 'INT');
+INSERT INTO dis_config (key, value, description, group_code, position, jboss_property, type_code)
+VALUES ('es.caib.distribucio.tasca.canviarAPendent.maxim.temps.estat.comunicada',
+        NULL,'Màxim de dies que pot estar comunicada abans de canviar l''estat a pendent d''usuari. Per defecte 30.',
+        'SCHEDULLED_COMUNICAT_A_PENDENT', 2, false, 'INT');
+
 -- Actualització de les propietats que poden ser configurables a nivell d'entitat
 
 UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.anotacions.permetre.reservar';
@@ -237,6 +280,10 @@ UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.
 UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.tasca.guardar.annexos.max.reintents';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.tasca.enviar.anotacions.max.reintents';
 UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.tasca.aplicar.regles.max.reintents';
+
+UPDATE dis_config SET configurable = 1 WHERE key LIKE 'es.caib.distribucio.tasca.monitor.integracio.actualitzar.serveis.disable';
+UPDATE dis_config SET configurable = 1 WHERE key LIKE 'es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments.disable';
+
 
 INSERT INTO DIS_ACL_CLASS (ID,CLASS,CLASS_ID_TYPE) VALUES
 	 (41,'es.caib.distribucio.persist.entity.BustiaEntity','java.lang.Long'),
