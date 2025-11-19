@@ -1,3 +1,4 @@
+-- Afegir límits de respostes de canvi d'estat per aplicació #761
 CREATE TABLE DIS_LIMIT_CANVI_ESTAT (
     ID NUMBER(19) NOT NULL,
     USUARI_CODI VARCHAR2(64 char) NOT NULL,

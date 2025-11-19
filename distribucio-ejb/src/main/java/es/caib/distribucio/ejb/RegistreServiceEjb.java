@@ -186,7 +186,7 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 	@Override	
 	@PermitAll
 	public FitxerDto getZipDocumentacio(Long registreId, String rolActual, boolean ambVersioImprimible) throws Exception{
-		return delegateService.getZipDocumentacio(registreId, rolActual, false);
+		return delegateService.getZipDocumentacio(registreId, rolActual, ambVersioImprimible);
 	}
 
 	@Override

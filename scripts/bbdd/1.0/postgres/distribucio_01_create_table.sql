@@ -24,7 +24,8 @@ CREATE TABLE DIS_USUARI
   REBRE_EMAILS  		boolean,
   EMAILS_AGRUPATS		boolean,
   VERSION       		bigint                      NOT NULL,
-  ROL_ACTUAL            character varying(64)
+  ROL_ACTUAL            character varying(64),
+  entitat_defecte_id    BIGINT
 );
 
 
@@ -199,6 +200,7 @@ CREATE TABLE DIS_REGISTRE
   BACK_PROCES_REBUTJ_ERROR_DATA  timestamp without time zone,
   BACK_OBSERVACIONS 	character varying(4000),
   BACK_RETRY_ENVIAR_DATA  timestamp without time zone,
+  back_comunicada_data TIMESTAMP(6),
   PRESENCIAL 			BOOLEAN,
   JUSTIFICANT_DESCARREGAT BOOLEAN DEFAULT FALSE,
   JUSTIFICANT_ID BIGINT,
@@ -208,7 +210,9 @@ CREATE TABLE DIS_REGISTRE
   SOBREESCRIURE           boolean default false,
   REACTIVAT               boolean default false,
   ANNEXOS_ESTAT_ESBORRANY integer default 0,
-  BACK_CODI               character varying(20)
+  BACK_CODI               character varying(20),
+  tramit_codi             VARCHAR(64),
+  tramit_nom              VARCHAR(255)
 );
 
 
@@ -707,3 +711,12 @@ CREATE TABLE DIS_EXECUCIO_MASSIVA_CONT (
 	LASTMODIFIEDBY_CODI VARCHAR(64), 
 	LASTMODIFIEDDATE 	TIMESTAMP (6)
  );
+CREATE TABLE dis_limit_canvi_estat (
+    id BIGINT NOT NULL,
+    usuari_codi VARCHAR(64) NOT NULL,
+    descripcio VARCHAR(255) NOT NULL,
+    lim_min_lab INTEGER,
+    lim_min_nolab INTEGER,
+    lim_dia_lab INTEGER,
+    lim_dia_nolab INTEGER
+);

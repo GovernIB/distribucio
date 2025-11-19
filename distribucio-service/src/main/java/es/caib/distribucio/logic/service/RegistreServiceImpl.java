@@ -2405,8 +2405,8 @@ public class RegistreServiceImpl implements RegistreService {
 					try {
 						fitxer = registreHelper.getAnnexFitxerImprimible(annexID);
 					} catch (Exception e) {
-						String errMsg = "Error obtenint la versió imprimible del l'annex " + this.annexID + "\"" + annexTitol + "\", es procedeix a consultar l'original. Error: "
-								+ e.getClass() + " " + e.getMessage();
+						String errMsg = "Error obtenint la versió imprimible del l'annex " + this.annexID + "\" " + annexTitol + "\", es procedeix a consultar l'original. Error: \\\""
+								+ e.getClass() + " " + e.getMessage() + "\"";
 						logger.warn(errMsg);
 						errors.add(errMsg);						
 					}					

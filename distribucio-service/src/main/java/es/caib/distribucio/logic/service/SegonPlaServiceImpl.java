@@ -36,13 +36,23 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
-import es.caib.distribucio.logic.config.SchedulingConfig;
-import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.logic.config.SegonPlaConfig;
+import es.caib.distribucio.logic.helper.BustiaHelper;
+import es.caib.distribucio.logic.helper.ConfigHelper;
+import es.caib.distribucio.logic.helper.ConversioTipusHelper;
+import es.caib.distribucio.logic.helper.EmailHelper;
+import es.caib.distribucio.logic.helper.HistogramPendentsHelper;
+import es.caib.distribucio.logic.helper.HistoricHelper;
+import es.caib.distribucio.logic.helper.RegistreHelper;
 import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.SegonPlaService;
 import es.caib.distribucio.logic.intf.service.ServeiService;
+import es.caib.distribucio.persist.entity.ContingutMovimentEmailEntity;
+import es.caib.distribucio.persist.entity.EntitatEntity;
+import es.caib.distribucio.persist.entity.RegistreEntity;
+import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.UsuariRepository;
@@ -90,9 +100,9 @@ public class SegonPlaServiceImpl implements SegonPlaService {
     @Autowired
     private UsuariRepository usuariRepository;
     @Autowired
-    private SchedulingConfig schedulingConfig;
-    @Autowired
     private RegistreServiceImpl registreServiceImpl;
+	@Autowired
+	private SegonPlaConfig schedulingConfig;
 
     private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
 
@@ -297,23 +307,11 @@ public class SegonPlaServiceImpl implements SegonPlaService {
         logger.debug("Execució de tasca programada (" + startTime + "): canviar estat comunicat a pendent al backoffice");
 
         try {
-            Integer dies = Integer.valueOf(configHelper.getConfig("es.caib.distribucio.tasca.enviar.anotacions.backoffice.maxim.temps.estat.comunicada", "30"));
+            Integer dies = Integer.valueOf(configHelper.getConfig("es.caib.distribucio.tasca.canviarAPendent.maxim.temps.estat.comunicada", "30"));
             List<RegistreEntity> registres = registreHelper.findAmbLimitDiesEstatComunicadaBackoffice(dies);
 
             for (RegistreEntity registre : registres) {
-                String observacions = "S'ha canviat automàticament l'estat a \"Bústia pendent\" després d'estar " +
-                        dies + " dies en estat \"Comunicada a " + registre.getBackCodi() + "\" sense confirmació de recepció";
-                registre.setNewProcesEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT);
-                ContingutComentariEntity comentari = ContingutComentariEntity.getBuilder(registre, observacions).build();
-                contingutComentariRepository.save(comentari);
-                List<String> params = new ArrayList<>();
-                params.add(String.valueOf(dies));
-                params.add(registre.getBackCodi());
-                contingutLogHelper.log(
-                        registre,
-                        LogTipusEnumDto.CANVI_PENDENT,
-                        params,
-                        false);
+                registreHelper.canviEstatComunicatAPendent(registre.getId(), dies);
             }
         } catch (Exception e) {
             logger.error("S'ha produit un error al intentar canviar els registres comunicats que han superat el limit de temps", e);
