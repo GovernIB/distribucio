@@ -320,6 +320,14 @@ $(document).ready(function() {
 		}
 	});
 });
+
+function refreshRegistres($modalExecucioMassiva) {
+	if ($modalExecucioMassiva) {
+		$(document).on("hidden.bs.modal", $modalExecucioMassiva, function () {
+		    $('#filtrar').submit();
+		});
+	}
+}
 </script>
 </head>
 <body>

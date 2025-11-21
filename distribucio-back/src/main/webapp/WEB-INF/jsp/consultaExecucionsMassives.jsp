@@ -80,6 +80,16 @@ pageContext.setAttribute(
 		<c:if test="${isRefrescant}">
 			refreshInterval = setInterval(reloadPage, 10000);
 		</c:if>
+		
+		const execucioMassivaIframe  = window.frameElement;
+		if (execucioMassivaIframe) {
+			const $modalExecucioMassiva = $(execucioMassivaIframe.parentElement.parentElement).prev();
+	
+			if (window.parent && typeof window.parent.refreshRegistres === 'function') {
+				window.parent.refreshRegistres($modalExecucioMassiva);
+			}
+		}
+
 	});
 
 	function reloadPage() {
