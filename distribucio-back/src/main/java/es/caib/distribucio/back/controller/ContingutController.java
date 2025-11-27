@@ -17,6 +17,7 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import es.caib.distribucio.back.command.RegistreClassificarTipusEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -694,7 +695,23 @@ public class ContingutController extends BaseUserController {
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.SOBREESCRIURE", new Object[] {log.getParams().get(0)}));
 			break;
 		case CLASSIFICAR:
-			sb.append(this.getMessage(request, "contingut.log.resum.msg.CLASSIFICAR", new Object[] {usuari, registre.getProcedimentCodi()}));
+            if (!log.getParams().isEmpty()) {
+                if (RegistreClassificarTipusEnum.PROCEDIMENT.name().equals(log.getParams().get(0))) {
+                    if (log.getParams().size() >= 2 && log.getParams().get(1) != null) {
+                        sb.append(this.getMessage(request, "contingut.log.resum.msg.CLASSIFICAR.PROCEDIMENT", new Object[]{usuari, log.getParams().get(1)}));
+                    } else {
+                        sb.append(this.getMessage(request, "contingut.log.resum.msg.CLASSIFICAR.PROCEDIMENT.NULL", new Object[]{usuari}));
+                    }
+                } else if (RegistreClassificarTipusEnum.SERVEI.name().equals(log.getParams().get(0))) {
+                    if (log.getParams().size() >= 2 && log.getParams().get(1) != null) {
+                        sb.append(this.getMessage(request, "contingut.log.resum.msg.CLASSIFICAR.SERVEI", new Object[]{usuari, log.getParams().get(1)}));
+                    } else {
+                        sb.append(this.getMessage(request, "contingut.log.resum.msg.CLASSIFICAR.SERVEI.NULL", new Object[]{usuari}));
+                    }
+                }
+            } else {
+                sb.append(this.getMessage(request, "contingut.log.resum.msg.CLASSIFICAR", new Object[]{usuari}));
+            }
 			break;
 		case CANVI_PENDENT:
             sb.append(this.getMessage(request, "contingut.log.resum.msg.CANVI_PENDENT", new Object[] {log.getParams().get(0), log.getParams().get(1)}));

@@ -7,23 +7,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import es.caib.distribucio.logic.intf.dto.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.ArxiuDetallDto;
-import es.caib.distribucio.logic.intf.dto.BustiaDto;
-import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
-import es.caib.distribucio.logic.intf.dto.ContingutDto;
-import es.caib.distribucio.logic.intf.dto.FitxerDto;
-import es.caib.distribucio.logic.intf.dto.HistogramPendentsEntryDto;
-import es.caib.distribucio.logic.intf.dto.PaginaDto;
-import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
-import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
-import es.caib.distribucio.logic.intf.dto.RegistreAnnexFirmaDto;
-import es.caib.distribucio.logic.intf.dto.RegistreDto;
-import es.caib.distribucio.logic.intf.dto.RegistreFiltreDto;
-import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreEntrada;
@@ -304,6 +291,7 @@ public interface RegistreService {
 	public ClassificacioResultatDto classificar(
 			Long entitatId,
 			Long registreId,
+            String tipus,
 			String procedimentCodi,
 			String serveiCodi,
 			String titol) throws NotFoundException;

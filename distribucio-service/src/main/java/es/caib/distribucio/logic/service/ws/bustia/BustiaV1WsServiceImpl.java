@@ -220,6 +220,10 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 			RegistreAnotacio registreEntrada) {
 		// Validació d'obligatorietat de camps
 		validarObligatorietatRegistre(registreEntrada);
+        if (registreEntrada.getProcedimentCodi() != null && registreEntrada.getServeiCodi() != null) {
+            throw new ValidationException(
+                    "No es pot especificar un valor per als camps 'procedimentCodi' y 'serveiCodi' a la vegada");
+        }
 		// Validació de format de camps
 		validarFormatCampsRegistre(registreEntrada);
 		// Validació d'annexos

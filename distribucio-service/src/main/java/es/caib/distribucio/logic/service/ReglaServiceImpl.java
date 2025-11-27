@@ -412,6 +412,13 @@ public class ReglaServiceImpl implements ReglaService {
 			codisProcediments = new ArrayList<>();
 			codisProcediments.add("-");
 		}
+
+		List<String> codisServei = new ArrayList<>();
+		if(regla.getServeiCodiFiltre() != null && !regla.getServeiCodiFiltre().trim().isEmpty()) {
+			codisServei.addAll(Arrays.asList(regla.getServeiCodiFiltre().split(" ")));
+		} else {
+			codisServei.add("-");
+		}
 		
 		List<Long> bustiesUnitatOrganitzativaIds = new ArrayList<>();
 		if (regla.getUnitatOrganitzativaFiltre() != null) {			
@@ -429,16 +436,16 @@ public class ReglaServiceImpl implements ReglaService {
 		}
 		
 		for(RegistreEntity registre : reglaRepository.findRegistres(
-				entitat, 
-				regla.getUnitatOrganitzativaFiltre() == null, 
+				entitat,
+				regla.getUnitatOrganitzativaFiltre() == null,
 				bustiesUnitatOrganitzativaIds,
-				registrePresencial == null, 
+				registrePresencial == null,
 				registrePresencial != null ? registrePresencial.booleanValue() : false,
-				regla.getBustiaFiltre() == null, 
+				regla.getBustiaFiltre() == null,
 				regla.getBustiaFiltre() != null ? regla.getBustiaFiltre().getId() : 0L,
-				regla.getProcedimentCodiFiltre() == null || regla.getProcedimentCodiFiltre().trim().isEmpty(), 
-				codisProcediments, 
-				regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(), 
+				codisProcediments,
+                codisServei,
+				regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(),
 				regla.getAssumpteCodiFiltre() != null && !regla.getAssumpteCodiFiltre().trim().isEmpty() ?
 						regla.getAssumpteCodiFiltre() : "-")) {
 			
@@ -818,6 +825,28 @@ public class ReglaServiceImpl implements ReglaService {
 				null,
 				procedimentCodi,
 				null);				
+		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
+	}
+
+	@Transactional(readOnly = true)
+	public List<ReglaDto> findReglaBackofficeByServei (String siaCodi) {
+		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiServei(siaCodi);
+		this.monitoritzarRegla(
+				ReglaGestioTipusEnumDto.Consulta,
+				null,
+				siaCodi,
+				null);
+		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
+	}
+
+	@Transactional(readOnly = true)
+	public List<ReglaDto> findReglaBackofficeByCodiSia (String serveiCodi) {
+		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiSia(serveiCodi);
+		this.monitoritzarRegla(
+				ReglaGestioTipusEnumDto.Consulta,
+				null,
+				serveiCodi,
+				null);
 		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
 	}
 	

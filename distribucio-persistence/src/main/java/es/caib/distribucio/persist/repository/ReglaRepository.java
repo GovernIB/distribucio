@@ -190,21 +190,21 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"    r.entitat = :entitat " +
 			"and r.procesEstat = es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT " +
 			"and (:unitatOrganitzativaFiltreIsNull = true or r.pare.id in (:bustiesUnitatOrganitzativaIds)) " +
-			"and (:isRegistrePresencialNull = true or r.presencial = :registrePresencial) " + 
-			"and (:bustiaFiltreIsNull = true or r.pare.id = :bustiaFiltreId) " + 
-			"and (:procedimentsCodisFiltreIsEmpty = true or r.procedimentCodi in (:procedimentsCodisFiltre)) " +
-			"and (:assumpteCodiFiltreIsNull = true or r.assumpteCodi = :assumpteCodiFiltre) " + 
+			"and (:isRegistrePresencialNull = true or r.presencial = :registrePresencial) " +
+			"and (:bustiaFiltreIsNull = true or r.pare.id = :bustiaFiltreId) " +
+			"and (r.procedimentCodi in (:procedimentsCodisFiltre) or r.serveiCodi in (:serveisCodisFiltre)) " +
+			"and (:assumpteCodiFiltreIsNull = true or r.assumpteCodi = :assumpteCodiFiltre) " +
 			"order by r.identificador asc")
 	List<RegistreEntity> findRegistres(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("unitatOrganitzativaFiltreIsNull") boolean unitatOrganitzativaFiltreIsNull,
 			@Param("bustiesUnitatOrganitzativaIds") List<Long> bustiesUnitatOrganitzativaIds,
-			@Param("isRegistrePresencialNull") boolean isRegistrePresencialNull, 
+			@Param("isRegistrePresencialNull") boolean isRegistrePresencialNull,
 			@Param("registrePresencial") boolean registrePresencial,
 			@Param("bustiaFiltreIsNull") boolean bustiaFiltreIsNull,
 			@Param("bustiaFiltreId") Long bustiaFiltreId,
-			@Param("procedimentsCodisFiltreIsEmpty") boolean procedimentsCodisFiltreIsEmpty,
 			@Param("procedimentsCodisFiltre") List<String> procedimentsCodisFiltre,
+			@Param("serveisCodisFiltre") List<String> serveisCodisFiltre,
 			@Param("assumpteCodiFiltreIsNull") boolean assumpteCodiFiltreIsNull,
 			@Param("assumpteCodiFiltre") String assumpteCodiFiltre);
 	
@@ -216,6 +216,27 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			" and (r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre = :procedimentCodiFiltre or r.procedimentCodiFiltre like (:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre))")
 	List<ReglaEntity> findReglaBackofficeByCodiProcediment(
 			@Param("procedimentCodiFiltre") String procedimentCodiFiltre);
+
+	/** Consulta las reglas de tipo BACKOFFICE para el codi servei dado */
+	@Query(	"from " +
+			"    ReglaEntity r " +
+			"where " +
+			"     r.tipus = 'BACKOFFICE'" +
+			" and (r.serveiCodiFiltre like ('% '||:serveiCodiFiltre||' %') or r.serveiCodiFiltre = :serveiCodiFiltre or r.serveiCodiFiltre like (:serveiCodiFiltre||' %') or r.serveiCodiFiltre like ('% '||:serveiCodiFiltre))")
+	List<ReglaEntity> findReglaBackofficeByCodiServei(
+			@Param("serveiCodiFiltre") String serveiCodiFiltre);
+
+	/** Consulta las reglas de tipo BACKOFFICE para el codi SIA dado */
+	@Query(	"from " +
+			"    ReglaEntity r " +
+			"where " +
+			"     r.tipus = 'BACKOFFICE'" +
+			" and (" +
+            "       (r.procedimentCodiFiltre like ('% '||:siaCodiFiltre||' %') or r.procedimentCodiFiltre = :siaCodiFiltre or r.procedimentCodiFiltre like (:siaCodiFiltre||' %') or r.procedimentCodiFiltre like ('% '||:siaCodiFiltre))" +
+            "       or (r.serveiCodiFiltre like ('% '||:siaCodiFiltre||' %') or r.serveiCodiFiltre = :siaCodiFiltre or r.serveiCodiFiltre like (:siaCodiFiltre||' %') or r.serveiCodiFiltre like ('% '||:siaCodiFiltre))" +
+            "   )")
+	List<ReglaEntity> findReglaBackofficeByCodiSia(
+			@Param("siaCodiFiltre") String siaCodiFiltre);
 	
 	/** Consulta les regles donat un codi de procediment. */
 	@Query(	"from " +

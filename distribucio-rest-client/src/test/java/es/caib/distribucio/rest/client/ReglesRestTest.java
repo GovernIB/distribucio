@@ -41,6 +41,7 @@ public class ReglesRestTest {
 		// Dades del test
 		String entitat = "A04003003";
 		String sia = String.valueOf(new Date().getTime());
+		String tipus = "PROCEDIMENT"; // PROCEDIMENT || SERVEI
 		String backoffice = "HELIUM";
 		Boolean activa = false;
 		Boolean presencial = null;
@@ -51,7 +52,7 @@ public class ReglesRestTest {
 				USERNAME,
 				PASSWORD,
 				true);
-		ReglesRestTest.altaCanviEstatConsultaUpdate(client, entitat, sia, backoffice, activa, presencial);
+		ReglesRestTest.altaCanviEstatConsultaUpdate(client, entitat, sia, tipus, backoffice, activa, presencial);
 		//ReglesRestTest.alta(client, entitat, sia, backoffice, activa, presencial);
 		//ReglesRestTest.consulta(client, "20220429");
 	}
@@ -69,13 +70,15 @@ public class ReglesRestTest {
 			ReglesRestClient client, 
 			String entitat, 
 			String sia,
-			String backoffice, 
+			String tipus,
+			String backoffice,
 			Boolean activa, 
 			Boolean presencial) {
 
 		System.out.println("Inici test alta de regles per API REST de regles ( " + 
 				"entitat= " + entitat +
 				", sia= " + sia +
+				", tipus= " + tipus +
 				", backoffice= " + backoffice +
 				", activa = " + activa +
 				", presencial= " + presencial
@@ -83,7 +86,7 @@ public class ReglesRestTest {
 		ReglaResponse ret;
 		// Creació de la regla
 		try {
-			ret = client.add(entitat, sia, backoffice, presencial);
+			ret = client.add(entitat, sia, tipus, backoffice, presencial);
 			System.out.println("Creació finalitzada correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
 									ret.getStatus() + " " + ret.getMsg());
 		} catch (Exception e) {
@@ -106,6 +109,7 @@ public class ReglesRestTest {
 			ReglesRestClient client, 
 			String entitat, 
 			String sia,
+            String tipus,
 			String backoffice, 
 			Boolean activa, 
 			Boolean presencial) {
@@ -113,6 +117,7 @@ public class ReglesRestTest {
 		System.out.println("Inici test API REST de regles ( " + 
 				"entitat= " + entitat +
 				", sia= " + sia +
+				", tipus= " + tipus +
 				", backoffice= " + backoffice +
 				", activa = " + activa +
 				", presencial= " + presencial
@@ -120,10 +125,10 @@ public class ReglesRestTest {
 		ReglaResponse ret;
 		// Creació de la regla
 		try {
-			ret = client.add(entitat, sia, backoffice, presencial);
+			ret = client.add(entitat, sia, tipus, backoffice, presencial);
 			System.out.println("Creació finalitzada correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
 									ret.getStatus() + " " + ret.getMsg());
-			ret = client.add(entitat, sia, backoffice, presencial);
+			ret = client.add(entitat, sia, tipus, backoffice, presencial);
 			System.out.println("Segona crida creació finalitzada correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
 									ret.getStatus() + " " + ret.getMsg());
 		} catch (Exception e) {

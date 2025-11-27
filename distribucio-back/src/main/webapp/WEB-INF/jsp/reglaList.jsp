@@ -245,11 +245,11 @@
 				<dis:inputText name="codiAssumpte" inline="true" placeholderKey="regla.form.camp.assumpte.codi"/>
 			</div>
             <div class="col-md-3">
-                <dis:inputText name="codiServei" inline="true" placeholderKey="regla.list.columna.servei.single.codi"/>
+                <dis:inputText name="codiSIA" inline="true" placeholderKey="regla.list.columna.procediment.single.codi"/>
             </div>
             <div class="col-md-3">
-				<dis:inputText name="codiSIA" inline="true" placeholderKey="regla.list.columna.procediment.single.codi"/>
-			</div>
+                <dis:inputText name="codiServei" inline="true" placeholderKey="regla.list.columna.servei.single.codi"/>
+            </div>
 		</div>
 		<div class="row">
             <div class="col-md-3">
