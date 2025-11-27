@@ -829,23 +829,23 @@ public class ReglaServiceImpl implements ReglaService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ReglaDto> findReglaBackofficeByServei (String siaCodi) {
-		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiServei(siaCodi);
+	public List<ReglaDto> findReglaBackofficeByServei (String serveiCodi) {
+		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiServei(serveiCodi);
 		this.monitoritzarRegla(
 				ReglaGestioTipusEnumDto.Consulta,
 				null,
-				siaCodi,
+				serveiCodi,
 				null);
 		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
 	}
 
 	@Transactional(readOnly = true)
-	public List<ReglaDto> findReglaBackofficeByCodiSia (String serveiCodi) {
-		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiSia(serveiCodi);
+	public List<ReglaDto> findReglaBackofficeByCodiSia (String siaCodi) {
+		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiSia(siaCodi);
 		this.monitoritzarRegla(
 				ReglaGestioTipusEnumDto.Consulta,
 				null,
-				serveiCodi,
+				siaCodi,
 				null);
 		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
 	}
