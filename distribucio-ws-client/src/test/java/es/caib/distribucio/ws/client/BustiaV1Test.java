@@ -51,7 +51,8 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_DESC = "Descripcio Codi";
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = null; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice 
+	private static final String PROCEDIMENT_CODI = null; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice
+	private static final String SERVEI_CODI = "885322";
 	private static final boolean PRESENCIAL = false;
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
@@ -163,6 +164,7 @@ public class BustiaV1Test {
 			anotacio.setAplicacioVersio(APLICACIO_VERSIO);
 			anotacio.setAssumpteCodi(ASSUMPTE_CODI);
 			anotacio.setProcedimentCodi(PROCEDIMENT_CODI);
+			anotacio.setServeiCodi(SERVEI_CODI);
 	        anotacio.setAssumpteDescripcio(ASSUMPTE_DESC);
 	        anotacio.setAssumpteTipusCodi(ASSUMPTE_TIPUS_CODI);
 	        anotacio.setAssumpteDescripcio(ASSUMPTE_TIPUS_DESC);

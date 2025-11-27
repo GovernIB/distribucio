@@ -13,6 +13,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import es.caib.distribucio.logic.intf.dto.*;
+import es.caib.distribucio.logic.intf.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +26,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.distribucio.logic.intf.dto.BackofficeDto;
-import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
-import es.caib.distribucio.logic.intf.dto.ReglaDto;
-import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
-import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
-import es.caib.distribucio.logic.intf.service.BackofficeService;
-import es.caib.distribucio.logic.intf.service.EntitatService;
-import es.caib.distribucio.logic.intf.service.ProcedimentService;
-import es.caib.distribucio.logic.intf.service.ReglaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -60,8 +52,10 @@ public class ReglaRestController {
 	private EntitatService entitatService;
 	@Autowired
 	private ProcedimentService procedimentService;
+    @Autowired
+    private ServeiService serveiService;
 
-	@RequestMapping(value = "/add", method = RequestMethod.POST)
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
 	@Operation(
 			summary = "Alta de regla per codi SIA", 
 			description = "Dona d'alta una regla pel backoffice i codi SIA indicat per a l'entitat indicada. Per poder invocar aquest mètode "
@@ -73,17 +67,24 @@ public class ReglaRestController {
 			@RequestParam(required = true) String entitat,
 			@Parameter(name = "sia", description = "Codi SIA de la regla pel filtre per procediment.")
 			@RequestParam(required = true) String sia,
-			@Parameter(name = "backoffice", description = "Codi Backoffice per la regla al qual s'enviaran les anotacions.") 
+			@Parameter(name = "tipusSia", description = "Codi per indicar el tipus de SIA")
+			@RequestParam(required = false, defaultValue = "PROCEDIMENT") String tipusSia,
+			@Parameter(name = "backoffice", description = "Codi Backoffice per la regla al qual s'enviaran les anotacions.")
 			@RequestParam(required = true) String backoffice,
 			@Parameter(name = "presencial", description = "Booleà per informar el filtre presencial de la regla. Paràmetre opcional.") 
 			@RequestParam(required = false) Boolean presencial) {
 		// Per posar la data a la descripció
-		String msg;
+		String msg = "";
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		String dataAra = sdf.format(new Date());
 		// Definim els valors que no hi son als paràmetres
 		String nom = backoffice + " " + sia;
-		String descripcio = "Creació de regla en data de " + dataAra + " pel backoffice amb codi " + backoffice + " i codi de procediment " + sia;
+		String descripcio = "Creació de regla en data de " + dataAra + " pel backoffice amb codi " + backoffice;
+        if ("PROCEDIMENT".equals(tipusSia)) {
+            descripcio += " i codi de procediment " + sia;
+        } else if ("SERVEI".equals(tipusSia)) {
+            descripcio += " i codi de servei " + sia;
+        }
 		ReglaTipusEnumDto tipus = ReglaTipusEnumDto.BACKOFFICE;		
 		// Validar que la entitat existeix
 		EntitatDto entitatDto = entitatService.findByCodiDir3(entitat);
@@ -103,12 +104,21 @@ public class ReglaRestController {
 		novaReglaDto.setTipus(tipus);
 		novaReglaDto.setBackofficeDestiId(backofficeDto.getId());
 		novaReglaDto.setBackofficeDestiNom(backoffice);
-		novaReglaDto.setProcedimentCodiFiltre(sia);
+        if ("PROCEDIMENT".equals(tipusSia)) {
+            novaReglaDto.setProcedimentCodiFiltre(sia);
+        } else if ("SERVEI".equals(tipusSia)) {
+            novaReglaDto.setServeiCodiFiltre(sia);
+        }
 		if (presencial != null) {
 			novaReglaDto.setPresencial(presencial.booleanValue() ? ReglaPresencialEnumDto.SI : ReglaPresencialEnumDto.NO );
 		}
 		// Validar que no hi ha cap altra regla pel SIA per un backoffice diferent
-		List<ReglaDto> reglesPerSia = reglaService.findReglaBackofficeByProcediment(sia);
+		List<ReglaDto> reglesPerSia = new ArrayList<>();
+        if ("PROCEDIMENT".equals(tipusSia)) {
+            reglesPerSia.addAll( reglaService.findReglaBackofficeByProcediment(sia) );
+        } else if ("SERVEI".equals(tipusSia)) {
+            reglesPerSia.addAll( reglaService.findReglaBackofficeByServei(sia) );
+        }
 		for (ReglaDto regla : reglesPerSia) {
 			if (backofficeDto.getId().compareTo(regla.getBackofficeDestiId()) != 0) {
 				// KO Existeix una regla amb mateix codi SIA per un altre backoffice
@@ -129,17 +139,31 @@ public class ReglaRestController {
 		}
 		try {
 			novaReglaDto = reglaService.create(entitatDto.getId(), novaReglaDto);
-			ProcedimentDto procediment = procedimentService.findByCodiSia(entitatDto.getId(), sia);
-			if (procediment != null) {
-				msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-						+ "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia + " ("
-						+ procediment.getNom() + ")" + " de la unitat " + " \""
-						+ procediment.getUnitatOrganitzativa().getCodiAndNom() + "\"" + " a l'entitat " + entitat;
-			} else {
-				msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-						+ "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia
-						+ "(Procediment no trobat)" + " a l'entitat " + entitat;
-			}
+            if ("PROCEDIMENT".equals(tipusSia)) {
+                ProcedimentDto procediment = procedimentService.findByCodiSia(entitatDto.getId(), sia);
+                if (procediment != null) {
+                    msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
+                            + "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia + " ("
+                            + procediment.getNom() + ")" + " de la unitat " + " \""
+                            + procediment.getUnitatOrganitzativa().getCodiAndNom() + "\"" + " a l'entitat " + entitat;
+                } else {
+                    msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
+                            + "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia
+                            + "(Procediment no trobat)" + " a l'entitat " + entitat;
+                }
+            } else if ("SERVEI".equals(tipusSia)) {
+                ServeiDto servei = serveiService.findByCodiSia(entitatDto.getId(), sia);
+                if (servei != null) {
+                    msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
+                            + "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia + " ("
+                            + servei.getNom() + ")" + " de la unitat " + " \""
+                            + servei.getUnitatOrganitzativa().getCodiAndNom() + "\"" + " a l'entitat " + entitat;
+                } else {
+                    msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
+                            + "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia
+                            + "(Servei no trobat)" + " a l'entitat " + entitat;
+                }
+            }
 			logger.debug(msg);
 			return new ResponseEntity<Object>(msg, HttpStatus.OK);
 		} catch (Exception e) {
@@ -200,9 +224,9 @@ public class ReglaRestController {
 			HttpServletRequest request, 
 			@Parameter(name = "sia", description = "Codi SIA de la regla que identifica la regla de tipus backoffice.")
 			@RequestParam(required = true) String sia) {
-		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByProcediment(sia);
+		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByCodiSia(sia);
 		if (reglesDto.size() > 1) {
-			logger.warn("S'han trobat " + reglesDto.size() + " regles pel codi de procediment " + sia + ".");
+			logger.warn("S'han trobat " + reglesDto.size() + " regles pel codi SIA " + sia + ".");
 		}
 		List<Map<String, Object>> regles = new ArrayList<>();
 		if (reglesDto == null || reglesDto.isEmpty()) {
@@ -277,6 +301,7 @@ public class ReglaRestController {
 			r.put("data", dateFormat.format(data));
 			r.put("entitat", regla.getEntitatNom());
 			r.put("activa", regla.isActiva());
+			r.put("tipusSia", regla.getProcedimentCodiFiltre() != null ?"PROCEDIMENT":"SERVEI");
 			if (regla.getPresencial() != null) {
 				switch(regla.getPresencial()) {
 				case NO:
