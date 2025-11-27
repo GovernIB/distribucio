@@ -30,6 +30,7 @@ import java.util.zip.ZipOutputStream;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import es.caib.distribucio.logic.intf.dto.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
@@ -72,37 +73,7 @@ import es.caib.distribucio.logic.helper.RegistreHelper;
 import es.caib.distribucio.logic.helper.ReglaHelper;
 import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.logic.helper.UsuariHelper;
-import es.caib.distribucio.logic.intf.dto.ArxiuContingutDto;
-import es.caib.distribucio.logic.intf.dto.ArxiuContingutTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.ArxiuDetallDto;
-import es.caib.distribucio.logic.intf.dto.BustiaDto;
-import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
 import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto.ClassificacioResultatEnumDto;
-import es.caib.distribucio.logic.intf.dto.ContingutDto;
-import es.caib.distribucio.logic.intf.dto.DadaDto;
-import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
-import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
-import es.caib.distribucio.logic.intf.dto.FitxerDto;
-import es.caib.distribucio.logic.intf.dto.HistogramPendentsEntryDto;
-import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.PaginaDto;
-import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
-import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
-import es.caib.distribucio.logic.intf.dto.RegistreAnnexFirmaDto;
-import es.caib.distribucio.logic.intf.dto.RegistreDto;
-import es.caib.distribucio.logic.intf.dto.RegistreEnviatPerEmailEnumDto;
-import es.caib.distribucio.logic.intf.dto.RegistreFiltreDto;
-import es.caib.distribucio.logic.intf.dto.RegistreFiltreReintentsEnumDto;
-import es.caib.distribucio.logic.intf.dto.RegistreMarcatPerSobreescriureEnumDto;
-import es.caib.distribucio.logic.intf.dto.RegistreNombreAnnexesEnumDto;
-import es.caib.distribucio.logic.intf.dto.RegistreProcesEstatSimpleEnumDto;
-import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
-import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.ServeiDto;
-import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexNtiTipusDocumentEnum;
@@ -814,7 +785,7 @@ public class RegistreServiceImpl implements RegistreService {
 		    parametres.put("maxReintents", maxReintents);
 		}
 		if (!esNullProcedimentCodi) {
-			sqlWhere.append("and r.procedimentCodi = :procedimentCodi ");
+			sqlWhere.append("and (r.procedimentCodi = :procedimentCodi or r.serveiCodi = :procedimentCodi) ");
 			parametres.put("procedimentCodi", procedimentCodi);
 		}
 		if (!esNullUsuariAssignatCodi && !mostrarSenseAssignar) {
@@ -2659,6 +2630,7 @@ public class RegistreServiceImpl implements RegistreService {
 	public ClassificacioResultatDto classificar(
 			Long entitatId,
 			Long registreId,
+            String tipus,
 			String procedimentCodi,
 			String serveiCodi,			
 			String titol)
@@ -2768,21 +2740,32 @@ public class RegistreServiceImpl implements RegistreService {
 			}
 			// Actualitzar històric i crear coa correus per cada registre a crear
 			updateMovimentDetail(
-					registrePerClassificar, 
+                    registre,
+                    tipus,
 					contingutMovimentEntity);
 		}
 		return classificacioResultat;
 	}
 
 	private void updateMovimentDetail(
-			ContingutEntity registrePerClassificar, 
+            RegistreEntity registrePerClassificar,
+            String tipus,
 			ContingutMovimentEntity contingutMoviment) {
-		
+        List<String> params = new ArrayList<>();
+
+        params.add(tipus);
+        if (RegistreClassificarTipusEnum.PROCEDIMENT.name().equals(tipus)) {
+            params.add(registrePerClassificar.getProcedimentCodi());
+        } else if (RegistreClassificarTipusEnum.SERVEI.name().equals(tipus)){
+            params.add(registrePerClassificar.getServeiCodi());
+        }
+
 		contingutLogHelper.logMoviment(
 				registrePerClassificar,
 				LogTipusEnumDto.CLASSIFICAR,
 				contingutMoviment,
-				true);
+				true,
+                params);
 	}
 
 	@Override

@@ -412,6 +412,13 @@ public class ReglaServiceImpl implements ReglaService {
 			codisProcediments = new ArrayList<>();
 			codisProcediments.add("-");
 		}
+
+		List<String> codisServei = new ArrayList<>();
+		if(regla.getServeiCodiFiltre() != null && !regla.getServeiCodiFiltre().trim().isEmpty()) {
+			codisServei.addAll(Arrays.asList(regla.getServeiCodiFiltre().split(" ")));
+		} else {
+			codisServei.add("-");
+		}
 		
 		List<Long> bustiesUnitatOrganitzativaIds = new ArrayList<>();
 		if (regla.getUnitatOrganitzativaFiltre() != null) {			
@@ -429,16 +436,16 @@ public class ReglaServiceImpl implements ReglaService {
 		}
 		
 		for(RegistreEntity registre : reglaRepository.findRegistres(
-				entitat, 
-				regla.getUnitatOrganitzativaFiltre() == null, 
+				entitat,
+				regla.getUnitatOrganitzativaFiltre() == null,
 				bustiesUnitatOrganitzativaIds,
-				registrePresencial == null, 
+				registrePresencial == null,
 				registrePresencial != null ? registrePresencial.booleanValue() : false,
-				regla.getBustiaFiltre() == null, 
+				regla.getBustiaFiltre() == null,
 				regla.getBustiaFiltre() != null ? regla.getBustiaFiltre().getId() : 0L,
-				regla.getProcedimentCodiFiltre() == null || regla.getProcedimentCodiFiltre().trim().isEmpty(), 
-				codisProcediments, 
-				regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(), 
+				codisProcediments,
+                codisServei,
+				regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(),
 				regla.getAssumpteCodiFiltre() != null && !regla.getAssumpteCodiFiltre().trim().isEmpty() ?
 						regla.getAssumpteCodiFiltre() : "-")) {
 			

@@ -190,21 +190,21 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"    r.entitat = :entitat " +
 			"and r.procesEstat = es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum.BUSTIA_PENDENT " +
 			"and (:unitatOrganitzativaFiltreIsNull = true or r.pare.id in (:bustiesUnitatOrganitzativaIds)) " +
-			"and (:isRegistrePresencialNull = true or r.presencial = :registrePresencial) " + 
-			"and (:bustiaFiltreIsNull = true or r.pare.id = :bustiaFiltreId) " + 
-			"and (:procedimentsCodisFiltreIsEmpty = true or r.procedimentCodi in (:procedimentsCodisFiltre)) " +
-			"and (:assumpteCodiFiltreIsNull = true or r.assumpteCodi = :assumpteCodiFiltre) " + 
+			"and (:isRegistrePresencialNull = true or r.presencial = :registrePresencial) " +
+			"and (:bustiaFiltreIsNull = true or r.pare.id = :bustiaFiltreId) " +
+			"and (r.procedimentCodi in (:procedimentsCodisFiltre) or r.serveiCodi in (:serveisCodisFiltre)) " +
+			"and (:assumpteCodiFiltreIsNull = true or r.assumpteCodi = :assumpteCodiFiltre) " +
 			"order by r.identificador asc")
 	List<RegistreEntity> findRegistres(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("unitatOrganitzativaFiltreIsNull") boolean unitatOrganitzativaFiltreIsNull,
 			@Param("bustiesUnitatOrganitzativaIds") List<Long> bustiesUnitatOrganitzativaIds,
-			@Param("isRegistrePresencialNull") boolean isRegistrePresencialNull, 
+			@Param("isRegistrePresencialNull") boolean isRegistrePresencialNull,
 			@Param("registrePresencial") boolean registrePresencial,
 			@Param("bustiaFiltreIsNull") boolean bustiaFiltreIsNull,
 			@Param("bustiaFiltreId") Long bustiaFiltreId,
-			@Param("procedimentsCodisFiltreIsEmpty") boolean procedimentsCodisFiltreIsEmpty,
 			@Param("procedimentsCodisFiltre") List<String> procedimentsCodisFiltre,
+			@Param("serveisCodisFiltre") List<String> serveisCodisFiltre,
 			@Param("assumpteCodiFiltreIsNull") boolean assumpteCodiFiltreIsNull,
 			@Param("assumpteCodiFiltre") String assumpteCodiFiltre);
 	

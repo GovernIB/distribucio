@@ -59,6 +59,7 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 		if (command.getTipus() != ReglaTipusEnumDto.BACKOFFICE && // Si es Tipo UNITAT o BUSTIA
 			(command.getAssumpteCodiFiltre() == null || command.getAssumpteCodiFiltre().trim().isEmpty()) && 
 			(command.getProcedimentCodiFiltre() == null || command.getProcedimentCodiFiltre().trim().isEmpty()) &&
+			(command.getServeiCodiFiltre() == null || command.getServeiCodiFiltre().trim().isEmpty()) &&
 			 command.getUnitatFiltreId() == null &&
 			 command.getBustiaFiltreId() == null) {
 			context.buildConstraintViolationWithTemplate(
@@ -68,7 +69,11 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 			context.buildConstraintViolationWithTemplate(
 					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
 					.addNode("procedimentCodiFiltre")
-					.addConstraintViolation();	
+					.addConstraintViolation();
+			context.buildConstraintViolationWithTemplate(
+					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
+					.addNode("serveiCodiFiltre")
+					.addConstraintViolation();
 			context.buildConstraintViolationWithTemplate(
 					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
 					.addNode("unitatFiltreId")
@@ -99,11 +104,16 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 						.addConstraintViolation();	
 				valid = false;
 			}
-			if (command.getProcedimentCodiFiltre() == null || command.getProcedimentCodiFiltre().trim().isEmpty()) {
+			if ((command.getProcedimentCodiFiltre() == null || command.getProcedimentCodiFiltre().trim().isEmpty()) &&
+                    (command.getServeiCodiFiltre() == null || command.getServeiCodiFiltre().trim().isEmpty())) {
 				context.buildConstraintViolationWithTemplate(
 						MessageHelper.getInstance().getMessage(codiMissatge + ".tipus.desti.buit", null, new RequestContext(request).getLocale()))
 						.addNode("procedimentCodiFiltre")
-						.addConstraintViolation();	
+						.addConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                                MessageHelper.getInstance().getMessage(codiMissatge + ".tipus.desti.buit", null, new RequestContext(request).getLocale()))
+                        .addNode("serveiCodiFiltre")
+                        .addConstraintViolation();
 				valid = false;
 			}
 			// No permetre crear regles de tipus "Gestionar amb backoffice" amb codis SIA ja definits en altres regles
