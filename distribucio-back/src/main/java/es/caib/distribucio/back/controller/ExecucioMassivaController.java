@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import es.caib.distribucio.back.command.*;
+import es.caib.distribucio.logic.intf.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,26 +30,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import es.caib.distribucio.back.command.ContingutReenviarCommand;
-import es.caib.distribucio.back.command.MarcarProcessatCommand;
-import es.caib.distribucio.back.command.RegistreClassificarCommand;
-import es.caib.distribucio.back.command.RegistreClassificarTipusEnum;
-import es.caib.distribucio.back.command.RegistreEnviarIProcessarCommand;
-import es.caib.distribucio.back.command.RegistreEnviarViaEmailCommand;
 import es.caib.distribucio.back.helper.EnumHelper;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.back.helper.RolHelper;
-import es.caib.distribucio.logic.intf.dto.BustiaDto;
-import es.caib.distribucio.logic.intf.dto.ElementTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaAccioDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaTipusDto;
-import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
-import es.caib.distribucio.logic.intf.dto.RegistreDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
@@ -64,13 +50,13 @@ import es.caib.distribucio.logic.intf.service.RegistreService;
 @RequestMapping("/massiva")
 public class ExecucioMassivaController extends BaseUserOAdminController {
 
-
 	// TODO: Unificar cridada selecció registre?
 	private static final String SESSION_ATTRIBUTE_SELECCIO_REGISTRES_ADMIN = "RegistreAdminController.session.seleccio";
 	private static final String SESSION_ATTRIBUTE_SELECCIO_REGISTRE_USER = "RegistreUserController.session.seleccio";
 	private static final String SESSION_ATTRIBUTE_SELECCIO_REGISTRE_MOVIMENTS = "RegistreUserController.session.seleccio.moviments";
 	private static final String SESSION_ATTRIBUTE_SELECCIO_ANNEXOS_ADMIN = "AnnexosAdminController.session.seleccio";
 	private static final String SESSION_COLLAPSE_SELECCIO = "ExecucioMassivaController.session.collapse.seleccio";
+    private static final String SESSION_ATTRIBUTE_FILTRE = "ExecucioMassivaController.session.filtre";
 	
 	@Autowired
 	private AplicacioService aplicacioService;
@@ -82,7 +68,22 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	private AnnexosService annexosService;
 	@Autowired
 	private BustiaService bustiaService;
-	
+
+    private RegistreFiltreCommand getFiltreCommand(
+            HttpServletRequest request) {
+        RegistreFiltreCommand filtreCommand = (RegistreFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
+                request,
+                SESSION_ATTRIBUTE_FILTRE);
+        if (filtreCommand == null) {
+            filtreCommand = new RegistreFiltreCommand();
+            RequestSessionHelper.actualitzarObjecteSessio(
+                    request,
+                    SESSION_ATTRIBUTE_FILTRE,
+                    filtreCommand);
+        }
+        return filtreCommand;
+    }
+
 	// Consultes modal execució massiva //
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/consulta/{pagina}", method = RequestMethod.GET)
@@ -93,9 +94,12 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		pagina = (pagina < 0 ? 0 : pagina);
-		List<ExecucioMassivaDto> execucionsMassives = new ArrayList<ExecucioMassivaDto>();
+        RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
+        model.addAttribute("remitentFiltreCommand", filtreCommand);
 		UsuariDto usuariActual = null;
 		if (RolHelper.isRolActualAdministrador(request)) {
+            if (filtreCommand.getRemitent() != null)
+                usuariActual = aplicacioService.findUsuariAmbCodi(filtreCommand.getRemitent());
 			model.addAttribute(
 					"titolConsulta",
 					getMessage(request, "accio.massiva.consulta.titol.gobal"));
@@ -105,7 +109,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 					"titolConsulta",
 					getMessage(request, "accio.massiva.consulta.titol.usuari", new String[]{usuariActual.getNom()}));
 		}
-		execucionsMassives = execucioMassivaService.findExecucionsMassivesPerUsuari(entitatActual.getId(), usuariActual, pagina);
+        List<ExecucioMassivaDto> execucionsMassives = execucioMassivaService.findExecucionsMassivesPerUsuari(entitatActual.getId(), usuariActual, pagina);
 		if (execucionsMassives.size() < 8) {
 			model.addAttribute("sumador", 0);
 		} else {
@@ -120,6 +124,29 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		}
 		return "consultaExecucionsMassives";
 	}
+
+    @RequestMapping(value = "/consulta/{pagina}", method = RequestMethod.POST)
+    public String consultaExecucionsPost(
+            HttpServletRequest request,
+            @PathVariable int pagina,
+            @Valid RegistreFiltreCommand registreFiltreCommand,
+            BindingResult bindingResult,
+            @RequestParam(value = "accio", required = false) String accio,
+            Model model) {
+        if ("netejar".equals(accio)) {
+            RequestSessionHelper.esborrarObjecteSessio(
+                    request,
+                    SESSION_ATTRIBUTE_FILTRE);
+        } else {
+            if (!bindingResult.hasErrors()) {
+                RequestSessionHelper.actualitzarObjecteSessio(
+                        request,
+                        SESSION_ATTRIBUTE_FILTRE,
+                        registreFiltreCommand);
+            }
+        }
+        return this.getConsultaExecucions(request, pagina, false, model);
+    }
 	
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/consultaContingut/{execucioMassivaId}", method = RequestMethod.GET)

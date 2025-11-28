@@ -14,7 +14,28 @@ pageContext.setAttribute(
 <html>
 <head>
 	<title>${titolConsulta}</title>
-	<script src="<c:url value="/js/webutil.common.js"/>"></script>
+    <script src="<c:url value="/webjars/datatables.net/1.10.19/js/jquery.dataTables.min.js"/>"></script>
+    <script src="<c:url value="/webjars/datatables.net-bs/1.10.19/js/dataTables.bootstrap.min.js"/>"></script>
+    <link href="<c:url value="/webjars/datatables.net-bs/1.10.19/css/dataTables.bootstrap.min.css"/>" rel="stylesheet"></link>
+    <link href="<c:url value="/webjars/select2/4.0.6-rc.1/dist/css/select2.min.css"/>" rel="stylesheet"/>
+    <link href="<c:url value="/webjars/select2-bootstrap-theme/0.1.0-beta.4/dist/select2-bootstrap.min.css"/>" rel="stylesheet"/>
+    <c:if test="${requestLocale == 'en'}">
+        <script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/select2.min.js"/>"></script>
+    </c:if>
+    <script src="<c:url value="/js/select2-locales/select2_${requestLocale}.min.js"/>"></script>
+    <script src="<c:url value="/js/select2-locales/select2_locale_ca.js"/>"></script>
+    <script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+    <link href="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/css/bootstrap-datepicker.min.css"/>" rel="stylesheet"/>
+    <script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/js/bootstrap-datepicker.min.js"/>"></script>
+    <script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/locales/bootstrap-datepicker.${requestLocale}.min.js"/>"></script>
+    <script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
+    <script src="<c:url value="/webjars/Sortable/1.4.2/Sortable.min.js"/>"></script>
+    <script src="<c:url value="/js/webutil.common.js"/>"></script>
+    <script src="<c:url value="/js/webutil.datatable.js"/>"></script>
+    <script src="<c:url value="/js/webutil.modal.js"/>"></script>
+
+    <script src="<c:url value="/webjars/datatables.net-select/1.1.2/js/dataTables.select.min.js"/>"></script>
+    <link href="<c:url value="/webjars/datatables.net-select-bs/1.1.2/css/select.bootstrap.min.css"/>" rel="stylesheet"></link>
 	<dis:modalHead/>
 <style>
 	.linea-exm {
@@ -250,6 +271,31 @@ pageContext.setAttribute(
 
 <div style="padding: 0px 0px 15px 2px;">
 	<input type='checkbox' name='refrescarDeu' <c:if test="${isRefrescant}">checked='checked'</c:if> >&nbsp;<b>Refrescar cada 10s.</b>
+
+    <c:if test="${isRolActualAdministrador}">
+    <form:form action="" method="post" cssClass="well" modelAttribute="remitentFiltreCommand">
+        <button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
+        <div class="row">
+            <div class="col-md-3">
+                <c:url value="/userajax/remitent/item" var="urlConsultaInicial"/>
+                <c:url value="/userajax/remitent" var="urlConsultaLlistat"/>
+                <dis:inputSuggest
+                    name="remitent"
+                    urlConsultaInicial="${urlConsultaInicial}"
+                    urlConsultaLlistat="${urlConsultaLlistat}"
+                    placeholderKey="principal.tipus.enum.USUARI"
+                    suggestValue="codi"
+                    suggestText="codiAndNom"
+                    inline="true"/>
+            </div>
+            <div class="col-md-7"></div>
+            <div class="col-md-2 d-flex">
+                <button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+                <button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+            </div>
+        </div>
+    </form:form>
+    </c:if>
 </div>
 
 <div class="panel panel-default">
