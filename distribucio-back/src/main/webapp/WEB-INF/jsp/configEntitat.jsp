@@ -47,19 +47,48 @@
     opacity: 0.2;
     text-shadow: 0 1px 0 #FFFFFF;
 }
-
+.highlight {
+    background-color: yellow;
+    font-weight: bold;
+}
 .d-none {
 	display: none;
 }
 </style> 
 
 <script>
+const reloadTabs = () => {
+    $('.panel-primary').each(function () {
+        const $panel = $(this);
+        const visibleForms = $panel.find('.form-update-config')
+            .filter(function () { return $(this).css('display') !== 'none' }).length;
+
+        if (visibleForms === 0) {
+            $panel.hide();
+        } else {
+            $panel.show();
+        }
+    });
+
+    $('.tab-pane').each(function () {
+        const $panel = $(this);
+        const visibleForms = $panel.find('.panel-primary')
+            .filter(function () { return $(this).css('display') !== 'none' }).length;
+
+        const key = $panel.attr('id').replace("group-", 'tab-')
+        if (visibleForms === 0) {
+            $('#' + key).hide();
+        } else {
+            $('#' + key).show();
+        }
+    });
+}
 
 $(document).ready(function() {
-	
 	$("#header").append("<div style='float: right;'><a id='btn-sincronitzar' href='<c:url value='/config/synchronize'/>' class='btn btn-default'><span id='span-refresh-synchronize' class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
 	$("#header").append("<div style='float: right;'><a id='btn-reiniciarTasques' href='<c:url value='/config/reiniciarTasquesSegonPla'/>' class='btn btn-default'><span id='span-refresh-reiniciar-tasques' class='fa fa-refresh'></span> <spring:message code='config.reiniciar.tasques'/></a></div>");
-	$("#header h2").append(" - ${entitatDto.nom}");
+    $("#header").append("<div style='float: right;'><input id='btn-search' class='form-control' title='<spring:message code='comu.boto.filtrar'/>...' placeholder='<spring:message code='comu.boto.filtrar'/>...' type='text'/></div>");
+    $("#header h2").append(" - ${entitatDto.nom}");
 
 	$('#btn-reiniciarTasques').click(function(e) {
 		$("#btn-reiniciarTasques #span-refresh-reiniciar-tasques").addClass('fa-circle-o-notch');
@@ -73,6 +102,37 @@ $(document).ready(function() {
 		$("#btn-sincronitzar").addClass('disabled');
 		$("#btn-sincronitzar").css("pointer-events", "none");
 	});
+    $('#btn-search').on('input', function() {
+        const springFilter = $(this).val().trim().toLowerCase();
+        $('.form-update-config').each(function () {
+            const $form = $(this);
+            const $label = $form.find('label.control-label');
+
+            const key = $form.find('input[name="key"]').val()?.toLowerCase();
+            const description = $label.text().trim()?.toLowerCase();
+            const value = $form.find('input[name="value"]').val()?.toLowerCase();
+
+            if (springFilter === "") {
+                $form.show();
+                $label.html($label.text());
+                $form.find('.help-block').html(key);
+                return;
+            }
+
+            if (key?.includes(springFilter) || description?.includes(springFilter) || value?.includes(springFilter)) {
+                $form.show();
+
+                const regex = new RegExp('(' + springFilter + ')', 'gi');
+                const text = $label.text(); // solo texto plano
+                $label.html(text.replace(regex, '<span class="highlight">$1</span>'));
+                $form.find('.help-block').html(key.replace(regex, '<span class="highlight">$1</span>'));
+            } else {
+                $form.hide()
+            }
+        });
+
+        reloadTabs();
+    })
 	
 	$(".form-update-config").submit(function(e) {
 	    e.preventDefault();
@@ -114,6 +174,8 @@ $(document).ready(function() {
 	        }
 	    });
 	});
+
+    reloadTabs();
 });
 
 function guardarAnotacionsPendents() {
@@ -182,7 +244,7 @@ function accioBoto(id, valorGeneric, otherButton) {
         <div class="col-md-3">
             <ul class="nav nav-pills nav-stacked">
                 <c:forEach items="${config_groups}" var="group" varStatus="status_group">
-                    <li role="presentation" class="${status_group.first ? 'active': ''}"><a data-toggle="tab" href="#group-${group.key}">${group.description}</a></li>
+                    <li id="tab-${group.key}" role="presentation" class="${status_group.first ? 'active': ''}"><a data-toggle="tab" href="#group-${group.key}">${group.description}</a></li>
                 </c:forEach>
             </ul>
         </div>
