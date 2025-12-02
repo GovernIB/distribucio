@@ -99,7 +99,9 @@
 
             const $entitats = $element.find('.entitat-prop');
             if ($entitats != null && $entitats.length > 0) {
-                if ($entitats.filter(() => hasFilter($(this), springFilter)).length > 0) {return true}
+                if ($entitats.filter(function () {
+                    return hasFilter($(this), springFilter)
+                }).length > 0) {return true}
             }
 
             const res = key?.includes(springFilter) || description?.includes(springFilter) || value?.includes(springFilter);
