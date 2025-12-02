@@ -12,12 +12,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 
+import es.caib.distribucio.persist.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,17 +85,6 @@ import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.permission.ExtendedPermission;
-import es.caib.distribucio.persist.entity.BustiaDefaultEntity;
-import es.caib.distribucio.persist.entity.BustiaEntity;
-import es.caib.distribucio.persist.entity.ContingutComentariEntity;
-import es.caib.distribucio.persist.entity.ContingutEntity;
-import es.caib.distribucio.persist.entity.ContingutMovimentEntity;
-import es.caib.distribucio.persist.entity.EntitatEntity;
-import es.caib.distribucio.persist.entity.RegistreEntity;
-import es.caib.distribucio.persist.entity.ReglaEntity;
-import es.caib.distribucio.persist.entity.UnitatOrganitzativaEntity;
-import es.caib.distribucio.persist.entity.UsuariBustiaFavoritEntity;
-import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.repository.BustiaDefaultRepository;
 import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.ContingutComentariRepository;
@@ -863,7 +854,15 @@ public class BustiaServiceImpl implements BustiaService {
 				filtre.getPerDefecte() == null || filtre.getPerDefecte() == false,
 				filtre.getActiva() == null || filtre.getActiva() == false);
 		contextfindByEntitatAndUnitatAndBustiaNomAndUnitatObsoletaAndPareNotNullFiltre.stop();
-		
+
+        if (filtre.getPermis() != null && filtre.getPermis()) {
+            Map<Long, List<PermisDto>> permisos = permisosHelper.findPermisos(busties.stream().map(DistribucioPersistable::getId).collect(Collectors.toList()), BustiaEntity.class);
+            busties = busties.stream().filter(bustia -> {
+                List<PermisDto> permis = permisos.get(bustia.getId());
+                return permis != null && permis.size()>1;
+            }).collect(Collectors.toList());
+        }
+
 		final Timer timertoBustiaDto = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "toBustiaDto"));
 		Timer.Context contexttoBustiaDto = timertoBustiaDto.time();
 		List<BustiaDto> bustiesDto = bustiaHelper.toBustiaDto(
