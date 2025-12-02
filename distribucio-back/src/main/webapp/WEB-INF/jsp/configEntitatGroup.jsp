@@ -33,7 +33,7 @@
                     }
                     for (let entitat of entitats) {
                         let keyReplaced = entitat.key.replaceAll('_','__').replaceAll('.', '_');
-                        let string = '<div>';                        
+                        let string = '<div class="entitat-prop">';
                         let disabled = false;//entitat.jbossProperty || !entitat.value ? 'disabled' : '';
                         let textGray = disabled ? "text-gray" : "";
                         string += '<label id="' + keyReplaced+ '_codi_entitat" for="entitat_config_' + keyReplaced + '" class="col-sm-3 control-label margin-bottom ' + textGray + '" style="word-wrap: break-word;">- ' + entitat.entitatCodi + '</label>';

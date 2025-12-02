@@ -57,32 +57,111 @@
 </style> 
 
 <script>
-const reloadTabs = () => {
-    $('.panel-primary').each(function () {
-        const $panel = $(this);
-        const visibleForms = $panel.find('.form-update-config')
-            .filter(function () { return $(this).css('display') !== 'none' }).length;
+    const reloadTabs = () => {
+        $('.panel-primary').each(function () {
+            const $panel = $(this);
+            if (hasFilter($panel)) {
+                $panel.show();
+            } else {
+                $panel.hide();
+            }
+        });
 
-        if (visibleForms === 0) {
-            $panel.hide();
-        } else {
-            $panel.show();
+        $('.tab-pane').each(function () {
+            const $panel = $(this);
+            const key = $panel.attr('id').replace("group-", 'tab-')
+            if (hasFilter($panel)) {
+                $('#' + key).show();
+            } else {
+                $('#' + key).hide();
+            }
+        });
+    }
+
+    const hasFilter = ($element, springFilter) => {
+        if ($element.hasClass('panel-primary')) {
+            return $element.find('.form-update-config')
+                .filter(function () { return $(this).css('display') !== 'none' }).length > 0;
         }
-    });
-
-    $('.tab-pane').each(function () {
-        const $panel = $(this);
-        const visibleForms = $panel.find('.panel-primary')
-            .filter(function () { return $(this).css('display') !== 'none' }).length;
-
-        const key = $panel.attr('id').replace("group-", 'tab-')
-        if (visibleForms === 0) {
-            $('#' + key).hide();
-        } else {
-            $('#' + key).show();
+        if ($element.hasClass('tab-pane')) {
+            return $element.find('.panel-primary')
+                .filter(function () { return $(this).css('display') !== 'none' }).length > 0;
         }
-    });
-}
+        if ($element.hasClass('form-update-config')) {
+            if (springFilter === "") {
+                return true
+            }
+            const $label = $element.find('label.control-label')?.first();
+
+            const key = $element.find('input[name="key"]').val()?.toLowerCase();
+            const description = $label.text().trim()?.toLowerCase();
+            const value = $element.find('input[name="value"]').val()?.toLowerCase();
+
+            const $entitats = $element.find('.entitat-prop');
+            if ($entitats != null && $entitats.length > 0) {
+                if ($entitats.filter(() => hasFilter($(this), springFilter)).length > 0) {return true}
+            }
+
+            const res = key?.includes(springFilter) || description?.includes(springFilter) || value?.includes(springFilter);
+            return !!res;
+        }
+        if ($element.hasClass('entitat-prop')) {
+            if (springFilter === "") {
+                return true
+            }
+            const $label = $element.find('label.control-label')?.first();
+
+            const key = $element.find('span.help-block').text().trim()?.toLowerCase();
+            const description = $label.text().trim()?.toLowerCase();
+            const value = $element.find('input[name="value"]').val()?.toLowerCase();
+
+            const res = key?.includes?.(springFilter) || description?.includes?.(springFilter) || value?.includes?.(springFilter);
+            return !!res;
+        }
+    }
+
+    const marckSearch = ($element, springFilter) => {
+        if ($element.hasClass('form-update-config')) {
+            const $label = $element.find('label.control-label')?.first();
+
+            const $keyElement = $element.find('.help-block')?.first();
+            const key = $keyElement.text().trim()?.toLowerCase();
+
+            if (springFilter === "") {
+                $element.show();
+                $label.html($label.text());
+                $keyElement.html(key);
+                return;
+            }
+
+            if (hasFilter($element, springFilter)) {
+                $element.show();
+
+                const regex = new RegExp('(' + springFilter + ')', 'gi');
+                const text = $label.text(); // solo texto plano
+                $label.html(text.replace(regex, '<span class="highlight">$1</span>'));
+                $keyElement.html(key.replace(regex, '<span class="highlight">$1</span>'));
+            } else {
+                $element.hide()
+            }
+        }
+        if ($element.hasClass('entitat-prop')) {
+            const $label = $element.find('label.control-label')?.first();
+
+            const $keyElement = $element.find('.help-block')?.first();
+            const key = $keyElement.text().trim()?.toLowerCase();
+
+            if (springFilter === "" || !hasFilter($element, springFilter)) {
+                $label.html($label.text());
+                $keyElement.html(key);
+            } else {
+                const regex = new RegExp('(' + springFilter + ')', 'gi');
+                const text = $label.text(); // solo texto plano
+                $label.html(text.replace(regex, '<span class="highlight">$1</span>'));
+                $keyElement.html(key.replace(regex, '<span class="highlight">$1</span>'));
+            }
+        }
+    }
 
 $(document).ready(function() {
 	$("#header").append("<div style='float: right;'><a id='btn-sincronitzar' href='<c:url value='/config/synchronize'/>' class='btn btn-default'><span id='span-refresh-synchronize' class='fa fa-refresh'></span> <spring:message code='config.sync'/></a></div>");
@@ -106,29 +185,11 @@ $(document).ready(function() {
         const springFilter = $(this).val().trim().toLowerCase();
         $('.form-update-config').each(function () {
             const $form = $(this);
-            const $label = $form.find('label.control-label');
+            marckSearch($form, springFilter)
 
-            const key = $form.find('input[name="key"]').val()?.toLowerCase();
-            const description = $label.text().trim()?.toLowerCase();
-            const value = $form.find('input[name="value"]').val()?.toLowerCase();
-
-            if (springFilter === "") {
-                $form.show();
-                $label.html($label.text());
-                $form.find('.help-block').html(key);
-                return;
-            }
-
-            if (key?.includes(springFilter) || description?.includes(springFilter) || value?.includes(springFilter)) {
-                $form.show();
-
-                const regex = new RegExp('(' + springFilter + ')', 'gi');
-                const text = $label.text(); // solo texto plano
-                $label.html(text.replace(regex, '<span class="highlight">$1</span>'));
-                $form.find('.help-block').html(key.replace(regex, '<span class="highlight">$1</span>'));
-            } else {
-                $form.hide()
-            }
+            $form.find('.entitat-prop').each(function () {
+                marckSearch($(this), springFilter)
+            })
         });
 
         reloadTabs();
