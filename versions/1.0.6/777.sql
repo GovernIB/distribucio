@@ -2,7 +2,7 @@
 
 -- Actualitza tots els permisos existents
 UPDATE DIS_ACL_ENTRY dae
-SET dae.MASK = 2 -- complet
+SET dae.MASK = 2 -- esriptura
 WHERE dae.MASK = 1 -- lectura
   AND dae.ACL_OBJECT_IDENTITY IN (
     SELECT daoi.ID

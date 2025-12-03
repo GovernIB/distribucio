@@ -69,10 +69,10 @@ WHERE dae.MASK = 1 -- lectura
     WHERE dac.CLASS LIKE 'es.caib.distribucio.persist.entity.BustiaEntity'
   );
 
---
+-- Canvia el permís a escriptura
 UPDATE DIS_ACL_ENTRY dae
 SET dae.MASK = 2
-WHERE dae.MASK = 3
+WHERE dae.MASK = 1
   AND dae.ACL_OBJECT_IDENTITY IN (
     SELECT daoi.ID
     FROM DIS_ACL_OBJECT_IDENTITY daoi
@@ -80,6 +80,7 @@ WHERE dae.MASK = 3
     WHERE dac.CLASS LIKE 'es.caib.distribucio.persist.entity.BustiaEntity'
   );
 
+-- Afegeix el permís que falta de lectura si no existeix
 INSERT INTO DIS_ACL_ENTRY (
     ID, ACL_OBJECT_IDENTITY, ACE_ORDER, SID, MASK, GRANTING, AUDIT_SUCCESS, AUDIT_FAILURE
 )

@@ -102,3 +102,44 @@ WHERE mask = 1
         JOIN dis_acl_class dac ON daoi.object_id_class = dac.id
         WHERE dac.class LIKE 'es.caib.distribucio.persist.entity.BustiaEntity'
   );
+
+-- Afegeix el permís que falta de lectura si no existeix
+INSERT INTO dis_acl_entry
+(id, acl_object_identity, ace_order, sid, mask, granting, audit_success, audit_failure)
+SELECT
+    nextval('dis_acl_entry_seq'),
+    acl_oid,
+    base_max + rn,
+    sid,
+    1,
+    granting,
+    audit_success,
+    audit_failure
+FROM (
+     SELECT
+         e.acl_object_identity AS acl_oid,
+         e.sid,
+         e.granting,
+         e.audit_success,
+         e.audit_failure,
+         ROW_NUMBER() OVER (PARTITION BY e.acl_object_identity ORDER BY e.sid, e.id) AS rn,
+         (SELECT COALESCE(MAX(d2.ace_order), 0)
+          FROM dis_acl_entry d2
+          WHERE d2.acl_object_identity = e.acl_object_identity) AS base_max
+     FROM dis_acl_entry e
+     WHERE e.mask = 2
+       AND NOT EXISTS (
+         SELECT 1
+         FROM dis_acl_entry e2
+         WHERE e2.acl_object_identity = e.acl_object_identity
+           AND e2.sid = e.sid
+           AND e2.mask = 1
+       )
+       AND EXISTS (
+         SELECT 1
+         FROM dis_acl_object_identity daoi
+         JOIN dis_acl_class dac ON daoi.object_id_class = dac.id
+         WHERE daoi.id = e.acl_object_identity
+           AND dac.class LIKE 'es.caib.distribucio.persist.entity.BustiaEntity'
+       )
+) t;
