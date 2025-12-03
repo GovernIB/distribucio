@@ -116,52 +116,93 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
                         .addConstraintViolation();
 				valid = false;
 			}
-			// No permetre crear regles de tipus "Gestionar amb backoffice" amb codis SIA ja definits en altres regles
+			
+			// Comprova que els codis SIA de procediment no s'usin en altres regles ja sigui per procediment o servei.
 			boolean mateixCodiSiaMateixFiltreUnitat = false;
 			Long unitatOrganitzativaId = command.getUnitatFiltreId();
-			String unitatOrganitzativaComparada = MessageHelper.getInstance().getMessage(codiMissatge + ".unitat.buida", null, new RequestContext(request).getLocale());
+			String unitatOrganitzativaComparada;
+			Map<String, List<ReglaDto>> reglesExistents;
 			if (command.getProcedimentCodiFiltre() != null) {
-				Map<String, List<ReglaDto>> mapa;
+				unitatOrganitzativaComparada = MessageHelper.getInstance().getMessage(codiMissatge + ".unitat.buida", null, new RequestContext(request).getLocale());
 				String procedimentCodiFiltre = command.getProcedimentCodiFiltre().trim();
 				List<String> procediments = Arrays.asList(procedimentCodiFiltre.split("\\s+"));
-				mapa = reglaService.findReglesByCodiProcediment(procediments);
-				
-				if (mapa != null && !mapa.isEmpty()) {
-					for(String codiProcediment : mapa.keySet()) {						
-						StringBuilder reglesNoms = new StringBuilder("");
-						for(ReglaDto regla : mapa.get(codiProcediment)) {
-							if (!regla.getId().equals(command.getId())) {
-								if (
-										(unitatOrganitzativaId==null) ||
-										(regla.getUnitatOrganitzativaFiltre()==null) ||
-										(unitatOrganitzativaId.equals(regla.getUnitatOrganitzativaFiltre().getId())) 
-								) {			
-									if (regla.getUnitatOrganitzativaFiltre()!=null) {
-										unitatOrganitzativaComparada = regla.getUnitatOrganitzativaFiltre().getDenominacio();
-									}
-									mateixCodiSiaMateixFiltreUnitat = true;
-									reglesNoms.append(regla.getNom());
-									if (!regla.getEntitatId().equals(entitatActual.getId())) {
-										reglesNoms.append(" (").append(regla.getEntitatNom()).append(")");
-									}
-									reglesNoms.append(", ");
+				reglesExistents = reglaService.findReglesByCodisSia(procediments);
+				for(String codiProcediment : reglesExistents.keySet()) {				
+					StringBuilder reglesNoms = new StringBuilder("");
+					for(ReglaDto regla : reglesExistents.get(codiProcediment)) {
+						if (!regla.getId().equals(command.getId()) && ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
+							if (
+									(unitatOrganitzativaId==null) ||
+									(regla.getUnitatOrganitzativaFiltre()==null) ||
+									(unitatOrganitzativaId.equals(regla.getUnitatOrganitzativaFiltre().getId())) 
+							) {			
+								if (regla.getUnitatOrganitzativaFiltre()!=null) {
+									unitatOrganitzativaComparada = regla.getUnitatOrganitzativaFiltre().getDenominacio();
 								}
+								mateixCodiSiaMateixFiltreUnitat = true;
+								reglesNoms.append(regla.getNom());
+								if (!regla.getEntitatId().equals(entitatActual.getId())) {
+									reglesNoms.append(" (").append(regla.getEntitatNom()).append(")");
+								}
+								reglesNoms.append(", ");
 							}
 						}
-						if (mateixCodiSiaMateixFiltreUnitat) {
-							if (reglesNoms != null && !reglesNoms.toString().isEmpty()) {
-								String[] args = {reglesNoms.substring(0, reglesNoms.length()-2).toString(), codiProcediment, unitatOrganitzativaComparada};
-								context.buildConstraintViolationWithTemplate(
-										MessageHelper.getInstance().getMessage(codiMissatge + ".backoffice.codiprocediment.igualUnitat.existent", args, new RequestContext(request).getLocale()))
-								.addNode("procedimentCodiFiltre")
-								.addConstraintViolation();	
-								valid = false;
+					}
+					if (mateixCodiSiaMateixFiltreUnitat) {
+						if (reglesNoms != null && !reglesNoms.toString().isEmpty()) {
+							String[] args = {reglesNoms.substring(0, reglesNoms.length()-2).toString(), codiProcediment, unitatOrganitzativaComparada};
+							context.buildConstraintViolationWithTemplate(
+									MessageHelper.getInstance().getMessage(codiMissatge + ".backoffice.codisia.igualUnitat.existent", args, new RequestContext(request).getLocale()))
+							.addNode("procedimentCodiFiltre")
+							.addConstraintViolation();	
+							valid = false;
+						}
+					}
+				}
+			}
+			// Comprova que els codis SIA de serveis no s'usin en altres regles ja sigui per procediment o servei.
+			if (command.getServeiCodiFiltre() != null) {
+				mateixCodiSiaMateixFiltreUnitat = false;
+				unitatOrganitzativaComparada = MessageHelper.getInstance().getMessage(codiMissatge + ".unitat.buida", null, new RequestContext(request).getLocale());
+				String serveiCodiFiltre = command.getServeiCodiFiltre().trim();
+				List<String> serveis = Arrays.asList(serveiCodiFiltre.split("\\s+"));
+				reglesExistents = reglaService.findReglesByCodisSia(serveis);
+				for(String codiServei : reglesExistents.keySet()) {						
+					StringBuilder reglesNoms = new StringBuilder("");
+					for(ReglaDto regla : reglesExistents.get(codiServei)) {
+						if (!regla.getId().equals(command.getId()) && ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
+							if (
+									(unitatOrganitzativaId==null) ||
+									(regla.getUnitatOrganitzativaFiltre()==null) ||
+									(unitatOrganitzativaId.equals(regla.getUnitatOrganitzativaFiltre().getId())) 
+							) {			
+								if (regla.getUnitatOrganitzativaFiltre()!=null) {
+									unitatOrganitzativaComparada = regla.getUnitatOrganitzativaFiltre().getDenominacio();
+								}
+								mateixCodiSiaMateixFiltreUnitat = true;
+								reglesNoms.append(regla.getNom());
+								if (!regla.getEntitatId().equals(entitatActual.getId())) {
+									reglesNoms.append(" (").append(regla.getEntitatNom()).append(")");
+								}
+								reglesNoms.append(", ");
 							}
+						}
+					}
+					if (mateixCodiSiaMateixFiltreUnitat) {
+						if (reglesNoms != null && !reglesNoms.toString().isEmpty()) {
+							String[] args = {reglesNoms.substring(0, reglesNoms.length()-2).toString(), codiServei, unitatOrganitzativaComparada};
+							context.buildConstraintViolationWithTemplate(
+									MessageHelper.getInstance().getMessage(codiMissatge + ".backoffice.codisia.igualUnitat.existent", args, new RequestContext(request).getLocale()))
+							.addNode("serveiCodiFiltre")
+							.addConstraintViolation();	
+							valid = false;
 						}
 					}
 				}
 			}
 		}
+		
+		
 		// Comrova que només s'informi el codi de procediment o el codi de servei, però no tots dos a l'hora
 		if (command.getProcedimentCodiFiltre() != null 
 				&& command.getServeiCodiFiltre() != null) {

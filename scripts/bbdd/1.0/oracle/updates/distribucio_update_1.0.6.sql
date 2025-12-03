@@ -60,7 +60,7 @@ INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY
 -- Afegir nou permis d'usuari de només lectura #777
 -- Actualitza tots els permisos existents
 UPDATE DIS_ACL_ENTRY dae
-SET dae.MASK = 2 -- complet
+SET dae.MASK = 3 -- complet read+write
 WHERE dae.MASK = 1 -- lectura
   AND dae.ACL_OBJECT_IDENTITY IN (
     SELECT daoi.ID

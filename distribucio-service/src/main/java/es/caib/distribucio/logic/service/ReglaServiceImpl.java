@@ -627,19 +627,36 @@ public class ReglaServiceImpl implements ReglaService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments) {
+	public Map<String, List<ReglaDto>> findReglesByCodisSia(List<String> codisSia) {
 		
 		Map<String, List<ReglaDto>> result = new HashMap<String, List<ReglaDto>>();
-		for (String procediment : procediments) {
-			List<ReglaEntity> reglasExistents = reglaRepository.findReglaBackofficeByCodiProcediment(procediment);
-			for (ReglaEntity regla : reglasExistents) {
+		List<ReglaEntity> reglesExistents;
+		for (String sia : codisSia) {
+			// Regles existents amb SIA per procediment
+			reglesExistents = reglaRepository.findReglaBackofficeByCodiProcediment(sia);
+			for (ReglaEntity regla : reglesExistents) {
 				if (regla.getProcedimentCodiFiltre() != null) {
 					List<String> procedimentsExistents = Arrays.asList(regla.getProcedimentCodiFiltre().split(" "));
-					if (procedimentsExistents.contains(procediment)) {
-						if (!result.containsKey(procediment)) {
-							result.put(procediment, new ArrayList<ReglaDto>());
+					if (procedimentsExistents.contains(sia)) {
+						if (!result.containsKey(sia)) {
+							result.put(sia, new ArrayList<ReglaDto>());
 						}
-						result.get(procediment).add(conversioTipusHelper.convertir(
+						result.get(sia).add(conversioTipusHelper.convertir(
+								regla,
+								ReglaDto.class));	
+					}
+				}
+			}
+			// Regles existents amb SIA per servei
+			reglesExistents = reglaRepository.findReglaBackofficeByCodiServei(sia);
+			for (ReglaEntity regla : reglesExistents) {
+				if (regla.getServeiCodiFiltre() != null) {
+					List<String> serveisExistents = Arrays.asList(regla.getServeiCodiFiltre().split(" "));
+					if (serveisExistents.contains(sia)) {
+						if (!result.containsKey(sia)) {
+							result.put(sia, new ArrayList<ReglaDto>());
+						}
+						result.get(sia).add(conversioTipusHelper.convertir(
 								regla,
 								ReglaDto.class));	
 					}

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.caib.distribucio.back.command.BustiaCommand.CreateUpdate;
+import es.caib.distribucio.back.command.ReglaCommand.CreateUpdate;
 import es.caib.distribucio.back.command.RegistreSimulatCommand;
 import es.caib.distribucio.back.command.ReglaCommand;
 import es.caib.distribucio.back.command.ReglaFiltreCommand;

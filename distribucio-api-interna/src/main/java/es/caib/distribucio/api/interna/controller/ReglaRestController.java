@@ -67,7 +67,7 @@ public class ReglaRestController {
 			@RequestParam(required = true) String entitat,
 			@Parameter(name = "sia", description = "Codi SIA de la regla pel filtre per procediment.")
 			@RequestParam(required = true) String sia,
-			@Parameter(name = "tipusSia", description = "Codi per indicar el tipus de SIA")
+			@Parameter(name = "tipusSia", description = "Codi per indicar si la regla aplica al codi SIA del procediment o del servei. Els possibles valors són 'PROCEDIMENT' i 'SERVEI'.")
 			@RequestParam(required = false, defaultValue = "PROCEDIMENT") String tipusSia,
 			@Parameter(name = "backoffice", description = "Codi Backoffice per la regla al qual s'enviaran les anotacions.")
 			@RequestParam(required = true) String backoffice,
@@ -84,6 +84,9 @@ public class ReglaRestController {
             descripcio += " i codi de procediment " + sia;
         } else if ("SERVEI".equals(tipusSia)) {
             descripcio += " i codi de servei " + sia;
+        } else {
+			return new ResponseEntity<Object>("Els valors pel tipusSia només poden ser 'PROCEDIMENT' o 'SERVEI'. El valor '" + tipusSia + "' no està reconegut.",
+					HttpStatus.BAD_REQUEST);
         }
 		ReglaTipusEnumDto tipus = ReglaTipusEnumDto.BACKOFFICE;		
 		// Validar que la entitat existeix

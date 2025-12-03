@@ -94,7 +94,7 @@ VALUES ('es.caib.distribucio.tasca.canviarAPendent.maxim.temps.estat.comunicada'
 
 -- Afegir nou permis d'usuari de només lectura #777
 UPDATE dis_acl_entry dae
-SET mask = 2
+SET mask = 3
 WHERE mask = 1
   AND acl_object_id_identity IN (
         SELECT daoi.id
