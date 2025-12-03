@@ -10,7 +10,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Component;
 
-import es.caib.comanda.ms.salut.model.EstatByPercent;
+import es.caib.comanda.ms.salut.helper.EstatHelper;
 import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.SubsistemaSalut;
 import es.caib.distribucio.logic.utils.CuaFifoBool;
@@ -227,7 +227,7 @@ public class SubsistemesHelper {
         final long total = ok + ko;
         // Percentatge d'errors arrodonit correctament evitant divisió d'enters
         final int errorRatePct = (int) Math.round((ko * 100.0) / Math.max(1L, total));
-        EstatSalutEnum estat = EstatByPercent.calculaEstat(errorRatePct);
+        EstatSalutEnum estat = EstatHelper.calculaEstat(errorRatePct);
         setDarrerEstat(subsistema, estat);
         return estat;
     }
