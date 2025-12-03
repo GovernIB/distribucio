@@ -13,9 +13,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import es.caib.distribucio.persist.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,22 +50,6 @@ import es.caib.distribucio.logic.intf.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.logic.permission.ExtendedPermission;
-import es.caib.distribucio.persist.entity.BustiaEntity;
-import es.caib.distribucio.persist.entity.ContingutComentariEntity;
-import es.caib.distribucio.persist.entity.ContingutEntity;
-import es.caib.distribucio.persist.entity.ContingutLogEntity;
-import es.caib.distribucio.persist.entity.ContingutMovimentEmailEntity;
-import es.caib.distribucio.persist.entity.ContingutMovimentEntity;
-import es.caib.distribucio.persist.entity.EntitatEntity;
-import es.caib.distribucio.persist.entity.ExecucioMassivaContingutEntity;
-import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
-import es.caib.distribucio.persist.entity.RegistreAnnexFirmaEntity;
-import es.caib.distribucio.persist.entity.RegistreEntity;
-import es.caib.distribucio.persist.entity.RegistreFirmaDetallEntity;
-import es.caib.distribucio.persist.entity.RegistreInteressatEntity;
-import es.caib.distribucio.persist.entity.UnitatOrganitzativaEntity;
-import es.caib.distribucio.persist.entity.UsuariEntity;
-import es.caib.distribucio.persist.entity.VistaMovimentEntity;
 import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.ContingutComentariRepository;
 import es.caib.distribucio.persist.repository.ContingutLogRepository;
@@ -1259,8 +1245,8 @@ public class ContingutHelper {
 	}
 
 	public void esborrarEmailsPendentsRegistre(ContingutEntity contingut) {
-		List<ContingutMovimentEmailEntity> emailsPendents = contingutMovimentEmailRepository.findByContingutOrderByDestinatariAscBustiaAsc(contingut);
-		contingutMovimentEmailRepository.deleteAll(emailsPendents);
+		List<ContingutMovimentEmailEntity> emailsPendents = contingutMovimentEmailRepository.findByContingutId(contingut.getId());
+		contingutMovimentEmailRepository.deleteAllById(emailsPendents.stream().map(DistribucioPersistable::getId).collect(Collectors.toList()));
 	}
 
 	public void esborrarMovimentsRegistre(ContingutEntity contingut) {

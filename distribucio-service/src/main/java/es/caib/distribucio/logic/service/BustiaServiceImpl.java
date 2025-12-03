@@ -1675,6 +1675,9 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				registreId,
 				bustiaOrigen);
+        if (!opcioDeixarCopiaSelectada) {
+            contingutHelper.esborrarEmailsPendentsRegistre(registreOriginal);
+        }
 		
 		List<ContingutEntity> nousContinguts = new ArrayList<ContingutEntity>();
 		List<RegistreEntity> registresExistents = new ArrayList<RegistreEntity>();
