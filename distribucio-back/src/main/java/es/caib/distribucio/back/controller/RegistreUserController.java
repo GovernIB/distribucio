@@ -382,6 +382,7 @@ public class RegistreUserController extends BaseUserController {
 	public String registreUserDetall(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
+            @RequestParam(value="annexId", required=false) Integer annexId,
 			@RequestParam(value="registreNumero", required=false) Integer registreNumero,
 			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
 			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
@@ -389,29 +390,7 @@ public class RegistreUserController extends BaseUserController {
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			@RequestParam(required=false) Long destiLogic,
 			Model model) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		return getRegistreDetall(
-				request, 
-				registreId, 
-				isVistaMoviments, 
-				destiLogic,
-				registreNumero, 
-				registreTotal, 
-				ordreColumn, 
-				ordreDir, 
-				model);
-	}	
-	
-	private String getRegistreDetall(
-			HttpServletRequest request,
-			Long registreId,
-			boolean isVistaMoviments,
-			Long destiLogic,
-			Integer registreNumero,
-			Integer registreTotal,
-			String ordreColumn,
-			String ordreDir,
-			Model model) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		
+
 		try {
 
 			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
@@ -456,6 +435,7 @@ public class RegistreUserController extends BaseUserController {
 			}
 
 			model.addAttribute("registre", registre);
+            model.addAttribute("annexId", annexId);
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
 			model.addAttribute("ordreColumn", ordreColumn);

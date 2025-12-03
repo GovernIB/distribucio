@@ -476,7 +476,12 @@ li[id^="anotacio_"] {
 		$('form#nodeDades td .form-group').on('clone.multifield', function(event, clon) {
 			$('input', clon).change(nodeDadesInputChange);
 		});
-		
+
+        const annexId = "${annexId}";
+        if (annexId !== "") {
+            $('a[href="#annexos"]').tab('show');
+            $("#collapse-annex-" + annexId).collapse('show');
+        }
 	});
 	
 	function modalLoading(modalDivId, modalData, message) {
@@ -1772,7 +1777,7 @@ li[id^="anotacio_"] {
 					<c:if test="${isRolActualAdministrador && (registre.procesEstat == 'BACK_PENDENT' && registre.procesError == null && registre.procesIntents >= 0)}">
 						<a href="../registre/${registre.id}/reintentarEnviamentBackoffice" class="btn btn-xs btn-default pull-right processarBtn" style="margin-right: 10px;"><span class="fa fa-refresh"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></a>
 				    </c:if>
-					<br><br>
+					<br/>
 				
 				
 				
@@ -1814,10 +1819,10 @@ li[id^="anotacio_"] {
 									<c:if test="${annex.arxiuEstat == 'ESBORRANY'}">
 										<span class="fa fa-exclamation-circle text-warning" title="<spring:message code="registre.annex.detalls.camp.estat.arxiu.esborrany"/>"></span>
 									</c:if>
-									<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-annex-${status.index}"><span class="fa fa-chevron-down"></span></button>
+									<button class="btn btn-default btn-xs pull-right" data-toggle="collapse" data-target="#collapse-annex-${annex.id}"><span class="fa fa-chevron-down"></span></button>
 								</h3>
 							</div>
- 							<div id="collapse-annex-${status.index}" class="panel-collapse collapse collapse-annex" role="tabpanel" aria-labelledby="dadesAnnex${status.index}" data-registre-id="${registre.id}" data-annex-id="${annex.id}"> 
+ 							<div id="collapse-annex-${annex.id}" class="panel-collapse collapse collapse-annex" role="tabpanel" aria-labelledby="dadesAnnex${status.index}" data-registre-id="${registre.id}" data-annex-id="${annex.id}">
 
  							</div> 
 						</div>
