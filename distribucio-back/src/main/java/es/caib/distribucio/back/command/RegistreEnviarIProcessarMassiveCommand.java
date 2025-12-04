@@ -1,10 +1,10 @@
 package es.caib.distribucio.back.command;
 
-import javax.validation.constraints.NotEmpty;
-
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
+
+import javax.validation.constraints.NotEmpty;
 
 /**
  * Command per a enviar i processar anotacions.
@@ -12,7 +12,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Getter @Setter
-public class RegistreEnviarIProcessarCommand {
+public class RegistreEnviarIProcessarMassiveCommand extends MassiveCommand {
 
 	private Long contingutId;
 	@NotEmpty

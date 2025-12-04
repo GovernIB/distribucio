@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import es.caib.distribucio.back.command.*;
+import es.caib.distribucio.logic.helper.MessageHelper;
 import es.caib.distribucio.logic.intf.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +69,8 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	private AnnexosService annexosService;
 	@Autowired
 	private BustiaService bustiaService;
+    @Autowired
+    private MessageHelper messageHelper;
 
     private RegistreFiltreCommand getFiltreCommand(
             HttpServletRequest request) {
@@ -409,36 +412,39 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 			HttpServletRequest request,
 			@PathVariable String rol,
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
-			@Valid ContingutReenviarCommand command,
+			@Valid ContingutReenviarMassiveCommand command,
 			BindingResult bindingResult,
 			Model model
 			) {
-		List<Long> registresSeleccionatsIds= obtenirIdsSeleccioRegistres(request, rol, isVistaMoviments);
-		EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 		if (bindingResult.hasErrors()) {
-			omplirModelPerReenviarMultiple(
-					request, 
-					entitatActual, 
-					model, 
-					registresSeleccionatsIds, 
-					rol);
-			
-			return "registreReenviarForm";
-		}
-		if (command.getDestins() == null || command.getDestins().length <= 0) {
-			MissatgesHelper.error(
-					request,
-					getMessage(
-							request, 	
-							"registre.user.controller.massiva.no.desti"));
-			model.addAttribute("maxLevel", getMaxLevelArbre());
-			model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
-			model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
-			return "registreReenviarForm";
+            if (command.getDestins() == null || command.getDestins().length <= 0) {
+                MissatgesHelper.error(
+                        request,
+                        getMessage(
+                                request,
+                                "registre.user.controller.massiva.no.desti"));
+                model.addAttribute("maxLevel", getMaxLevelArbre());
+                model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
+                model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
+            } else {
+                MissatgesHelper.error(
+                        request,
+                        getMessage(
+                                request,
+                                "processamentMultiple.error.validacio"));
+            }
+
+			return registreReenviarGet(request, isVistaMoviments, model, rol);
 		}
 
 		try {
-			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, isVistaMoviments);
+//			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, isVistaMoviments);
+            EntitatDto entitatActual = getEntitatActualComprovantPermis(request, "admin");
+
+            List<RegistreDto> registresSeleccionats = registreService.findMultiple(
+                    entitatActual.getId(),
+                    command.getIds(),
+                    "admin".equals(rol));
 			
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("isVistaMoviments", isVistaMoviments);
@@ -463,8 +469,8 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 							"accio.massiva.controller.accion.crear.ko")
 					);
 		}
-		
-		return "registreReenviarForm";
+
+        return registreReenviarGet(request, isVistaMoviments, model, rol);
 	}
 	
 
@@ -672,6 +678,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		
 		RegistreEnviarIProcessarCommand command = new RegistreEnviarIProcessarCommand();
 		model.addAttribute("registres", registres);
+        model.addAttribute("registresAdvertencies", this.getAdvertencies(registres));
 		model.addAttribute(command);
 		return "registreUserEnviarIProcessar";
 	}
@@ -680,17 +687,27 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	public String registreEnviarIProcessarPost(
 			HttpServletRequest request,
 			@PathVariable String rol,
-			@Valid RegistreEnviarIProcessarCommand command,
+			@Valid RegistreEnviarIProcessarMassiveCommand command,
 			BindingResult bindingResult,
 			Model model) {
 		
 		try {
 			if (bindingResult.hasErrors()) {
-				omplirModelAmbRegistres(request, rol, model);
-				return "registreUserEnviarIProcessar";
+                MissatgesHelper.error(
+                        request,
+                        getMessage(
+                                request,
+                                "processamentMultiple.error.validacio"));
+				return registreEnviarIProcessarGet(request, model, rol);
 			}
 			
-			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
+//			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
+            EntitatDto entitatActual = getEntitatActualComprovantPermis(request, "admin");
+
+            List<RegistreDto> registresSeleccionats = registreService.findMultiple(
+                    entitatActual.getId(),
+                    command.getIds(),
+                    "admin".equals(rol));
 			
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("destinataris", command.getAddresses());
@@ -711,11 +728,10 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 							"accio.massiva.controller.accion.crear.ko")
 					);
 		}
-		
-		
-		return "registreUserEnviarIProcessar";
+
+        return registreEnviarIProcessarGet(request, model, rol);
 	}
-	
+
 	@RequestMapping(value = "/reintentarProcessament", method = RequestMethod.GET)
 	public String registreReintentarProcessamentGet(
 			HttpServletRequest request,
@@ -730,9 +746,10 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		
 		if (redireccio != null)
 			return redireccio;
-		
-		Object command = new Object();
+
+		MassiveCommand command = new MassiveCommand();
 		model.addAttribute("registres", registres);
+		model.addAttribute("registresAdvertencies", this.getAdvertencies(registres));
 		model.addAttribute("reintentarProcessamentCommand", command);
 		
 		return "reintentarProcessamentMultiple";
@@ -741,7 +758,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	@RequestMapping(value = "/reintentarProcessament", method = RequestMethod.POST)
 	public String registreReintentarProcessamentPost(
 			HttpServletRequest request,
-			@Valid Object command,
+            @Valid MassiveCommand command,
 			BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			MissatgesHelper.error(
@@ -749,18 +766,24 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 					getMessage(
 							request, 
 							"processamentMultiple.error.validacio"));
-			return "reintentarProcessamentMultiple";
+			return "redirect:reintentarProcessament";
 		}
 		
 		try {
-			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, "admin", false);
-			
+//			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, "admin", false);
+            EntitatDto entitatActual = getEntitatActualComprovantPermis(request, "admin");
+
+            List<RegistreDto> registresSeleccionats = registreService.findMultiple(
+                    entitatActual.getId(),
+                    command.getIds(),
+                    true);
+
 			return executarAccioMassivaRegistres(
-					request, 
-					"admin", 
-					registresSeleccionats, 
-					ExecucioMassivaTipusDto.PROCESSAR, 
-					null, 
+					request,
+					"admin",
+					registresSeleccionats,
+					ExecucioMassivaTipusDto.PROCESSAR,
+					null,
 					"redirect:../registreUser");
 		} catch (Exception e) {
 			MissatgesHelper.error(
@@ -770,8 +793,8 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 							"accio.massiva.controller.accion.crear.ko")
 					);
 		}
-		
-		return "reintentarProcessamentMultiple";
+
+        return "redirect:reintentarProcessament";
 	}
 	
 	@RequestMapping(value = "/reintentarEnviamentBackoffice", method = RequestMethod.GET)
@@ -955,6 +978,28 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	}
 
 	//Private methods//
+
+    private HashMap<Long, String> getAdvertencies(List<RegistreDto> registres) {
+        HashMap<Long, String> registresAdvertencies = new HashMap<>();
+        registresAdvertencies.put(0L, messageHelper.getMessage("historic.taula.header.estats.error"));
+        registres.forEach(registre -> {
+            switch (registre.getProcesEstat()) {
+                case ARXIU_PENDENT:
+                    registresAdvertencies.put(registre.getId(), messageHelper.getMessage("registre.proces.estat.enum.ARXIU_PENDENT"));
+                    break;
+                case REGLA_PENDENT:
+                    registresAdvertencies.put(registre.getId(), messageHelper.getMessage("registre.proces.estat.enum.REGLA_PENDENT"));
+                    break;
+                case BUSTIA_PROCESSADA:
+                    registresAdvertencies.put(registre.getId(), messageHelper.getMessage("registre.proces.estat.enum.BUSTIA_PROCESSADA"));
+                    break;
+                case BACK_PROCESSADA:
+                    registresAdvertencies.put(registre.getId(), messageHelper.getMessage("registre.proces.estat.enum.BACK_PROCESSADA"));
+                    break;
+            }
+        });
+        return registresAdvertencies;
+    }
 	
 	private void crearExecucioMassivaRegistres(
 			HttpServletRequest request, 
@@ -1111,12 +1156,12 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 						true,
 						false,
 						true));
-		
-		model.addAttribute("registres", 
-				registreService.findMultiple(
-						entitatActual.getId(),
-						registresSeleccionats,
-						"admin".equals(rol)));
+        List<RegistreDto> registres = registreService.findMultiple(
+                entitatActual.getId(),
+                registresSeleccionats,
+                "admin".equals(rol));
+        model.addAttribute("registres", registres);
+        model.addAttribute("registresAdvertencies", this.getAdvertencies(registres));
 	}
 	
 	private String executarAccioMassivaRegistres(

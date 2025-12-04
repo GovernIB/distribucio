@@ -21,18 +21,20 @@
 </head>
 <body>
 
-	<c:if test="${registres != null}">
-		<dis:seleccioMultiple 
-			items="${registres}" 
-			itemId="id"
-			itemUrl="/registreUser/registre"  
-			itemUrlParam1="id"
-			itemKey="numero"
-			itemText="extracte" 
-			missatgeHeader="registresSeleccionats.anotacions.seleccionades"/>
-	</c:if>
-	
+    <c:if test="${registres != null}">
+        <dis:seleccioMultiple
+                items="${registres}"
+                itemAlerts="${registresAdvertencies}"
+                itemId="id"
+                itemUrl="/registreUser/registre"
+                itemUrlParam1="id"
+                itemKey="numero"
+                itemText="extracte"
+                missatgeHeader="registresSeleccionats.anotacions.seleccionades"/>
+    </c:if>
+
 	<form:form action="" class="form-horizontal" modelAttribute="reintentarProcessamentCommand">
+        <div id="selectedIdsContainer"></div>
 		<div id="modal-botons" class="well">
             <a href="<c:url value="/registreAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.tancar"/></a>
 			<button name="btnReintentarProcessamentSubmit" type="submit" class="btn btn-success"><span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentar"/></button>

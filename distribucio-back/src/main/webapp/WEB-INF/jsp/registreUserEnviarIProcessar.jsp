@@ -25,6 +25,7 @@
 		<dis:seleccioMultiple 
 			items="${registres}" 
 			itemId="id"
+            itemAlerts="${registresAdvertencies}"
 			itemUrl="/registreUser/registre"  
 			itemUrlParam1="id"
 			itemKey="numero"
@@ -35,7 +36,7 @@
 	</c:if>
 
 	<form:form method="post" cssClass="form-horizontal" modelAttribute="registreEnviarIProcessarCommand">
-
+        <div id="selectedIdsContainer"></div>
 		<form:hidden path="contingutId"/>
 		
 		<dis:inputTextarea name="addresses" textKey="bustia.pendent.contingut.enviarViaEmail.destinataris" required="true"/>
