@@ -107,7 +107,7 @@ public class ValidacioFirmaPluginApiEvidenciesIB extends DistribucioAbstractPlug
 	                Optional.ofNullable(evidencia.getPersonaLlinatge2()).orElse("")
 	        );
 	        detall.setResponsableNif(evidencia.getPersonaNif());
-	        detall.setData(evidencia.getDataFi() != null ? Date.from(evidencia.getDataFi().toInstant()) : null);
+	        detall.setData(evidencia.getDataInici() != null ? Date.from(evidencia.getDataInici().toInstant()) : null);
 	        resposta.getFirmaDetalls().add(detall);
 
 	        salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
@@ -194,6 +194,7 @@ public class ValidacioFirmaPluginApiEvidenciesIB extends DistribucioAbstractPlug
         private String personaLlinatge1;
         private String personaLlinatge2;
         private String personaNif;
+        private Date dataInici;
         private Date dataFi;
         private EvidenciaFile fitxerOriginal;
         private EvidenciaFile fitxerSignat;
