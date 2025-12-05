@@ -156,7 +156,7 @@ public class ValidaSignaturaAgilPluginHelper extends AbstractPluginHelper<Valida
 
 	@Override
 	protected String getPluginClassProperty() {
-		return configHelper.getConfig("es.caib.distribucio.plugins.validatesignature.api.evidenciesib.class");
+		return configHelper.getConfig("es.caib.distribucio.plugin.validarsignatura.agil.class");
 	}
 	
 	@Override

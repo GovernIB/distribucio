@@ -16,7 +16,7 @@ public class ValidacioFirmaAgilTest {
 
 	private static final String API_ENDPOINT_ADDRESS = "https://dev.caib.es/evidenciesibapi/externa";
 	private static final String API_USERNAME = "$distribucio_evidenciesib_dev";
-	private static final String API_PASSWORD = "**************";
+	private static final String API_PASSWORD = "distribucio_evidenciesib_dev";
 	
 	private ValidacioSignaturaPlugin plugin;
 	
@@ -24,13 +24,13 @@ public class ValidacioFirmaAgilTest {
 	public void setUp() throws Exception {
 		PropertiesHelper.getProperties().setLlegirSystem(false);
 		PropertiesHelper.getProperties().setProperty(
-				"es.caib.distribucio.plugins.validatesignature.api.evidenciesib.endpoint",
+				"es.caib.distribucio.plugins.validarsignatura.agil.api.evidenciesib.endpoint",
 				API_ENDPOINT_ADDRESS);
 		PropertiesHelper.getProperties().setProperty(
-				"es.caib.distribucio.plugins.validatesignature.api.evidenciesib.username",
+				"es.caib.distribucio.plugins.validarsignatura.agil.api.evidenciesib.username",
 				API_USERNAME);
 		PropertiesHelper.getProperties().setProperty(
-				"es.caib.distribucio.plugins.validatesignature.api.evidenciesib.password",
+				"es.caib.distribucio.plugins.validarsignatura.agil.api.evidenciesib.password",
 				API_PASSWORD);
 		plugin = new ValidacioFirmaPluginApiEvidenciesIB(PropertiesHelper.getProperties(), false);
 	}

@@ -205,15 +205,15 @@ public class ValidacioFirmaPluginApiEvidenciesIB extends DistribucioAbstractPlug
 	}
 
 	private String getPropertyEndpoint() {
-		return getProperties().getProperty("es.caib.distribucio.plugins.validatesignature.api.evidenciesib.endpoint");
+		return getProperties().getProperty("es.caib.distribucio.plugins.validarsignatura.agil.api.evidenciesib.endpoint");
 	}
 
 	private String getPropertyUsername() {
-		return getProperties().getProperty("es.caib.distribucio.plugins.validatesignature.api.evidenciesib.username");
+		return getProperties().getProperty("es.caib.distribucio.plugins.validarsignatura.agil.api.evidenciesib.username");
 	}
 
 	private String getPropertyPassword() {
-		return getProperties().getProperty("es.caib.distribucio.plugins.validatesignature.api.evidenciesib.password");
+		return getProperties().getProperty("es.caib.distribucio.plugins.validarsignatura.agil.api.evidenciesib.password");
 	}
 
 	// Mètodes de SALUT
