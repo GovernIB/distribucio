@@ -77,6 +77,7 @@ public class BustiaV1Test {
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_ENVELOPED = false; //TF03 - XAdES enveloped signature  
 	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false; //TF04 - CAdES detached/explicit signature
 	private static final boolean TEST_ANNEX_FIRMA_CADES_ATTACHED = false; //TF05 - CAdES attached
+	private static final boolean TEST_ANNEX_FIRMA_AGIL = false;
 	private static final boolean TEST_ANNEX_PDF = true;
 	private static final boolean TEST_ANNEX_DOC_TECNIC = true; // Indica si adjuntar els documents tècnics de sistra2 com annexos
 	
@@ -294,6 +295,28 @@ public class BustiaV1Test {
 				        		"application/pdf",
 				        		null,
 				        		null,
+				        		"0",
+				        		"EE01",
+				        		"TD01",
+				        		"01",
+				        		firmes);
+				    } else if (TEST_ANNEX_FIRMA_AGIL) {
+			        	firmes = new ArrayList<Firma>();
+			            Firma firma = new Firma();
+			            firma.setFitxerNom("annex_firma_agil.pdf");
+			            firma.setTipusMime("application/pdf");
+			            firma.setContingut(
+			            		null);
+//			            firma.setContingut(null);
+			            firma.setTipus("TF06");
+			            firma.setPerfil("EPES");
+			            firmes.add(firma);
+			            annex = crearAnnex(
+				        		"Annex signat PAdES " + j,
+				        		"annex_firma_agil.pdf",
+				        		"application/pdf",
+				        		null,
+				        		getContingutAnnexFirmaAgil(),
 				        		"0",
 				        		"EE01",
 				        		"TD01",
@@ -580,6 +603,10 @@ public class BustiaV1Test {
 	}
 	private InputStream getContingutAnnexSenseFirmaDoc() {
 		InputStream is = getClass().getResourceAsStream("/annex.doc");
+		return is;
+	}
+	private InputStream getContingutAnnexFirmaAgil() {
+		InputStream is = getClass().getResourceAsStream("/annex_firma_agil.pdf");
 		return is;
 	}
 	private InputStream getContingutAnnexFirmat() {

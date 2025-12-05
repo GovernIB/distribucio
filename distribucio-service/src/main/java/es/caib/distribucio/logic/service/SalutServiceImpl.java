@@ -315,6 +315,9 @@ public class SalutServiceImpl implements SalutService {
         if (endpoint.contains("/procedimientos")) return "Procediments";
         if (endpoint.contains("Catalogos")) return "Dades externes";
         if (endpoint.contains("/unidades")) return "Unitats";
+        if (endpoint.contains("/evidenciesibapi/externa")) return "Validació firma àgil";
+        if (endpoint.contains("/DSSAfirmaVerify")) return "Validació firma @firma";
+        if (endpoint.contains("/portafibapi/interna")) return "Validació firma Portafib";
         return "UNKNOWN";
     }
 

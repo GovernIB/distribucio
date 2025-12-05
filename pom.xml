@@ -21,7 +21,7 @@
 		<keycloak.version>22.0.4</keycloak.version>
 		<plugins.validatesignature.version>3.0.0-SNAPSHOT</plugins.validatesignature.version>
 		<xdocreport.version>2.0.4</xdocreport.version>
-
+		<pdfbox.version>2.0.24</pdfbox.version>
 		<cxf.version>3.2.5.redhat-00001</cxf.version>
 		<arxiu.api.version>3.0.0-SNAPSHOT</arxiu.api.version>
 		<arxiu.filesystem.version>3.0.0-SNAPSHOT</arxiu.filesystem.version>

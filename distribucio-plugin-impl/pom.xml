@@ -284,7 +284,12 @@
     		<version>1.0-SNAPSHOT</version>
 		</dependency>
 		
-		
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>${pdfbox.version}</version>
+		</dependency>
+
 	</dependencies>
 	<profiles>
 		<profile>
@@ -294,6 +299,12 @@
 					<groupId>es.caib.distribucio</groupId>
 					<artifactId>distribucio-plugin-apbfiles</artifactId>
 					<version>0.9</version>
+				</dependency>
+				
+				<dependency>
+					<groupId>org.fundaciobit.plugins</groupId>
+					<artifactId>plugin-arxiu-apb</artifactId>
+					<version>1.0.4</version>
 				</dependency>
 			</dependencies>
 		</profile>
