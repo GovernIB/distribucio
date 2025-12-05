@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.logic.helper.plugin.AbstractPluginHelper;
@@ -19,7 +20,9 @@ import es.caib.distribucio.logic.helper.plugin.ProcedimentPluginHelper;
 import es.caib.distribucio.logic.helper.plugin.ServeiPluginHelper;
 import es.caib.distribucio.logic.helper.plugin.SignaturaPluginHelper;
 import es.caib.distribucio.logic.helper.plugin.UnitatsOrganitzativesPluginHelper;
+import es.caib.distribucio.logic.helper.plugin.ValidaSignaturaAgilPluginHelper;
 import es.caib.distribucio.logic.helper.plugin.ValidaSignaturaPluginHelper;
+import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.logic.intf.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.logic.intf.dto.FitxerDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
@@ -59,6 +62,10 @@ public class PluginHelper {
 	private final GestioDocumentalPluginHelper gestioDocumentalPluginHelper;
 	private final ServeiPluginHelper serveiPluginHelper;
 	private final SignaturaPluginHelper signaturaPluginHelper;
+	private final ValidaSignaturaAgilPluginHelper validaSignaturaAgilPluginHelper;
+	
+	@Autowired
+	private ConfigHelper configHelper;
 	
 	/* Mètode per crear un nou expedient*/
 	public String saveRegistreAsExpedientInArxiu(
@@ -198,12 +205,34 @@ public class PluginHelper {
 			byte[] documentContingut,
 			byte[] firmaContingut,
 			String registreNumero) {
-		return validaSignaturaPluginHelper.validaSignaturaObtenirDetalls(
+		
+		ValidaSignaturaResposta resposta = validaSignaturaPluginHelper.validaSignaturaObtenirDetalls(
 				documentNom,
 				documentMime,
 				documentContingut, 
 				firmaContingut, 
 				registreNumero);
+		
+		if (isValidacioFirmaAgilActiva()) {
+			ValidaSignaturaResposta respostaAgil = validaSignaturaAgilPluginHelper.validaSignaturaObtenirDetalls(
+					documentNom, 
+					documentMime, 
+					documentContingut, 
+					firmaContingut, 
+					registreNumero);
+			
+			// Combinar validació firma certificat i firma àgil 
+			if (resposta != null && respostaAgil != null) {
+			    List<ArxiuFirmaDetallDto> detalls = resposta.getFirmaDetalls();
+			    List<ArxiuFirmaDetallDto> detallsAgil = respostaAgil.getFirmaDetalls();
+	
+			    if (detalls != null && detallsAgil != null && !detallsAgil.isEmpty()) {
+			        detalls.addAll(detallsAgil);
+			    }
+			}
+		}
+		
+		return resposta;
 	}
 
 	public SignaturaResposta signarDocument(String id,
@@ -316,6 +345,7 @@ public class PluginHelper {
 		gestioDocumentalPluginHelper.resetPlugin();
 		serveiPluginHelper.resetPlugin();
 		signaturaPluginHelper.resetPlugin();
+		validaSignaturaAgilPluginHelper.resetPlugin();
 	}
 	
 	public List<AbstractPluginHelper<?>> getPluginHelpers() {
@@ -329,8 +359,14 @@ public class PluginHelper {
 				procedimentPluginHelper,
 				gestioDocumentalPluginHelper,
 				serveiPluginHelper,
-				signaturaPluginHelper
+				signaturaPluginHelper,
+				validaSignaturaAgilPluginHelper
 		);
+	}
+	
+	private Boolean isValidacioFirmaAgilActiva() {
+		return configHelper.getAsBoolean(
+				"es.caib.distribucio.plugins.validatesignature.api.evidenciesib.activa", false);
 	}
 
 }

@@ -191,7 +191,8 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
     // /////////////////////////////////////////////////////////////////////////////////////////////
     private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
     public void init(MeterRegistry registry, String codiPlugin) {
-        salutPluginComponent.init(registry, codiPlugin);
+    	String uniqueId = codiPlugin + "-" + System.identityHashCode(this);
+        salutPluginComponent.init(registry, uniqueId);
     }
     
     @Override
@@ -206,7 +207,9 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		return salutPluginComponent.getPeticionsPlugin();
+		IntegracioPeticions peticions = salutPluginComponent.getPeticionsPlugin();
+		peticions.setEndpoint(getPropertyEndpoint());
+		return peticions;
 	}
 
 }

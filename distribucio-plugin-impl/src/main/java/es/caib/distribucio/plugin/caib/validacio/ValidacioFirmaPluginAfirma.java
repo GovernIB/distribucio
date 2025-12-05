@@ -114,6 +114,11 @@ public class ValidacioFirmaPluginAfirma extends DistribucioAbstractPluginPropert
 		}
 		return resposta;
 	}
+	
+	private String getPropertyEndpoint() {
+		return getProperties().getProperty(
+				"es.caib.distribucio.pluginsib.validatesignature.afirmacxf.endpoint");
+	}
 
     // Mètodes de SALUT
     // /////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,7 +139,9 @@ public class ValidacioFirmaPluginAfirma extends DistribucioAbstractPluginPropert
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		return salutPluginComponent.getPeticionsPlugin();
+		IntegracioPeticions peticions = salutPluginComponent.getPeticionsPlugin();
+		peticions.setEndpoint(getPropertyEndpoint());
+		return peticions;
 	}
 	
 }
