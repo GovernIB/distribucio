@@ -366,7 +366,7 @@ public class PluginHelper {
 	
 	private Boolean isValidacioFirmaAgilActiva() {
 		return configHelper.getAsBoolean(
-				"es.caib.distribucio.plugins.validatesignature.api.evidenciesib.activa", false);
+				"es.caib.distribucio.plugin.validarsignatura.agil.activa", false);
 	}
 
 }
