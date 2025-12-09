@@ -1597,7 +1597,6 @@ public class RegistreServiceImpl implements RegistreService {
 			RegistreEntity registreEntity = registreRepository.findById(registresId.get(0)).orElseThrow();
 
 			EntitatDto entitatDto = new EntitatDto();
-//			entitatDto.setCodi(registreEntity.getEntitatCodi());
 			entitatDto.setCodi(registreEntity.getEntitat().getCodi());
 			ConfigHelper.setEntitat(entitatDto);
 
@@ -1618,6 +1617,7 @@ public class RegistreServiceImpl implements RegistreService {
 			anotacioPerBackoffice.setAssumpteTipusDescripcio(registreEntity.getAssumpteTipusDescripcio());
 			anotacioPerBackoffice.setAssumpteCodiCodi(registreEntity.getAssumpteCodi());
 			anotacioPerBackoffice.setProcedimentCodi(registreEntity.getProcedimentCodi());
+			anotacioPerBackoffice.setServeiCodi(registreEntity.getServeiCodi());
 			anotacioPerBackoffice.setAssumpteCodiDescripcio(registreEntity.getAssumpteDescripcio());
 			anotacioPerBackoffice.setTransportTipusCodi(registreEntity.getTransportTipusCodi());
 			anotacioPerBackoffice.setTransportTipusDescripcio(registreEntity.getTransportTipusDescripcio());
@@ -1639,6 +1639,9 @@ public class RegistreServiceImpl implements RegistreService {
 			anotacioPerBackoffice.setAnnexos(getAnnexosPerBackoffice(registreEntity.getId()));
 			anotacioPerBackoffice.setJustificantFitxerArxiuUuid(registreEntity.getJustificantArxiuUuid());
 			anotacioPerBackoffice.setPresencial(registreEntity.getPresencial());
+			anotacioPerBackoffice.setTramitCodi(registreEntity.getTramitCodi());
+			anotacioPerBackoffice.setTramitNom(registreEntity.getTramitNom());
+			
 		} catch (Exception ex){
 			throw new RuntimeException(ex);
 		}
