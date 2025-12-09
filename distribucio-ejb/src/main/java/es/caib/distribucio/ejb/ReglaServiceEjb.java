@@ -209,14 +209,26 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 	
 	@Override
 	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
-	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments) {
-		return delegateService.findReglesByCodiProcediment(procediments);
+	public Map<String, List<ReglaDto>> findReglesByCodisSia(List<String> procediments) {
+		return delegateService.findReglesByCodisSia(procediments);
 	}
 
 	@Override
 	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
 	public List<ReglaDto> findReglaBackofficeByProcediment(String procedimentCodi) {
 		return delegateService.findReglaBackofficeByProcediment(procedimentCodi);
+	}
+
+	@Override
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
+	public List<ReglaDto> findReglaBackofficeByServei(String serveiCodi) {
+		return delegateService.findReglaBackofficeByServei(serveiCodi);
+	}
+
+	@Override
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
+	public List<ReglaDto> findReglaBackofficeByCodiSia(String siaCodi) {
+		return delegateService.findReglaBackofficeByCodiSia(siaCodi);
 	}
 
 	@Override

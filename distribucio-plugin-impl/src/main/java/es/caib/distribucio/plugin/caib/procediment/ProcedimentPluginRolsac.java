@@ -295,7 +295,8 @@ public class ProcedimentPluginRolsac extends DistribucioAbstractPluginProperties
 	// /////////////////////////////////////////////////////////////////////////////////////////////
     private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
     public void init(MeterRegistry registry, String codiPlugin) {
-        salutPluginComponent.init(registry, codiPlugin);
+    	String uniqueId = codiPlugin + "-" + System.identityHashCode(this);
+        salutPluginComponent.init(registry, uniqueId);
     }
     
 	@Override

@@ -63,6 +63,7 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 					sb.toString(),
 					"lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}&filtroPaginacion={\"page\":\"1\", \"size\":\"9999\"}");
 		} catch (Exception ex) {
+			salutPluginComponent.incrementarOperacioError();
 			logger.error("No s'han pogut consultar els serveis de ROLSAC (" +
 					"codiDir3=" + codiDir3 + ")",
 					ex);
@@ -239,7 +240,8 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 	// /////////////////////////////////////////////////////////////////////////////////////////////
     private AbstractSalutPlugin salutPluginComponent = new AbstractSalutPlugin();
     public void init(MeterRegistry registry, String codiPlugin) {
-        salutPluginComponent.init(registry, codiPlugin);
+    	String uniqueId = codiPlugin + "-" + System.identityHashCode(this);
+        salutPluginComponent.init(registry, uniqueId);
     }
     
     @Override

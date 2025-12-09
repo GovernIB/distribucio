@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import es.caib.distribucio.back.command.BustiaCommand.CreateUpdate;
+import es.caib.distribucio.back.command.ReglaCommand.CreateUpdate;
 import es.caib.distribucio.back.helper.ConversioTipusHelper;
 import es.caib.distribucio.back.validation.Regla;
 

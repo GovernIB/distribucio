@@ -63,12 +63,13 @@ public class ReglesRestClient extends RestClientBase{
 	public ReglaResponse add (
 			String entitat, 
 			String sia,
+			String tipus,
 			String backoffice,
 			Boolean presencial) throws RuntimeException {
 		
 		ReglaResponse ret = null;
 		try {
-			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/add?entitat=" + entitat + "&sia=" + sia + "&backoffice=" + backoffice + "&presencial=" + (presencial != null ? presencial.toString() : "");
+			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/add?entitat=" + entitat + "&sia=" + sia + "&tipusSia=" + tipus + "&backoffice=" + backoffice + "&presencial=" + (presencial != null ? presencial.toString() : "");
 			Client jerseyClient = generarClient(urlAmbMetode);
 			ClientResponse response = jerseyClient
 					.resource(urlAmbMetode)

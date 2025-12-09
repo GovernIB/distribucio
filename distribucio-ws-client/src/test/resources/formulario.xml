@@ -57,6 +57,10 @@
             </CAMPO>
         </ELEMENTO>
     </CAMPO>
+
+	<CAMPO id="FLOAT" tipo="simple">
+		<VALOR>1.562,00</VALOR>
+	</CAMPO>
     
     
 	<CAMPO id="LLENCAR_EXCEPCIO" tipo="simple">

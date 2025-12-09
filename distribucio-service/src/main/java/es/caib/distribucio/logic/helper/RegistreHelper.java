@@ -402,6 +402,7 @@ public class RegistreHelper {
 			assumpteCodi(registreAnotacio.getAssumpteCodi()).
 			assumpteDescripcio(registreAnotacio.getAssumpteDescripcio()).
 			procedimentCodi(registreAnotacio.getProcedimentCodi()).
+			serveiCodi(registreAnotacio.getServeiCodi()).
 			referencia(registreAnotacio.getReferencia()).
 			expedientNumero(registreAnotacio.getExpedientNumero()).
 			numeroOrigen(registreAnotacio.getNumeroOrigen()).
