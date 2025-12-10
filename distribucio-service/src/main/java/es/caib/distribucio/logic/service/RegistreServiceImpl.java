@@ -31,6 +31,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import es.caib.distribucio.logic.intf.dto.*;
+import es.caib.distribucio.persist.entity.*;
+import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
+import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
+import es.caib.pluginsib.arxiu.api.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
@@ -100,22 +104,6 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.NtiTipoDocumento;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.Representant;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.SicresTipoDocumento;
 import es.caib.distribucio.logic.permission.ExtendedPermission;
-import es.caib.distribucio.persist.entity.BustiaEntity;
-import es.caib.distribucio.persist.entity.ContingutEntity;
-import es.caib.distribucio.persist.entity.ContingutMovimentEntity;
-import es.caib.distribucio.persist.entity.DadaEntity;
-import es.caib.distribucio.persist.entity.EntitatEntity;
-import es.caib.distribucio.persist.entity.MetaDadaEntity;
-import es.caib.distribucio.persist.entity.ProcedimentEntity;
-import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
-import es.caib.distribucio.persist.entity.RegistreAnnexFirmaEntity;
-import es.caib.distribucio.persist.entity.RegistreEntity;
-import es.caib.distribucio.persist.entity.RegistreInteressatEntity;
-import es.caib.distribucio.persist.entity.ReglaEntity;
-import es.caib.distribucio.persist.entity.ServeiEntity;
-import es.caib.distribucio.persist.entity.UnitatOrganitzativaEntity;
-import es.caib.distribucio.persist.entity.UsuariEntity;
-import es.caib.distribucio.persist.entity.VistaMovimentEntity;
 import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.ContingutLogRepository;
 import es.caib.distribucio.persist.repository.ContingutMovimentRepository;
@@ -129,12 +117,6 @@ import es.caib.distribucio.persist.repository.RegistreRepository;
 import es.caib.distribucio.persist.repository.ServeiRepository;
 import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.persist.repository.VistaMovimentRepository;
-import es.caib.pluginsib.arxiu.api.ContingutArxiu;
-import es.caib.pluginsib.arxiu.api.Document;
-import es.caib.pluginsib.arxiu.api.DocumentContingut;
-import es.caib.pluginsib.arxiu.api.ExpedientMetadades;
-import es.caib.pluginsib.arxiu.api.Firma;
-import es.caib.pluginsib.arxiu.api.FirmaTipus;
 
 /**
  * Implementació dels mètodes per a gestionar anotacions
@@ -1661,7 +1643,7 @@ public class RegistreServiceImpl implements RegistreService {
 			anotacioPerBackoffice.setPresencial(registreEntity.getPresencial());
 			anotacioPerBackoffice.setTramitCodi(registreEntity.getTramitCodi());
 			anotacioPerBackoffice.setTramitNom(registreEntity.getTramitNom());
-			
+
 		} catch (Exception ex){
 			throw new RuntimeException(ex);
 		}
@@ -3002,17 +2984,41 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
+
+        RegistreEntity registre = registreRepository.getReferenceById(registreId);
 		RegistreAnnexEntity annex = registreAnnexRepository.getReferenceById(annexId);
 		ValidacioFirmaEnum validacioFirma = registreHelper.validaFirmes(annex, null);
 		
 		try {
-			// Si la firma és vàlida i està com a esborrany i el document està firmat llavors es pot 
+			if (ValidacioFirmaEnum.SENSE_FIRMES.equals(validacioFirma)
+					&& AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat()) ) {
+//                TODO: firmar en servidor
+                DistribucioRegistreAnnex distribucioRegistreAnnex = conversioTipusHelper.convertir(
+                        annex, DistribucioRegistreAnnex.class);
+                DistribucioRegistreAnotacio distribucioRegistreAnotacio =
+                        registreHelper.getDistribucioRegistreAnotacio(registreId);
+
+                DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
+                documentEniRegistrableDto.setNumero(registre.getNumero());
+                documentEniRegistrableDto.setData(registre.getData());
+                documentEniRegistrableDto.setOficinaDescripcio(registre.getOficinaDescripcio());
+                documentEniRegistrableDto.setOficinaCodi(registre.getOficinaCodi());
+
+                pluginHelper.saveAnnexAsDocumentInArxiu(
+                        registre.getNumero(),
+                        distribucioRegistreAnnex,
+                        distribucioRegistreAnotacio.getUnitatOrganitzativaCodi(),
+                        distribucioRegistreAnotacio.getExpedientArxiuUuid(),
+                        documentEniRegistrableDto,
+                        distribucioRegistreAnotacio.getProcedimentCodi());
+                validacioFirma = registreHelper.validaFirmes(annex, null);
+            }
+			// Si la firma és vàlida i està com a esborrany i el document està firmat llavors es pot
 			// guardar com a definitiu
 			if (ValidacioFirmaEnum.FIRMA_VALIDA.equals(validacioFirma)
 					&& AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat()) ) {
 
 				// Actualitza el recompte d'esborranys
-				RegistreEntity registre = registreRepository.getReferenceById(registreId);
 				List<RegistreAnnexEntity> registreAnnex = registreRepository.getDadesRegistreAnnex( registreId);
 				int numEsborrany = 0;
 				for(RegistreAnnexEntity annexList: registreAnnex) {
@@ -3020,16 +3026,15 @@ public class RegistreServiceImpl implements RegistreService {
 						numEsborrany++;
 					}					
 				}
-				
+                registre.setAnnexosEstatEsborrany(numEsborrany);
+
 				// Modificar 
 				if (annex.getFitxerArxiuUuid() != null) {
-					pluginHelper.arxiuDocumentSetDefinitiu(annex);
-					annex.setArxiuEstat(AnnexEstat.DEFINITIU);
-					registre.setAnnexosEstatEsborrany(numEsborrany-1);
-					registreRepository.saveAndFlush(registre);
-					registreAnnexRepository.saveAndFlush(annex);
-					entityManager.flush();
-
+                    annex.setArxiuEstat(AnnexEstat.DEFINITIU);
+                    registreHelper.loadSignaturaDetallsToDB(annex);
+                    registreRepository.saveAndFlush(registre);
+                    registreAnnexRepository.saveAndFlush(annex);
+                    entityManager.flush();
 				}
 			}
 			logger.debug("Validació de signatura completada correctament per a l'annex con id:  "+annexId+" de l'anotació amb id:  "+ registreId + " i resultat " + validacioFirma);

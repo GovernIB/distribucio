@@ -1193,7 +1193,7 @@ public class RegistreHelper {
 	
 	
 	
-	private void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
+	public void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
 		
 		logger.debug("Guardant els detalls de la firma a la BBDD de l'annex " + annexEntity.getId() + " " + annexEntity.getTitol() + " de l'anotació " + annexEntity.getRegistre().getNumero());
 		
@@ -1891,7 +1891,7 @@ public class RegistreHelper {
 		return annexEntity;
 	}
 
-	private RegistreAnnexFirmaEntity crearFirmaEntity(
+	public RegistreAnnexFirmaEntity crearFirmaEntity(
 			Firma firma,
 			RegistreAnnexEntity annex) {
 		String gestioDocumentalId = null;
