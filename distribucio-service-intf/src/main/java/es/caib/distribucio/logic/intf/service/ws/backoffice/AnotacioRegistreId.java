@@ -18,7 +18,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AnotacioRegistreId {
+
+    private String indetificador;
 	private String identificador;
 	private String clauAcces;
-	
+
+    public String getIdentificador() {
+        return identificador != null ? identificador : indetificador;
+    }
 }

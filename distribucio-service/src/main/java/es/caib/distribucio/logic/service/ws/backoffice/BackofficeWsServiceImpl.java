@@ -66,7 +66,7 @@ public class BackofficeWsServiceImpl implements BackofficeWsService, ArxiuPlugin
 					// Construeix l'identificador pel WS del backoffice de DISTRIBUCIO
 					idWs = new es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreId();
 					idWs.setClauAcces(id.getClauAcces());
-					idWs.setIndetificador(id.getIdentificador());
+					idWs.setIdentificador(id.getIdentificador());
 					// Consulta l'anotació
 					AnotacioRegistreEntrada anotacio = backofficeClient.consulta(idWs);
 					// Canvia l'estat a Rebuda
