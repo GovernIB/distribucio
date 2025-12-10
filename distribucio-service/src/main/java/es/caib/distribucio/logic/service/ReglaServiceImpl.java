@@ -475,6 +475,13 @@ public class ReglaServiceImpl implements ReglaService {
             codisProcediments.add("-");
         }
 
+        List<String> codisServei = new ArrayList<>();
+        if(regla.getServeiCodiFiltre() != null && !regla.getServeiCodiFiltre().trim().isEmpty()) {
+            codisServei.addAll(Arrays.asList(regla.getServeiCodiFiltre().split(" ")));
+        } else {
+            codisServei.add("-");
+        }
+
         List<Long> bustiesUnitatOrganitzativaIds = new ArrayList<>();
         if (regla.getUnitatOrganitzativaFiltre() != null) {
             for (BustiaEntity bustia : bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNotNull(entitat, regla.getUnitatOrganitzativaFiltre())) {
@@ -498,8 +505,8 @@ public class ReglaServiceImpl implements ReglaService {
                 registrePresencial != null ? registrePresencial.booleanValue() : false,
                 regla.getBustiaFiltre() == null,
                 regla.getBustiaFiltre() != null ? regla.getBustiaFiltre().getId() : 0L,
-                regla.getProcedimentCodiFiltre() == null || regla.getProcedimentCodiFiltre().trim().isEmpty(),
                 codisProcediments,
+                codisServei,
                 regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(),
                 regla.getAssumpteCodiFiltre() != null && !regla.getAssumpteCodiFiltre().trim().isEmpty() ?
                         regla.getAssumpteCodiFiltre() : "-");
