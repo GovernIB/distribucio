@@ -51,7 +51,7 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_DESC = "Descripcio Codi";
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = null; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice
+	private static final String PROCEDIMENT_CODI = "BACK_HELIUM"; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice
 	private static final String SERVEI_CODI = "BACK_HELIUM";
 	private static final boolean PRESENCIAL = false;
 	private static final String USUARI_CODI = "u104848";

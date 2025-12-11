@@ -1360,6 +1360,7 @@ public class RegistreHelper {
 			for (RegistreEntity pendent : pendentsByRegla) {
 				
 				AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
+		    	// Per compatibilitat amb backoffices anteriors a la versió 1.0.7 es fixa també indetificador
 				anotacioRegistreId.setIdentificador(pendent.getNumero());
 				
 				try {
