@@ -62,9 +62,14 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
 		if (firmaContingut != null) {
 			firma = new Document();
 			firma.setData(firmaContingut);
+			firma.setMime("application/octet-stream");
+			firma.setName("firma");
+	        validateRequest.setSignatureDocument(firma);
+			validateRequest.setDetachedDocument(document);
+		} else {
+	        validateRequest.setSignatureDocument(document);
+			validateRequest.setDetachedDocument(firma);
 		}
-        validateRequest.setSignatureDocument(document);
-		validateRequest.setDetachedDocument(firma);
 		
 		SignatureRequestedInformation sri = new SignatureRequestedInformation();
 		sri.setReturnSignatureTypeFormatProfile(true);

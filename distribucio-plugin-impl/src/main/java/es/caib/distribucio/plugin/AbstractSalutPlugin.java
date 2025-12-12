@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Strings;
 
-import es.caib.comanda.ms.salut.model.EstatByPercent;
+import es.caib.comanda.ms.salut.helper.EstatHelper;
 import es.caib.comanda.ms.salut.model.EstatSalut;
 import es.caib.comanda.ms.salut.model.EstatSalutEnum;
 import es.caib.comanda.ms.salut.model.IntegracioPeticions;
@@ -138,7 +138,7 @@ public class AbstractSalutPlugin  implements SalutPlugin {
         final long totalOperacions = peticionsOkSegures + peticionsErrorSegures;
         // Percentatge d'errors arrodonit correctament evitant divisió d'enters
         final int errorRatePct = (int) Math.round((peticionsErrorSegures * 100.0) / totalOperacions);
-        return EstatByPercent.calculaEstat(errorRatePct);
+        return EstatHelper.calculaEstat(errorRatePct);
     }
 
     @Override
