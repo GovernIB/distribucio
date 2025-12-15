@@ -1853,6 +1853,7 @@ public class RegistreUserController extends BaseUserController {
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				registreId,
+                command.getTipus(),
 				codiProcediment,
 				codiServei,
 				command.getTitol());

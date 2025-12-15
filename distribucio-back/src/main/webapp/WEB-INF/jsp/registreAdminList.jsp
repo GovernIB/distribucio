@@ -464,14 +464,14 @@ function refreshRegistres($modalExecucioMassiva) {
 					inline="true"/>
 			</div>
 			<div class="col-md-3">
-				<c:url value="/procedimentajax/procediment" var="urlConsultaInicial"/>
-				<c:url value="/procedimentajax/procediments" var="urlConsultaLlistat"/>
+				<c:url value="/procedimentserveiajax/procedimentservei" var="urlConsultaInicial"/>
+				<c:url value="/procedimentserveiajax/procedimentserveis" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 
 					name="procedimentCodi"
 					urlConsultaInicial="${urlConsultaInicial}" 
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="true" 
-					placeholderKey="registre.admin.list.filtre.procediment"
+					placeholderKey="registre.admin.list.filtre.procedimentservei"
 					suggestValue="codiSia"
 					suggestText="codiNom" />
 			</div>

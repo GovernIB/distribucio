@@ -1,5 +1,6 @@
 package es.caib.distribucio.rest.client.bustia.domini;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class RegistreAnnex {
 	private String localitzacio;//is not set
 	private String observacions;//50
 	private Map<String, String> metaDades;	
-	private List<Firma> firmes;
+	private List<Firma> firmes = new ArrayList<>();
 	private String timestamp;//is not set
 	private String validacioOCSP;//255
 	

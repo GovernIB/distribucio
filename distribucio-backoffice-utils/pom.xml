@@ -8,7 +8,7 @@
 		<version>1.0.7</version>
 	</parent>
 	<artifactId>distribucio-backoffice-utils</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.7</version>
 	<dependencies>
 		<dependency>
 			<groupId>javax.xml.ws</groupId>
@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>es.caib.distribucio</groupId>
 			<artifactId>distribucio-rest-client</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.7</version>
 		</dependency>
 		<dependency>
 			<groupId>es.caib.distribucio</groupId>

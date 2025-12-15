@@ -13,20 +13,7 @@ import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.ArxiuDetallDto;
-import es.caib.distribucio.logic.intf.dto.BustiaDto;
-import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
-import es.caib.distribucio.logic.intf.dto.ContingutDto;
-import es.caib.distribucio.logic.intf.dto.FitxerDto;
-import es.caib.distribucio.logic.intf.dto.HistogramPendentsEntryDto;
-import es.caib.distribucio.logic.intf.dto.PaginaDto;
-import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
-import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
-import es.caib.distribucio.logic.intf.dto.RegistreAnnexFirmaDto;
-import es.caib.distribucio.logic.intf.dto.RegistreDto;
-import es.caib.distribucio.logic.intf.dto.RegistreFiltreDto;
-import es.caib.distribucio.logic.intf.dto.ServeiDto;
+import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.logic.intf.service.RegistreService;
@@ -270,12 +257,14 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 	public ClassificacioResultatDto classificar(
 			Long entitatId,
 			Long registreId,
+            String tipus,
 			String procedimentCodi,
 			String serveiCodi,
 			String titol) throws NotFoundException {
 		return delegateService.classificar(
 				entitatId,
 				registreId,
+                tipus,
 				procedimentCodi,
 				serveiCodi,
 				titol);

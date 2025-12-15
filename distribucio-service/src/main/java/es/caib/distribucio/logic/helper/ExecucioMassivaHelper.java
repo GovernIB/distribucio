@@ -57,12 +57,14 @@ public class ExecucioMassivaHelper {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public ClassificacioResultatDto classificarNewTransaction(Long entitatId, Long elementId, String parametres) {
 		String titol = getValorParametre(parametres, "titol", String.class);
+        String tipus = getValorParametre(parametres, "tipus", String.class);
 		String procedimentCodi = getValorParametre(parametres, "codiProcediment", String.class);
 		String serveiCodi = getValorParametre(parametres, "codiServei", String.class);
 		
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatId, 
-				elementId, 
+				elementId,
+                tipus,
 				procedimentCodi, 
 				serveiCodi, 
 				titol);

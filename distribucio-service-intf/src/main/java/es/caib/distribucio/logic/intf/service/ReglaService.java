@@ -250,7 +250,7 @@ public interface ReglaService {
 	 * @return Map<codiProcediment, List<ReglasExistents>>
 	 */
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
-	public Map<String, List<ReglaDto>> findReglesByCodiProcediment(List<String> procediments);
+	public Map<String, List<ReglaDto>> findReglesByCodisSia(List<String> procediments);
 
 	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de creació
 	 * de regles.
@@ -260,6 +260,24 @@ public interface ReglaService {
 	 */
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
 	public List<ReglaDto> findReglaBackofficeByProcediment (String procedimentCodi);
+
+	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de creació
+	 * de regles.
+	 *
+	 * @param serveiCodi
+	 * @return
+	 */
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
+	public List<ReglaDto> findReglaBackofficeByServei (String serveiCodi);
+
+	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de creació
+	 * de regles.
+	 *
+	 * @param siaCodi
+	 * @return
+	 */
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
+	public List<ReglaDto> findReglaBackofficeByCodiSia (String siaCodi);
 
 	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de update
 	 * de regles.

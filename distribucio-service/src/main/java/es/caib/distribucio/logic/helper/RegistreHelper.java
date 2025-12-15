@@ -402,6 +402,7 @@ public class RegistreHelper {
 			assumpteCodi(registreAnotacio.getAssumpteCodi()).
 			assumpteDescripcio(registreAnotacio.getAssumpteDescripcio()).
 			procedimentCodi(registreAnotacio.getProcedimentCodi()).
+			serveiCodi(registreAnotacio.getServeiCodi()).
 			referencia(registreAnotacio.getReferencia()).
 			expedientNumero(registreAnotacio.getExpedientNumero()).
 			numeroOrigen(registreAnotacio.getNumeroOrigen()).
@@ -1192,7 +1193,7 @@ public class RegistreHelper {
 	
 	
 	
-	private void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
+	public void loadSignaturaDetallsToDB(RegistreAnnexEntity annexEntity) {
 		
 		logger.debug("Guardant els detalls de la firma a la BBDD de l'annex " + annexEntity.getId() + " " + annexEntity.getTitol() + " de l'anotació " + annexEntity.getRegistre().getNumero());
 		
@@ -1359,6 +1360,7 @@ public class RegistreHelper {
 			for (RegistreEntity pendent : pendentsByRegla) {
 				
 				AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
+		    	// Per compatibilitat amb backoffices anteriors a la versió 1.0.7 es fixa també indetificador
 				anotacioRegistreId.setIdentificador(pendent.getNumero());
 				
 				try {
@@ -1890,7 +1892,7 @@ public class RegistreHelper {
 		return annexEntity;
 	}
 
-	private RegistreAnnexFirmaEntity crearFirmaEntity(
+	public RegistreAnnexFirmaEntity crearFirmaEntity(
 			Firma firma,
 			RegistreAnnexEntity annex) {
 		String gestioDocumentalId = null;

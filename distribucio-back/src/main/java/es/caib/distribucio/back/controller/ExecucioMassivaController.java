@@ -340,6 +340,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 			
 			Map<String, Object> params = new HashMap<>();
 		    params.put("titol", titol);
+            params.put("tipus", command.getTipus());
 		    params.put("codiProcediment", codiProcediment);
 		    params.put("codiServei", codiServei);
 		    

@@ -17,6 +17,7 @@ public class AnotacioRegistreBase {
 
 	private String identificador;
 	private String procedimentCodi;
+	private String serveiCodi;
 	private String extracte;
 	private Date data;
 	private String entitatCodi;
@@ -52,6 +53,8 @@ public class AnotacioRegistreBase {
 	private String justificantFitxerArxiuUuid;
 	private String clauAcces;
 	private boolean presencial;
+	private String tramitCodi;
+	private String tramitNom;
 	
 	public String getIdentificador() {
 		return identificador;
@@ -64,6 +67,13 @@ public class AnotacioRegistreBase {
 	}
 	public void setProcedimentCodi(String procedimentCodi) {
 		this.procedimentCodi = procedimentCodi;
+	}
+	@XmlTransient
+	public String getServeiCodi() {
+		return serveiCodi;
+	}
+	public void setServeiCodi(String serveiCodi) {
+		this.serveiCodi = serveiCodi;
 	}
 	public String getExtracte() {
 		return extracte;
@@ -275,5 +285,19 @@ public class AnotacioRegistreBase {
 	}
 	public void setPresencial(boolean presencial) {
 		this.presencial = presencial;
+	}
+	@XmlTransient
+	public String getTramitCodi() {
+		return tramitCodi;
+	}
+	public void setTramitCodi(String tramitCodi) {
+		this.tramitCodi = tramitCodi;
+	}
+	@XmlTransient
+	public String getTramitNom() {
+		return tramitNom;
+	}
+	public void setTramitNom(String tramitNom) {
+		this.tramitNom = tramitNom;
 	}
 }
