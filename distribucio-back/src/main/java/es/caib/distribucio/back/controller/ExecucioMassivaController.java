@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import es.caib.distribucio.back.command.*;
 import es.caib.distribucio.logic.helper.MessageHelper;
 import es.caib.distribucio.logic.intf.dto.*;
+import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
