@@ -3030,8 +3030,10 @@ public class RegistreServiceImpl implements RegistreService {
 
 				// Modificar 
 				if (annex.getFitxerArxiuUuid() != null) {
+                    pluginHelper.arxiuDocumentSetDefinitiu(annex);
                     annex.setArxiuEstat(AnnexEstat.DEFINITIU);
                     registreHelper.loadSignaturaDetallsToDB(annex);
+                    registre.setAnnexosEstatEsborrany(numEsborrany-1);
                     registreRepository.saveAndFlush(registre);
                     registreAnnexRepository.saveAndFlush(annex);
                     entityManager.flush();
