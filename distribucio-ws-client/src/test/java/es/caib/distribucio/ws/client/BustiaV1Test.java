@@ -56,7 +56,7 @@ public class BustiaV1Test {
 	private static final boolean PRESENCIAL = false;
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Alta anotació" + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date());
+	private static final String EXTRACTE = "Alta anotació " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date());
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
