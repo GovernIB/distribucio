@@ -3,9 +3,9 @@ package es.caib.distribucio.logic.intf.service;
 import java.time.LocalDate;
 import java.util.List;
 
-import es.caib.comanda.ms.estadistica.model.DimensioDesc;
-import es.caib.comanda.ms.estadistica.model.IndicadorDesc;
-import es.caib.comanda.ms.estadistica.model.RegistresEstadistics;
+import es.caib.comanda.model.v1.estadistica.DimensioDesc;
+import es.caib.comanda.model.v1.estadistica.IndicadorDesc;
+import es.caib.comanda.model.v1.estadistica.RegistresEstadistics;
 
 public interface EstadisticaService {
 

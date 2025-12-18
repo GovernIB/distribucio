@@ -43,6 +43,8 @@ public class BaseWebSecurityConfig {
 				new AntPathRequestMatcher("/v1/salut/**/*"),
 				new AntPathRequestMatcher("/v1/estadistiques"),
 				new AntPathRequestMatcher("/v1/estadistiques/**/*"),
+				new AntPathRequestMatcher("/v1/logs"),
+				new AntPathRequestMatcher("/v1/logs/**/*"),
 		};
 	}
 

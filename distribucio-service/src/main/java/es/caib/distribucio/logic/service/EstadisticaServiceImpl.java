@@ -1,6 +1,6 @@
 package es.caib.distribucio.logic.service;
 
-import static es.caib.comanda.ms.estadistica.model.Format.LONG;
+import static es.caib.comanda.model.v1.estadistica.Format.LONG;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import es.caib.comanda.ms.estadistica.model.DimensioDesc;
-import es.caib.comanda.ms.estadistica.model.IndicadorDesc;
-import es.caib.comanda.ms.estadistica.model.RegistresEstadistics;
+import es.caib.comanda.model.v1.estadistica.DimensioDesc;
+import es.caib.comanda.model.v1.estadistica.IndicadorDesc;
+import es.caib.comanda.model.v1.estadistica.RegistresEstadistics;
 import es.caib.distribucio.logic.intf.dto.estadistic.DimEnum;
 import es.caib.distribucio.logic.intf.dto.estadistic.FetEnum;
 import es.caib.distribucio.logic.intf.dto.historic.HistoricTipusEnumDto;

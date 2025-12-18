@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import es.caib.comanda.ms.salut.model.AppInfo;
-import es.caib.comanda.ms.salut.model.SalutInfo;
+import es.caib.comanda.model.v1.salut.AppInfo;
+import es.caib.comanda.model.v1.salut.SalutInfo;
 import es.caib.distribucio.logic.intf.service.SalutService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Builder;

@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import es.caib.comanda.ms.estadistica.model.DimensioDesc;
-import es.caib.comanda.ms.estadistica.model.EstadistiquesInfo;
-import es.caib.comanda.ms.estadistica.model.IndicadorDesc;
-import es.caib.comanda.ms.estadistica.model.RegistresEstadistics;
+import es.caib.comanda.model.v1.estadistica.DimensioDesc;
+import es.caib.comanda.model.v1.estadistica.EstadistiquesInfo;
+import es.caib.comanda.model.v1.estadistica.IndicadorDesc;
+import es.caib.comanda.model.v1.estadistica.RegistresEstadistics;
 import es.caib.distribucio.logic.intf.service.EstadisticaService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

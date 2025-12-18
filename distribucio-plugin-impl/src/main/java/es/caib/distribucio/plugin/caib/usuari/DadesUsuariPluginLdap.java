@@ -21,8 +21,8 @@ import javax.naming.ldap.LdapContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.IntegracioPeticions;
+import es.caib.comanda.model.v1.salut.EstatSalut;
+import es.caib.comanda.model.v1.salut.IntegracioPeticions;
 import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;

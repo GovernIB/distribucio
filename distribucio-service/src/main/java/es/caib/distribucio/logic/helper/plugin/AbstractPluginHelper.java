@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Strings;
 
-import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.IntegracioApp;
-import es.caib.comanda.ms.salut.model.IntegracioInfo;
-import es.caib.comanda.ms.salut.model.IntegracioPeticions;
-import es.caib.comanda.ms.salut.model.IntegracioSalut;
+import es.caib.comanda.model.v1.salut.EstatSalut;
+import es.caib.comanda.model.v1.salut.IntegracioApp;
+import es.caib.comanda.model.v1.salut.IntegracioInfo;
+import es.caib.comanda.model.v1.salut.IntegracioPeticions;
+import es.caib.comanda.model.v1.salut.IntegracioSalut;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.helper.LoadedPropertiesHelper;

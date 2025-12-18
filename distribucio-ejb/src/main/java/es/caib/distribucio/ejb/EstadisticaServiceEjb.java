@@ -5,9 +5,9 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 
-import es.caib.comanda.ms.estadistica.model.DimensioDesc;
-import es.caib.comanda.ms.estadistica.model.IndicadorDesc;
-import es.caib.comanda.ms.estadistica.model.RegistresEstadistics;
+import es.caib.comanda.model.v1.estadistica.DimensioDesc;
+import es.caib.comanda.model.v1.estadistica.IndicadorDesc;
+import es.caib.comanda.model.v1.estadistica.RegistresEstadistics;
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.service.EstadisticaService;
 import lombok.experimental.Delegate;
