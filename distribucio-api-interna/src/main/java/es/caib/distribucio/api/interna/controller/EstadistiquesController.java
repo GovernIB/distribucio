@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.caib.comanda.ms.estadistica.model.DimensioDesc;
@@ -20,6 +21,7 @@ import es.caib.distribucio.logic.intf.service.EstadisticaService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
+@RequestMapping("/v1/estadistiques")
 @Tag(
 		name = "Estadístiques",
 		description = "API REST de consulta de les estadístiques per mostrar l'aplicació Comanda.")
@@ -28,7 +30,7 @@ public class EstadistiquesController {
 	@Autowired
 	private EstadisticaService estadisticaService;
 	
-	@GetMapping("/estadistiquesInfo")
+	@GetMapping("/info")
     public EstadistiquesInfo statsInfo() throws IOException {
 		List<DimensioDesc> dimensions = estadisticaService.getDimensions();
         List<IndicadorDesc> indicadors = estadisticaService.getIndicadors();
@@ -40,19 +42,19 @@ public class EstadistiquesController {
         		build();
 	}	
 	
-	@GetMapping("/estadistiques")
+	@GetMapping("")
     public RegistresEstadistics estadistiques(HttpServletRequest request) throws IOException {
         return estadisticaService.consultaUltimesEstadistiques();
     }
 	
-	@GetMapping("/estadistiques/of/{data}")
+	@GetMapping("/of/{data}")
     public RegistresEstadistics estadistiques(HttpServletRequest request, @PathVariable String data) throws Exception {
 
         LocalDate localData = LocalDate.parse(data, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         return estadisticaService.consultaEstadistiques(localData);
     }
 
-    @GetMapping("/estadistiques/from/{dataInici}/to/{dataFi}")
+    @GetMapping("/from/{dataInici}/to/{dataFi}")
     public List<RegistresEstadistics> estadistiques(HttpServletRequest request, @PathVariable String dataInici, @PathVariable String dataFi) throws Exception {
         LocalDate dataFrom = LocalDate.parse(dataInici, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         LocalDate dataTo = LocalDate.parse(dataFi, DateTimeFormatter.ofPattern("dd-MM-yyyy"));

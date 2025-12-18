@@ -39,12 +39,10 @@ public class BaseWebSecurityConfig {
 				new AntPathRequestMatcher("/swagger-ui/**/*"),
 				new AntPathRequestMatcher("/apidocs"),
 				new AntPathRequestMatcher("/apidocs/**/*"),
-				new AntPathRequestMatcher("/appInfo"),
-				new AntPathRequestMatcher("/salut"),
-				new AntPathRequestMatcher("/salutPerformance"),
-				new AntPathRequestMatcher("/estadistiquesInfo"),
-				new AntPathRequestMatcher("/estadistiques"),
-				new AntPathRequestMatcher("/estadistiques/**/*"),
+				new AntPathRequestMatcher("/v1/salut"),
+				new AntPathRequestMatcher("/v1/salut/**/*"),
+				new AntPathRequestMatcher("/v1/estadistiques"),
+				new AntPathRequestMatcher("/v1/estadistiques/**/*"),
 		};
 	}
 
