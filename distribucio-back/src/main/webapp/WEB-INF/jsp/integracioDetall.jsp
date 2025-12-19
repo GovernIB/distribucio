@@ -49,7 +49,7 @@
 			</c:if>
 		</dl>
 		<c:if test="${integracio.estat == 'ERROR' && not empty integracio.excepcioMessage}">
-			<pre style="height:300px">${integracio.excepcioStacktrace}</pre>
+			<pre style="height:300px"><c:out value="${integracio.excepcioStacktrace}" escapeXml="true"/></pre>
 		</c:if>
 	</c:if>
 	<div id="modal-botons">
