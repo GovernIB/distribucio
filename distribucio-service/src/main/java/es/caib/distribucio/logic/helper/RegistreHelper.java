@@ -1022,7 +1022,7 @@ public class RegistreHelper {
 		return validacioFirmaEstat;
 	}
 
-	/** Comprova si totes les firmes de l'annex són de tipus attached i per tant el propi annex és el que hauria d'incloure la informació de firma. */
+	/** Comprova si totes les firmes de l'annex són de tipus attached i per tant el propi contingut del document és el que hauria d'incloure la informació de firma. */
 	private boolean firmesAttached(List<RegistreAnnexFirmaEntity> firmes) {
 		boolean firmesAttached = false;
 		if (firmes != null && !firmes.isEmpty()) {
@@ -1031,11 +1031,10 @@ public class RegistreHelper {
 				firmesAttached = firmesAttached && 
 						("TF02".equals(firma.getTipus()) 				//TF02 - XAdES internally detached signature
 								|| "TF03".equals(firma.getTipus())  	//TF03 - XAdES enveloped signature
-								|| "TF05".equals(firma.getTipus())		//TF05 - CAdES attached
 								|| "TF06".equals(firma.getTipus())); 	//TF06 - PAdES
 			}
 		}
-		return firmesAttached;
+		return firmesAttached = false;
 	}
 
 	/** Serverix per convertir les firmes reconegudes d'un document després de la validació i afegir-les al registre. 

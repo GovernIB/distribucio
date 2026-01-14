@@ -81,6 +81,7 @@ public class ValidaSignaturaPluginHelper extends AbstractPluginHelper<ValidacioS
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("documentContingut", documentContingut != null ? documentContingut.length + " bytes" : "null");
 		accioParams.put("firmaContingut", firmaContingut != null ? firmaContingut.length + " bytes" : "null");
+		accioParams.put("documentNom", documentNom);
 		long t0 = System.currentTimeMillis();
 		try {
 			resposta = 	this.getPlugin().validaSignatura(
