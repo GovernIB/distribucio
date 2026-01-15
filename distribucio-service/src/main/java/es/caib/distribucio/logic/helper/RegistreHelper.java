@@ -1034,7 +1034,7 @@ public class RegistreHelper {
 								|| "TF06".equals(firma.getTipus())); 	//TF06 - PAdES
 			}
 		}
-		return firmesAttached = false;
+		return firmesAttached;
 	}
 
 	/** Serverix per convertir les firmes reconegudes d'un document després de la validació i afegir-les al registre. 
