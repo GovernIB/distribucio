@@ -116,7 +116,10 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
 import es.caib.distribucio.logic.service.RegistreServiceImpl;
 import es.caib.distribucio.logic.service.SegonPlaServiceImpl.GuardarAnotacioPendentThread;
 import es.caib.distribucio.persist.entity.BackofficeEntity;
+<<<<<<< HEAD
 import es.caib.distribucio.persist.entity.ContingutComentariEntity;
+=======
+>>>>>>> refs/remotes/origin/dis-1.0
 import es.caib.distribucio.persist.entity.ContingutEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
@@ -883,10 +886,11 @@ public class RegistreHelper {
 		if (firmes == null) {
 			firmes = new ArrayList<>();
 		}
-		// 0 - Mira si és un PDF sense firmes
+		// 0 - Mira si és un PDF sense firmes per evitar enviar a validar documents PDF o XML que haurien de tenir la firma inclosa
 		boolean senseFirmes = false;
 		if ((annex.getFirmes() == null
-				|| annex.getFirmes().isEmpty()) ) {
+				|| annex.getFirmes().isEmpty()) 
+				|| firmesAttached(annex.getFirmes())) {
 			
 			if ("application/pdf".equals(annex.getFitxerTipusMime()) ) {
 				PdfReader reader;
@@ -1029,6 +1033,21 @@ public class RegistreHelper {
 		logger.debug("Validació firmes de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " finalitzada: " +
 							validacioFirmaEstat + " " + (validacioFirmaError != null ? validacioFirmaError : ""));
 		return validacioFirmaEstat;
+	}
+
+	/** Comprova si totes les firmes de l'annex són de tipus attached i per tant el propi contingut del document és el que hauria d'incloure la informació de firma. */
+	private boolean firmesAttached(List<RegistreAnnexFirmaEntity> firmes) {
+		boolean firmesAttached = false;
+		if (firmes != null && !firmes.isEmpty()) {
+			firmesAttached = true;
+			for (RegistreAnnexFirmaEntity firma : firmes) {
+				firmesAttached = firmesAttached && 
+						("TF02".equals(firma.getTipus()) 				//TF02 - XAdES internally detached signature
+								|| "TF03".equals(firma.getTipus())  	//TF03 - XAdES enveloped signature
+								|| "TF06".equals(firma.getTipus())); 	//TF06 - PAdES
+			}
+		}
+		return firmesAttached;
 	}
 
 	/** Serverix per convertir les firmes reconegudes d'un document després de la validació i afegir-les al registre. 
