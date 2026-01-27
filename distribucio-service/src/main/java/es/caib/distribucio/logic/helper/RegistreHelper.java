@@ -892,7 +892,7 @@ public class RegistreHelper {
     }
     private boolean conteFirmesDocx(byte[] contingut) {
         try {
-//            ByteArrayInputStream is = new ByteArrayInputStream(documentContingut);
+//            ByteArrayInputStream is = new ByteArrayInputStream(contingut);
 //            OPCPackage pkg = OPCPackage.open(is);
 //            List<PackagePart> signatures = pkg.getPartsByContentType(
 //                    "application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml"
@@ -909,6 +909,9 @@ public class RegistreHelper {
             SignatureCommonUtils.getXAdESMode(contingut, inputXML);
             return true;
         } catch (Exception e) {
+            if (!e.getMessage().contains("No s'ha trobat cap node de firma dins de l'XML")) {
+                logger.error(e.getMessage());
+            }
             return false;
         }
     }
@@ -917,6 +920,9 @@ public class RegistreHelper {
             SignatureCommonUtils.getCAdESMode(contingut);
             return true;
         } catch (Exception e) {
+            if (!e.getMessage().contains("Malformed content.")) {
+                logger.error(e.getMessage());
+            }
             return false;
         }
     }
@@ -924,19 +930,22 @@ public class RegistreHelper {
         // comprovar pdf's
         if (arxiuNom.toLowerCase().endsWith(".pdf") || mimetype.equals("application/pdf")) {
             if (conteFirmesPdf(contingut))
-                // completar con revisar si las firmas no son sello de tiempo
                 return true;
         }
 
         // Comprovar firmes XADES per XML's i XSIG
         if (arxiuNom.toLowerCase().endsWith(".xml") || arxiuNom.toLowerCase().endsWith(".xsig") || mimetype.equals("application/xml")) {
             if (conteFirmesXAdES(contingut, true) && conteFirmesXml(contingut))
-                // comprovar lo mismo del tag signature y además tratar de abrir como han puesto ellos con XADES mode
                 return true;
         }
 
+//        // Comprovar DOCX
+//        if (arxiuNom.toLowerCase().endsWith(".docx") || mimetype.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+//            if (conteFirmesDocx(contingut))
+//                return true;
+//        }
+
         // Para el resto de binarios
-        // comprovar lo mismo del tag signature y además tratar de abrir como han puesto ellos con XADES mode
         return (conteFirmesCAdES(contingut));
     }
     private boolean teFirmesSeparades(List<RegistreAnnexFirmaEntity> firmes) {
@@ -968,7 +977,7 @@ public class RegistreHelper {
         }
         if (!ambFirmes) { validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES; }
 
-		if ((ambFirmes && pluginHelper.isValidaSignaturaPluginActiu())) {
+		if (ambFirmes && pluginHelper.isValidaSignaturaPluginActiu()) {
 			// Si el document per separat no té firmes o té firmes vàlides llavors comprova les firmes
 			boolean annexFirmat = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
 			if (annexFirmat) {
