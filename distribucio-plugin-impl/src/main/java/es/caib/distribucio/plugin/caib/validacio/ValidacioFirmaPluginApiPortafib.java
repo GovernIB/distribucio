@@ -52,11 +52,14 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
 		long start = System.currentTimeMillis();
 		ValidateSignatureRequest validateRequest = new ValidateSignatureRequest();
 		ValidaSignaturaResposta resposta = new ValidaSignaturaResposta();
-		
-		Document document = new Document();
-		document.setName(documentNom);
-		document.setMime(documentMime);
-		document.setData(documentContingut);
+
+        Document document = null;
+		if (documentContingut != null) {
+            document = new Document();
+            document.setName(documentNom);
+            document.setMime(documentMime);
+            document.setData(documentContingut);
+		}
 
 		Document firma = null;
 		if (firmaContingut != null) {
