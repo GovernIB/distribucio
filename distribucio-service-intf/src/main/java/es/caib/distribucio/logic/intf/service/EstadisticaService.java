@@ -11,19 +11,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface EstadisticaService {
 
-	@PreAuthorize("hasRole('DIS_COM')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_COMANDA + "')")
     public List<DimensioDesc> getDimensions();
 
-	@PreAuthorize("hasRole('DIS_COM')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_COMANDA + "')")
     public List<IndicadorDesc> getIndicadors();
 
-	@PreAuthorize("hasRole('DIS_COM')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_COMANDA + "')")
     public RegistresEstadistics consultaUltimesEstadistiques();
 
-	@PreAuthorize("hasRole('DIS_COM')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_COMANDA + "')")
     public RegistresEstadistics consultaEstadistiques(LocalDate localData);
 
-	@PreAuthorize("hasRole('DIS_COM')")
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_COMANDA + "')")
     public List<RegistresEstadistics> consultaEstadistiques(LocalDate startLocalData, LocalDate endLocalData);
 
 }

@@ -22,6 +22,7 @@ import es.caib.distribucio.logic.intf.service.SalutService;
 import es.caib.distribucio.logic.intf.service.ServeiService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeIntegracioWsService;
 import es.caib.distribucio.logic.intf.service.ws.bustia.BustiaV1WsService;
+import es.caib.distribucio.logic.intf.service.LogService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -112,6 +113,12 @@ public class EjbClientConfig {
     @ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean configService() {
 		return getLocalEjbFactoyBean(ConfigService.class);
+	}
+
+	@Bean
+    @ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean logService() {
+		return getLocalEjbFactoyBean(LogService.class);
 	}
 
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {

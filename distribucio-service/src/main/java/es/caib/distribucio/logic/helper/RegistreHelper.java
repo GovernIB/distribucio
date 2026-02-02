@@ -3,7 +3,9 @@
  */
 package es.caib.distribucio.logic.helper;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,7 +42,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.ws.soap.SOAPFaultException;
 
-import com.itextpdf.text.pdf.security.PdfPKCS7;
 import org.apache.commons.io.FilenameUtils;
 import org.fundaciobit.pluginsib.utils.signature.SignatureCommonUtils;
 import org.slf4j.Logger;
@@ -64,6 +65,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.security.PdfPKCS7;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandler;
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -116,10 +118,7 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
 import es.caib.distribucio.logic.service.RegistreServiceImpl;
 import es.caib.distribucio.logic.service.SegonPlaServiceImpl.GuardarAnotacioPendentThread;
 import es.caib.distribucio.persist.entity.BackofficeEntity;
-<<<<<<< HEAD
 import es.caib.distribucio.persist.entity.ContingutComentariEntity;
-=======
->>>>>>> refs/remotes/origin/dis-1.0
 import es.caib.distribucio.persist.entity.ContingutEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
@@ -181,8 +180,6 @@ public class RegistreHelper {
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	@Autowired
 	private PluginHelper pluginHelper;
-	@Autowired
-	private PermisosHelper permisosHelper;
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;
 	@Autowired

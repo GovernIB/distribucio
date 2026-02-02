@@ -44,6 +44,7 @@ import es.caib.distribucio.logic.helper.PluginHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper;
 import es.caib.distribucio.logic.helper.plugin.AbstractPluginHelper;
 import es.caib.distribucio.logic.intf.service.SalutService;
+import es.caib.distribucio.logic.intf.util.DatesUtils;
 import es.caib.distribucio.logic.utils.DistribucioBenchmark;
 import es.caib.distribucio.persist.repository.AvisRepository;
 import lombok.RequiredArgsConstructor;
@@ -109,7 +110,7 @@ public class SalutServiceImpl implements SalutService {
         return SalutInfo.builder()
                 .codi("DIS")
                 .versio(versio)
-                .data(new Date())
+                .data(DatesUtils.toOffsetDateTime(new Date()))
                 .estatGlobal(estatSalut)
                 .estatBaseDeDades(salutDatabase)
                 .integracions(integracions)

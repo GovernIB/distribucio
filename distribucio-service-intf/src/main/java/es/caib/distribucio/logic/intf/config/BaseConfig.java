@@ -25,6 +25,7 @@ public class BaseConfig {
 	public static final String ROLE_REPORT = "DIS_REPORT";
 	public static final String ROLE_BUSTIA_WS = "DIS_BSTWS";
 	public static final String ROLE_BACKOFFICE_WS = "DIS_BACKWS";
+	public static final String ROLE_COMANDA = "DIS_COM";
 	public static final String ROLE_USER = "tothom";
 
 }

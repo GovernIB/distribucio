@@ -30,6 +30,7 @@ import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
 import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
+import es.caib.distribucio.logic.intf.util.DatesUtils;
 import es.caib.distribucio.persist.entity.AlertaEntity;
 import es.caib.distribucio.persist.entity.AvisEntity;
 import es.caib.distribucio.persist.entity.ContingutComentariEntity;
@@ -284,7 +285,7 @@ public class ConversioTipusHelper {
 							break;
 						}
 						MissatgeSalut target = new MissatgeSalut(
-								source.getDataInici(), 
+								DatesUtils.toOffsetDateTime(source.getDataInici()), 
 								avisNivell, 
 								source.getMissatge());
 						return target;

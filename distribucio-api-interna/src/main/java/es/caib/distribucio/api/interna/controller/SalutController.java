@@ -22,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import es.caib.comanda.model.v1.salut.AppInfo;
 import es.caib.comanda.model.v1.salut.SalutInfo;
 import es.caib.distribucio.logic.intf.service.SalutService;
+import es.caib.distribucio.logic.intf.util.DatesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,7 +49,7 @@ public class SalutController {
         return AppInfo.builder()
                 .codi("DIS")
                 .nom("Distribució")
-                .data(manifestInfo.getBuildDate())
+                .data(DatesUtils.toOffsetDateTime(manifestInfo.getBuildDate()))
                 .versio(manifestInfo.getVersion())
                 .revisio(manifestInfo.getBuildScmRevision())
                 .jdkVersion(manifestInfo.getBuildJDK())
