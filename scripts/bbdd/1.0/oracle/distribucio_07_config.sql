@@ -22,6 +22,7 @@ Insert into DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) values (
 Insert into DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) values('SCHEDULLED_SERVEI', 'SCHEDULLED', '23', 'Tasca periòdica per actualitzar la taula de serveis');
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SERVEIS',null,'23','Plugin de consulta de serveis');
 INSERT INTO DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) VALUES ('SCHEDULLED_EXECUCIONS_MASSIVES','SCHEDULLED','20','Tasca periòdica d''executar les execucions massives pendents');
+INSERT INTO DIS_CONFIG_GROUP (POSITION, CODE, DESCRIPTION) VALUES (5, 'LOGS', 'Logs del servidor' );
 
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('BOOL',null);
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('TEXT',null);
@@ -207,6 +208,8 @@ Insert INTO DIS_CONFIG (KEY,VALUE, description, group_code, jboss_property, type
 INSERT INTO DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) VALUES ('SCHEDULLED_COMUNICAT_A_PENDENT','SCHEDULLED','20','Tasca periòdica de canvi d''estat anotacions comunicades a pendents');
 INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE) VALUES ('es.caib.distribucio.tasca.canviarAPendent.temps.espera.execucio', null, 'Iterval de temps entre les execucions de la tasca (ms). Per defecte 60000', 'SCHEDULLED_COMUNICAT_A_PENDENT', '1', '0', 'INT');
 INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE) VALUES ('es.caib.distribucio.tasca.canviarAPendent.maxim.temps.estat.comunicada', null, 'Màxim de dies que pot estar comunicada abans de canviar l''estat a pendent d''usuari. Per defecte 30.', 'SCHEDULLED_COMUNICAT_A_PENDENT', '2', '0', 'INT');
+
+INSERT INTO DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PROPERTY, TYPE_CODE, CONFIGURABLE) VALUES ('es.caib.distribucio.plugin.fitxer.logs.path', null,'Ruta on es guarden el fitxers de logs del servidor','LOGS', 0, 1, 'TEXT', 0);
 
 -- Actualització de les propietats que poden ser configurables a nivell d'entitat
 

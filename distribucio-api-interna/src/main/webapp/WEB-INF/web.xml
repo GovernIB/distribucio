@@ -20,6 +20,10 @@
 		<description>Rol per poder invocar el mètode de donar d'alta una anotació a una bústia.</description>
 		<role-name>DIS_BSTWS</role-name>
 	</security-role>
+	<security-role>
+		<description>Rol per poder consultar logs i estadístiques des de comanda.</description>
+		<role-name>DIS_COM</role-name>
+	</security-role>
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Public areas</web-resource-name>
@@ -31,10 +35,6 @@
 			<url-pattern>/apidocs/*</url-pattern>
 			<url-pattern>/v1/salut</url-pattern>
             <url-pattern>/v1/salut/*</url-pattern>
-            <url-pattern>/v1/estadistiques</url-pattern>
-            <url-pattern>/v1/estadistiques/*</url-pattern>
-            <url-pattern>/v1/logs</url-pattern>
-            <url-pattern>/v1/logs/*</url-pattern>
 		</web-resource-collection>
 	</security-constraint>
 	<security-constraint>
@@ -43,6 +43,10 @@
 			<url-pattern>/backoffice/*</url-pattern>
 			<url-pattern>/regla/*</url-pattern>
 			<url-pattern>/bustia/*</url-pattern>
+            <url-pattern>/v1/estadistiques</url-pattern>
+            <url-pattern>/v1/estadistiques/*</url-pattern>
+            <url-pattern>/v1/logs</url-pattern>
+            <url-pattern>/v1/logs/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>**</role-name>
