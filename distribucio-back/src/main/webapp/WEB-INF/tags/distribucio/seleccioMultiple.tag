@@ -14,6 +14,12 @@
 <%@ attribute name="missatgeError" required="false" rtexprvalue="true"%>
 
 <c:set var="nItems">${fn:length(items)}</c:set>
+<c:set var="hayError" value="false" />
+<c:forEach var="item" items="${items}">
+    <c:if test="${itemError != null && !item[itemError]}">
+        <c:set var="hayError" value="true" />
+    </c:if>
+</c:forEach>
 
 <div id="contingut-missatges"></div>
 
@@ -24,6 +30,14 @@
 				<h3 class="panel-title">
 					<span class="state-icon fa"></span>
 					<span class="badge seleccioCount">${fn:length(items)}</span> <spring:message code="${missatgeHeader}"/>
+                    <span>
+                        <c:if test="${hayError}">
+                            <c:choose>
+                                <c:when test="${missatgeError != null}"><span class="fa fa-warning alert-warning" title="<spring:message code='${missatgeError}'/>"></span></c:when>
+                                <c:otherwise><span class="fa fa-warning alert-warning"></span></c:otherwise>
+                            </c:choose>
+                        </c:if>
+                    </span>
 				</h3>
 			</div>
 			<div class="col-sm-7">

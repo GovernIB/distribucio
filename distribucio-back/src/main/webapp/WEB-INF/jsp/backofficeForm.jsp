@@ -74,10 +74,10 @@
 
                              if (!!data.warning) {
                                  $("#div-alert").addClass("alert-warning");
-                                 $("#div-alert").html(data.warning);
+                                 $("#div-alert").text(data.warning);
                              } else if (!!data.error) {
                                  $("#div-alert").addClass("alert-danger");
-                                 $("#div-alert").html(data.error);
+                                 $("#div-alert").text(data.error);
                              }
 		    			 }else {
 		    				 $("#div-alert").removeClass("alert-danger");

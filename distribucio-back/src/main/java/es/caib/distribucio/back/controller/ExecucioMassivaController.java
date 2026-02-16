@@ -1103,16 +1103,23 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 
 	    EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 
-	    List<RegistreDto> registresModificables = registresSeleccionats.stream()
-	            .filter(RegistreDto::isPotModificar)
-	            .collect(Collectors.toList());
+        if (registresSeleccionats.isEmpty()) {
+            return getModalControllerReturnValueError(
+                    request,
+                    vistaError,
+                    "accio.massiva.controller.registre.seleccio.buida");
+        }
 
-	    if (registresSeleccionats.isEmpty()) {
-	        return getModalControllerReturnValueError(
-	                request,
-	                vistaError,
-	                "accio.massiva.controller.registre.seleccio.buida");
-	    }
+        List<RegistreDto> registresModificables = registresSeleccionats;
+        switch (tipus) {
+            case ENVIAR_VIA_EMAIL:
+                break;
+            default:
+                registresModificables = registresSeleccionats.stream()
+                        .filter(RegistreDto::isPotModificar)
+                        .collect(Collectors.toList());
+                break;
+        }
 
 	    if (registresModificables.isEmpty()) {
 	        return getModalControllerReturnValueError(
