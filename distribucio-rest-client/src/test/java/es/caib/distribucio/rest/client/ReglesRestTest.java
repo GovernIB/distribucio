@@ -176,7 +176,6 @@ public class ReglesRestTest {
 	 */
 	private static void consulta(ReglesRestClient client, String sia) throws Exception {
 		
-		client.update(sia, true, true);
 		Regla r  = client.consultarRegla(sia);
 		
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();

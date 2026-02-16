@@ -19,6 +19,7 @@ public class AnotacioRegistreBase {
 
 	private String identificador;
 	private String procedimentCodi;
+	private String serveiCodi;
 	private String extracte;
 	private Date data;
 	private String entitatCodi;
