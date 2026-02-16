@@ -31,9 +31,10 @@ public class BustiaV1WsServiceEjb extends AbstractServiceEjb<BustiaV1WsService> 
 	public void enviarAnotacioRegistreEntrada(
 			String entitat,
 			String unitatAdministrativa,
-			RegistreAnotacio registreEntrada) {
+			RegistreAnotacio registreEntrada,
+			Origen origen) {
 		propagateEjbAuthenticationToSpringSecurity(BaseConfig.ROLE_BUSTIA_WS);
-		delegateService.enviarAnotacioRegistreEntrada(entitat, unitatAdministrativa, registreEntrada);
+		delegateService.enviarAnotacioRegistreEntrada(entitat, unitatAdministrativa, registreEntrada, origen);
 	}
 
 	@Override

@@ -43,7 +43,8 @@ public class BustiaController {
 			bustiaV1WsService.enviarAnotacioRegistreEntrada(
 					entitatCodi, 
 					unitatAdministrativaCodi, 
-					registreAnotacio);
+					registreAnotacio,
+					BustiaV1WsService.Origen.REST);
 			
 			String msg = "Anotació creada correctament per l'entitat " + entitatCodi + " i unitat " + unitatAdministrativaCodi;
 			

@@ -49,7 +49,8 @@ public class BustiaV1WsServiceWs implements BustiaV1WsServiceI {
 		bustiaService.enviarAnotacioRegistreEntrada(
 				entitat,
 				unitatAdministrativa,
-				registreEntrada);
+				registreEntrada,
+				BustiaV1WsService.Origen.SOAP);
 	}
 
 	@Override

@@ -16,6 +16,11 @@ import es.caib.distribucio.logic.intf.registre.RegistreAnotacio;
  * @author Limit Tecnologies <limit@limit.es>
  */
 public interface BustiaV1WsService {
+	
+	public enum Origen {
+		SOAP,
+		REST
+	}
 
 	/**
 	 * Envia una anotació de registre d'entrada a la bústia per defecte
@@ -32,7 +37,8 @@ public interface BustiaV1WsService {
 	public void enviarAnotacioRegistreEntrada(
 			String entitat,
 			String unitatAdministrativa,
-			RegistreAnotacio registreEntrada);
+			RegistreAnotacio registreEntrada,
+			Origen origen);
 
 	/**
 	 * Envia una anotació de registre d'entrada a la bústia per defecte
