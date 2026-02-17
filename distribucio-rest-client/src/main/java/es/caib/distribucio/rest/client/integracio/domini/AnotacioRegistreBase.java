@@ -53,5 +53,8 @@ public class AnotacioRegistreBase {
 	private List<Interessat> interessats;
 	private List<Annex> annexos;
 	private String justificantFitxerArxiuUuid;
+	private boolean presencial;
+	private String tramitCodi;
+	private String tramitNom;
 		
 }
