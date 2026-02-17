@@ -63,12 +63,13 @@ public class ReglesRestClient extends RestClientBase{
 	public ReglaResponse add (
 			String entitat, 
 			String sia,
+			String tipusSia,
 			String backoffice,
 			Boolean presencial) throws RuntimeException {
 		
 		ReglaResponse ret = null;
 		try {
-			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/add?entitat=" + entitat + "&sia=" + sia + "&backoffice=" + backoffice + "&presencial=" + (presencial != null ? presencial.toString() : "");
+			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/add?entitat=" + entitat + "&sia=" + sia + "&tipusSia=" + tipusSia + "&backoffice=" + backoffice + "&presencial=" + (presencial != null ? presencial.toString() : "");
 			Client jerseyClient = generarClient(urlAmbMetode);
 			ClientResponse response = jerseyClient
 					.resource(urlAmbMetode)
@@ -159,6 +160,12 @@ public class ReglesRestClient extends RestClientBase{
 				regla.setPresencial((Boolean) reg.get("presencial"));
 				if (reg.containsKey("backofficeDesti")) {
 					regla.setBackofficeDesti(String.valueOf(reg.get("backofficeDesti")));					
+				}
+				if (reg.containsKey("tipusSia") 
+						&& Regla.TipusSia.SERVEI.name().equals(reg.get("tipusSia"))) {
+					regla.setTipusSia(Regla.TipusSia.SERVEI);
+				} else {
+					regla.setTipusSia(Regla.TipusSia.PROCEDIMENT);
 				}
 			}			
 		} catch (Exception ex) { 

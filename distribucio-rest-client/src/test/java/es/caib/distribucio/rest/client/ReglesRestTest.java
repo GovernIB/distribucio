@@ -26,10 +26,15 @@ import es.caib.distribucio.rest.client.regla.domini.ReglaResponse;
  */
 public class ReglesRestTest {
 
-	private static final String URL = "http://localhost:8080/distribucioapi/interna";
 	// Usuari amb només el rol de DIS_REGLA
-	private static final String USERNAME = "disregla";
-	private static final String PASSWORD = "disregla";
+	// DES
+	private static final String URL = "http://10.35.3.232:8080/distribucioapi/interna";
+	private static final String USERNAME = "dis_reglaws";
+	private static final String PASSWORD = "dis_reglaws";
+	// DEV
+//	private static final String URL = "https://dev.caib.es/distribucioapi/interna";
+//	private static final String USERNAME = "e43631077p";
+//	private static final String PASSWORD = "limit";
 
 	
 	/** Mètode de prova de creació d'una regla. 
@@ -41,6 +46,7 @@ public class ReglesRestTest {
 		// Dades del test
 		String entitat = "A04003003";
 		String sia = String.valueOf(new Date().getTime());
+		String tipusSia = (new String[] {"PROCEDIMENT", "SERVEI"})[(int) new Date().getTime() % 2];
 		String backoffice = "HELIUM";
 		Boolean activa = false;
 		Boolean presencial = null;
@@ -52,8 +58,8 @@ public class ReglesRestTest {
 				PASSWORD,
 				true);
 		
-		ReglesRestTest.altaCanviEstatConsultaUpdate(client, entitat, sia, backoffice, activa, presencial);
-		//ReglesRestTest.consulta(client, sia);
+		ReglesRestTest.altaCanviEstatConsultaUpdate(client, entitat, sia, tipusSia, backoffice, activa, presencial);
+		//ReglesRestTest.consulta(client, "BACK_HELIUM");
 	}
 
 	/** Test general per crear una nova regla, canviar-li l'estat, consultar-la i modificar-la.
@@ -69,6 +75,7 @@ public class ReglesRestTest {
 			ReglesRestClient client, 
 			String entitat, 
 			String sia,
+			String tipusSia,
 			String backoffice, 
 			Boolean activa, 
 			Boolean presencial) {
@@ -76,6 +83,7 @@ public class ReglesRestTest {
 		System.out.println("Inici test API REST de regles ( " + 
 				"entitat= " + entitat +
 				", sia= " + sia +
+				", tipusSia= " + tipusSia +
 				", backoffice= " + backoffice +
 				", activa = " + activa +
 				", presencial= " + presencial
@@ -83,10 +91,10 @@ public class ReglesRestTest {
 		ReglaResponse ret;
 		// Creació de la regla
 		try {
-			ret = client.add(entitat, sia, backoffice, presencial);
+			ret = client.add(entitat, sia, tipusSia, backoffice, presencial);
 			System.out.println("Creació finalitzada correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
 									ret.getStatus() + " " + ret.getMsg());
-			ret = client.add(entitat, sia, backoffice, presencial);
+			ret = client.add(entitat, sia, tipusSia, backoffice, presencial);
 			System.out.println("Segona crida creació finalitzada correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
 									ret.getStatus() + " " + ret.getMsg());
 		} catch (Exception e) {
@@ -134,11 +142,8 @@ public class ReglesRestTest {
 	 */
 	private static void consulta(ReglesRestClient client, String sia) throws Exception {
 		
-		client.update(sia, true, true);
 		Regla r  = client.consultarRegla(sia);
-		
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-		
 		System.out.println("Regla consultada: " + ow.writeValueAsString(r));
 	}
 

@@ -16,6 +16,10 @@ import lombok.Setter;
 @Getter @Setter
 public class Regla {
 
+	public enum TipusSia {
+		PROCEDIMENT,
+		SERVEI
+	}
 	private long id;
 	private String entitat;
 	private Date data;
@@ -23,5 +27,6 @@ public class Regla {
 	private String nom;
 	private String backofficeDesti;
 	private Boolean presencial;
+	private TipusSia tipusSia;
 
 }

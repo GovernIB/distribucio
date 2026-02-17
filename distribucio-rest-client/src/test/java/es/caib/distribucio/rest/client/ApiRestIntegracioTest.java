@@ -1,5 +1,8 @@
 package es.caib.distribucio.rest.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 import es.caib.distribucio.rest.client.integracio.BackofficeIntegracioRestClient;
 import es.caib.distribucio.rest.client.integracio.BackofficeIntegracioRestClientFactory;
 import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreEntrada;
@@ -11,9 +14,9 @@ import es.caib.distribucio.rest.client.integracio.domini.Estat;
  */
 public class ApiRestIntegracioTest {
 
-	public static String BASE_URL = "https://dev.caib.es/distribucioapi/interna";
-	public static String USERNAME = "$helium_distribucio";
-	public static String PASSWORD = "****";
+	public static String BASE_URL = "http://10.35.3.232:8080/distribucioapi/interna";
+	public static String USERNAME = "dis_backws";
+	public static String PASSWORD = "dis_backws";
 	
 	/** Prova de crear una regla, descactivar-la i consultar-la. 
 	 * @throws Exception */
@@ -25,12 +28,14 @@ public class ApiRestIntegracioTest {
 		
 		// Crea l'objecte id per la consulta
 		AnotacioRegistreId id = new AnotacioRegistreId();			
-		id.setIndetificador("GOIBE715-DEV/2023");
-		id.setClauAcces("JRwLmCaMES6JKAAnzhd5K9Qi4ppjudiLwd+2b5LNsVo=");		
+		id.setIndetificador("GOIBE1708001141307/2024");
+		id.setClauAcces("BYlMBmFPLGJSytavAH325Yjbwqo9xfXhM+wM0vzHxL4=");		
 
 		// Consulta l'anotació
 		AnotacioRegistreEntrada anotacio = restClient.consulta(id);
 		System.out.println("Anotació consultada: " + anotacio.getIdentificador() + " " + anotacio.getExtracte());
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();		
+		System.out.println("JSON anotació: " + ow.writeValueAsString(anotacio));
 		
 		// Canvi d'estat
 		restClient.canviEstat(id, Estat.REBUDA, "Observacions text");
