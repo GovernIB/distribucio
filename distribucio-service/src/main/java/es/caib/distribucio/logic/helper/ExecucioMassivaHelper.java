@@ -198,10 +198,11 @@ public class ExecucioMassivaHelper {
 				missatge = "Anotació reprocessada " + (correcte ? "correctament" : "amb error");
 			} else {
 				// Pendent d'enviar a backoffice
-				correcte = registreService.reintentarEnviamentBackofficeAdmin(
+				Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(
 						entitatId, 
 						elementId);
-				missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error");
+				correcte = throwable == null;
+				missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error: " + throwable.getMessage());
 			}
 		} else if (this.isPendentArxiu(registre)||registre.getAnnexosEstatEsborrany()>0) {
 			correcte = registreService.reintentarProcessamentAdmin(
@@ -227,16 +228,24 @@ public class ExecucioMassivaHelper {
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public String reintentarBackofficeNewTransaction(Long entitatId, Long elementId) {
+		
 		RegistreDto registre = registreService.findOne(entitatId, elementId, false);
+		boolean correcte = true;
 		String missatge = null;
 		
 		if (ArrayUtils.contains(estatsReenviablesBackoffices, registre.getProcesEstat())) {
-			boolean correcte = registreService.reintentarEnviamentBackofficeAdmin(
+			Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(
 					entitatId, 
 					elementId);
-			missatge = "Anotació reenviada al backoffice " + (registre.getBackCodi()) + " " + (correcte ? "correctament" : "amb error");
+			correcte = throwable == null;
+			missatge = "Anotació reenviada al backoffice " + (registre.getBackCodi()) + " " + (correcte ? "correctament" : "amb error: " + throwable.getMessage());
 		}else {
+			correcte = false;
 			missatge = messageHelper.getMessage("execucio.massiva.helper.enviament.backoffice.estat.incompatible", new Object[] {elementId}); 
+		}
+
+		if (!correcte) {
+			throw new RuntimeException(missatge);
 		}
 		
 		return missatge;

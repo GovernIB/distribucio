@@ -1911,7 +1911,7 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 
 	@Override
-	public boolean reintentarEnviamentBackofficeAdmin(
+	public Throwable reintentarEnviamentBackofficeAdmin(
 			Long entitatId,
 			Long registreId) {
 		logger.debug("Reintentant processament d'anotació pendent per admins (" +
@@ -1921,7 +1921,7 @@ public class RegistreServiceImpl implements RegistreService {
 		List<Long> pendentsIds = new ArrayList<>();
 		pendentsIds.add(registreId);
 		Throwable exceptionProcessant = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIds);
-		return exceptionProcessant == null;
+		return exceptionProcessant;
 
 	}
 

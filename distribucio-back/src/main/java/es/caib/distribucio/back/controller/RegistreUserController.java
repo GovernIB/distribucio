@@ -1518,9 +1518,9 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
 		RegistreDto registreReenviat = registreService.findOne(entitatActual.getId(), registreId, false);	
-		boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
+		Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
 					registreId);
-			if (processatOk) {
+			if (throwable == null) {
 				MissatgesHelper.success(request,
 						getMessage(request,
 								"contingut.admin.controller.registre.reintentat.ok", 

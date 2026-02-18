@@ -266,8 +266,14 @@ public interface RegistreService {
 			Estat estat,
 			String observacions);
 
+	/** Mètode per reenviar l'enviament d'una anotació al backoffice.
+	 * 
+	 * @param entitatId
+	 * @param registreId
+	 * @return Si tot va bé retorna null i si hi ha hagut cap error retorna l'excepció.
+	 */
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
-	public boolean reintentarEnviamentBackofficeAdmin(
+	public Throwable reintentarEnviamentBackofficeAdmin(
 			Long entitatId,
 			Long registreId);
 
