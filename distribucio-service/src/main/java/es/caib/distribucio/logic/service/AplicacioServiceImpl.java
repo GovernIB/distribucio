@@ -266,7 +266,9 @@ public class AplicacioServiceImpl implements AplicacioService {
 				dto.getRebreEmailsBustia(), 
 				dto.getRebreEmailsAgrupats(),
 				dto.getIdioma(),
-                dto.getEntitatPerDefecteId() != null ? entitatRepository.getOne(dto.getEntitatPerDefecteId()) : null);
+                dto.getEntitatPerDefecteId() != null ? entitatRepository.getOne(dto.getEntitatPerDefecteId()) : null,
+                dto.getNumElementsPagina(),
+                dto.getEmailErrorAnotacio());
 		BustiaDefaultEntity bustiaDefaultEntity = bustiaDefaultRepository.findByEntitatAndUsuari(
 				entitatActual, 
 				usuari);

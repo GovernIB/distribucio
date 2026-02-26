@@ -50,6 +50,10 @@ public class UsuariEntity implements Serializable {
     @JoinColumn(name = "entitat_defecte_id")
     @org.hibernate.annotations.ForeignKey(name = BaseConfig.DB_PREFIX + "entitat_usuari_fk")
     private EntitatEntity entitatPerDefecte;
+    @Column(name="num_elements_pagina")
+    private Long numElementsPagina;
+    @Column(name="email_error_anotacio")
+    private boolean emailErrorAnotacio;
 	
 	@Version
 	private long version = 0;
@@ -72,11 +76,15 @@ public class UsuariEntity implements Serializable {
 			boolean rebreEmailsBustia,
 			boolean rebreEmailsAgrupats,
 			String idioma,
-            EntitatEntity entitatPerDefecte) {
+            EntitatEntity entitatPerDefecte,
+            Long numElementsPagina,
+            boolean emailErrorAnotacio) {
 		this.rebreEmailsBustia = rebreEmailsBustia;
 		this.rebreEmailsAgrupats = rebreEmailsAgrupats;
 		this.idioma = idioma;
         this.entitatPerDefecte = entitatPerDefecte;
+        this.numElementsPagina = numElementsPagina;
+        this.emailErrorAnotacio = emailErrorAnotacio;
 	}
 	
 	public void updateRolActual(String rolActual) {

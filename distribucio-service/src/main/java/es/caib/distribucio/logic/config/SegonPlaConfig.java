@@ -56,6 +56,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
     private final String codiReintentarProcessament = "reintentarProcessament";
     private final String codiActualitzarProcediments = "actualitzarProcediments";
     private final String codiActualitzarServeis = "actualitzarServeis";
+    private final String codiEnviarEmailsAnotacionsErrorProcessament = "enviarEmailsAnotacionsErrorProcessament";
     private final String codiExecucionMassives = "execucionsMassives";
 
     @Bean
@@ -363,6 +364,25 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 getTrigger(codiExecucionMassives)
         );
 
+        addTask(
+                codiEnviarEmailsAnotacionsErrorProcessament,
+                new Runnable() {
+                    @SneakyThrows
+                    @Override
+                    public void run() {
+                        monitorTasquesService.inici(codiEnviarEmailsAnotacionsErrorProcessament);
+                        try {
+                            segonPlaService.enviarEmailsAnotacionsErrorProcessament();
+                            monitorTasquesService.fi(codiEnviarEmailsAnotacionsErrorProcessament);
+                        } catch (Throwable th) {
+                            tractarErrorTascaSegonPla(th, codiEnviarEmailsAnotacionsErrorProcessament);
+                        } finally {
+                            SecurityContextHolder.clearContext();
+                        }
+                    }
+                },
+                getTrigger(codiEnviarEmailsAnotacionsErrorProcessament)
+            );
     } //Fi de configureTasks
 
     private Date getPeriodicTriggerNextExecutionTime(TriggerContext triggerContext, String taskCodi, Long value) {
@@ -551,6 +571,22 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                         value = "0 30 15 * * 5";
                     }
                     log.info("Actualitzant serveis");
+                    return getCronTriggerNextExecutionTime(triggerContext, taskCodi, value);
+                }
+            };
+        } else if (taskCodi.equals(codiEnviarEmailsAnotacionsErrorProcessament)) {
+            return new Trigger() {
+                @Override
+                public Date nextExecutionTime(TriggerContext triggerContext) {
+                    String value = null;
+                    try {
+                        value = configService.getConfig("es.caib.distribucio.enviar.anotacio.error.cron");
+                    } catch (Exception e) {
+                        log.warn("Error consultant la propietat per la propera execució per enviar per email les anotacions amb error al processament");
+                    }
+                    if (value == null) {
+                        value = "0 0 0 * * *";
+                    }
                     return getCronTriggerNextExecutionTime(triggerContext, taskCodi, value);
                 }
             };

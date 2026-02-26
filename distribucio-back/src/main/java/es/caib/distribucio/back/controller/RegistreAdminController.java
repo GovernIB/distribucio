@@ -120,7 +120,10 @@ public class RegistreAdminController extends BaseAdminController {
 		backNull.setCodi("senseBackoffice");
 		backoffices.add(backNull);
 		model.addAttribute("backoffices", backoffices);
-		return "registreAdminList";
+        model.addAttribute("estatsPendents", RegistreProcesEstatEnum.estatsPendents);
+        model.addAttribute("estatsProcessats", RegistreProcesEstatEnum.estatsProcessats);
+
+        return "registreAdminList";
 	}
 
 	@RequestMapping(method = RequestMethod.POST)

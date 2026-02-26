@@ -75,6 +75,11 @@
 	<script src="<c:url value="/webjars/bootstrap/3.3.6/dist/js/bootstrap.min.js"/>"></script>
 	<link href="<c:url value="/css/bootstrap-colorpicker.min.css"/>" rel="stylesheet">
 	<script src="<c:url value="/js/bootstrap-colorpicker.min.js"/>"></script>
+    <script>
+        $(document).ready(function() {
+            $('table').data("page-length", ${dadesUsuariActual.numElementsPagina});
+        });
+    </script>
 	<decorator:head />
 <style>
 body {
@@ -272,6 +277,7 @@ body {
 									<a href="<c:url value="/avis"/>" class="btn btn-primary"><spring:message code="decorator.menu.avisos"/></a>
 								</c:when>
 								<c:when test="${isRolActualAdministrador or isRolActualAdminLectura}">
+									<a href="<c:url value="/registreAdmin"/>" class="btn btn-primary"><spring:message code="decorator.menu.anotacions"/></a>
 									<div class="btn-group">
 										<button data-toggle="dropdown" class="btn btn-primary dropdown-toggle"><spring:message code="decorator.menu.configurar"/>&nbsp;<span class="caret caret-white"></span></button>
 										<ul class="dropdown-menu">
@@ -300,7 +306,6 @@ body {
 											</c:if>
 											<li><a href="<c:url value="/procediment"/>"><spring:message code="decorator.menu.procediments"/></a></li>
 											<li><a href="<c:url value="/servei"/>"><spring:message code="decorator.menu.serveis"/></a></li>
-											<li><a href="<c:url value="/registreAdmin"/>"><spring:message code="decorator.menu.anotacions"/></a></li>
 											<li><a href="<c:url value="/historic"/>"><spring:message code="decorator.menu.estadistiques"/></a></li>
 											<li class="divider"></li>
 											<li>

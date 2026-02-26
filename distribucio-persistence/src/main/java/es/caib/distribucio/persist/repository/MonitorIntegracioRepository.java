@@ -39,7 +39,8 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			"and (:isDataNula = true or mon.data between :data and :dataFi) " + 
 			"and (:isNullDescripcio = true or lower(mon.descripcio) like lower('%'||:descripcio||'%')) " + 
 			"and (:isNullUsuari = true or lower(mon.codiUsuari) like lower('%'||:usuari||'%'))" + 
-			"and (:isNullEstat = true or mon.estat like :estat)")
+			"and (:isNullEstat = true or mon.estat = :estat) " +
+			"and (:isNullEntitat = true or lower(mon.codiEntitat) like lower('%'||:entitat||'%'))")
 	Page<MonitorIntegracioEntity> findByFiltrePaginat(
 			@Param("codiMonitor") String codiMonitor, 
 			@Param("isDataNula") boolean isDataNula, 
@@ -51,7 +52,9 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			@Param("usuari") String usuari, 
 			@Param("isNullEstat") boolean isNullEstat, 
 			@Param("estat") IntegracioAccioEstatEnumDto estat,
-			Pageable pageable);
+            @Param("isNullEntitat") boolean isNullEntitat,
+            @Param("entitat") String entitat,
+            Pageable pageable);
 
 	@Query(	" 	select count(mon) " + 
 			"	from MonitorIntegracioEntity mon " +

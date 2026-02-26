@@ -253,6 +253,47 @@ $(document).ready(function() {
 			});
 	});
 	$('#mostrarInactives').change();
+
+    (function(){
+        const $procSelect = $('select[name="procesEstatSimple"]');
+        const $estatSelect = $('select[name="estat"]');
+
+        const $opcionsOriginals = $estatSelect.find('option').clone();
+
+        const pendents = [
+            <c:forEach var="e" items="${estatsPendents}" varStatus="s">
+                '${e}'<c:if test="${!s.last}">,</c:if>
+            </c:forEach>
+        ];
+        const processats = [
+            <c:forEach var="e" items="${estatsProcessats}" varStatus="s">
+                '${e}'<c:if test="${!s.last}">,</c:if>
+            </c:forEach>
+        ];
+
+        function actualitzarOpcionsEstat() {
+            const valorProc = $procSelect.val();
+            let valorsValids = [];
+
+            if (valorProc === 'PENDENT') valorsValids = pendents;
+            else if (valorProc === 'PROCESSAT') valorsValids = processats;
+            else valorsValids = pendents.concat(processats);
+
+            const valorActual = $estatSelect.val();
+            $estatSelect.empty().append(
+                $opcionsOriginals.filter(function() {
+                    const v = $(this).val();
+                    return v === '' || valorsValids.includes(v);
+                })
+            );
+            $estatSelect.val(valorActual);
+        }
+
+        $procSelect.on('change', actualitzarOpcionsEstat);
+
+        actualitzarOpcionsEstat();
+    })();
+
 	$('#showModalProcesEstatButton').click(function(e) {
 		$('#modalProcesEstat').modal();
 		e.stopPropagation();
@@ -279,6 +320,14 @@ $(document).ready(function() {
 		}
 	});
 });
+
+function refreshRegistres($modalExecucioMassiva) {
+	if ($modalExecucioMassiva) {
+		$(document).on("hidden.bs.modal", $modalExecucioMassiva, function () {
+		    $('#filtrar').submit();
+		});
+	}
+}
 </script>
 </head>
 <body>
@@ -557,6 +606,9 @@ $(document).ready(function() {
 							{{else}}
 								<span class="fa fa-exclamation-triangle text-danger" title="<spring:message code="registre.admin.list.icon.annexos.estat.pendent.regla.sense.regla"/>"> </span>
 							{{/if}}
+							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deProcessarRegla"/>">
+								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
+							</span>
 						{{else procesEstat == 'BUSTIA_PENDENT'}}
 							<spring:message code="registre.proces.estat.enum.BUSTIA_PENDENT"/>
 						{{else procesEstat == 'BUSTIA_PROCESSADA'}}

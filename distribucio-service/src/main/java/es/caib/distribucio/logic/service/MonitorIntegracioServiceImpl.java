@@ -154,6 +154,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 		String descripcio = integracioFiltreDto.getDescripcio();
 		String usuari = integracioFiltreDto.getUsuari();
 		IntegracioAccioEstatEnumDto estat = integracioFiltreDto.getEstat();
+        String entitat = integracioFiltreDto.getEntitat();
 		PaginaDto<MonitorIntegracioDto> resposta;
 		resposta = paginacioHelper.toPaginaDto(
 				monitorIntegracioRepository.findByFiltrePaginat(
@@ -166,7 +167,9 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 						usuari == null || usuari.isEmpty(), 
 						usuari != null && !usuari.isEmpty() ? usuari : "",
 						estat == null, 
-						estat != null ? estat : IntegracioAccioEstatEnumDto.OK, 
+						estat != null ? estat : IntegracioAccioEstatEnumDto.OK,
+                        entitat == null || entitat.isEmpty(),
+                        entitat != null && !entitat.isEmpty() ? entitat : "",
 						paginacioHelper.toSpringDataPageable(paginacioParams)),
 				MonitorIntegracioDto.class);	
 		return resposta;

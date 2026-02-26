@@ -2,7 +2,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib tagdir="/WEB-INF/tags/distribucio" prefix="dis" %>
 <%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator"%>
-
+<%
+    pageContext.setAttribute(
+            "dadesUsuariActual",
+            es.caib.distribucio.back.helper.SessioHelper.getUsuariActual(request));
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +29,12 @@
     <script src="<c:url value="/webjars/bootstrap/3.3.6/dist/js/bootstrap.min.js"/>"></script>
     <link href="<c:url value="/css/bootstrap-colorpicker.min.css"/>" rel="stylesheet">
 	<script src="<c:url value="/js/bootstrap-colorpicker.min.js"/>"></script>
-	<decorator:head />
+    <script>
+        $(document).ready(function() {
+            $('table').data("page-length", ${dadesUsuariActual.numElementsPagina})
+        });
+    </script>
+    <decorator:head />
 </head>
 <script type="text/javascript">
 	// Guarda l'idioma de la configuració de l'usuari a local storage

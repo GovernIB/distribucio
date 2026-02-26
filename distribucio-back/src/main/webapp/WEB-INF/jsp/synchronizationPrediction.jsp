@@ -310,11 +310,17 @@
 	<form:form action="${formAction}" method="post" cssClass="form-horizontal" role="form">
 		<div id="modal-botons">
 			<a id="pdfBtn" class="btn btn-default" onclick="crearPdf()"><spring:message code="comu.boto.descarregar.pdf" /></a>
-			<button type="submit" class="btn btn-success"
+			<button type="submit" name="action" value="sync" class="btn btn-success"
 				<c:if test="${isAllEmpty and !isFirstSincronization}"><c:out value="disabled='disabled'"/></c:if>>
 				<span class="fa fa-save"></span>
 				<spring:message code="unitat.list.boto.synchronize" />
 			</button>
+            <c:if test="${isAllEmpty and !isFirstSincronization}">
+                <button type="submit" name="action" value="force" class="btn btn-danger">
+                    <span class="fa fa-save"></span>
+                    <spring:message code="unitat.list.boto.forcedSynchronize" />
+                </button>
+            </c:if>
 			<a href="<c:url value="/unitatOrganitzativa"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar" /></a>
 		</div>
 	</form:form>

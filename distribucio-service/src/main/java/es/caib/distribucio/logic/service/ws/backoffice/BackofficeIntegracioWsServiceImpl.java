@@ -43,10 +43,10 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
     public AnotacioRegistreEntrada consulta(
             AnotacioRegistreId id) {
         AnotacioRegistreEntrada anotacioRegistreEntrada;
-        String accioDescripcio = "Consulta d'anotació pendent "+ id.getIndetificador();
+        String accioDescripcio = "Consulta d'anotació pendent "+ id.getIdentificador();
         String usuariIntegracio = this.getUsuariIntegracio();
         Map<String, String> accioParams = new HashMap<String, String>();
-        accioParams.put("Anotació identificador", id.getIndetificador());
+        accioParams.put("Anotació identificador", id.getIdentificador());
         accioParams.put("Anotació clau accés", id.getClauAcces());
         long start = System.currentTimeMillis();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -177,10 +177,10 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
             Estat estat,
             String observacions) {
 		long start = System.currentTimeMillis();
-        String accioDescripcio = "Canvi d'estat de l'anotació " + (id != null ? id.getIndetificador() : "-") + " a " + estat;
+        String accioDescripcio = "Canvi d'estat de l'anotació " + (id != null ? id.getIdentificador() : "-") + " a " + estat;
         String usuariIntegracio = this.getUsuariIntegracio();
         Map<String, String> accioParams = new HashMap<String, String>();
-        accioParams.put("Anotació identificador", id.getIndetificador());
+        accioParams.put("Anotació identificador", id.getIdentificador());
         accioParams.put("Anotació clau accés", id.getClauAcces());
         accioParams.put("Estat", estat.name());
         accioParams.put("Observacions", observacions);

@@ -10,6 +10,7 @@ import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import es.caib.distribucio.back.validation.EntitatCodi;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,7 @@ import es.caib.distribucio.logic.intf.dto.EntitatDto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @CodiEntitatNoRepetit(campId = "id", campCodi = "codi")
+@EntitatCodi
 public class EntitatCommand {
 
 	private Long id;

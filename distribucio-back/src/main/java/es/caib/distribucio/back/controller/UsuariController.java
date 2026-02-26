@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import es.caib.distribucio.back.helper.EntitatHelper;
+import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.service.EntitatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,11 +30,6 @@ import es.caib.distribucio.back.command.UsuariCommand;
 import es.caib.distribucio.back.helper.EnumHelper;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.SessioHelper;
-import es.caib.distribucio.logic.intf.dto.BustiaDto;
-import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.IdiomaEnumDto;
-import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
 import lombok.Builder;
 import lombok.Data;
@@ -75,13 +71,21 @@ public class UsuariController  extends BaseAdminController {
 		} catch(Exception e) {
 			MissatgesHelper.error(request, getMessage(request, "usuari.form.actualitzar.usuari.error", new Object[] {e.toString()}));
 		}
-		
+
 		EntitatDto entitatActual = this.getEntitatActual(request);
 		BustiaDto bustiaPerDefecte = aplicacioService.getBustiaPerDefecte(usuari, entitatActual.getId());
 
         List<EntitatDto> entitatsAccessibles = EntitatHelper.findEntitatsAccessibles(request, entitatService);
         model.addAttribute("entitats", entitatsAccessibles);
-		
+
+        List<IdNomDto> numElementsPagina = new ArrayList<>();
+        numElementsPagina.add(new IdNomDto(10L, "10"));
+        numElementsPagina.add(new IdNomDto(20L, "20"));
+        numElementsPagina.add(new IdNomDto(50L, "50"));
+        numElementsPagina.add(new IdNomDto(100L, "100"));
+
+        model.addAttribute("numElementsPagina", numElementsPagina);
+
 		model.addAttribute(UsuariCommand.asCommand(usuari));
 		model.addAttribute("rolsPerMostrar", this.getFiltraRolsPerMostrar(usuari.getRols()));
 		model.addAttribute(

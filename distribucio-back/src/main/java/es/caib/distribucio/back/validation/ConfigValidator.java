@@ -60,6 +60,32 @@ public class ConfigValidator implements ConstraintValidator<Config, Object> {
 						.addConstraintViolation();							
 					}
 				}
+                if("BOOL".equals(configDto.getTypeCode())) {
+                    try {
+                        if (command.getValue() != null) {
+                            Boolean.valueOf(command.getValue());
+                        }
+                    } catch(Exception e) {
+                        valid = false;
+                        context.buildConstraintViolationWithTemplate(
+                                MessageHelper.getInstance().getMessage("config.validator.error.bool.no.valid", null, new RequestContext(request).getLocale()))
+                        .addNode("value")
+                        .addConstraintViolation();
+                    }
+                }
+                if("INT".equals(configDto.getTypeCode())) {
+                    try {
+                        if (command.getValue() != null) {
+                            Integer.valueOf(command.getValue());
+                        }
+                    } catch(Exception e) {
+                        valid = false;
+                        context.buildConstraintViolationWithTemplate(
+                                MessageHelper.getInstance().getMessage("config.validator.error.int.no.valid", null, new RequestContext(request).getLocale()))
+                        .addNode("value")
+                        .addConstraintViolation();
+                    }
+                }
 			} else {
 				valid = false;
 				context.buildConstraintViolationWithTemplate(

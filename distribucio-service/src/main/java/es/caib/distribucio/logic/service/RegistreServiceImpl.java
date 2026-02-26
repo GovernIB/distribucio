@@ -31,6 +31,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import es.caib.distribucio.logic.intf.dto.*;
+import es.caib.distribucio.persist.entity.*;
+import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
+import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
+import es.caib.pluginsib.arxiu.api.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
@@ -100,22 +104,6 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.NtiTipoDocumento;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.Representant;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.SicresTipoDocumento;
 import es.caib.distribucio.logic.permission.ExtendedPermission;
-import es.caib.distribucio.persist.entity.BustiaEntity;
-import es.caib.distribucio.persist.entity.ContingutEntity;
-import es.caib.distribucio.persist.entity.ContingutMovimentEntity;
-import es.caib.distribucio.persist.entity.DadaEntity;
-import es.caib.distribucio.persist.entity.EntitatEntity;
-import es.caib.distribucio.persist.entity.MetaDadaEntity;
-import es.caib.distribucio.persist.entity.ProcedimentEntity;
-import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
-import es.caib.distribucio.persist.entity.RegistreAnnexFirmaEntity;
-import es.caib.distribucio.persist.entity.RegistreEntity;
-import es.caib.distribucio.persist.entity.RegistreInteressatEntity;
-import es.caib.distribucio.persist.entity.ReglaEntity;
-import es.caib.distribucio.persist.entity.ServeiEntity;
-import es.caib.distribucio.persist.entity.UnitatOrganitzativaEntity;
-import es.caib.distribucio.persist.entity.UsuariEntity;
-import es.caib.distribucio.persist.entity.VistaMovimentEntity;
 import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.ContingutLogRepository;
 import es.caib.distribucio.persist.repository.ContingutMovimentRepository;
@@ -129,12 +117,6 @@ import es.caib.distribucio.persist.repository.RegistreRepository;
 import es.caib.distribucio.persist.repository.ServeiRepository;
 import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.persist.repository.VistaMovimentRepository;
-import es.caib.pluginsib.arxiu.api.ContingutArxiu;
-import es.caib.pluginsib.arxiu.api.Document;
-import es.caib.pluginsib.arxiu.api.DocumentContingut;
-import es.caib.pluginsib.arxiu.api.ExpedientMetadades;
-import es.caib.pluginsib.arxiu.api.Firma;
-import es.caib.pluginsib.arxiu.api.FirmaTipus;
 
 /**
  * Implementació dels mètodes per a gestionar anotacions
@@ -777,13 +759,33 @@ public class RegistreServiceImpl implements RegistreService {
 				parametres.put("backCodi", backCodi);
 			}
 		}
-		if (!esNullReintentsPendents && Boolean.TRUE.equals(reintentsPendents)) {
-		    sqlWhere.append("and r.procesIntents < :maxReintents ");
-		    parametres.put("maxReintents", maxReintents);
-		} else if (!esNullReintentsPendents && Boolean.FALSE.equals(reintentsPendents)) {
-		    sqlWhere.append("and r.procesIntents >= :maxReintents ");
-		    parametres.put("maxReintents", maxReintents);
-		}
+		if (!esNullReintentsPendents) {
+            EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
+            int maxBackoffice = registreHelper.getEnviarIdsAnotacionsMaxReintentsProperty(entitat);
+            int maxAnnex = this.getGuardarAnnexosMaxReintentsProperty(entitat);
+            String maxRegla = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.aplicar.regles.max.reintents");
+            String maxError = configHelper.getConfig("es.caib.distribucio.backoffice.reintentar.processament.max.reintents");
+
+            if (Boolean.TRUE.equals(reintentsPendents)) {
+                sqlWhere.append("and (");
+                sqlWhere.append(" (r.procesEstat = 'BACK_PENDENT' and r.procesIntents < :maxBackoffice)");
+                sqlWhere.append(" or (r.procesEstat = 'ARXIU_PENDENT' and r.procesIntents < :maxAnnex)");
+                sqlWhere.append(" or (r.procesEstat = 'REGLA_PENDENT' and r.procesIntents < :maxRegla)");
+                sqlWhere.append(" or (r.procesEstat = 'BACK_ERROR' and r.procesIntents < :maxError)");
+                sqlWhere.append(") ");
+            } else {
+                sqlWhere.append("and (");
+                sqlWhere.append(" (r.procesEstat = 'BACK_PENDENT' and r.procesIntents >= :maxBackoffice)");
+                sqlWhere.append(" or (r.procesEstat = 'ARXIU_PENDENT' and r.procesIntents >= :maxAnnex)");
+                sqlWhere.append(" or (r.procesEstat = 'REGLA_PENDENT' and r.procesIntents >= :maxRegla)");
+                sqlWhere.append(" or (r.procesEstat = 'BACK_ERROR' and r.procesIntents >= :maxError)");
+                sqlWhere.append(") ");
+            }
+            parametres.put("maxBackoffice", maxBackoffice);
+            parametres.put("maxAnnex", maxAnnex);
+            parametres.put("maxRegla", maxRegla!=null ?Integer.parseInt(maxRegla) :0);
+            parametres.put("maxError", maxError!=null ?Integer.parseInt(maxError) :0);
+        }
 		if (!esNullProcedimentCodi) {
 			sqlWhere.append("and (r.procedimentCodi = :procedimentCodi or r.serveiCodi = :procedimentCodi) ");
 			parametres.put("procedimentCodi", procedimentCodi);
@@ -1641,7 +1643,7 @@ public class RegistreServiceImpl implements RegistreService {
 			anotacioPerBackoffice.setPresencial(registreEntity.getPresencial());
 			anotacioPerBackoffice.setTramitCodi(registreEntity.getTramitCodi());
 			anotacioPerBackoffice.setTramitNom(registreEntity.getTramitNom());
-			
+
 		} catch (Exception ex){
 			throw new RuntimeException(ex);
 		}
@@ -1838,7 +1840,7 @@ public class RegistreServiceImpl implements RegistreService {
 		List<Long> registresId = new ArrayList<Long>();
 		String clauSecreta = registreHelper.getClauSecretaProperty();
 		// Cerca el registre per clau i identificador encriptades tenint en compte que pot haver anotacions reenviades
-		List<RegistreEntity> registres = registreRepository.findByNumero(id.getIndetificador());
+		List<RegistreEntity> registres = registreRepository.findByNumero(id.getIdentificador());
 		if (registres.isEmpty()) {
 			throw new NotFoundException(
 					id,
@@ -1847,7 +1849,7 @@ public class RegistreServiceImpl implements RegistreService {
 		String encryptedIdentificator = "";
 		for(RegistreEntity r : registres) {
 			encryptedIdentificator = RegistreHelper.encrypt(
-					id.getIndetificador() + "_" + Long.valueOf(r.getId()),
+					id.getIdentificador() + "_" + Long.valueOf(r.getId()),
 					clauSecreta);
 			if (encryptedIdentificator.equals(id.getClauAcces())) {
 				registresId.add(r.getId());
@@ -1855,10 +1857,10 @@ public class RegistreServiceImpl implements RegistreService {
 		}
 		if (registresId.isEmpty() && registres.size() > 0) {
 			// Codifica només l'identificador com es feia fins la versió 0.9.43.1 
-			encryptedIdentificator = RegistreHelper.encrypt(id.getIndetificador(), clauSecreta);
+			encryptedIdentificator = RegistreHelper.encrypt(id.getIdentificador(), clauSecreta);
 			if (encryptedIdentificator.equals(id.getClauAcces())) {
-				logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + id.getIndetificador() + " en la consulta pel backoffice");
-				registres = contingutLogRepository.findByNumeroAndComunidaBackoffice(id.getIndetificador());
+				logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + id.getIdentificador() + " en la consulta pel backoffice");
+				registres = contingutLogRepository.findByNumeroAndComunidaBackoffice(id.getIdentificador());
 				if (registres != null && !registres.isEmpty()) {
 					for (RegistreEntity r : registres) {
 						registresId.add(r.getId());
@@ -2982,34 +2984,59 @@ public class RegistreServiceImpl implements RegistreService {
 				true,
 				false,
 				false);
+
+        RegistreEntity registre = registreRepository.getReferenceById(registreId);
 		RegistreAnnexEntity annex = registreAnnexRepository.getReferenceById(annexId);
 		ValidacioFirmaEnum validacioFirma = registreHelper.validaFirmes(annex, null);
 		
 		try {
-			// Si la firma és vàlida i està com a esborrany i el document està firmat llavors es pot 
+			if (ValidacioFirmaEnum.SENSE_FIRMES.equals(validacioFirma)
+					&& AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat()) ) {
+//                TODO: firmar en servidor
+                DistribucioRegistreAnnex distribucioRegistreAnnex = conversioTipusHelper.convertir(
+                        annex, DistribucioRegistreAnnex.class);
+                DistribucioRegistreAnotacio distribucioRegistreAnotacio =
+                        registreHelper.getDistribucioRegistreAnotacio(registreId);
+
+                DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
+                documentEniRegistrableDto.setNumero(registre.getNumero());
+                documentEniRegistrableDto.setData(registre.getData());
+                documentEniRegistrableDto.setOficinaDescripcio(registre.getOficinaDescripcio());
+                documentEniRegistrableDto.setOficinaCodi(registre.getOficinaCodi());
+
+                pluginHelper.saveAnnexAsDocumentInArxiu(
+                        registre.getNumero(),
+                        distribucioRegistreAnnex,
+                        distribucioRegistreAnotacio.getUnitatOrganitzativaCodi(),
+                        distribucioRegistreAnotacio.getExpedientArxiuUuid(),
+                        documentEniRegistrableDto,
+                        distribucioRegistreAnotacio.getProcedimentCodi());
+                validacioFirma = registreHelper.validaFirmes(annex, null);
+            }
+			// Si la firma és vàlida i està com a esborrany i el document està firmat llavors es pot
 			// guardar com a definitiu
 			if (ValidacioFirmaEnum.FIRMA_VALIDA.equals(validacioFirma)
 					&& AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat()) ) {
 
 				// Actualitza el recompte d'esborranys
-				RegistreEntity registre = registreRepository.getReferenceById(registreId);
 				List<RegistreAnnexEntity> registreAnnex = registreRepository.getDadesRegistreAnnex( registreId);
 				int numEsborrany = 0;
 				for(RegistreAnnexEntity annexList: registreAnnex) {
 					if(annexList.getArxiuEstat()== AnnexEstat.ESBORRANY) {
 						numEsborrany++;
 					}					
-				}			
-				
+				}
+                registre.setAnnexosEstatEsborrany(numEsborrany);
+
 				// Modificar 
 				if (annex.getFitxerArxiuUuid() != null) {
-					pluginHelper.arxiuDocumentSetDefinitiu(annex);
-					annex.setArxiuEstat(AnnexEstat.DEFINITIU);
-					registre.setAnnexosEstatEsborrany(numEsborrany-1);
-					registreRepository.saveAndFlush(registre);
-					registreAnnexRepository.saveAndFlush(annex);
-					entityManager.flush();
-
+                    pluginHelper.arxiuDocumentSetDefinitiu(annex);
+                    annex.setArxiuEstat(AnnexEstat.DEFINITIU);
+                    registreHelper.loadSignaturaDetallsToDB(annex);
+                    registre.setAnnexosEstatEsborrany(numEsborrany-1);
+                    registreRepository.saveAndFlush(registre);
+                    registreAnnexRepository.saveAndFlush(annex);
+                    entityManager.flush();
 				}
 			}
 			logger.debug("Validació de signatura completada correctament per a l'annex con id:  "+annexId+" de l'anotació amb id:  "+ registreId + " i resultat " + validacioFirma);

@@ -11,6 +11,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import es.caib.distribucio.back.helper.MissatgesHelper;
+import es.caib.distribucio.logic.intf.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +34,6 @@ import es.caib.distribucio.back.helper.DatatablesHelper;
 import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.back.helper.EnumHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
-import es.caib.distribucio.logic.intf.dto.BackofficeDto;
-import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
-import es.caib.distribucio.logic.intf.dto.ReglaDto;
-import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.logic.intf.service.BackofficeService;
 import es.caib.distribucio.logic.intf.service.BustiaService;
@@ -435,6 +431,39 @@ public class ReglaController  extends BaseAdminController {
 				"redirect:../../regla",
 				"regla.accio.accioMultiple.accioCompletada");
 	}
+
+    /** Mètode  per aplicar una regla manualment. Primer es mostra la modal amb les anotacions que es veuran afectades
+     * i en prèmer el botó s'aplicarà la regla a les diferents anotacions.
+     *
+     * @param request
+     * @param reglaId
+     * @return
+     */
+    @RequestMapping(value = "/{reglaId}/aplicarPreview", method = RequestMethod.GET)
+    public String aplicarPreview(
+            HttpServletRequest request,
+            Model model,
+            @PathVariable Long reglaId) {
+        model.addAttribute("reglaId", reglaId);
+
+        try {
+            ReglaDto regla = obtenirReglaActiva(request, reglaId);
+            //obtenirReglaActiva(request, reglaId);
+
+            EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+            List<RegistreDto> registres = reglaService.consultaRegistresAplicaRegla(
+                    entitatActual.getId(), reglaId);
+            model.addAttribute("registres", registres);
+        } catch (Exception e) {
+            String errMsg = this.getMessage(request, "regla.controller.aplicada.error",
+                    new Object[]{e.getMessage()});
+            logger.error(errMsg, e);
+            MissatgesHelper.error(request, errMsg);
+        }
+        return "reglesAplicarPreview";
+
+    }
+
 	/** Mètode per aplicar una regla manualment. S'avaluen els registres pendents de bústia
 	 * sense regla assignada i se'ls assigna la regla a aquells que coincideixin amb el filtre.
 	 * 
@@ -443,52 +472,49 @@ public class ReglaController  extends BaseAdminController {
 	 * @return
 	 */
 	@RequestMapping(value = "/{reglaId}/aplicar", method = RequestMethod.GET)
-	public String aplicar(
-			HttpServletRequest request,
-			@PathVariable Long reglaId) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		ReglaDto reglaPerAplicar = reglaService.findOne(entitatActual.getId(), reglaId);
-		if (reglaPerAplicar.isActiva()) {
-			try {
-				List<String> registres = reglaService.aplicarManualment(
-					entitatActual.getId(),
-					reglaId);
-				StringBuilder numeros = new StringBuilder();
-				for (int i = 0; i < registres.size(); i ++) {
-					numeros.append(registres.get(i));
-					if (i < registres.size() - 1) {
-						numeros.append(", ");
-					}
-				}
-				
-				return getAjaxControllerReturnValueSuccess(
-						request,
-						"redirect:../../regla",
-						"regla.controller.aplicada.ok", new Object[] {registres.size(), numeros});
-				
-			} catch(Exception e) {
-				
-				String errMsg = this.getMessage(request, "regla.controller.aplicada.error", new Object[] {e.getMessage()});
-				logger.error(errMsg, e);
-				return getAjaxControllerReturnValueError(
-						request,
-						"redirect:../../regla",
-						"regla.controller.aplicada.error", new Object[] {e.getMessage()});			
-			}
-		}else {
-			String errMsg = this.getMessage(request, "regla.controller.aplicada.error", new Object[] {"No es pot executar la regla perquè no està activa."});
-			return getAjaxControllerReturnValueError(
-					request,
-					"redirect:../../regla",
-					"regla.controller.aplicada.error", new Object[] {errMsg});
-		}
-		
-	}
+    public String aplicar(
+            HttpServletRequest request,
+            @PathVariable Long reglaId) {
+        try {
+            ReglaDto regla = obtenirReglaActiva(request, reglaId);
+            //obtenirReglaActiva(request, reglaId);
 
-	
+            EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+            List<String> registres = reglaService.aplicarManualment(entitatActual.getId(), reglaId);
+
+            String numeros = String.join(", ", registres);
+            MissatgesHelper.success(request, getMessage(request, "regla.controller.aplicada.ok",
+                    new Object[]{registres.size(), numeros}));
+        } catch (Exception e) {
+            String errMsg = this.getMessage(request, "regla.controller.aplicada.error",
+                    new Object[]{e.getMessage()});
+            logger.error(errMsg, e);
+            MissatgesHelper.error(request, errMsg);
+        }
+
+        return "redirect:/modal/tancar";
+    }
+
+    /**
+     * Obté la regla indicada i comprova que estigui activa.
+     * Si no ho està, registra un error i llança una excepció.
+     */
+    private ReglaDto obtenirReglaActiva(HttpServletRequest request, Long reglaId) {
+        EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+        ReglaDto regla = reglaService.findOne(entitatActual.getId(), reglaId);
+
+        if (!regla.isActiva()) {
+            String errMsg = this.getMessage(request, "regla.controller.aplicada.errorInactiva");
+            logger.error(errMsg);
+            MissatgesHelper.error(request, errMsg);
+            throw new IllegalStateException(errMsg);
+        }
+
+        return regla;
+    }
 
 
-	private void emplenarModelFormulari(
+    private void emplenarModelFormulari(
 			HttpServletRequest request,
 			Model model) {
 		model.addAttribute(
