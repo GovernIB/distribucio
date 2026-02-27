@@ -51,11 +51,12 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_DESC = "Descripcio Codi";
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
-	private static final String PROCEDIMENT_CODI = "1234"; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice 
+	private static final String PROCEDIMENT_CODI = null; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice 
+	private static final String SERVEI_CODI = null; // 
 	private static final boolean PRESENCIAL = false;
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
-	private static final String EXTRACTE = "Prova alta per Helium " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date());
+	private static final String EXTRACTE = "Prova alta anotació " + new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date());
 	private static final String ENTITAT_CODI = ENTITAT_DIST_CODI;
 	private static final String ENTITAT_DESC = "Descripció entitat";
 	private static final String OFICINA_CODI = "10";
@@ -66,6 +67,8 @@ public class BustiaV1Test {
 	private static final String IDIOMA_DESC = "Català";
 	private static final String IDENTIFICADOR = "15/10/2015";
 	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2025";
+	private static final String TRAMIT_CODI = "TRAMIT";  
+	private static final String TRAMIT_NOM = "Tramit Nom";
 	
 
 	private static final int N_ANOTACIONS = 1;
@@ -162,6 +165,7 @@ public class BustiaV1Test {
 			anotacio.setAplicacioVersio(APLICACIO_VERSIO);
 			anotacio.setAssumpteCodi(ASSUMPTE_CODI);
 			anotacio.setProcedimentCodi(PROCEDIMENT_CODI);
+			anotacio.setServeiCodi(SERVEI_CODI);
 	        anotacio.setAssumpteDescripcio(ASSUMPTE_DESC);
 	        anotacio.setAssumpteTipusCodi(ASSUMPTE_TIPUS_CODI);
 	        anotacio.setAssumpteDescripcio(ASSUMPTE_TIPUS_DESC);
@@ -186,8 +190,10 @@ public class BustiaV1Test {
 	        anotacio.setExpedientNumero(EXPEDIENT_NUM);
 	        anotacio.setPresencial(PRESENCIAL);
 	        anotacio.setObservacions("Anotacio Observacions....");
+	        anotacio.setTramitCodi(TRAMIT_CODI);
+	        anotacio.setTramitNom(TRAMIT_NOM);
 	        
-//	        anotacio.setDocumentacioFisicaCodi("1");
+	        anotacio.setDocumentacioFisicaCodi("1");
 //	        anotacio.setDocumentacioFisicaDescripcio("Documentació adjunta en suport PAPER (o altres suports)");
 //	        anotacio.setDocumentacioFisicaCodi("2");
 //	        anotacio.setDocumentacioFisicaDescripcio("Documentació adjunta digitalitzada i complementàriament en paper");
