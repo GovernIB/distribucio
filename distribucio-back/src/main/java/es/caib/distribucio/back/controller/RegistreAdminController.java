@@ -846,15 +846,19 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long annexId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		ValidacioFirmaEnum validacioFirma = registreService.validarFirmes(entitatActual.getId(), registreId, annexId);
-		if (ValidacioFirmaEnum.isValida(validacioFirma)) {
-			MissatgesHelper.success(request,
-					getMessage(request,
-							"contingut.admin.controller.validar.firmes.valides"));
-		} else {
-			MissatgesHelper.warning(request,
-					getMessage(request,
-							"contingut.admin.controller.validar.firmes.no.valides"));
+		try {
+			ValidacioFirmaEnum validacioFirma = registreService.validarFirmes(entitatActual.getId(), registreId, annexId);
+			if (ValidacioFirmaEnum.isValida(validacioFirma)) {
+				MissatgesHelper.success(request,
+						getMessage(request,
+								"contingut.admin.controller.validar.firmes.valides"));
+			} else {
+				MissatgesHelper.warning(request,
+						getMessage(request,
+								"contingut.admin.controller.validar.firmes.no.valides"));
+			}			
+		} catch(Throwable ex) {
+			MissatgesHelper.error(request, getMessage(request, "contingut.admin.controller.validar.firmes.error.no.controlat"));
 		}
 		return "redirect:" + request.getHeader("referer");
 	}

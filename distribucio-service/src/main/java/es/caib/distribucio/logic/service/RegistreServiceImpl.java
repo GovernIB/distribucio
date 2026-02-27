@@ -2974,7 +2974,7 @@ public class RegistreServiceImpl implements RegistreService {
 		contingutLogHelper.log(registre, LogTipusEnumDto.ALLIBERAR, params, false);
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Transactional
 	@Override
 	public ValidacioFirmaEnum validarFirmes(Long entitatId, Long registreId, Long annexId) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -3032,12 +3032,17 @@ public class RegistreServiceImpl implements RegistreService {
 				if (annex.getFitxerArxiuUuid() != null) {
                     pluginHelper.arxiuDocumentSetDefinitiu(annex);
                     annex.setArxiuEstat(AnnexEstat.DEFINITIU);
-                    registreHelper.loadSignaturaDetallsToDB(annex);
                     registre.setAnnexosEstatEsborrany(numEsborrany-1);
                     registreRepository.saveAndFlush(registre);
                     registreAnnexRepository.saveAndFlush(annex);
                     entityManager.flush();
 				}
+			}
+			// Finalment si està a l'arxiu com a definitiu i no s'han carregat els detalls de la firma els carrega
+			if (annex.getFitxerArxiuUuid() != null 
+					&& AnnexEstat.DEFINITIU.compareTo(annex.getArxiuEstat()) == 0 
+					&& !annex.isSignaturaDetallsDescarregat()) {
+                registreHelper.loadSignaturaDetallsToDB(annex);
 			}
 			logger.debug("Validació de signatura completada correctament per a l'annex con id:  "+annexId+" de l'anotació amb id:  "+ registreId + " i resultat " + validacioFirma);
 		} catch (Exception e) {

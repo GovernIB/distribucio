@@ -2595,7 +2595,7 @@ public class RegistreHelper {
 		Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, registre.getNumero());
 		if (document != null) {
 			List<es.caib.pluginsib.arxiu.api.Firma> firmes = document.getFirmes();
-			if (firmes != null && firmes.size() > indexFirma) {
+			if (firmes != null) {
 				Iterator<es.caib.pluginsib.arxiu.api.Firma> it = firmes.iterator();
 				while (it.hasNext()) {
 					es.caib.pluginsib.arxiu.api.Firma f = it.next();
@@ -2603,7 +2603,9 @@ public class RegistreHelper {
 						it.remove();
 					}
 				}
-				firma = firmes.get(indexFirma);
+				if (firmes.size() > indexFirma) {
+					firma = firmes.get(indexFirma);
+				}
 			}
 		}
 		return firma;
