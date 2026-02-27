@@ -253,7 +253,17 @@
 			</c:if>
 			
 			<c:if test="${isRolActualAdministrador}">
-				<a href="<c:url value="/registreAdmin/registre/${registreId}/annex/${annex.id}/validarFirmes"/>"  class="btn-validarFirmes btn btn-xs btn-default pull-right processarBtn" title="<spring:message code="contingut.admin.controller.validar.firmes.title"/>"><span class="fa fa-refresh"></span></a>
+				<a href="<c:url value="/registreAdmin/registre/${registreId}/annex/${annex.id}/validarFirmes"/>"  class="btn-validarFirmes btn btn-sm btn-default pull-right processarBtn" title="<spring:message code="contingut.admin.controller.validar.firmes.title"/>">
+					<span class="fa fa-refresh"></span> 
+					<c:choose>
+						<c:when test="${annex.arxiuEstat == 'DEFINITIU'}">
+							<spring:message code="contingut.admin.controller.validar.firmes.validar"></spring:message>
+						</c:when>
+						<c:otherwise>
+							<spring:message code="contingut.admin.controller.validar.firmes.validar.i.custodiar"></spring:message>
+						</c:otherwise>
+					</c:choose>
+				</a>
 			</c:if>
 			
 		</td>

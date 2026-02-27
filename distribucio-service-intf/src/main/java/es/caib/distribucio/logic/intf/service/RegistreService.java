@@ -438,7 +438,7 @@ public interface RegistreService {
 			String text,
 			String rolActual);
 
-	/** Invoca la validació de firmes i actualitza l'estat de l'annex. Si té firmes vàlides llavors
+	/** Invoca la validació de firmes i actualitza l'estat de l'annex. Si no té firmes llavors prova de firmar-lo en servidor. Si té firmes vàlides llavors
 	 * es guarda com a definitiu.
 	 * 
 	 * @param entitatId
@@ -452,6 +452,21 @@ public interface RegistreService {
 			Long registreId,
 			Long annexId);
 		
+	/** Invoca la validació de firmes i actualitza l'estat de l'annex. Si no té firmes llavors prova de firmar-lo en servidor. Si té firmes vàlides llavors
+	 * es guarda com a definitiu.
+	 * 
+	 * @param entitatId
+	 * @param registreId
+	 * @param annexId
+	 * @return 
+	 * @return
+	 */
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
+	public void custodiarAnnex(
+			Long entitatId,
+			Long registreId,
+			Long annexId);
+	
 	/**
 	 * Cerca les dades (sense detall) de les firmes d'un annex. 
 	 *  

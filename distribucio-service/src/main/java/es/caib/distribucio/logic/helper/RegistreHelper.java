@@ -1318,7 +1318,7 @@ public class RegistreHelper {
 						Math.max(0, annexEntity.getRegistre().getAnnexosEstatEsborrany() - 1));
 			}
 			DocumentMetadades metadades = document.getMetadades();
-			if (metadades != null) {
+			if (metadades != null && annexEntity.getFirmaCsv() == null) {
 				annexEntity.updateFirmaCsv(metadades.getCsv());
 			}
 			
@@ -1347,7 +1347,8 @@ public class RegistreHelper {
 									registre.getNumero()) ;
 							List<ArxiuFirmaDetallDto> firmaDetalls = validacioFirma.getFirmaDetalls();
 							contevalidaSignaturaObtenirDetalls.stop();
-							
+							registreFirmaDetallRepository.deleteAll(firma.getDetalls());
+							firma.getDetalls().clear();
 							for (ArxiuFirmaDetallDto arxiuFirmaDetallDto : firmaDetalls) {
 								RegistreFirmaDetallEntity firmaDetallEntity = RegistreFirmaDetallEntity.getBuilder(
 										arxiuFirmaDetallDto,
@@ -1355,7 +1356,6 @@ public class RegistreHelper {
 								firma.getDetalls().add(firmaDetallEntity);
 								registreFirmaDetallRepository.save(firmaDetallEntity);
 							}
-							
 						} else {
 							logger.warn("ValidaSignaturaPlugin is not configured");
 						}
@@ -2354,8 +2354,10 @@ public class RegistreHelper {
 					registre.getNumero());
 			
 			isAnnexDefinitiuInArxiu = DocumentEstat.DEFINITIU.equals(annexArxiu.getEstat());
+			if (isAnnexDefinitiuInArxiu && annex.getFirmaCsv() == null) {
+				annex.updateFirmaCsv(annexArxiu.getDocumentMetadades().getCsv());
+			}
 		}
-		
 		// Només crea l'annex a dins el contenidor si encara no s'ha creat o està com esborrany per tornar a provar de guardar com a definitiu
 		if ((annex.getFitxerArxiuUuid() == null || 
 				!AnnexEstat.DEFINITIU.equals(annex.getArxiuEstat())) && ! isAnnexDefinitiuInArxiu) {

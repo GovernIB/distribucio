@@ -398,6 +398,15 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 	}
 
 	@Override
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
+	public void custodiarAnnex(
+			Long entitatId,
+			Long registreId,
+			Long annexId) {
+		delegateService.custodiarAnnex(entitatId, registreId, annexId);
+	}
+
+	@Override
 	@RolesAllowed("**")
 	public List<RegistreAnnexFirmaDto> getDadesAnnexFirmesSenseDetall(Long annexId) {
 		return delegateService.getDadesAnnexFirmesSenseDetall(annexId);

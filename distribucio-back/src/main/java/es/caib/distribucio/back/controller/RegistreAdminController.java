@@ -848,17 +848,45 @@ public class RegistreAdminController extends BaseAdminController {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		try {
 			ValidacioFirmaEnum validacioFirma = registreService.validarFirmes(entitatActual.getId(), registreId, annexId);
-			if (ValidacioFirmaEnum.isValida(validacioFirma)) {
-				MissatgesHelper.success(request,
+
+			if (ValidacioFirmaEnum.ERROR_VALIDANT.equals(validacioFirma)) {
+				MissatgesHelper.error(request,
 						getMessage(request,
-								"contingut.admin.controller.validar.firmes.valides"));
-			} else {
+								"contingut.admin.controller.validar.firmes.error.validant"));
+			} else if (ValidacioFirmaEnum.FIRMA_INVALIDA.equals(validacioFirma)) {
 				MissatgesHelper.warning(request,
 						getMessage(request,
 								"contingut.admin.controller.validar.firmes.no.valides"));
+			} else {
+				if (ValidacioFirmaEnum.FIRMA_VALIDA.equals(validacioFirma)) {
+					MissatgesHelper.success(request,
+							getMessage(request,
+									"contingut.admin.controller.validar.firmes.valides"));
+					
+				} else if (ValidacioFirmaEnum.SENSE_FIRMES.equals(validacioFirma)) {
+					MissatgesHelper.success(request,
+							getMessage(request,
+									"contingut.admin.controller.validar.firmes.valides"));
+				}
+				try {
+					// En el cas de firma vàlida o que no tingui firmes es procedeix a custodiar l'annex
+					registreService.custodiarAnnex(entitatActual.getId(), registreId, annexId);
+					MissatgesHelper.success(request,
+							getMessage(request,
+									"contingut.admin.controller.validar.firmes.custodiat"));
+				} catch (Exception e) {
+					String errMsg = "Error custodiant l'annex.";
+					getMessage(request,
+							"contingut.admin.controller.validar.firmes.custodiar.error",
+							new Object[] {annexId, registreId});
+					logger.error(errMsg, e);
+					MissatgesHelper.error(request, errMsg);
+				}
 			}			
 		} catch(Throwable ex) {
-			MissatgesHelper.error(request, getMessage(request, "contingut.admin.controller.validar.firmes.error.no.controlat"));
+			String errMsg = getMessage(request, "contingut.admin.controller.validar.firmes.error.no.controlat");
+			logger.error(errMsg, ex);
+			MissatgesHelper.error(request, errMsg);
 		}
 		return "redirect:" + request.getHeader("referer");
 	}
