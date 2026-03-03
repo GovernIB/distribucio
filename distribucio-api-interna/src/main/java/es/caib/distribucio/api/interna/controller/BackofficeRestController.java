@@ -70,12 +70,18 @@ public class BackofficeRestController {
 			HttpServletRequest request,
 			@Parameter(name = "identificador", description = "Identificador de la anotació de registre, sol ser el número de registre", required = false)
 			String identificador,
-			@Parameter(name = "indetificador", required = false, hidden = true)
+			@Parameter(name = "indetificador",
+						description = "Camp anterior a la versó 1.0.7 amb el terme incorrecte però que es manté per compatibilitat amb els backoffices existentss'ha corregit per \"identificador\".", 
+						required = false, hidden = true)
 			String indetificador,
 			@Parameter(name = "clauAcces", description = "Clau de caràcters alfanumèrics proporcionada per Distribucio per poder consultar l'anotació", required = true)
 			String clauAcces) throws SistemaExternException {
 		if (!hasRole())
 			return responseUnautorized();
+		if (identificador == null 
+				&& indetificador == null) {
+			return new ResponseEntity<Object>("S'ha d'informar l'identificador de l'anotació per poder fer la consulta.", HttpStatus.BAD_REQUEST);		
+		}
 		try {
 			AnotacioRegistreId id = new AnotacioRegistreId();
 			id.setIdentificador(identificador!=null?identificador:indetificador);
