@@ -321,7 +321,7 @@ body {
 										<a href="<c:url value="/expedient"/>" class="btn btn-primary"><spring:message code="decorator.menu.expedients"/></a>
 									</c:if>
 									<a href="<c:url value="/registreUser"/>" id="contingutBusties" class="btn btn-primary">
-										<spring:message code="decorator.menu.busties"/>
+										<spring:message code="decorator.menu.anotacions"/>
 										<span id="bustia-pendent-count" class="badge small">${countElementsPendentsBusties}</span>
 									</a>
 									<a href="#" id="canviVistaReenvios" class="btn btn-primary">
