@@ -21,7 +21,7 @@
 	<sec:http pattern="/img/**" security="none" disable-url-rewriting="true"/>
 
 	<sec:http create-session="never" use-expressions="false" auto-config="false" entry-point-ref="preAuthenticatedProcessingFilterEntryPoint">
-		<sec:intercept-url pattern="/**" access="ROLE_BACKWS,ROLE_REGLA,ROLE_BSTWS,ROLE_DELEG"/>
+		<sec:intercept-url pattern="/**" access="ROLE_BACKWS,ROLE_REGLA,ROLE_BSTWS,ROLE_DELEG,ROLE_COMANDA"/>
 		<sec:custom-filter position="PRE_AUTH_FILTER" ref="preauthFilter"/>
 		<sec:anonymous/>
 		<sec:session-management session-fixation-protection="none"/>
@@ -48,6 +48,7 @@
 								<value>DIS_BACKWS</value>
 								<value>DIS_REGLA</value>
 								<value>DIS_BSTWS</value>
+								<value>DIS_COM</value>
 								<value>tothom</value>
 							</set>
 						</property>
@@ -60,6 +61,7 @@
 								<entry key="DIS_BACKWS" value="ROLE_BACKWS"/>
 								<entry key="DIS_REGLA" value="ROLE_REGLA"/>
 								<entry key="DIS_BSTWS" value="ROLE_BSTWS"/>
+								<entry key="DIS_COM" value="ROLE_COMANDA"/>
 								<entry key="tothom" value="ROLE_DELEG"/>
 							</map>
 						</property>

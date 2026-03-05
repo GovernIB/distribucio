@@ -1,5 +1,8 @@
 package es.caib.distribucio.rest.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 import es.caib.distribucio.rest.client.integracio.BackofficeIntegracioRestClient;
 import es.caib.distribucio.rest.client.integracio.BackofficeIntegracioRestClientFactory;
 import es.caib.distribucio.rest.client.integracio.domini.AnotacioRegistreEntrada;
@@ -31,7 +34,9 @@ public class ApiRestIntegracioTest {
 		// Consulta l'anotació
 		AnotacioRegistreEntrada anotacio = restClient.consulta(id);
 		System.out.println("Anotació consultada: " + anotacio.getIdentificador() + " " + anotacio.getExtracte());
-		
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();		
+		System.out.println("JSON anotació: " + ow.writeValueAsString(anotacio));
+
 		// Canvi d'estat
 		restClient.canviEstat(id, Estat.REBUDA, "Observacions text");
 		System.out.println("Test finalitzat correctament.");

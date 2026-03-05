@@ -66,10 +66,14 @@ public class UnitatOrganitzativaServiceEjb extends AbstractServiceEjb<UnitatOrga
 
 	@Override
 	@RolesAllowed("**")
-	public void synchronize (
-			Long entitatId
-			) throws SistemaExternException {
+	public void synchronize (Long entitatId) throws SistemaExternException {
 		delegateService.synchronize(entitatId);
+	}
+
+	@Override
+	@RolesAllowed("**")
+	public void forcedSynchronize (Long entitatId) throws SistemaExternException {
+		delegateService.forcedSynchronize(entitatId);
 	}
 
 	@Override

@@ -26,24 +26,25 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import es.caib.comanda.ms.salut.model.ContextInfo;
-import es.caib.comanda.ms.salut.model.DetallSalut;
-import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
-import es.caib.comanda.ms.salut.model.IntegracioInfo;
-import es.caib.comanda.ms.salut.model.IntegracioPeticions;
-import es.caib.comanda.ms.salut.model.IntegracioSalut;
-import es.caib.comanda.ms.salut.model.Manual;
-import es.caib.comanda.ms.salut.model.MissatgeSalut;
-import es.caib.comanda.ms.salut.model.SalutInfo;
-import es.caib.comanda.ms.salut.model.SubsistemaInfo;
-import es.caib.comanda.ms.salut.model.SubsistemaSalut;
+import es.caib.comanda.model.v1.salut.ContextInfo;
+import es.caib.comanda.model.v1.salut.DetallSalut;
+import es.caib.comanda.model.v1.salut.EstatSalut;
+import es.caib.comanda.model.v1.salut.EstatSalutEnum;
+import es.caib.comanda.model.v1.salut.IntegracioInfo;
+import es.caib.comanda.model.v1.salut.IntegracioPeticions;
+import es.caib.comanda.model.v1.salut.IntegracioSalut;
+import es.caib.comanda.model.v1.salut.Manual;
+import es.caib.comanda.model.v1.salut.MissatgeSalut;
+import es.caib.comanda.model.v1.salut.SalutInfo;
+import es.caib.comanda.model.v1.salut.SubsistemaInfo;
+import es.caib.comanda.model.v1.salut.SubsistemaSalut;
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.MonitorHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper;
 import es.caib.distribucio.logic.helper.plugin.AbstractPluginHelper;
 import es.caib.distribucio.logic.intf.service.SalutService;
+import es.caib.distribucio.logic.intf.util.DatesUtils;
 import es.caib.distribucio.logic.utils.DistribucioBenchmark;
 import es.caib.distribucio.persist.repository.AvisRepository;
 import lombok.RequiredArgsConstructor;
@@ -92,7 +93,7 @@ public class SalutServiceImpl implements SalutService {
         var estatSalut = checkEstatSalut(performanceUrl);   // Estat
         var salutDatabase = checkDatabase();                // Base de dades
         var integracions = checkIntegracions();             // Integracions
-        var altres = checkAltres();                         // Altres
+//        var altres = checkAltres();                         // Altres
         var missatges = checkMissatges();                   // Missatges
 
         SubsistemesHelper.SubsistemesInfo subsistemesInfo = SubsistemesHelper.getSubsistemesInfo();
@@ -109,12 +110,12 @@ public class SalutServiceImpl implements SalutService {
         return SalutInfo.builder()
                 .codi("DIS")
                 .versio(versio)
-                .data(new Date())
-                .estat(estatSalut)
-                .bd(salutDatabase)
+                .data(DatesUtils.toOffsetDateTime(new Date()))
+                .estatGlobal(estatSalut)
+                .estatBaseDeDades(salutDatabase)
                 .integracions(integracions)
                 .subsistemes(subsistemes)
-                .altres(altres)
+//                .altres(altres)
                 .missatges(missatges)
                 .build();
 	}

@@ -43,6 +43,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.ws.soap.SOAPFaultException;
 
 import org.apache.commons.io.FilenameUtils;
+import org.fundaciobit.pluginsib.utils.signature.SignatureCommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.security.PdfPKCS7;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandler;
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -178,8 +180,6 @@ public class RegistreHelper {
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	@Autowired
 	private PluginHelper pluginHelper;
-	@Autowired
-	private PermisosHelper permisosHelper;
 	@Autowired
 	private GestioDocumentalHelper gestioDocumentalHelper;
 	@Autowired
@@ -865,7 +865,104 @@ public class RegistreHelper {
 				false);
 	}
 
-	/** Mètode per validar les firmes de l'annex tingui o no firmes per revisar si 
+    private boolean conteFirmesPdf(byte[] contingut) {
+        PdfReader reader;
+        try {
+            reader = new PdfReader(contingut);
+            AcroFields acroFields = reader.getAcroFields();
+            List<String> names = acroFields.getSignatureNames();
+            if (names == null || names.isEmpty()) {
+                return false;
+            }
+            for (int i = names.size() - 1; i >= 0; i--) {
+                String name = names.get(i);
+                PdfPKCS7 pk = acroFields.verifySignature(name);
+                if (!pk.isTsp()) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+//            logger.debug("Error validant si l'annex PDF \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " conté informació de firmes amb PdfReader.");
+        }
+        return false;
+    }
+    private boolean conteFirmesXml(byte[] contingut) {
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            dbf.setNamespaceAware(true);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            org.w3c.dom.Document doc = db.parse(new ByteArrayInputStream(contingut));
+            NodeList signatures = doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
+            return !(signatures == null || signatures.getLength() <= 0);
+        } catch (Exception e) {
+//            logger.warn("Error validant si l'annex XML \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " conté informació de firmes.");
+        }
+        return false;
+    }
+    private boolean conteFirmesDocx(byte[] contingut) {
+        try {
+//            ByteArrayInputStream is = new ByteArrayInputStream(contingut);
+//            OPCPackage pkg = OPCPackage.open(is);
+//            List<PackagePart> signatures = pkg.getPartsByContentType(
+//                    "application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml"
+//            );
+//            return !(signatures.isEmpty());
+        }catch (Exception e) {
+//            logger.warn("Error validant si l'annex DOCX \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " conté informació de firmes.");
+        }
+        return false;
+    }
+
+    private boolean conteFirmesXAdES(byte[] contingut, boolean inputXML) {
+        try {
+            SignatureCommonUtils.getXAdESMode(contingut, inputXML);
+            return true;
+        } catch (Exception e) {
+            if (!e.getMessage().contains("No s'ha trobat cap node de firma dins de l'XML")) {
+                logger.error(e.getMessage());
+            }
+            return false;
+        }
+    }
+    private boolean conteFirmesCAdES(byte[] contingut) {
+        try {
+            SignatureCommonUtils.getCAdESMode(contingut);
+            return true;
+        } catch (Exception e) {
+            if (!e.getMessage().contains("Malformed content.")) {
+                logger.error(e.getMessage());
+            }
+            return false;
+        }
+    }
+    private boolean conteFirmes(String arxiuNom, String mimetype, byte[] contingut) {
+        // comprovar pdf's
+        if (arxiuNom.toLowerCase().endsWith(".pdf") || mimetype.equals("application/pdf")) {
+            if (conteFirmesPdf(contingut))
+                return true;
+        }
+
+        // Comprovar firmes XADES per XML's i XSIG
+        if (arxiuNom.toLowerCase().endsWith(".xml") || arxiuNom.toLowerCase().endsWith(".xsig") || mimetype.equals("application/xml")) {
+            if (conteFirmesXAdES(contingut, true) && conteFirmesXml(contingut))
+                return true;
+        }
+
+//        // Comprovar DOCX
+//        if (arxiuNom.toLowerCase().endsWith(".docx") || mimetype.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+//            if (conteFirmesDocx(contingut))
+//                return true;
+//        }
+
+        // Para el resto de binarios
+        return (conteFirmesCAdES(contingut));
+    }
+    private boolean teFirmesSeparades(List<RegistreAnnexFirmaEntity> firmes) {
+        return !(firmes == null || firmes.isEmpty()) || firmesAttached(firmes);
+    }
+
+    /** Mètode per validar les firmes de l'annex tingui o no firmes per revisar si
 	 * l'annex té firmes invàlides.
 	 * @param firmes 
 	 * 
@@ -883,43 +980,14 @@ public class RegistreHelper {
 		if (firmes == null) {
 			firmes = new ArrayList<>();
 		}
-		// 0 - Mira si és un PDF sense firmes
-		boolean senseFirmes = false;
-		if ((annex.getFirmes() == null
-				|| annex.getFirmes().isEmpty()) ) {
-			
-			if ("application/pdf".equals(annex.getFitxerTipusMime()) ) {
-				PdfReader reader;
-				try {
-					reader = new PdfReader(documentContingut);
-					AcroFields acroFields = reader.getAcroFields();
-					List<String> signatureNames = acroFields.getSignatureNames();
-					if (signatureNames == null || signatureNames.isEmpty()) {
-						senseFirmes = true;
-						validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
-					}
-				} catch (Exception e) {
-					logger.debug("Error validant si l'annex PDF \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " conté informació de firmes amb PdfReader.");
-				}
-			}  else if ("application/xml".equals(annex.getFitxerTipusMime())) {
-				try {
-					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-					dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-					dbf.setNamespaceAware(true); 
-					DocumentBuilder db = dbf.newDocumentBuilder();
-					org.w3c.dom.Document doc = db.parse(new ByteArrayInputStream(documentContingut));
-					NodeList signatures = doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
-					if (signatures == null || signatures.getLength() <= 0) {
-						senseFirmes = true;
-						validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES;
-					}
-				} catch (Exception e) {
-					logger.warn("Error validant si l'annex XML \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " conté informació de firmes.");
-				}
-			}
-		}
+		// 0 - Mira si és un PDF sense firmes per evitar enviar a validar documents PDF o XML que haurien de tenir la firma inclosa
+        boolean ambFirmes = true;
+        if ( !teFirmesSeparades(annex.getFirmes()) ) {
+            ambFirmes = this.conteFirmes(fitxer.getNom(), annex.getFitxerTipusMime(), documentContingut);
+        }
+        if (!ambFirmes) { validacioFirmaEstat = ValidacioFirmaEnum.SENSE_FIRMES; }
 
-		if ((!senseFirmes 	&& pluginHelper.isValidaSignaturaPluginActiu())) {
+		if (ambFirmes && pluginHelper.isValidaSignaturaPluginActiu()) {
 			// Si el document per separat no té firmes o té firmes vàlides llavors comprova les firmes
 			boolean annexFirmat = annex.getFirmes() != null && !annex.getFirmes().isEmpty();
 			if (annexFirmat) {
@@ -1029,6 +1097,21 @@ public class RegistreHelper {
 		logger.debug("Validació firmes de l'annex \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getIdentificador() + " finalitzada: " +
 							validacioFirmaEstat + " " + (validacioFirmaError != null ? validacioFirmaError : ""));
 		return validacioFirmaEstat;
+	}
+
+	/** Comprova si totes les firmes de l'annex són de tipus attached i per tant el propi contingut del document és el que hauria d'incloure la informació de firma. */
+	private boolean firmesAttached(List<RegistreAnnexFirmaEntity> firmes) {
+		boolean firmesAttached = false;
+		if (firmes != null && !firmes.isEmpty()) {
+			firmesAttached = true;
+			for (RegistreAnnexFirmaEntity firma : firmes) {
+				firmesAttached = firmesAttached &&
+						("TF02".equals(firma.getTipus()) 				//TF02 - XAdES internally detached signature
+								|| "TF03".equals(firma.getTipus())  	//TF03 - XAdES enveloped signature
+								|| "TF06".equals(firma.getTipus())); 	//TF06 - PAdES
+			}
+		}
+		return firmesAttached;
 	}
 
 	/** Serverix per convertir les firmes reconegudes d'un document després de la validació i afegir-les al registre. 
@@ -1235,7 +1318,7 @@ public class RegistreHelper {
 						Math.max(0, annexEntity.getRegistre().getAnnexosEstatEsborrany() - 1));
 			}
 			DocumentMetadades metadades = document.getMetadades();
-			if (metadades != null) {
+			if (metadades != null && annexEntity.getFirmaCsv() == null) {
 				annexEntity.updateFirmaCsv(metadades.getCsv());
 			}
 			
@@ -1264,7 +1347,8 @@ public class RegistreHelper {
 									registre.getNumero()) ;
 							List<ArxiuFirmaDetallDto> firmaDetalls = validacioFirma.getFirmaDetalls();
 							contevalidaSignaturaObtenirDetalls.stop();
-							
+							registreFirmaDetallRepository.deleteAll(firma.getDetalls());
+							firma.getDetalls().clear();
 							for (ArxiuFirmaDetallDto arxiuFirmaDetallDto : firmaDetalls) {
 								RegistreFirmaDetallEntity firmaDetallEntity = RegistreFirmaDetallEntity.getBuilder(
 										arxiuFirmaDetallDto,
@@ -1272,7 +1356,6 @@ public class RegistreHelper {
 								firma.getDetalls().add(firmaDetallEntity);
 								registreFirmaDetallRepository.save(firmaDetallEntity);
 							}
-							
 						} else {
 							logger.warn("ValidaSignaturaPlugin is not configured");
 						}
@@ -2271,8 +2354,10 @@ public class RegistreHelper {
 					registre.getNumero());
 			
 			isAnnexDefinitiuInArxiu = DocumentEstat.DEFINITIU.equals(annexArxiu.getEstat());
+			if (isAnnexDefinitiuInArxiu && annex.getFirmaCsv() == null) {
+				annex.updateFirmaCsv(annexArxiu.getDocumentMetadades().getCsv());
+			}
 		}
-		
 		// Només crea l'annex a dins el contenidor si encara no s'ha creat o està com esborrany per tornar a provar de guardar com a definitiu
 		if ((annex.getFitxerArxiuUuid() == null || 
 				!AnnexEstat.DEFINITIU.equals(annex.getArxiuEstat())) && ! isAnnexDefinitiuInArxiu) {
@@ -2512,7 +2597,7 @@ public class RegistreHelper {
 		Document document = pluginHelper.arxiuDocumentConsultar(registreAnnexEntity.getFitxerArxiuUuid(), null, true, registre.getNumero());
 		if (document != null) {
 			List<es.caib.pluginsib.arxiu.api.Firma> firmes = document.getFirmes();
-			if (firmes != null && firmes.size() > indexFirma) {
+			if (firmes != null) {
 				Iterator<es.caib.pluginsib.arxiu.api.Firma> it = firmes.iterator();
 				while (it.hasNext()) {
 					es.caib.pluginsib.arxiu.api.Firma f = it.next();
@@ -2520,7 +2605,9 @@ public class RegistreHelper {
 						it.remove();
 					}
 				}
-				firma = firmes.get(indexFirma);
+				if (firmes.size() > indexFirma) {
+					firma = firmes.get(indexFirma);
+				}
 			}
 		}
 		return firma;

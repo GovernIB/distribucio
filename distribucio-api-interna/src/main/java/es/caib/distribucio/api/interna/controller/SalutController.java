@@ -14,13 +14,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import es.caib.comanda.ms.salut.model.AppInfo;
-import es.caib.comanda.ms.salut.model.SalutInfo;
+import es.caib.comanda.model.v1.salut.AppInfo;
+import es.caib.comanda.model.v1.salut.SalutInfo;
 import es.caib.distribucio.logic.intf.service.SalutService;
+import es.caib.distribucio.logic.intf.util.DatesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/v1/salut")
 @Tag(
 		name = "Salut",
 		description = "API REST de consulta de la salut de Distribució per mostrar a l'aplicació Comanda.")
@@ -38,7 +41,7 @@ public class SalutController {
 
     private ManifestInfo manifestInfo;
 
-    @GetMapping("/appInfo")
+    @GetMapping("/info")
     public AppInfo appInfo(HttpServletRequest request) throws IOException {
 
         ManifestInfo manifestInfo = getManifestInfo();
@@ -46,7 +49,7 @@ public class SalutController {
         return AppInfo.builder()
                 .codi("DIS")
                 .nom("Distribució")
-                .data(manifestInfo.getBuildDate())
+                .data(DatesUtils.toOffsetDateTime(manifestInfo.getBuildDate()))
                 .versio(manifestInfo.getVersion())
                 .revisio(manifestInfo.getBuildScmRevision())
                 .jdkVersion(manifestInfo.getBuildJDK())
@@ -65,7 +68,7 @@ public class SalutController {
                 .toUriString();
     }
 
-    @GetMapping("/salut")
+    @GetMapping("")
     public SalutInfo health(HttpServletRequest request) throws IOException {
 
         ManifestInfo manifestInfo = getManifestInfo();
@@ -75,7 +78,7 @@ public class SalutController {
                 request.getRequestURL().toString() + "Performance");
     }
 
-    @GetMapping("/salutPerformance")
+    @GetMapping("/performance")
     @ResponseBody
     public Health healthCheck() {
     	return Health.up().build();

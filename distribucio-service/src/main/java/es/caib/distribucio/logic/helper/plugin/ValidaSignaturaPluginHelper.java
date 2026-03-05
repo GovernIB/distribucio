@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 
-import es.caib.comanda.ms.salut.model.IntegracioApp;
+import es.caib.comanda.model.v1.salut.IntegracioApp;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
@@ -50,7 +50,7 @@ public class ValidaSignaturaPluginHelper extends AbstractPluginHelper<ValidacioS
 				return false;
 			}
 			var bytes = arxiuSignat.readAllBytes();
-			var signatura = validaSignaturaObtenirDetalls(arxiuNom, "application/pdf", bytes, null, null);
+			var signatura = validaSignaturaObtenirDetalls(arxiuNom, "application/pdf", bytes, null, "-");
 			return signatura != null && signatura.getErrMsg() == null;
 		}
 	}
@@ -65,7 +65,7 @@ public class ValidaSignaturaPluginHelper extends AbstractPluginHelper<ValidacioS
 
 		ValidaSignaturaResposta resposta = new ValidaSignaturaResposta();
 		
-		String accioDescripcio = "Obtenir informació de document firmat";
+		String accioDescripcio = "Obtenir informació de firma del document \"" + documentNom + "\"";
 		String usuariIntegracio = this.getPlugin().getUsuariIntegracio();
 		
 		// Abans de cridar a la validació de firmes comprova si la grandària supera el màxim en bytes
@@ -81,6 +81,7 @@ public class ValidaSignaturaPluginHelper extends AbstractPluginHelper<ValidacioS
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("documentContingut", documentContingut != null ? documentContingut.length + " bytes" : "null");
 		accioParams.put("firmaContingut", firmaContingut != null ? firmaContingut.length + " bytes" : "null");
+		accioParams.put("documentNom", documentNom);
 		long t0 = System.currentTimeMillis();
 		try {
 			resposta = 	this.getPlugin().validaSignatura(

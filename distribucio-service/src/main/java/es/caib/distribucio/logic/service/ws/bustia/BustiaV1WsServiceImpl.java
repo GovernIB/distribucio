@@ -68,7 +68,8 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 	public void enviarAnotacioRegistreEntrada(
 			String entitat,
 			String unitatAdministrativa,
-			RegistreAnotacio registreEntrada) {
+			RegistreAnotacio registreEntrada,
+			Origen origen) {
 		final Timer timer = metricRegistry.timer(MetricRegistry.name(BustiaV1WsServiceImpl.class, "enviarAnotacioRegistreEntrada"));
 		Timer.Context context = timer.time();
 		long start = System.currentTimeMillis();
@@ -112,7 +113,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 				first = false;
 			}
 		}
-		String accioDescripcio = "Nou registre d'entrada ";
+		String accioDescripcio = "Nou registre d'entrada " + origen + " ";
 		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("entitat", entitatOArrel);
@@ -130,7 +131,8 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					"numero=" + registreEntradaNumero + ", " +
 					"extracte=" + registreEntradaExtracte + ", " +
 					"annexosNum=" + Integer.toString(numAnnexos) + ", " +
-					"annexosFirmats=" + ambFirma.toString() + ")");
+					"annexosFirmats=" + ambFirma.toString() + ", " +
+					"origen=" + origen + ")");
 			final Timer timerTotalvalidarAnotacioRegistre = metricRegistry.timer(MetricRegistry.name(BustiaV1WsServiceImpl.class, "enviarAnotacioRegistreEntrada.validarAnotacioRegistre"));
 			Timer.Context contextTotalvalidarAnotacioRegistre = timerTotalvalidarAnotacioRegistre.time();
 			validarAnotacioRegistre(registreEntrada);

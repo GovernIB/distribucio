@@ -20,6 +20,7 @@ Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SC
 Insert into DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) values ('SCHEDULLED_BACKOFFICE_ERRORS', 'SCHEDULLED', '21', 'Tasca periòdica de reintentar anotacions processades amb errors al backoffice');
 Insert into DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) values ('SCHEDULLED_PROCEDIMENT', 'SCHEDULLED', '22', 'Tasca periòdica per actualitzar la taula de procediments');
 INSERT INTO DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) VALUES ('SCHEDULLED_EXECUCIONS_MASSIVES','SCHEDULLED','20','Tasca periòdica d''executar les execucions massives pendents');
+INSERT INTO DIS_CONFIG_GROUP (POSITION, CODE, DESCRIPTION) VALUES (5, 'LOGS', 'Logs del servidor' );
 
 
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('BOOL',null);
@@ -214,6 +215,8 @@ INSERT INTO dis_config (key, value, description, group_code, position, jboss_pro
 VALUES ('es.caib.distribucio.tasca.canviarAPendent.maxim.temps.estat.comunicada',
         NULL,'Màxim de dies que pot estar comunicada abans de canviar l''estat a pendent d''usuari. Per defecte 30.',
         'SCHEDULLED_COMUNICAT_A_PENDENT', 2, false, 'INT');
+
+INSERT INTO DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PROPERTY, TYPE_CODE, CONFIGURABLE) VALUES ('es.caib.distribucio.plugin.fitxer.logs.path', null,'Ruta on es guarden el fitxers de logs del servidor','LOGS', false, 1, 'TEXT', false);
 
 -- Actualització de les propietats que poden ser configurables a nivell d'entitat
 

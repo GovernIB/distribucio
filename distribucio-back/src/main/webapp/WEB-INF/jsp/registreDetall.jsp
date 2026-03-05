@@ -1498,16 +1498,21 @@ li[id^="anotacio_"] {
 						<table class="table table-bordered">
 							<tbody>
 								<tr>
-									<td colspan="2"><strong><spring:message code="registre.detalls.camp.procediment"/></strong></td>
 									<td colspan="2">
-									<c:choose>
-										<c:when test="${procedimentDades != null }">
-											${procedimentDades.codiSia} - ${procedimentDades.nom}
-										</c:when>
-										<c:otherwise>
-											${registre.procedimentCodi}
-										</c:otherwise>
-									</c:choose>
+                                        <c:if test="${procedimentDades != null}">
+                                            <strong><spring:message code="registre.detalls.camp.procediment"/></strong>
+                                        </c:if>
+                                        <c:if test="${serveiDades != null }">
+                                            <strong><spring:message code="registre.detalls.camp.servei"/></strong>
+                                        </c:if>
+                                    </td>
+									<td colspan="2">
+                                        <c:if test="${procedimentDades != null }">
+                                            ${procedimentDades.codiSia} - ${procedimentDades.nom}
+                                        </c:if>
+                                        <c:if test="${serveiDades != null }">
+                                            ${serveiDades.codiSia} - ${serveiDades.nom}
+                                        </c:if>
 									</td>
 								</tr>
 								<tr>

@@ -6,8 +6,8 @@ package es.caib.distribucio.plugin.caib.validacio;
 import java.util.Date;
 import java.util.Properties;
 
-import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.IntegracioPeticions;
+import es.caib.comanda.model.v1.salut.EstatSalut;
+import es.caib.comanda.model.v1.salut.IntegracioPeticions;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
 import es.caib.distribucio.plugin.AbstractSalutPlugin;
@@ -52,19 +52,27 @@ public class ValidacioFirmaPluginApiPortafib extends DistribucioAbstractPluginPr
 		long start = System.currentTimeMillis();
 		ValidateSignatureRequest validateRequest = new ValidateSignatureRequest();
 		ValidaSignaturaResposta resposta = new ValidaSignaturaResposta();
-		
-		Document document = new Document();
-		document.setName(documentNom);
-		document.setMime(documentMime);
-		document.setData(documentContingut);
+
+        Document document = null;
+		if (documentContingut != null) {
+            document = new Document();
+            document.setName(documentNom);
+            document.setMime(documentMime);
+            document.setData(documentContingut);
+		}
 
 		Document firma = null;
 		if (firmaContingut != null) {
 			firma = new Document();
 			firma.setData(firmaContingut);
+			firma.setMime("application/octet-stream");
+			firma.setName("firma");
+	        validateRequest.setSignatureDocument(firma);
+			validateRequest.setDetachedDocument(document);
+		} else {
+	        validateRequest.setSignatureDocument(document);
+			validateRequest.setDetachedDocument(firma);
 		}
-        validateRequest.setSignatureDocument(document);
-		validateRequest.setDetachedDocument(firma);
 		
 		SignatureRequestedInformation sri = new SignatureRequestedInformation();
 		sri.setReturnSignatureTypeFormatProfile(true);

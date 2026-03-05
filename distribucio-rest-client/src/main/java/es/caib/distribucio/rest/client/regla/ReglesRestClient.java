@@ -161,6 +161,12 @@ public class ReglesRestClient extends RestClientBase{
 				if (reg.containsKey("backofficeDesti")) {
 					regla.setBackofficeDesti(String.valueOf(reg.get("backofficeDesti")));					
 				}
+				if (reg.containsKey("tipusSia") 
+						&& Regla.TipusSia.SERVEI.name().equals(reg.get("tipusSia"))) {
+					regla.setTipusSia(Regla.TipusSia.SERVEI);
+				} else {
+					regla.setTipusSia(Regla.TipusSia.PROCEDIMENT);
+				}
 			}			
 		} catch (Exception ex) { 
 			if (ex instanceof UniformInterfaceException

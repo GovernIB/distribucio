@@ -44,7 +44,6 @@ import es.caib.distribucio.back.helper.RolHelper;
 import es.caib.distribucio.logic.intf.dto.BackofficeDto;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.BustiaFiltreDto;
-import es.caib.distribucio.logic.intf.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.logic.intf.dto.ContingutDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
@@ -473,9 +472,9 @@ public class RegistreAdminController extends BaseAdminController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		RegistreDto registreDto = registreService.findOne(entitatActual.getId(), registreId, false);
-		boolean processatOk = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
+		Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
 				registreId);
-		if (processatOk) {
+		if (throwable == null) {
 			MissatgesHelper.success(request,
 					getMessage(request,
 							"contingut.admin.controller.registre.backoffice.reintentat.ok", new Object[] {registreDto.getBackCodi()}));
@@ -721,9 +720,10 @@ public class RegistreAdminController extends BaseAdminController {
 					missatge = "Anotació reprocessada " + (correcte ? "correctament" : "amb error");
 				} else {
 					// Pendent d'enviar a backoffice
-					correcte = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), 
+					Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), 
 							registreId);
-					missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error");
+					correcte = throwable == null;
+					missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error: " + throwable.getMessage());
 				}
 			} else if (this.isPendentArxiu(registreDto)||registreDto.getAnnexosEstatEsborrany()>0) {
 				correcte = registreService.reintentarProcessamentAdmin(entitatActual.getId(), 
@@ -851,15 +851,47 @@ public class RegistreAdminController extends BaseAdminController {
 			@PathVariable Long annexId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-		ValidacioFirmaEnum validacioFirma = registreService.validarFirmes(entitatActual.getId(), registreId, annexId);
-		if (ValidacioFirmaEnum.isValida(validacioFirma)) {
-			MissatgesHelper.success(request,
+		try {
+			ValidacioFirmaEnum validacioFirma = registreService.validarFirmes(entitatActual.getId(), registreId, annexId);
+
+			if (ValidacioFirmaEnum.ERROR_VALIDANT.equals(validacioFirma)) {
+				MissatgesHelper.error(request,
+						getMessage(request,
+								"contingut.admin.controller.validar.firmes.error.validant"));
+			} else if (ValidacioFirmaEnum.FIRMA_INVALIDA.equals(validacioFirma)) {
+				MissatgesHelper.warning(request,
+						getMessage(request,
+								"contingut.admin.controller.validar.firmes.no.valides"));
+			} else {
+				if (ValidacioFirmaEnum.FIRMA_VALIDA.equals(validacioFirma)) {
+					MissatgesHelper.success(request,
+							getMessage(request,
+									"contingut.admin.controller.validar.firmes.valides"));
+					
+				} else if (ValidacioFirmaEnum.SENSE_FIRMES.equals(validacioFirma)) {
+					MissatgesHelper.success(request,
+							getMessage(request,
+									"contingut.admin.controller.validar.firmes.valides"));
+				}
+				try {
+					// En el cas de firma vàlida o que no tingui firmes es procedeix a custodiar l'annex
+					registreService.custodiarAnnex(entitatActual.getId(), registreId, annexId);
+					MissatgesHelper.success(request,
+							getMessage(request,
+									"contingut.admin.controller.validar.firmes.custodiat"));
+				} catch (Exception e) {
+					String errMsg = "Error custodiant l'annex.";
 					getMessage(request,
-							"contingut.admin.controller.validar.firmes.valides"));
-		} else {
-			MissatgesHelper.warning(request,
-					getMessage(request,
-							"contingut.admin.controller.validar.firmes.no.valides"));
+							"contingut.admin.controller.validar.firmes.custodiar.error",
+							new Object[] {annexId, registreId});
+					logger.error(errMsg, e);
+					MissatgesHelper.error(request, errMsg);
+				}
+			}			
+		} catch(Throwable ex) {
+			String errMsg = getMessage(request, "contingut.admin.controller.validar.firmes.error.no.controlat");
+			logger.error(errMsg, ex);
+			MissatgesHelper.error(request, errMsg);
 		}
         String referer = request.getHeader("referer");
 

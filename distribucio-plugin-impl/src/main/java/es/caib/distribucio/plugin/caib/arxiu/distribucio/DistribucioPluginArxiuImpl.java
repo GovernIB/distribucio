@@ -27,9 +27,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.IntegracioApp;
-import es.caib.comanda.ms.salut.model.IntegracioPeticions;
+import es.caib.comanda.model.v1.salut.EstatSalut;
+import es.caib.comanda.model.v1.salut.IntegracioApp;
+import es.caib.comanda.model.v1.salut.IntegracioPeticions;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;

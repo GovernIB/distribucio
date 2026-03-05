@@ -2,7 +2,7 @@ package es.caib.distribucio.logic.intf.dto.estadistic;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import es.caib.comanda.ms.estadistica.model.Dimensio;
+import es.caib.comanda.model.v1.estadistica.Dimensio;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

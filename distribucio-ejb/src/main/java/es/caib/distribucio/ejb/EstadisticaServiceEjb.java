@@ -3,14 +3,16 @@ package es.caib.distribucio.ejb;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
-import es.caib.comanda.ms.estadistica.model.DimensioDesc;
-import es.caib.comanda.ms.estadistica.model.IndicadorDesc;
-import es.caib.comanda.ms.estadistica.model.RegistresEstadistics;
+import es.caib.comanda.model.v1.estadistica.DimensioDesc;
+import es.caib.comanda.model.v1.estadistica.IndicadorDesc;
+import es.caib.comanda.model.v1.estadistica.RegistresEstadistics;
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.service.EstadisticaService;
 import lombok.experimental.Delegate;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 
 /**
  * Implementació de ReglaService com a EJB que empra una clase
@@ -25,26 +27,31 @@ public class EstadisticaServiceEjb  extends AbstractServiceEjb<EstadisticaServic
 	private EstadisticaService delegateService = null;
 	
 	@Override
+    @RolesAllowed(BaseConfig.ROLE_COMANDA)
 	public List<DimensioDesc> getDimensions() {
 		return delegateService.getDimensions();
 	}
 
 	@Override
+    @RolesAllowed(BaseConfig.ROLE_COMANDA)
 	public List<IndicadorDesc> getIndicadors() {
 		return delegateService.getIndicadors();
 	}
 
 	@Override
+    @RolesAllowed(BaseConfig.ROLE_COMANDA)
 	public RegistresEstadistics consultaUltimesEstadistiques() {
 		return delegateService.consultaUltimesEstadistiques();
 	}
 
 	@Override
+    @RolesAllowed(BaseConfig.ROLE_COMANDA)
 	public RegistresEstadistics consultaEstadistiques(LocalDate data) {
 		return delegateService.consultaEstadistiques(data);
 	}
 
 	@Override
+    @RolesAllowed(BaseConfig.ROLE_COMANDA)
 	public List<RegistresEstadistics> consultaEstadistiques(LocalDate startDate, LocalDate endDate) {
 		return delegateService.consultaEstadistiques(startDate, endDate);
 	}

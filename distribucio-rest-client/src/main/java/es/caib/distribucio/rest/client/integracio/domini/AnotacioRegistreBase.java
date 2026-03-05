@@ -19,6 +19,7 @@ public class AnotacioRegistreBase {
 
 	private String identificador;
 	private String procedimentCodi;
+	private String serveiCodi;
 	private String extracte;
 	private Date data;
 	private String entitatCodi;
@@ -52,5 +53,8 @@ public class AnotacioRegistreBase {
 	private List<Interessat> interessats;
 	private List<Annex> annexos;
 	private String justificantFitxerArxiuUuid;
+	private boolean presencial;
+	private String tramitCodi;
+	private String tramitNom;
 		
 }

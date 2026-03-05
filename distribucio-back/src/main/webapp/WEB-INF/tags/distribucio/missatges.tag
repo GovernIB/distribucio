@@ -35,19 +35,19 @@
 <c:forEach var="text" items="${sessionWarnings}">
 	<div class="alert alert-warning">
 		<button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button>
-		${text}
+        ${text}
 	</div>
 </c:forEach>
 <c:forEach var="text" items="${sessionSuccesses}">
 	<div class="alert alert-success">
 		<button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button>
-		${text}
+        ${text}
 	</div>
 </c:forEach>
 <c:forEach var="text" items="${sessionInfos}">
 	<div class="alert alert-info">
 		<button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button>
-		${text}
+        ${text}
 	</div>
 </c:forEach>
 

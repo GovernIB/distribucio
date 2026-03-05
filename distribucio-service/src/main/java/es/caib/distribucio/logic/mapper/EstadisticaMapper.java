@@ -13,11 +13,11 @@ import java.util.stream.Stream;
 
 import org.springframework.stereotype.Component;
 
-import es.caib.comanda.ms.estadistica.model.Dimensio;
-import es.caib.comanda.ms.estadistica.model.Fet;
-import es.caib.comanda.ms.estadistica.model.RegistreEstadistic;
-import es.caib.comanda.ms.estadistica.model.RegistresEstadistics;
-import es.caib.comanda.ms.estadistica.model.Temps;
+import es.caib.comanda.model.v1.estadistica.Dimensio;
+import es.caib.comanda.model.v1.estadistica.Fet;
+import es.caib.comanda.model.v1.estadistica.RegistreEstadistic;
+import es.caib.comanda.model.v1.estadistica.RegistresEstadistics;
+import es.caib.comanda.model.v1.estadistica.Temps;
 import es.caib.distribucio.logic.helper.HibernateHelper;
 import es.caib.distribucio.logic.intf.dto.estadistic.DimEnum;
 import es.caib.distribucio.logic.intf.dto.estadistic.DimensioDistribucio;

@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class PermisosContingutHelper {
 
-    @Autowired
-    private PermisosHelper permisosHelper;
+    @Autowired private PermisosHelper permisosHelper;
+    @Autowired private UsuariHelper usuariHelper;
 
     public void omplirPermisosPerContingut(ContingutDto contingut, Long bustiaId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        contingut.setPotModificar(
+        contingut.setPotModificar( usuariHelper.isAdmin() ||
                 permisosHelper.isGrantedAll(
                         bustiaId,
                         BustiaEntity.class,

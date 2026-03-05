@@ -246,7 +246,7 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 
 	@Override
 	@RolesAllowed(BaseConfig.ROLE_ADMIN)
-	public boolean reintentarEnviamentBackofficeAdmin(
+	public Throwable reintentarEnviamentBackofficeAdmin(
 			Long entitatId,
 			Long registreId) {
 		return delegateService.reintentarEnviamentBackofficeAdmin(entitatId, registreId);
@@ -395,6 +395,15 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 			Long registreId,
 			Long annexId) {
 		return delegateService.validarFirmes(entitatId, registreId, annexId);
+	}
+
+	@Override
+	@RolesAllowed(BaseConfig.ROLE_ADMIN)
+	public void custodiarAnnex(
+			Long entitatId,
+			Long registreId,
+			Long annexId) {
+		delegateService.custodiarAnnex(entitatId, registreId, annexId);
 	}
 
 	@Override

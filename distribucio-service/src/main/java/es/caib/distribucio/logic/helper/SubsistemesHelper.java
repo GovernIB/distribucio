@@ -11,8 +11,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 import es.caib.comanda.ms.salut.helper.EstatHelper;
-import es.caib.comanda.ms.salut.model.EstatSalutEnum;
-import es.caib.comanda.ms.salut.model.SubsistemaSalut;
+import es.caib.comanda.model.v1.salut.EstatSalutEnum;
+import es.caib.comanda.model.v1.salut.SubsistemaSalut;
 import es.caib.distribucio.logic.utils.CuaFifoBool;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;

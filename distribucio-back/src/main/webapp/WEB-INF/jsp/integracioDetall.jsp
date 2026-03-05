@@ -41,15 +41,13 @@
 				<dd>
 				<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 					${fn:escapeXml(integracio.errorDescripcio)}
-					
-					
 				</dd>
 				<dt><spring:message code="integracio.detall.camp.excepcio.missatge"/></dt>
-				<dd>${integracio.excepcioMessage}</dd>
+				<dd>${fn:escapeXml(integracio.excepcioMessage)}</dd>
 			</c:if>
 		</dl>
 		<c:if test="${integracio.estat == 'ERROR' && not empty integracio.excepcioMessage}">
-			<pre style="height:300px">${integracio.excepcioStacktrace}</pre>
+			<pre style="height:300px">${fn:escapeXml(integracio.excepcioStacktrace)}</pre>
 		</c:if>
 	</c:if>
 	<div id="modal-botons">

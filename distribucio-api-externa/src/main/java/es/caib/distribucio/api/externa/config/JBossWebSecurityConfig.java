@@ -68,7 +68,7 @@ public class JBossWebSecurityConfig extends BaseWebSecurityConfig {
 
 	/** Clau de la propietat con es pot configurar el resource access per establir el nom del client per l'API RESt. */
 	
-	@Value("${es.caib.distribucio.security.mappableRoles:" + BaseConfig.ROLE_SUPER + "," + BaseConfig.ROLE_ADMIN + "," + BaseConfig.ROLE_ADMIN_LECTURA + "," + BaseConfig.ROLE_REGLA + "," + BaseConfig.ROLE_BUSTIA_WS + "}")
+	@Value("${es.caib.distribucio.security.mappableRoles:" + BaseConfig.ROLE_SUPER + "," + BaseConfig.ROLE_ADMIN + "," + BaseConfig.ROLE_ADMIN_LECTURA + "," + BaseConfig.ROLE_REGLA + "," + BaseConfig.ROLE_BUSTIA_WS + "," + BaseConfig.ROLE_COMANDA + "}")
 	private String mappableRoles;
 	@Value("${es.caib.distribucio.security.nameAttributeKey:preferred_username}")
 	private String nameAttributeKey;
