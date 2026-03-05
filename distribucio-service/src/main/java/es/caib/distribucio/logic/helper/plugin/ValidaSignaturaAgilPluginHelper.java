@@ -9,8 +9,7 @@ import java.util.Properties;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
-
-import es.caib.comanda.ms.salut.model.IntegracioApp;
+import es.caib.comanda.model.v1.salut.IntegracioApp;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;

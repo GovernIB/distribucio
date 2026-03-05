@@ -14,8 +14,8 @@ import java.util.Properties;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import es.caib.comanda.ms.salut.model.EstatSalut;
-import es.caib.comanda.ms.salut.model.IntegracioPeticions;
+import es.caib.comanda.model.v1.salut.EstatSalut;
+import es.caib.comanda.model.v1.salut.IntegracioPeticions;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
