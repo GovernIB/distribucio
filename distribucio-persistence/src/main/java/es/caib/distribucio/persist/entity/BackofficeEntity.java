@@ -14,16 +14,22 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.BackofficeTipusEnumDto;
+
+import java.time.LocalDateTime;
 
 /**
  * Classe del model de dades que representa un backoffice.
  *
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter
+@Setter
 @Entity
 @Table(name = BaseConfig.DB_PREFIX + "backoffice")
 @EntityListeners(AuditingEntityListener.class)
@@ -48,42 +54,19 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 	@Enumerated(EnumType.STRING)
 	private BackofficeTipusEnumDto tipus;
 
+	@Column(name = "ENVIAR_EMAIL_RESPONSABLE")
+	private Boolean enviamentEmail;
+	@Column(name = "EMAIL_RESPONSABLE")
+	private String emailResponsable;
+	@Column(name = "DARRER_EMAIL")
+	private LocalDateTime darrerEmailResponsable;
+
 	@ManyToOne(optional = false, fetch = FetchType.EAGER)
 	@JoinColumn(
 			name = "entitat_id",
 			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "backoffice_entitat_fk"))
 	private EntitatEntity entitat;
 
-	public String getCodi() {
-		return codi;
-	}
-	public String getNom() {
-		return nom;
-	}
-	public String getUrl() {
-		return url;
-	}
-	public String getUsuari() {
-		return usuari;
-	}
-	public String getContrasenya() {
-		return contrasenya;
-	}
-	public Integer getIntents() {
-		return intents;
-	}
-	public Integer getTempsEntreIntents() {
-		return tempsEntreIntents;
-	}
-	public EntitatEntity getEntitat() {
-		return entitat;
-	}
-	public BackofficeTipusEnumDto getTipus() {
-		return tipus;
-	}
-	public void setTipus(BackofficeTipusEnumDto tipus) {
-		this.tipus = tipus;
-	}
 	public static Builder getBuilder(
 			String codi,
 			String nom,
@@ -103,7 +86,7 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 				String codi,
 				String nom,
 				String url,
-				BackofficeTipusEnumDto tipus, 
+				BackofficeTipusEnumDto tipus,
 				EntitatEntity entitat) {
 			built = new BackofficeEntity();
 			built.codi = codi;
@@ -141,7 +124,10 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 			String contrasenya,
 			Integer intents,
 			Integer tempsEntreIntents, 
-			BackofficeTipusEnumDto tipus) {
+			BackofficeTipusEnumDto tipus,
+            Boolean enviamentEmail,
+			String emailResponsable
+    ) {
 		this.codi = codi;
 		this.nom = nom;
 		this.url = url;
@@ -150,6 +136,9 @@ public class BackofficeEntity extends DistribucioAuditable<Long> {
 		this.intents = intents;
 		this.tempsEntreIntents = tempsEntreIntents;
 		this.tipus = tipus;
+
+        this.enviamentEmail = enviamentEmail;
+        this.emailResponsable = emailResponsable;
 	}
 
 }

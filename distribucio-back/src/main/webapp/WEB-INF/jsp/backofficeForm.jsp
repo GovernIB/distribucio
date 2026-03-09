@@ -148,7 +148,10 @@
 				optionMinimumResultsForSearch="0"/>
 		<dis:inputText name="usuari" textKey="backoffice.form.camp.usuari" comment="backoffice.form.camp.usuari.comment"/>
 		<dis:inputText name="contrasenya" textKey="backoffice.form.camp.contrasenya" comment="backoffice.form.camp.contrasenya.comment"/>
-					
+
+		<dis:inputCheckbox name="enviamentEmail" textKey="backoffice.form.camp.enviamentEmail"/>
+		<dis:inputText name="emailResponsable" textKey="backoffice.form.camp.emailResponsable"/>
+
 		<div id="modal-botons" class="well">				
 			<c:if test="${!nou}">
 				<c:set var="backId" value="${backofficeCommand.id}"/>

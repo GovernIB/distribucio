@@ -5,6 +5,7 @@ package es.caib.distribucio.logic.helper;
 
 import java.util.*;
 
+import es.caib.distribucio.persist.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,6 @@ import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.EmptyMailException;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
-import es.caib.distribucio.persist.entity.BustiaEntity;
-import es.caib.distribucio.persist.entity.ContingutEntity;
-import es.caib.distribucio.persist.entity.ContingutMovimentEmailEntity;
-import es.caib.distribucio.persist.entity.ContingutMovimentEntity;
-import es.caib.distribucio.persist.entity.EntitatEntity;
-import es.caib.distribucio.persist.entity.RegistreEntity;
-import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.persist.repository.ContingutMovimentRepository;
 import es.caib.distribucio.persist.repository.UsuariRepository;
@@ -216,6 +210,21 @@ public class EmailHelper {
             mailSender.send(missatge);
         } catch (Exception e) {
             logger.error("S'ha produit un error al intentar enviar correu de les anotacions amb error de processament a l'usuari " + user.getNom(), e.getMessage());
+        }
+    }
+
+    public void sendEmailRepresentantBackoffice(BackofficeEntity backoffice) {
+        try {
+            SimpleMailMessage missatge = new SimpleMailMessage();
+            missatge.setTo(backoffice.getEmailResponsable());
+            missatge.setFrom(getRemitent());
+            missatge.setSubject(this.getPrefixDistribucio() + " Error de comunicació a backoffice");
+
+            missatge.setText("Aquest és un correu informatiu enviat des de Distribucio SE. L'aplicació està tenint problemes a l'hora de comunicar anotacions pendents al backoffice '"
+                    + backoffice.getCodi() + " - " + backoffice.getNom() + "' on està el vostre email configurat com a responsable del backoffice");
+            mailSender.send(missatge);
+        } catch (Exception e) {
+            logger.error("S'ha produit un error al intentar enviar correu al representant del backoffice " + backoffice.getCodi(), e.getMessage());
         }
     }
 
