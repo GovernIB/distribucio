@@ -109,7 +109,10 @@ public class BackofficeServiceImpl implements BackofficeService {
 				backofficeDto.getContrasenya(),
 				backofficeDto.getIntents(),
 				backofficeDto.getTempsEntreIntents(), 
-				backofficeDto.getTipus());
+				backofficeDto.getTipus(),
+                backofficeDto.getEnviamentEmail(),
+                backofficeDto.getEmailResponsable()
+                );
 		
 		
 		BackofficeDto dto = conversioTipusHelper.convertir(
