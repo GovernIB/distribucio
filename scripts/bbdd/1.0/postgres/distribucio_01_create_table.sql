@@ -25,7 +25,9 @@ CREATE TABLE DIS_USUARI
   EMAILS_AGRUPATS		boolean,
   VERSION       		bigint                      NOT NULL,
   ROL_ACTUAL            character varying(64),
-  entitat_defecte_id    BIGINT
+  entitat_defecte_id    BIGINT,
+  NUM_ELEMENTS_PAGINA   BIGINT,
+  EMAIL_ERROR_ANOTACIO  boolean DEFAULT false
 );
 
 
@@ -450,7 +452,7 @@ CREATE TABLE DIS_AVIS
   ASSUMPTE             character varying(256)            NOT NULL,
   MISSATGE             character varying(2048)           NOT NULL,
   DATA_INICI           timestamp without time zone       NOT NULL,
-  DATA_FINAL           timestamp without time zone       NOT NULL,
+  DATA_FINAL           timestamp without time zone ,
   ACTIU                boolean                		     NOT NULL,
   AVIS_NIVELL          character varying(10)             NOT NULL,
   CREATEDBY_CODI       character varying(64),

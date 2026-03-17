@@ -36,7 +36,7 @@ import es.caib.distribucio.ws.v1.bustia.RegistreAnnex.MetaDades.Entry;
 import es.caib.distribucio.ws.v1.bustia.RegistreAnotacio;
 import es.caib.distribucio.ws.v1.bustia.RegistreInteressat;
 /**
- * Client de test per al servei bustia de RIPEA.
+ * Client de test per al servei bustia de Distribucio.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -52,7 +52,7 @@ public class BustiaV1Test {
 	private static final String ASSUMPTE_TIPUS_CODI = ""; //"A1";
 	private static final String ASSUMPTE_TIPUS_DESC = "Assumpte de proves"; //"Assumpte de proves";
 	private static final String PROCEDIMENT_CODI = null; //"BACK_DIST_232" //"1234" //PRE	//"208133" //DEV // "208002" prova regles //DES "BACK_HELIUM" backoffice 
-	private static final String SERVEI_CODI = null; // 
+	private static final String SERVEI_CODI = null; //PRE 886353 
 	private static final boolean PRESENCIAL = false;
 	private static final String USUARI_CODI = "u104848";
 	private static final String USUARI_NOM = "VHZ";
@@ -66,7 +66,7 @@ public class BustiaV1Test {
 	private static final String IDIOMA_CODI = "1";
 	private static final String IDIOMA_DESC = "Català";
 	private static final String IDENTIFICADOR = "15/10/2015";
-	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2025";
+	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2026";
 	private static final String TRAMIT_CODI = "TRAMIT";  
 	private static final String TRAMIT_NOM = "Tramit Nom";
 	

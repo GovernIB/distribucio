@@ -23,6 +23,8 @@ Insert into DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) values('
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SERVEIS',null,'23','Plugin de consulta de serveis');
 INSERT INTO DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) VALUES ('SCHEDULLED_EXECUCIONS_MASSIVES','SCHEDULLED','20','Tasca periòdica d''executar les execucions massives pendents');
 INSERT INTO DIS_CONFIG_GROUP (POSITION, CODE, DESCRIPTION) VALUES (5, 'LOGS', 'Logs del servidor' );
+INSERT INTO DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) VALUES ('SCHEDULLED_EMAIL_ANOTACIO_ERROR_PROCESAR', 'SCHEDULLED', 24, 'Enviament periòdic per correu de les anotacions amb error de processament');
+INSERT INTO DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) VALUES ('VALID_SIGN_AGIL',null,'12','Plugin de validació de firmes àgils');
 
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('BOOL',null);
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('TEXT',null);
@@ -210,6 +212,16 @@ INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY
 INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE) VALUES ('es.caib.distribucio.tasca.canviarAPendent.maxim.temps.estat.comunicada', null, 'Màxim de dies que pot estar comunicada abans de canviar l''estat a pendent d''usuari. Per defecte 30.', 'SCHEDULLED_COMUNICAT_A_PENDENT', '2', '0', 'INT');
 
 INSERT INTO DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PROPERTY, TYPE_CODE, CONFIGURABLE) VALUES ('es.caib.distribucio.plugin.fitxer.logs.path', null,'Ruta on es guarden el fitxers de logs del servidor','LOGS', 0, 1, 'TEXT', 0);
+
+Insert into DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE,CONFIGURABLE) values ('1','DADES_EXTERNES',null, null,'Url del plugin rest','2','TEXT','1');
+
+INSERT INTO DIS_CONFIG (GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE) values ('SCHEDULLED_EMAIL_ANOTACIO_ERROR_PROCESAR','es.caib.distribucio.enviar.anotacio.error.cron','0 0 0 * * *','Especificar l''expressió ''cron'' indicant l''interval de temps de les execucions de la tasca','0','CRON');
+
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.validarsignatura.agil.activa',null,'Acitvar validació firmes àgils','VALID_SIGN_AGIL','0','0','BOOL',null,null);
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugin.validarsignatura.agil.class','es.caib.distribucio.plugin.caib.validacio.ValidacioFirmaPluginApiEvidenciesIB','Classe de plugin de validació de firmes àgils (EvidenciesIB)','VALID_SIGN_AGIL','1','0','TEXT',null,null);
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugins.validarsignatura.agil.api.evidenciesib.endpoint',null,'URL API EXTERNA EvidenciesIB','VALID_SIGN_AGIL','2','1','TEXT',null,null);
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugins.validarsignatura.agil.api.evidenciesib.username',null,'Usuari integració de API EvidenciesIB','VALID_SIGN_AGIL','3','1','TEXT',null,null);
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugins.validarsignatura.agil.api.evidenciesib.password',null,'Contrasenya usuario integració API EvidenciesIB','VALID_SIGN_AGIL','4','1','CREDENTIALS',null,null);
 
 -- Actualització de les propietats que poden ser configurables a nivell d'entitat
 
