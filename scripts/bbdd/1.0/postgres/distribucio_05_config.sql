@@ -220,7 +220,7 @@ VALUES ('es.caib.distribucio.tasca.canviarAPendent.maxim.temps.estat.comunicada'
 
 INSERT INTO DIS_CONFIG (KEY, VALUE, DESCRIPTION, GROUP_CODE, POSITION, JBOSS_PROPERTY, TYPE_CODE, CONFIGURABLE) VALUES ('es.caib.distribucio.plugin.fitxer.logs.path', null,'Ruta on es guarden el fitxers de logs del servidor','LOGS', false, 1, 'TEXT', false);
 
-Insert into DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE,CONFIGURABLE) values (true,'DADES_EXTERNES',null, null,'Url del plugin rest',2,'TEXT',true);
+Insert into DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE,CONFIGURABLE) values (true,'DADES_EXTERNES','es.caib.distribucio.plugin.dadesext.dir3.rest.url', null,'Url del plugin rest',2,'TEXT',true);
 
 INSERT INTO DIS_CONFIG (GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE) values ('SCHEDULLED_EMAIL_ANOTACIO_ERROR_PROCESAR','es.caib.distribucio.enviar.anotacio.error.cron','0 0 0 * * *','Especificar l''expressió ''cron'' indicant l''interval de temps de les execucions de la tasca',0,'CRON');
 

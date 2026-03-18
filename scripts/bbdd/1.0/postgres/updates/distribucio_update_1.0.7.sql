@@ -5,7 +5,7 @@ ALTER TABLE DIS_USUARI ADD NUM_ELEMENTS_PAGINA BIGINT;
 
 -- Actualitzar el plugin de dades externes #689
 Insert into DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE,CONFIGURABLE) values
-    ('1','DADES_EXTERNES',null, null,'Url del plugin rest','2','TEXT','1');
+    (true,'DADES_EXTERNES','es.caib.distribucio.plugin.dadesext.dir3.rest.url', null,'Url del plugin rest','2','TEXT',true);
 
 -- Correu periòdic anotacions de registre que no es poden processar automàticament #771
 INSERT INTO DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION)
