@@ -16,6 +16,7 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import es.caib.comanda.model.v1.salut.*;
 import org.apache.commons.lang3.time.DateUtils;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -26,18 +27,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import es.caib.comanda.model.v1.salut.ContextInfo;
-import es.caib.comanda.model.v1.salut.DetallSalut;
-import es.caib.comanda.model.v1.salut.EstatSalut;
-import es.caib.comanda.model.v1.salut.EstatSalutEnum;
-import es.caib.comanda.model.v1.salut.IntegracioInfo;
-import es.caib.comanda.model.v1.salut.IntegracioPeticions;
-import es.caib.comanda.model.v1.salut.IntegracioSalut;
-import es.caib.comanda.model.v1.salut.Manual;
-import es.caib.comanda.model.v1.salut.MissatgeSalut;
-import es.caib.comanda.model.v1.salut.SalutInfo;
-import es.caib.comanda.model.v1.salut.SubsistemaInfo;
-import es.caib.comanda.model.v1.salut.SubsistemaSalut;
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.MonitorHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
@@ -95,6 +84,7 @@ public class SalutServiceImpl implements SalutService {
         var integracions = checkIntegracions();             // Integracions
 //        var altres = checkAltres();                         // Altres
         var missatges = checkMissatges();                   // Missatges
+        InformacioSistema systemInfo = es.caib.comanda.ms.salut.helper.MonitorHelper.getInfoSistema(); // Informacio sistema
 
         SubsistemesHelper.SubsistemesInfo subsistemesInfo = SubsistemesHelper.getSubsistemesInfo();
         var subsistemes = subsistemesInfo.getSubsistemesSalut();  // Subsistemes
@@ -117,6 +107,7 @@ public class SalutServiceImpl implements SalutService {
                 .subsistemes(subsistemes)
 //                .altres(altres)
                 .missatges(missatges)
+                .informacioSistema(systemInfo)
                 .build();
 	}
 	
