@@ -171,17 +171,29 @@
 		</thead>
 	</table>
 	<script id="botonsTemplate" type="text/x-jsrender">
-        <div style="float: right">
-            <a href="<c:url value="/unitatOrganitzativa/mostrarArbre"/>" data-toggle="modal"  class="btn btn-default"><span class="fa fa-sitemap"></span> <spring:message code="unitat.list.boto.mostrarArbre"/></a>
-			<c:if test="${isRolActualAdministrador}">
-				<a href="<c:url value="/unitatOrganitzativa/synchronizeGet"/>" data-toggle="modal" class="btn btn-default"><span class="fa fa-refresh"></span> <spring:message code="unitat.list.boto.synchronize"/></a>
-			</c:if>
-		</div>
-		<div style="float: right">
-            <strong><spring:message code="entitat.list.columna.codiEntitatDir3"/>: </strong>${unitatArrel.codiDir3}
-            <strong><spring:message code="entitat.list.columna.fechaSincronizacion"/>: </strong><fmt:formatDate value="${unitatArrel.fechaSincronizacion}" pattern="dd/MM/yyyy HH:mm:ss"/>
-            <strong><spring:message code="entitat.list.columna.fechaActualizacion"/>: </strong><fmt:formatDate value="${unitatArrel.fechaActualizacion}" pattern="dd/MM/yyyy HH:mm:ss"/>
+        <div style="display: flex; align-items: center; width: 100%;">
+            <!-- Centro -->
+            <div style="flex: 1; text-align: left;">
+                <strong><spring:message code="entitat.list.columna.fechaSincronizacion"/>: </strong>
+                <fmt:formatDate value="${unitatArrel.fechaSincronizacion}" pattern="dd/MM/yyyy HH:mm:ss"/>
+                <br/>
+                <strong><spring:message code="entitat.list.columna.fechaActualizacion"/>: </strong>
+                <fmt:formatDate value="${unitatArrel.fechaActualizacion}" pattern="dd/MM/yyyy HH:mm:ss"/>
+            </div>
+
+            <!-- Derecha -->
+            <div style="display: flex; gap: 8px;">
+                <a href="<c:url value="/unitatOrganitzativa/mostrarArbre"/>" data-toggle="modal" class="btn btn-default">
+                    <span class="fa fa-sitemap"></span> <spring:message code="unitat.list.boto.mostrarArbre"/>
+                </a>
+
+                <c:if test="${isRolActualAdministrador}">
+                    <a href="<c:url value="/unitatOrganitzativa/synchronizeGet"/>" data-toggle="modal" class="btn btn-default">
+                        <span class="fa fa-refresh"></span> <spring:message code="unitat.list.boto.synchronize"/>
+                    </a>
+                </c:if>
+            </div>
         </div>
-	</script>
+    </script>
 
 </body>
