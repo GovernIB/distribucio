@@ -166,6 +166,8 @@ public class RegistreHelper {
 	@Autowired
 	private ContingutComentariRepository contingutComentariRepository;
 	@Autowired
+	private ContingutLogRepository contingutLogRepository;
+	@Autowired
 	private UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 	@Autowired
 	private PluginHelper pluginHelper;
@@ -1567,42 +1569,6 @@ public class RegistreHelper {
 			String errorDescripcio = "";
 			if (!ids.isEmpty()) {
 				errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions al backoffice " + backofficeDesti.getNom();
-
-                AtomicBoolean reintentsEsgotat = new AtomicBoolean(false);
-                try {
-                    for (AnotacioRegistreId id : ids) {
-                        if (!reintentsEsgotat.get()) {
-                            List<Long> registresId = registreService.findRegistresPerIdentificador(id);
-                            if (!registresId.isEmpty()) {
-                                registreRepository.findById(registresId.get(0))
-                                        .ifPresent(registre -> {
-                                            RegistreDto registreDto = (RegistreDto) contingutHelper.toContingutDto(registre);
-                                            if (registreDto.isReintentsEsgotat()) {
-                                                reintentsEsgotat.set(true);
-                                            }
-                                        });
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("Error no controlat consultant anotacions per identificador: " + e.getMessage());
-                }
-
-                if (reintentsEsgotat.get()) {
-                    if (backofficeDesti.getEnviamentEmail() && backofficeDesti.getEmailResponsable() != null) {
-                        int minuts = Integer.parseInt(configHelper.getConfig("es.caib.distribucio.email.backoffice.responsable.temps", "1440"));
-                        if (backofficeDesti.getDarrerEmailResponsable() == null
-                                || Duration.between(backofficeDesti.getDarrerEmailResponsable(), LocalDateTime.now()).toMinutes() >= minuts) {
-                            try {
-                                emailHelper.sendEmailRepresentantBackoffice(backofficeDesti);
-                                backofficeDesti.setDarrerEmailResponsable(LocalDateTime.now());
-                                backofficeRepository.save(backofficeDesti);
-                            } catch (Exception e) {
-                                logger.error("Error no controlat enviament de correu a representant de backoffice: " + e.getMessage());
-                            }
-                        }
-                    }
-                }
             } else {
                 if (ExceptionHelper.isExceptionOrCauseInstanceOf(ex, SOAPFaultException.class)) {
                     errorDescripcio = "S'ha pogut establir connexió però s'ha produït un error intern al backoffice " + backofficeDesti.getCodi();
@@ -1758,6 +1724,14 @@ public class RegistreHelper {
 		return throwable;
 	}
 
+	/** Actualitza les dades dels intents de comunicació i error i també comprova si s'ha de comunicar per email al responsable del 
+	 * backoffice en cas d'error.
+	 * 
+	 * @param pendentId
+	 * @param throwable
+	 * @param dataComunicacio
+	 * @param minutesEspera
+	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateBackEnviarDelayData(
 			Long pendentId, 
@@ -1777,7 +1751,34 @@ public class RegistreHelper {
 			// if excepion occured during sending anotacions ids to backoffice
 			// add exception message and increment procesIntents
 			pend.updateProces(null,
-					throwable);				
+					throwable);
+			
+			// Comproba si s'ha de comunicar l'error al responsable del backoffice
+			BackofficeEntity backofficeDesti = backofficeRepository.findByEntitatAndCodi(pend.getEntitat(), pend.getBackCodi());
+			if (backofficeDesti != null 
+					&& backofficeDesti.getEnviamentEmail() 
+					&& backofficeDesti.getEmailResponsable() != null) 
+			{
+				// Consulta si s'ha superat el màxim de reintents per alguna de les anotacions a fi de comunicar per email l'error al responsable.
+				int maxReintents = getEnviarIdsAnotacionsMaxReintentsProperty(backofficeDesti.getEntitat());
+            	boolean reintentsEsgotat = pend.getProcesIntents() >= maxReintents;
+                if (reintentsEsgotat) {
+                    if (backofficeDesti.getEnviamentEmail() && backofficeDesti.getEmailResponsable() != null) {
+                        int minuts = Integer.parseInt(configHelper.getConfig("es.caib.distribucio.email.backoffice.responsable.temps", "1440"));
+                        // Si ha passat un temps configurat entre emails torna a avisar al responsable.
+                        if (backofficeDesti.getDarrerEmailResponsable() == null
+                                || Duration.between(backofficeDesti.getDarrerEmailResponsable(), LocalDateTime.now()).toMinutes() >= minuts) {
+                            try {
+                                emailHelper.sendEmailRepresentantBackoffice(backofficeDesti);
+                                backofficeDesti.setDarrerEmailResponsable(LocalDateTime.now());
+                                backofficeRepository.save(backofficeDesti);
+                            } catch (Exception e) {
+                                logger.error("Error no controlat enviament de correu a representant de backoffice: " + e.getMessage());
+                            }
+                        }
+                    }
+                }
+			}
 		}
 		// set delay for another send retry
 		int procesIntents = pend.getProcesIntents();
@@ -2708,6 +2709,51 @@ public class RegistreHelper {
 
 	}
 
+
+
+	/**
+	 * Obté la llista de registres que compleixen amb l'identificador.
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	public List<RegistreEntity> findRegistresPerIdentificador(AnotacioRegistreId id) throws Exception {
+		List<RegistreEntity> resultat = new ArrayList<RegistreEntity>();
+		String clauSecreta = this.getClauSecretaProperty();
+		// Cerca el registre per clau i identificador encriptades tenint en compte que pot haver anotacions reenviades
+		List<RegistreEntity> registres = registreRepository.findByNumero(id.getIdentificador());
+		if (registres.isEmpty()) {
+			throw new NotFoundException(
+					id,
+					RegistreEntity.class);
+		}
+		String encryptedIdentificator = "";
+		for(RegistreEntity r : registres) {
+			encryptedIdentificator = RegistreHelper.encrypt(
+					id.getIdentificador() + "_" + Long.valueOf(r.getId()),
+					clauSecreta);
+			if (encryptedIdentificator.equals(id.getClauAcces())) {
+				resultat.add(r);
+			}
+		}
+		if (resultat.isEmpty() && registres.size() > 0) {
+			// Codifica només l'identificador com es feia fins la versió 0.9.43.1 
+			encryptedIdentificator = RegistreHelper.encrypt(id.getIdentificador(), clauSecreta);
+			if (encryptedIdentificator.equals(id.getClauAcces())) {
+				logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + id.getIdentificador() + " en la consulta pel backoffice");
+				registres = contingutLogRepository.findByNumeroAndComunidaBackoffice(id.getIdentificador());
+				if (registres != null && !registres.isEmpty()) {
+					for (RegistreEntity r : registres) {
+						resultat.add(r);
+					}
+				}
+			}
+		}
+		return resultat;
+	}
+	
+	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
 
 }

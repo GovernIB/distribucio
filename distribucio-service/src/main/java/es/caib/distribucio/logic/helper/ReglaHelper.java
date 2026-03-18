@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -190,7 +191,7 @@ public class ReglaHelper {
 				if (pare != null) {					
 					ContingutMovimentEntity darrerMoviment = registre.getDarrerMoviment();
 					if (darrerMoviment!=null) {
-						if (!darrerMoviment.getOrigenId().equals(darrerMoviment.getDestiId())) {
+						if (!Objects.equals(darrerMoviment.getOrigenId(), darrerMoviment.getDestiId())) {
 							if (HibernateHelper.isProxy(pare))
 								pare = HibernateHelper.deproxy(pare);
 							emailHelper.createEmailsPendingToSend(
@@ -221,7 +222,7 @@ public class ReglaHelper {
 					procesError = ExceptionUtils.getStackTrace(ex);
 				}
 			}
-			logger.debug("Processament anotació ERROR (" +
+			logger.error("Processament anotació ERROR (" +
 					"id=" + registre.getId() + ", " +
 					"núm.=" + registre.getIdentificador() + "): " +
 					procesError);

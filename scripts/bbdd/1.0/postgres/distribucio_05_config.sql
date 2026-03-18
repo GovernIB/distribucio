@@ -230,6 +230,8 @@ INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY
 INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugins.validarsignatura.agil.api.evidenciesib.username',null,'Usuari integració de API EvidenciesIB','VALID_SIGN_AGIL',3,true,'TEXT',null,null);
 INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugins.validarsignatura.agil.api.evidenciesib.password',null,'Contrasenya usuario integració API EvidenciesIB','VALID_SIGN_AGIL',4,true,'CREDENTIALS',null,null);
 
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.email.backoffice.responsable.temps','1440','Temps entre correus al responsable del backoffice (minuts)','EMAIL','3',false,'INT',null,null);
+
 -- Actualització de les propietats que poden ser configurables a nivell d'entitat
 
 UPDATE DIS_CONFIG SET CONFIGURABLE = 'true' WHERE KEY LIKE 'es.caib.distribucio.anotacions.permetre.reservar';
