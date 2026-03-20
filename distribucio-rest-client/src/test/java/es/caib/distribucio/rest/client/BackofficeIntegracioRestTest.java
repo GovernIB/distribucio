@@ -38,7 +38,7 @@ public class BackofficeIntegracioRestTest {
 		try {
 			
 			AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
-			anotacioRegistreId.setIndetificador(IDENTIFICADOR);
+			anotacioRegistreId.setIdentificador(IDENTIFICADOR);
 			anotacioRegistreId.setClauAcces(CLAU_ACCESS);		
 			
 			
@@ -56,7 +56,7 @@ public class BackofficeIntegracioRestTest {
 
 		try {
 			AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
-			anotacioRegistreId.setIndetificador(IDENTIFICADOR);
+			anotacioRegistreId.setIdentificador(IDENTIFICADOR);
 			anotacioRegistreId.setClauAcces(CLAU_ACCESS);
 
 			getClientRest().canviEstat(
@@ -78,7 +78,7 @@ public class BackofficeIntegracioRestTest {
 			BackofficeIntegracioRestClient client = getClientRest();
 			
 			AnotacioRegistreId anotacioRegistreId = new AnotacioRegistreId();
-			anotacioRegistreId.setIndetificador(IDENTIFICADOR);
+			anotacioRegistreId.setIdentificador(IDENTIFICADOR);
 			anotacioRegistreId.setClauAcces(CLAU_ACCESS);		
 
 			// Consulta
@@ -125,6 +125,6 @@ public class BackofficeIntegracioRestTest {
 
 	
 	private BackofficeIntegracioRestClient getClientRest() {
-		return BackofficeIntegracioRestClientFactory.getRestClient(URL_BASE, USER, PASS);
+		return BackofficeIntegracioRestClientFactory.getRestClient(URL, USUARI, PASSWORD);
 	}
 }

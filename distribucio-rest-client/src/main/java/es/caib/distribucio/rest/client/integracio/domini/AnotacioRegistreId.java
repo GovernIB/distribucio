@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter @Setter
 public class AnotacioRegistreId {
 
-	private String indetificador;
+	private String identificador;
 	private String clauAcces;
 
 }

@@ -38,10 +38,6 @@ public class BackofficeIntegracioTest {
 			AnotacioRegistreEntrada response = getBustiaServicePort().consulta(
 					anotacioRegistreId);
 			System.out.println("Test: " + response);
-			
-			
-			
-			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			fail();
@@ -71,9 +67,9 @@ public class BackofficeIntegracioTest {
 	
 	private BackofficeIntegracio getBustiaServicePort() throws IOException {
 		return BackofficeIntegracioWsClientFactory.getWsClient(
-				"https://se.caib.es/distribucio/ws/backofficeIntegracio",
-				"$udit_distribucio",				
-				"udit_distribucio");				
+				URL,
+				USUARI,				
+				PASSWORD);				
 	}	
 
 }
