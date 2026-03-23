@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -212,8 +213,11 @@ public class PluginHelper {
 				documentContingut, 
 				firmaContingut, 
 				registreNumero);
-		
-		if (isValidacioFirmaAgilActiva()) {
+		// Si és un PDF i la validació de la firma àgil està activa llavors prova a obtenir la firma àgil
+		if (isValidacioFirmaAgilActiva()
+			 && ("pdf".equals(FilenameUtils.getExtension(documentNom.toLowerCase()))
+					|| "application/pdf".equals(documentMime))) {
+			
 			ValidaSignaturaResposta respostaAgil = validaSignaturaAgilPluginHelper.validaSignaturaObtenirDetalls(
 					documentNom, 
 					documentMime, 
