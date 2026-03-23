@@ -48,8 +48,13 @@ public class ConfigValidator implements ConstraintValidator<Config, Object> {
 			if (configDto != null) {
 				if ("CRON".equals(configDto.getTypeCode())) {
 					try {
-						if (command.getValue() != null) {
-							CronSequenceGenerator cronGen = new CronSequenceGenerator(command.getValue());
+                        String cron = command.getValue();
+						if (cron != null) {
+                            if (!cron.matches("^([0-9*/,-]+\\s){5}[0-9*/,-]+$")) {
+                                throw new IllegalArgumentException("Expresión cron inválida");
+                            }
+
+							CronSequenceGenerator cronGen = new CronSequenceGenerator(cron);
 							cronGen.next(new Date());
 						}
 					} catch(Exception e) {
