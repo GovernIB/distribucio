@@ -12,6 +12,7 @@ import javax.validation.ConstraintValidatorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.web.servlet.support.RequestContext;
 
@@ -50,10 +51,7 @@ public class ConfigValidator implements ConstraintValidator<Config, Object> {
 					try {
                         String cron = command.getValue();
 						if (cron != null) {
-                            if (!cron.matches("^([0-9*/,-]+\\s){5}[0-9*/,-]+$")) {
-                                throw new IllegalArgumentException("Expresión cron inválida");
-                            }
-
+                            CronExpression.parse(cron);
 							CronSequenceGenerator cronGen = new CronSequenceGenerator(cron);
 							cronGen.next(new Date());
 						}
