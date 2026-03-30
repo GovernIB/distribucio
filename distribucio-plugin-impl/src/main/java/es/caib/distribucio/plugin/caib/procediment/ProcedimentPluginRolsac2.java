@@ -21,6 +21,8 @@ import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
 import es.caib.distribucio.plugin.procediment.UnitatAdministrativa;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
 import io.micrometer.core.instrument.MeterRegistry;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +59,8 @@ public class ProcedimentPluginRolsac2 extends DistribucioAbstractPluginPropertie
 		try {
             response = findProcedimentsRolsac(
 					getServiceUrl() + "?lang=ca",
-					"{\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\", \"filtroPaginacion\": {\"page\":\"1\", \"size\":\"9999\"}}");
+					"{\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\", " +
+                            "\"filtroPaginacion\": {\"page\":\"0\", \"size\":\"200\"}}");
 		} catch (Exception ex) {
 			salutPluginComponent.incrementarOperacioError();
 			logger.error("No s'han pogut consultar els procediments de ROLSAC (" +
@@ -71,7 +74,7 @@ public class ProcedimentPluginRolsac2 extends DistribucioAbstractPluginPropertie
 		
 		if (response != null && response.getStatus().equals("200")) {
 			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
-			return response.getResultado();
+			return response.getItems();
 		} else {
 			salutPluginComponent.incrementarOperacioError();
 			logger.error("No s'han pogut consultar els procediments de ROLSAC (" +
@@ -148,12 +151,12 @@ public class ProcedimentPluginRolsac2 extends DistribucioAbstractPluginPropertie
 		}
 		
 		if (response != null && response.getStatus().equals("200")) {
-			if (response.getResultado() != null && !response.getResultado().isEmpty()) {
-				for (Procediment procediment: response.getResultado()) {
+			if (response.getItems() != null && !response.getItems().isEmpty()) {
+				for (Procediment procediment: response.getItems()) {
 					toProcedmientDto(procediment);
 				}
 				
-				return toProcedmientDto(response.getResultado().get(0));
+				return toProcedmientDto(response.getItems().get(0));
 			} else { 
 				return null;
 			}
@@ -254,29 +257,15 @@ public class ProcedimentPluginRolsac2 extends DistribucioAbstractPluginPropertie
 		return getProperty(
 					"es.caib.distribucio.plugin.procediment.rolsac.service.username","-");		
 	}
-	
+
+    @Getter @Setter
 	public static class ProcedimientosResponse {
-		private String numeroElementos;
+		private Integer totalCount;
 		private String status;
-		private List<Procediment> resultado;
-		public String getNumeroElementos() {
-			return numeroElementos;
-		}
-		public void setNumeroElementos(String numeroElementos) {
-			this.numeroElementos = numeroElementos;
-		}
-		public String getStatus() {
-			return status;
-		}
-		public void setStatus(String status) {
-			this.status = status;
-		}
-		public List<Procediment> getResultado() {
-			return resultado;
-		}
-		public void setResultado(List<Procediment> resultado) {
-			this.resultado = resultado;
-		}
+		private List<Procediment> items;
+		private Integer page;
+		private Integer pageSize;
+		private Integer totalPages;
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ProcedimentPluginRolsac2.class);
