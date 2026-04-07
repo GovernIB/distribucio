@@ -1,6 +1,5 @@
 package es.caib.distribucio.logic.service;
 
-import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -18,6 +17,8 @@ import java.util.stream.Collectors;
 
 import es.caib.comanda.model.server.monitoring.*;
 import es.caib.comanda.ms.salut.helper.MonitorHelper;
+import es.caib.distribucio.persist.entity.BackofficeEntity;
+import es.caib.distribucio.persist.repository.BackofficeRepository;
 import org.apache.commons.lang3.time.DateUtils;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -48,6 +49,9 @@ public class SalutServiceImpl implements SalutService {
 	
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
+
+    @Autowired
+    private BackofficeRepository backofficeRepository;
 	
 	private final JdbcTemplate jdbcTemplate;
     private final RestTemplate restTemplate;
@@ -67,14 +71,15 @@ public class SalutServiceImpl implements SalutService {
 
 	@Override
 	public List<SubsistemaInfo> getSubsistemes() {
-		return List.of(
-				new SubsistemaInfo().codi("AWS").nom("Alta Registre WS"),
-				new SubsistemaInfo().codi("BKC").nom("Backoffice consulta"),
-				new SubsistemaInfo().codi("BKE").nom("Backoffice canvi estat"),
-				new SubsistemaInfo().codi("BKL").nom("Backoffice llistar"),
-				new SubsistemaInfo().codi("RGB").nom("Aplicar Regla tipus Backoffice"),
-				new SubsistemaInfo().codi("GDO").nom("Gestió documental FileSystem")
-		);
+        List<SubsistemaInfo> subsistemes = new ArrayList<>();
+        for(SubsistemesHelper.SubsistemesEnum subsistema: SubsistemesHelper.SubsistemesEnum.values()) {
+            subsistemes.add(new SubsistemaInfo().codi(subsistema.name()).nom(subsistema.getNom()));
+        }
+        List<BackofficeEntity> backofficeList = backofficeRepository.findAll();
+        for (BackofficeEntity backoffice: backofficeList) {
+            subsistemes.add(new SubsistemaInfo().codi(backoffice.getCodi()).nom(backoffice.getNom()));
+        }
+        return subsistemes;
 	}
 
 	@Override
@@ -86,7 +91,7 @@ public class SalutServiceImpl implements SalutService {
         var missatges = checkMissatges();                   // Missatges
 
         SubsistemesHelper.SubsistemesInfo subsistemesInfo = SubsistemesHelper.getSubsistemesInfo();
-        var subsistemes = subsistemesInfo.getSubsistemesSalut();  // Subsistemes
+        List<SubsistemaSalut> subsistemes = subsistemesInfo.getSubsistemesSalut();  // Subsistemes
         var estatGlobalSubsistemes = subsistemesInfo.getEstatGlobal();
         
         if (EstatSalutEnum.UP.equals(estatSalut.getEstat()) && !EstatSalutEnum.UP.equals(estatGlobalSubsistemes) && !EstatSalutEnum.UNKNOWN.equals(estatGlobalSubsistemes)) {
