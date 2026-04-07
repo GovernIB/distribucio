@@ -2,11 +2,11 @@ package es.caib.distribucio.logic.intf.dto.estadistic;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import es.caib.comanda.model.v1.estadistica.Fet;
+import es.caib.comanda.model.server.monitoring.Fet;
 import lombok.Getter;
 
 @Getter
-public class FetDistribucio implements Fet {
+public class FetDistribucio extends Fet {
 
     @JsonIgnore
     private FetEnum tipus;

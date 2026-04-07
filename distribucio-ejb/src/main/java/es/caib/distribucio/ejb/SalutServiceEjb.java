@@ -6,9 +6,9 @@ import javax.ejb.Stateless;
 
 import org.springframework.context.annotation.Primary;
 
-import es.caib.comanda.model.v1.salut.IntegracioInfo;
-import es.caib.comanda.model.v1.salut.SalutInfo;
-import es.caib.comanda.model.v1.salut.SubsistemaInfo;
+import es.caib.comanda.model.server.monitoring.IntegracioInfo;
+import es.caib.comanda.model.server.monitoring.SalutInfo;
+import es.caib.comanda.model.server.monitoring.SubsistemaInfo;
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.service.SalutService;
 import lombok.experimental.Delegate;

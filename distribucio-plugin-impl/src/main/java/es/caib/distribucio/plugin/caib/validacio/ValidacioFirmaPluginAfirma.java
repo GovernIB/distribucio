@@ -12,8 +12,8 @@ import org.fundaciobit.pluginsib.validatesignature.api.TimeStampInfo;
 import org.fundaciobit.pluginsib.validatesignature.api.ValidateSignatureRequest;
 import org.fundaciobit.pluginsib.validatesignature.api.ValidateSignatureResponse;
 
-import es.caib.comanda.model.v1.salut.EstatSalut;
-import es.caib.comanda.model.v1.salut.IntegracioPeticions;
+import es.caib.comanda.model.server.monitoring.EstatSalut;
+import es.caib.comanda.model.server.monitoring.IntegracioPeticions;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
 import es.caib.distribucio.plugin.AbstractSalutPlugin;

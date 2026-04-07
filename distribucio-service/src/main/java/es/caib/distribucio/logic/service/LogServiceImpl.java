@@ -1,7 +1,7 @@
 package es.caib.distribucio.logic.service;
 
-import es.caib.comanda.model.v1.log.FitxerContingut;
-import es.caib.comanda.model.v1.log.FitxerInfo;
+import es.caib.comanda.model.server.monitoring.FitxerContingut;
+import es.caib.comanda.model.server.monitoring.FitxerInfo;
 import es.caib.comanda.ms.log.helper.LogHelper;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.intf.service.LogService;
