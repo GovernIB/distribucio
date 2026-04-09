@@ -5,6 +5,7 @@ package es.caib.distribucio.logic.intf.service.ws.backoffice;
 
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ import lombok.Setter;
 public class AnotacioRegistreId {
 
     private String indetificador;
+    @JsonIgnore
 	private String identificador;
 	private String clauAcces;
 
