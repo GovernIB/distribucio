@@ -927,9 +927,7 @@ public class RegistreHelper {
             SignatureCommonUtils.getCAdESMode(contingut);
             return true;
         } catch (Exception e) {
-            if (!e.getMessage().contains("Malformed content.")) {
-                logger.error(e.getMessage());
-            }
+        	// No es fa res amb l'error, només es considera que no té firma
             return false;
         }
     }
@@ -1756,7 +1754,8 @@ public class RegistreHelper {
 			// Comproba si s'ha de comunicar l'error al responsable del backoffice
 			BackofficeEntity backofficeDesti = backofficeRepository.findByEntitatAndCodi(pend.getEntitat(), pend.getBackCodi());
 			if (backofficeDesti != null 
-					&& backofficeDesti.getEnviamentEmail() 
+					&& backofficeDesti.getEnviamentEmail() != null 
+					&& backofficeDesti.getEnviamentEmail()
 					&& backofficeDesti.getEmailResponsable() != null) 
 			{
 				// Consulta si s'ha superat el màxim de reintents per alguna de les anotacions a fi de comunicar per email l'error al responsable.
