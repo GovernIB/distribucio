@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -56,11 +57,22 @@ public class ProcedimentPluginRolsac2 extends DistribucioAbstractPluginPropertie
 				"codiDir3=" + codiDir3 + ")");
 		ProcedimientosResponse response = null;
 		long start = System.currentTimeMillis();
+
+        List<Procediment> procedimientosList = new ArrayList<>();
+        int totalPages = 1;
+        int page = 0;
+
 		try {
-            response = findProcedimentsRolsac(
-					getServiceUrl() + "?lang=ca",
-					"{\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\", " +
-                            "\"filtroPaginacion\": {\"page\":\"0\", \"size\":\"200\"}}");
+            while (page < totalPages) {
+                response = findProcedimentsRolsac(
+                        getServiceUrl() + "?lang=ca",
+                        "{\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\", " +
+                                "\"filtroPaginacion\": {\"page\":\""+ page + "\", \"size\":\"200\"}}");
+
+                procedimientosList.addAll(response.getItems());
+                totalPages = response.getTotalPages();
+                page++;
+            }
 		} catch (Exception ex) {
 			salutPluginComponent.incrementarOperacioError();
 			logger.error("No s'han pogut consultar els procediments de ROLSAC (" +
@@ -74,7 +86,7 @@ public class ProcedimentPluginRolsac2 extends DistribucioAbstractPluginPropertie
 		
 		if (response != null && response.getStatus().equals("200")) {
 			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
-			return response.getItems();
+			return procedimientosList;
 		} else {
 			salutPluginComponent.incrementarOperacioError();
 			logger.error("No s'han pogut consultar els procediments de ROLSAC (" +

@@ -18,6 +18,7 @@ import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
+import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.servei.Servei;
 import es.caib.distribucio.plugin.servei.ServeiPlugin;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -57,11 +59,22 @@ public class ServeiPluginRolsac2 extends DistribucioAbstractPluginProperties imp
 				"codiDir3=" + codiDir3 + ")");
 		ProcedimientosResponse response = null;
 		long start = System.currentTimeMillis();
-		try {
-            response = findServeisRolsac(
-					getServiceUrl() + "?lang=ca",
-					"{\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\", " +
-                            "\"filtroPaginacion\": {\"page\":\"0\", \"size\":\"200\"}}");
+
+        List<Servei> serveisList = new ArrayList<>();
+        int totalPages = 1;
+        int page = 0;
+
+        try {
+            while (page < totalPages) {
+                response = findServeisRolsac(
+                        getServiceUrl() + "?lang=ca",
+                        "{\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\", " +
+                                "\"filtroPaginacion\": {\"page\":\"" + page + "\", \"size\":\"200\"}}");
+
+                serveisList.addAll(response.getItems());
+                totalPages = response.getTotalPages();
+                page++;
+            }
 		} catch (Exception ex) {
 			salutPluginComponent.incrementarOperacioError();
 			logger.error("No s'han pogut consultar els serveis de ROLSAC (" +
@@ -75,7 +88,7 @@ public class ServeiPluginRolsac2 extends DistribucioAbstractPluginProperties imp
 		
 		if (response != null && response.getStatus().equals("200")) {
 			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
-			return response.getItems();
+			return serveisList;
 		} else {
 			salutPluginComponent.incrementarOperacioError();
 			logger.error("No s'han pogut consultar els serveis de ROLSAC (" +
