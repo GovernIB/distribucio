@@ -17,8 +17,15 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.annotation.PostConstruct;
@@ -36,8 +43,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.ws.soap.SOAPFaultException;
 
-import es.caib.distribucio.logic.intf.service.RegistreService;
-import es.caib.distribucio.persist.repository.*;
 import org.apache.commons.io.FilenameUtils;
 import org.fundaciobit.pluginsib.utils.signature.SignatureCommonUtils;
 import org.slf4j.Logger;
@@ -108,6 +113,7 @@ import es.caib.distribucio.logic.intf.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
 import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
@@ -124,6 +130,15 @@ import es.caib.distribucio.persist.entity.RegistreFirmaDetallEntity;
 import es.caib.distribucio.persist.entity.RegistreInteressatEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
 import es.caib.distribucio.persist.entity.UsuariEntity;
+import es.caib.distribucio.persist.repository.BackofficeRepository;
+import es.caib.distribucio.persist.repository.ContingutComentariRepository;
+import es.caib.distribucio.persist.repository.ContingutLogRepository;
+import es.caib.distribucio.persist.repository.EntitatRepository;
+import es.caib.distribucio.persist.repository.RegistreAnnexFirmaRepository;
+import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
+import es.caib.distribucio.persist.repository.RegistreFirmaDetallRepository;
+import es.caib.distribucio.persist.repository.RegistreInteressatRepository;
+import es.caib.distribucio.persist.repository.RegistreRepository;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
@@ -1569,45 +1584,6 @@ public class RegistreHelper {
 			String errorDescripcio = "";
 			if (!ids.isEmpty()) {
 				errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions al backoffice " + backofficeDesti.getNom();
-<<<<<<< HEAD
-=======
-
-                AtomicBoolean reintentsEsgotat = new AtomicBoolean(false);
-                try {
-                    for (AnotacioRegistreId id : ids) {
-                        if (!reintentsEsgotat.get()) {
-                            List<Long> registresId = registreService.findRegistresPerIdentificador(id);
-                            if (!registresId.isEmpty()) {
-                                registreRepository.findById(registresId.get(0))
-                                        .ifPresent(registre -> {
-                                            RegistreDto registreDto = (RegistreDto) contingutHelper.toContingutDto(registre);
-                                            if (registreDto.isReintentsEsgotat()) {
-                                                reintentsEsgotat.set(true);
-                                            }
-                                        });
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("Error no controlat consultant anotacions per identificador: " + e.getMessage());
-                }
-
-                if (reintentsEsgotat.get()) {
-                    if (backofficeDesti.getEnviamentEmail() && backofficeDesti.getEmailResponsable() != null) {
-                        int minuts = Integer.parseInt(configHelper.getConfig("es.caib.distribucio.email.backoffice.responsable.temps", "1440"));
-                        if (backofficeDesti.getDarrerEmailResponsable() == null
-                                || Duration.between(backofficeDesti.getDarrerEmailResponsable(), LocalDateTime.now()).toMinutes() >= minuts) {
-                            try {
-                                emailHelper.sendEmailRepresentantBackoffice(backofficeDesti);
-                                backofficeDesti.setDarrerEmailResponsable(LocalDateTime.now());
-                                backofficeRepository.save(backofficeDesti);
-                            } catch (Exception e) {
-                                logger.error("Error no controlat enviament de correu a representant de backoffice: " + e.getMessage());
-                            }
-                        }
-                    }
-                }
->>>>>>> refs/remotes/origin/dis-dev-1.0.8
             } else {
                 if (ExceptionHelper.isExceptionOrCauseInstanceOf(ex, SOAPFaultException.class)) {
                     errorDescripcio = "S'ha pogut establir connexió però s'ha produït un error intern al backoffice " + backofficeDesti.getCodi();

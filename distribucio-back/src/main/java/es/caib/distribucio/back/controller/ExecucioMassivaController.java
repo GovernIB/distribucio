@@ -12,10 +12,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import es.caib.distribucio.back.command.*;
-import es.caib.distribucio.logic.helper.MessageHelper;
-import es.caib.distribucio.logic.intf.dto.*;
-import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +28,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import es.caib.distribucio.back.command.ContingutReenviarCommand;
+import es.caib.distribucio.back.command.ContingutReenviarMassiveCommand;
+import es.caib.distribucio.back.command.MarcarProcessatCommand;
+import es.caib.distribucio.back.command.MassiveCommand;
+import es.caib.distribucio.back.command.RegistreClassificarCommand;
+import es.caib.distribucio.back.command.RegistreEnviarIProcessarCommand;
+import es.caib.distribucio.back.command.RegistreEnviarIProcessarMassiveCommand;
+import es.caib.distribucio.back.command.RegistreEnviarViaEmailCommand;
+import es.caib.distribucio.back.command.RegistreFiltreCommand;
 import es.caib.distribucio.back.helper.EnumHelper;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.back.helper.RolHelper;
+import es.caib.distribucio.logic.intf.dto.BustiaDto;
+import es.caib.distribucio.logic.intf.dto.ElementTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaAccioDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaTipusDto;
+import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
+import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
+import es.caib.distribucio.logic.intf.dto.RegistreDto;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
@@ -70,8 +86,6 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	private AnnexosService annexosService;
 	@Autowired
 	private BustiaService bustiaService;
-    @Autowired
-    private MessageHelper messageHelper;
 
     private RegistreFiltreCommand getFiltreCommand(
             HttpServletRequest request) {
@@ -680,7 +694,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		
 		RegistreEnviarIProcessarCommand command = new RegistreEnviarIProcessarCommand();
 		model.addAttribute("registres", registres);
-        model.addAttribute("registresAdvertencies", this.getAdvertencies(registres));
+        model.addAttribute("registresAdvertencies", this.getAdvertencies(request, registres));
 		model.addAttribute(command);
 		return "registreUserEnviarIProcessar";
 	}
@@ -751,7 +765,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 
 		MassiveCommand command = new MassiveCommand();
 		model.addAttribute("registres", registres);
-		model.addAttribute("registresAdvertencies", this.getAdvertencies(registres));
+		model.addAttribute("registresAdvertencies", this.getAdvertencies(request, registres));
 		model.addAttribute("reintentarProcessamentCommand", command);
 		
 		return "reintentarProcessamentMultiple";
@@ -981,22 +995,22 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 
 	//Private methods//
 
-    private HashMap<Long, String> getAdvertencies(List<RegistreDto> registres) {
+    private HashMap<Long, String> getAdvertencies(HttpServletRequest request, List<RegistreDto> registres) {
         HashMap<Long, String> registresAdvertencies = new HashMap<>();
-        registresAdvertencies.put(0L, messageHelper.getMessage("historic.taula.header.estats.error"));
+        registresAdvertencies.put(0L, getMessage(request, "historic.taula.header.estats.error"));
         registres.forEach(registre -> {
             switch (registre.getProcesEstat()) {
                 case ARXIU_PENDENT:
-                    registresAdvertencies.put(registre.getId(), messageHelper.getMessage("registre.proces.estat.enum.ARXIU_PENDENT"));
+                    registresAdvertencies.put(registre.getId(), getMessage(request, "registre.proces.estat.enum.ARXIU_PENDENT"));
                     break;
                 case REGLA_PENDENT:
-                    registresAdvertencies.put(registre.getId(), messageHelper.getMessage("registre.proces.estat.enum.REGLA_PENDENT"));
+                    registresAdvertencies.put(registre.getId(), getMessage(request, "registre.proces.estat.enum.REGLA_PENDENT"));
                     break;
                 case BUSTIA_PROCESSADA:
-                    registresAdvertencies.put(registre.getId(), messageHelper.getMessage("registre.proces.estat.enum.BUSTIA_PROCESSADA"));
+                    registresAdvertencies.put(registre.getId(), getMessage(request, "registre.proces.estat.enum.BUSTIA_PROCESSADA"));
                     break;
                 case BACK_PROCESSADA:
-                    registresAdvertencies.put(registre.getId(), messageHelper.getMessage("registre.proces.estat.enum.BACK_PROCESSADA"));
+                    registresAdvertencies.put(registre.getId(), getMessage(request, "registre.proces.estat.enum.BACK_PROCESSADA"));
                     break;
             }
         });
@@ -1163,7 +1177,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
                 registresSeleccionats,
                 "admin".equals(rol));
         model.addAttribute("registres", registres);
-        model.addAttribute("registresAdvertencies", this.getAdvertencies(registres));
+        model.addAttribute("registresAdvertencies", this.getAdvertencies(request, registres));
 	}
 	
 	private String executarAccioMassivaRegistres(
