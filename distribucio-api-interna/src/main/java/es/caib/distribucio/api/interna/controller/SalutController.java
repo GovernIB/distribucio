@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import es.caib.comanda.model.v1.salut.AppInfo;
-import es.caib.comanda.model.v1.salut.SalutInfo;
+import es.caib.comanda.model.server.monitoring.AppInfo;
+import es.caib.comanda.model.server.monitoring.SalutInfo;
 import es.caib.distribucio.logic.intf.service.SalutService;
 import es.caib.distribucio.logic.intf.util.DatesUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,7 +46,7 @@ public class SalutController {
 
         ManifestInfo manifestInfo = getManifestInfo();
 
-        return AppInfo.builder()
+        return new AppInfo()
                 .codi("DIS")
                 .nom("Distribució")
                 .data(DatesUtils.toOffsetDateTime(manifestInfo.getBuildDate()))
@@ -56,8 +56,7 @@ public class SalutController {
                 .versio(manifestInfo.getVersion())
                 .integracions(salutService.getIntegracions())
                 .subsistemes(salutService.getSubsistemes())
-                .contexts(salutService.getContexts(getBaseUrl(request)))
-                .build();
+                .contexts(salutService.getContexts(getBaseUrl(request)));
     }
     
     public String getBaseUrl(HttpServletRequest request) {

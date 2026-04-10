@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 
-import es.caib.comanda.model.v1.salut.EstatSalut;
-import es.caib.comanda.model.v1.salut.EstatSalutEnum;
-import es.caib.comanda.model.v1.salut.IntegracioApp;
-import es.caib.comanda.model.v1.salut.IntegracioInfo;
-import es.caib.comanda.model.v1.salut.IntegracioSalut;
+import es.caib.comanda.model.server.monitoring.EstatSalut;
+import es.caib.comanda.model.server.monitoring.EstatSalutEnum;
+import es.caib.comanda.ms.salut.helper.IntegracioApp;
+import es.caib.comanda.model.server.monitoring.IntegracioInfo;
+import es.caib.comanda.model.server.monitoring.IntegracioSalut;
 import es.caib.distribucio.logic.intf.dto.IntegracioDiagnostic;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.plugin.SalutPlugin;
@@ -80,12 +80,11 @@ public abstract class AbstractPluginHelper<T extends SalutPlugin> {
 
 	private static <T extends SalutPlugin> void mergeGlobalIntegracio(Map<String, IntegracioSalut> integracioResult, T plugin, EstatSalut estatSalut, String codiIntegracio) {
 		integracioResult.merge(GLOBAL,
-				IntegracioSalut.builder()
+				new IntegracioSalut()
 						.codi(codiIntegracio)
 						.estat(estatSalut.getEstat())
 						.latencia(estatSalut.getLatencia())
-						.peticions(plugin.getPeticionsPlugin())
-						.build(),
+						.peticions(plugin.getPeticionsPlugin()),
 				(existing, nou) -> {
 					existing.getPeticions().setTotalOk(existing.getPeticions().getTotalOk() + nou.getPeticions().getTotalOk());
 					existing.getPeticions().setTotalError(existing.getPeticions().getTotalError() + nou.getPeticions().getTotalError());
@@ -94,12 +93,11 @@ public abstract class AbstractPluginHelper<T extends SalutPlugin> {
 	}
 
 	private IntegracioSalut createIntegracioForPlugin(String codiIntegracio, String codiEntitat, EstatSalut estatSalut, T plugin) {
-		return IntegracioSalut.builder()
+		return new IntegracioSalut()
 				.codi(setFormatIntegracio(codiIntegracio, codiEntitat, 16))
 				.estat(estatSalut.getEstat())
 				.latencia(estatSalut.getLatencia())
-				.peticions(plugin.getPeticionsPlugin())
-				.build();
+				.peticions(plugin.getPeticionsPlugin());
 	}
 
 	private void addFilteredEntitiesToIntegracions(Map<String, IntegracioSalut> integracionsMap) {
@@ -108,10 +106,9 @@ public abstract class AbstractPluginHelper<T extends SalutPlugin> {
 		getEntitatsFiltrades().stream()
 				.filter(entitat -> (entitat.isConfiguracioEspecifica() && !integracionsMap.containsKey(entitat.getCodi())) || (!entitat.isConfiguracioEspecifica() && !integracionsMap.containsKey(GLOBAL)))
 				.forEach(entitat -> integracionsMap.put(entitat.getCodi(),
-						IntegracioSalut.builder()
+						new IntegracioSalut()
 								.codi(entitat.isConfiguracioEspecifica() ? setFormatIntegracio(codiIntegracio, entitat.getCodi(), 16) : codiIntegracio)
-								.estat(EstatSalutEnum.UNKNOWN)
-								.build()));
+								.estat(EstatSalutEnum.UNKNOWN)));
 	}
 
 
@@ -127,10 +124,9 @@ public abstract class AbstractPluginHelper<T extends SalutPlugin> {
 		String codiIntegracio = getCodiApp().name();
 		String nomIntegracio = getCodiApp().getNom();
 
-		return IntegracioInfo.builder()
+		return new IntegracioInfo()
 				.codi(showInfoEspecifica ? setFormatIntegracio(codiIntegracio, entitat.getCodi(), 16) : codiIntegracio)
-				.nom(showInfoEspecifica ? setFormatIntegracio(nomIntegracio, entitat.getCodi(), 255) : nomIntegracio)
-				.build();
+				.nom(showInfoEspecifica ? setFormatIntegracio(nomIntegracio, entitat.getCodi(), 255) : nomIntegracio);
 	}
 
 

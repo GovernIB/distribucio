@@ -3,16 +3,15 @@
  */
 package es.caib.distribucio.back.command;
 
-import java.util.HashMap;
-import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Command per a copiar, moure o enviar contenidors.
@@ -20,7 +19,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Getter @Setter
-public class ContingutReenviarCommand {
+public class ContingutReenviarMassiveCommand extends MassiveCommand {
 
 	@Size(max=3940)
 	protected String comentariEnviar;

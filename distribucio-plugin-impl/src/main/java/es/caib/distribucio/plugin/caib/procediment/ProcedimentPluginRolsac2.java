@@ -1,14 +1,7 @@
 /**
  * 
  */
-package es.caib.distribucio.plugin.caib.servei;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package es.caib.distribucio.plugin.caib.procediment;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -19,69 +12,75 @@ import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-
 import es.caib.comanda.model.server.monitoring.EstatSalut;
 import es.caib.comanda.model.server.monitoring.IntegracioPeticions;
-import es.caib.distribucio.logic.intf.dto.ServeiDto;
-import es.caib.distribucio.plugin.AbstractSalutPlugin;
-import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
-import es.caib.distribucio.plugin.SistemaExternException;
-import es.caib.distribucio.plugin.servei.Servei;
-import es.caib.distribucio.plugin.servei.ServeiPlugin;
+import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
+import es.caib.distribucio.plugin.*;
+import es.caib.distribucio.plugin.procediment.Procediment;
+import es.caib.distribucio.plugin.procediment.ProcedimentPlugin;
+import es.caib.distribucio.plugin.procediment.UnitatAdministrativa;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
 import io.micrometer.core.instrument.MeterRegistry;
+import lombok.Getter;
+import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
 
 /**
- * Implementació del plugin de consulta de serveis emprant ROLSAC.
+ * Implementació del plugin de consulta de procediments emprant ROLSAC.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties implements ServeiPlugin {
+public class ProcedimentPluginRolsac2 extends DistribucioAbstractPluginProperties implements ProcedimentPlugin {
 
 	private Client jerseyClient;
 	private ObjectMapper mapper;
 
-	public ServeiPluginRolsac() {
+	public ProcedimentPluginRolsac2() {
 		super();
 	}
-	
-	public ServeiPluginRolsac(Properties properties, boolean configuracioEspecifica) {
+
+	public ProcedimentPluginRolsac2(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
 		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
 	
 	@Override
-	public List<Servei> findAmbCodiDir3(
+	public List<Procediment> findAmbCodiDir3(
 			String codiDir3) throws SistemaExternException {
-		logger.debug("Consulta dels serveis de l'unitat organitzativa (" +
+		logger.debug("Consulta dels procediments de l'unitat organitzativa (" +
 				"codiDir3=" + codiDir3 + ")");
 		ProcedimientosResponse response = null;
 		long start = System.currentTimeMillis();
 		try {
-			StringBuilder sb = new StringBuilder(getServiceUrl());
-			response = findServeisRolsac(
-					sb.toString(),
-					"lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}&filtroPaginacion={\"page\":\"1\", \"size\":\"9999\"}");
+            response = findProcedimentsRolsac(
+					getServiceUrl() + "?lang=ca",
+					"{\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\", " +
+                            "\"filtroPaginacion\": {\"page\":\"0\", \"size\":\"200\"}}");
 		} catch (Exception ex) {
 			salutPluginComponent.incrementarOperacioError();
-			logger.error("No s'han pogut consultar els serveis de ROLSAC (" +
+			logger.error("No s'han pogut consultar els procediments de ROLSAC (" +
 					"codiDir3=" + codiDir3 + ")",
 					ex);
 			throw new SistemaExternException(
-					"No s'han pogut consultar els serveis de ROLSAC (" +
+					"No s'han pogut consultar els procediments de ROLSAC (" +
 					"codiDir3=" + codiDir3 + ")",
 					ex);
 		}
 		
 		if (response != null && response.getStatus().equals("200")) {
 			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
-			return response.getResultado();
+			return response.getItems();
 		} else {
 			salutPluginComponent.incrementarOperacioError();
-			logger.error("No s'han pogut consultar els serveis de ROLSAC (" +
+			logger.error("No s'han pogut consultar els procediments de ROLSAC (" +
 					"codiDir3=" + codiDir3 + "). Resposta rebuda amb el codi " + response.getStatus());
 			throw new SistemaExternException(
-					"No s'han pogut consultar els serveis de ROLSAC (" +
+					"No s'han pogut consultar els procediments de ROLSAC (" +
 					"codiDir3=" + codiDir3 + "). Resposta rebuda amb el codi " + response.getStatus());
 		}
 	}
@@ -110,7 +109,7 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 		return jerseyClient;
 	}
 
-	private ProcedimientosResponse findServeisRolsac(
+	private ProcedimientosResponse findProcedimentsRolsac(
 			String url,
 			String body) throws UniformInterfaceException, ClientHandlerException, IOException {
 		logger.debug("Enviant petició HTTP a l'arxiu (" +
@@ -129,38 +128,35 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 	}
 
 	@Override
-	public ServeiDto findAmbCodiSia(
+	public ProcedimentDto findAmbCodiSia(
 			String codiSia) throws SistemaExternException {
-		logger.debug("Consulta del servei pel codi SIA (" +
+		logger.debug("Consulta del procediment pel codi SIA (" +
 			"codiSia=" + codiSia + ")");
 		ProcedimientosResponse response = null;
+		long start = System.currentTimeMillis();
 		try {
-			long start = System.currentTimeMillis();
-			StringBuilder sb = new StringBuilder(getServiceUrl());			
-			String params = "?lang=ca&filtro={\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}";
-			
-			response = findServeisRolsac(
-					sb.toString(),
-					params);
+			response = findProcedimentsRolsac(
+                    getServiceUrl() + "?lang=ca",
+                    "{\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}");
 			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 		} catch (Exception ex) {
 			salutPluginComponent.incrementarOperacioError();
-			logger.error("Error consultant el servei de ROLSAC (" +
+			logger.error("Error consultant el procediment de ROLSAC (" +
 					"codiSia=" + codiSia + "): " + ex.getMessage(),
 					ex);
 			throw new SistemaExternException(
-					"Error consultant el servei de ROLSAC (" +
+					"Error consultant el procediment de ROLSAC (" +
 					"codiSia=" + codiSia + "): " + ex.getMessage(),
 					ex);
 		}
 		
 		if (response != null && response.getStatus().equals("200")) {
-			if (response.getResultado() != null && !response.getResultado().isEmpty()) {
-				for (Servei servei: response.getResultado()) {
-					toProcedmientDto(servei);
+			if (response.getItems() != null && !response.getItems().isEmpty()) {
+				for (Procediment procediment: response.getItems()) {
+					toProcedmientDto(procediment);
 				}
 				
-				return toProcedmientDto(response.getResultado().get(0));
+				return toProcedmientDto(response.getItems().get(0));
 			} else { 
 				return null;
 			}
@@ -168,36 +164,88 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 		} else {
 			return null;
 //			throw new SistemaExternException(
-//					"No s'han pogut consultar el servei de ROLSAC (" +
+//					"No s'han pogut consultar el procediment de ROLSAC (" +
 //					"codiSia=" + codiSia + "). Resposta rebuda amb el codi " + response.getStatus());
 		}	
 	}
 	
-	public ServeiDto toProcedmientDto (Servei servei) throws  SistemaExternException {
-		ServeiDto dto = new ServeiDto();
-		if (servei != null) {
-			dto.setCodi(servei.getCodigo());
-			dto.setCodiSia(servei.getCodigoSIA());
-			dto.setNom(servei.getNombre());			
+	public ProcedimentDto toProcedmientDto (Procediment procediment) throws  SistemaExternException {
+		ProcedimentDto dto = new ProcedimentDto();
+		if (procediment != null) {
+			dto.setCodi(procediment.getCodigo());
+			dto.setCodiSia(procediment.getCodigoSIA());
+			dto.setNom(procediment.getNombre());			
 		}
 		return dto;
 	}
 
+	@Override
+	public UnitatAdministrativa findUnitatAdministrativaAmbCodi(String codi) throws SistemaExternException {
+
+		logger.debug("Consulta de la unitat administrativa amb codi (" +
+				"codi=" + codi + ")");
+
+		UnitatAdministrativa unitatAdministrativa = null;
+		try {
+			long start = System.currentTimeMillis();
+			String urlAmbMetode = getRolsacServiceUrl() + "/unidades_administrativas/" + codi;
+			
+			Client jerseyClient = getJerseyClient();
+			
+			String json = jerseyClient.
+					resource(urlAmbMetode).
+					post(String.class);
+			
+			RespostaUnitatAdministrativa resposta = mapper.readValue(json, RespostaUnitatAdministrativa.class);
+			if (resposta.getResultado() != null && !resposta.getResultado().isEmpty()) {
+				UnitatAdministrativaRolsac unitatAdministrativaRolsac = resposta.getResultado().get(0);
+				unitatAdministrativa = new UnitatAdministrativa();
+				unitatAdministrativa.setCodi(String.valueOf(unitatAdministrativaRolsac.getCodigo()));
+				unitatAdministrativa.setCodiDir3(unitatAdministrativaRolsac.getCodigoDIR3());
+				unitatAdministrativa.setNom(unitatAdministrativaRolsac.getNombre());
+				if (unitatAdministrativaRolsac.getPadre() != null) {
+					unitatAdministrativa.setPareCodi(unitatAdministrativaRolsac.getPadre().getCodigo());					
+				}
+			}
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
+		} catch (Exception ex) {
+			salutPluginComponent.incrementarOperacioError();
+			throw new SistemaExternException(
+					"No s'ha pogut consultar la unitat administrativa amb codi " + codi + " via REST: " + ex.toString(),
+					ex);
+		}
+		return unitatAdministrativa;
+	}
 	
+	public String getRolsacServiceUrl() {
+		String rolsacUrl = getProperty(
+				"es.caib.distribucio.plugin.rolsac.service.url");
+		if (rolsacUrl == null || rolsacUrl.isBlank()) {
+			// si no troba la propietat llavors obté la url base a partir de la url
+			rolsacUrl = getServiceUrl();
+			if (rolsacUrl.endsWith("/procedimientos")) {
+				rolsacUrl = rolsacUrl.replace("/procedimientos", "");
+			} else if (rolsacUrl.endsWith("/procedimientos")) {
+				rolsacUrl = rolsacUrl.replace("/procedimientos", "");
+			}
+		}
+		return rolsacUrl;
+	}
+
 	public String getServiceUrl() {
 		return getProperty(
-				"es.caib.distribucio.plugin.servei.rolsac.service.url");
+				"es.caib.distribucio.plugin.procediment.rolsac.service.url");
 	}
 	private String getServiceUsername() {
 		return getProperty(
-				"es.caib.distribucio.plugin.servei.rolsac.service.username");
+				"es.caib.distribucio.plugin.procediment.rolsac.service.username");
 	}
 	private String getServicePassword() {
 		return getProperty(
-				"es.caib.distribucio.plugin.servei.rolsac.service.password");
+				"es.caib.distribucio.plugin.procediment.rolsac.service.password");
 	}
 	private Integer getServiceTimeout() {
-		String key = "es.caib.distribucio.plugin.servei.rolsac.service.timeout";
+		String key = "es.caib.distribucio.plugin.procediment.rolsac.service.timeout";
 		if (PropertiesHelper.getProperties().getProperty(key) != null) {
 			return PropertiesHelper.getProperties().getAsInt(key);
 		} else {
@@ -207,34 +255,20 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 
 	public String getUsuariIntegracio() {
 		return getProperty(
-					"es.caib.distribucio.plugin.servei.rolsac.service.username","-");		
-	}
-	
-	public static class ProcedimientosResponse {
-		private String numeroElementos;
-		private String status;
-		private List<Servei> resultado;
-		public String getNumeroElementos() {
-			return numeroElementos;
-		}
-		public void setNumeroElementos(String numeroElementos) {
-			this.numeroElementos = numeroElementos;
-		}
-		public String getStatus() {
-			return status;
-		}
-		public void setStatus(String status) {
-			this.status = status;
-		}
-		public List<Servei> getResultado() {
-			return resultado;
-		}
-		public void setResultado(List<Servei> resultado) {
-			this.resultado = resultado;
-		}
+					"es.caib.distribucio.plugin.procediment.rolsac.service.username","-");		
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(ServeiPluginRolsac.class);
+    @Getter @Setter
+	public static class ProcedimientosResponse {
+		private Integer totalCount;
+		private String status;
+		private List<Procediment> items;
+		private Integer page;
+		private Integer pageSize;
+		private Integer totalPages;
+	}
+
+	private static final Logger logger = LoggerFactory.getLogger(ProcedimentPluginRolsac2.class);
 
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////
@@ -244,7 +278,7 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
         salutPluginComponent.init(registry, uniqueId);
     }
     
-    @Override
+	@Override
 	public boolean teConfiguracioEspecifica() {
 		return salutPluginComponent.teConfiguracioEspecifica();
 	}
@@ -261,5 +295,4 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 		return peticions;
 	}
 	
-
 }

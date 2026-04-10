@@ -1562,11 +1562,52 @@ public class RegistreHelper {
 				}				
 			}
 			logger.trace(">>> Despres de cridar backoffice WS "+ backofficeDesti.getCodi());
+            SubsistemesHelper.addSuccessOperation(backofficeDesti.getCodi(), System.currentTimeMillis() - t0);
 			return null;
         } catch (Exception ex) {
+            SubsistemesHelper.addErrorOperation(backofficeDesti.getCodi());
 			String errorDescripcio = "";
 			if (!ids.isEmpty()) {
 				errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions al backoffice " + backofficeDesti.getNom();
+<<<<<<< HEAD
+=======
+
+                AtomicBoolean reintentsEsgotat = new AtomicBoolean(false);
+                try {
+                    for (AnotacioRegistreId id : ids) {
+                        if (!reintentsEsgotat.get()) {
+                            List<Long> registresId = registreService.findRegistresPerIdentificador(id);
+                            if (!registresId.isEmpty()) {
+                                registreRepository.findById(registresId.get(0))
+                                        .ifPresent(registre -> {
+                                            RegistreDto registreDto = (RegistreDto) contingutHelper.toContingutDto(registre);
+                                            if (registreDto.isReintentsEsgotat()) {
+                                                reintentsEsgotat.set(true);
+                                            }
+                                        });
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error("Error no controlat consultant anotacions per identificador: " + e.getMessage());
+                }
+
+                if (reintentsEsgotat.get()) {
+                    if (backofficeDesti.getEnviamentEmail() && backofficeDesti.getEmailResponsable() != null) {
+                        int minuts = Integer.parseInt(configHelper.getConfig("es.caib.distribucio.email.backoffice.responsable.temps", "1440"));
+                        if (backofficeDesti.getDarrerEmailResponsable() == null
+                                || Duration.between(backofficeDesti.getDarrerEmailResponsable(), LocalDateTime.now()).toMinutes() >= minuts) {
+                            try {
+                                emailHelper.sendEmailRepresentantBackoffice(backofficeDesti);
+                                backofficeDesti.setDarrerEmailResponsable(LocalDateTime.now());
+                                backofficeRepository.save(backofficeDesti);
+                            } catch (Exception e) {
+                                logger.error("Error no controlat enviament de correu a representant de backoffice: " + e.getMessage());
+                            }
+                        }
+                    }
+                }
+>>>>>>> refs/remotes/origin/dis-dev-1.0.8
             } else {
                 if (ExceptionHelper.isExceptionOrCauseInstanceOf(ex, SOAPFaultException.class)) {
                     errorDescripcio = "S'ha pogut establir connexió però s'ha produït un error intern al backoffice " + backofficeDesti.getCodi();

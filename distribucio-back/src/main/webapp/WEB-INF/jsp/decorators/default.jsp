@@ -88,21 +88,23 @@ body {
 	padding-top: 120px;
 }
 
-<c:if test="${sessionScope['EntitatHelper.entitatActual'].colorFons != null  && not empty sessionScope['EntitatHelper.entitatActual'].colorFons}">
-	.navbar-app {
-		background-color: ${sessionScope['EntitatHelper.entitatActual'].colorFons} !important;
-	}
-	.navbar-app .list-inline li.dropdown>a {
-		background-color: ${sessionScope['EntitatHelper.entitatActual'].colorFons} !important;
-	}
-</c:if>
-<c:if test="${sessionScope['EntitatHelper.entitatActual'].colorLletra != null  && not empty sessionScope['EntitatHelper.entitatActual'].colorLletra}">
-	.navbar-app {
-		color: ${sessionScope['EntitatHelper.entitatActual'].colorLletra} !important;
-	}
-	.navbar-app .list-inline li.dropdown>a {
-		color: ${sessionScope['EntitatHelper.entitatActual'].colorLletra} !important;
-	}
+<c:if test="${!isRolActualSuperusuari}">
+    <c:if test="${sessionScope['EntitatHelper.entitatActual'].colorFons != null  && not empty sessionScope['EntitatHelper.entitatActual'].colorFons}">
+        .navbar-app {
+            background-color: ${sessionScope['EntitatHelper.entitatActual'].colorFons} !important;
+        }
+        .navbar-app .list-inline li.dropdown>a {
+            background-color: ${sessionScope['EntitatHelper.entitatActual'].colorFons} !important;
+        }
+    </c:if>
+    <c:if test="${sessionScope['EntitatHelper.entitatActual'].colorLletra != null  && not empty sessionScope['EntitatHelper.entitatActual'].colorLletra}">
+        .navbar-app {
+            color: ${sessionScope['EntitatHelper.entitatActual'].colorLletra} !important;
+        }
+        .navbar-app .list-inline li.dropdown>a {
+            color: ${sessionScope['EntitatHelper.entitatActual'].colorLletra} !important;
+        }
+    </c:if>
 </c:if>
 </style>
 <script type="text/javascript">

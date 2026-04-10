@@ -96,7 +96,7 @@ public class AjaxUserController extends BaseUserController {
 		return getRemitentWithParam(request, text, model);
 	}
 	
-	@RequestMapping(value = "/remitent/item/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/remitent/item/{codi}", method = RequestMethod.GET)
 	@ResponseBody
 	public UsuariDto getItem(HttpServletRequest request, @PathVariable String codi, Model model) {
 		return aplicacioService.findUsuariAmbCodi(codi);

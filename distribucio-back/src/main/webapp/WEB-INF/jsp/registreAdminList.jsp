@@ -49,7 +49,12 @@
 	}
 	tbody tr.selectable td span.caret {
 		margin: 8px 0 0 2px; 
-	}	
+	}
+
+    button#netejarFiltre,
+    button#filtrar {
+        width: 50%;
+    }
 	
 .fila-desactivada {
   position: relative;
@@ -737,7 +742,10 @@ function refreshRegistres($modalExecucioMassiva) {
 				</th>
 				<th data-col-name="interessatsResum" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.interessats"/>
-				</th>				
+				</th>
+                <th data-col-name="backCodi" data-orderable="true">
+                    <spring:message code="contingut.admin.columna.backoffice"/>
+                </th>
 				<th data-col-name="numComentaris"   style ="text-align: center;" data-orderable="false" data-template="#cellPermisosTemplate">							
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
 						<a href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default">
@@ -745,9 +753,6 @@ function refreshRegistres($modalExecucioMassiva) {
 							<span class="badge">{{:numComentaris}}</span>
 						</a>
 					</script>
-				</th>
-				<th data-col-name="backCodi" data-orderable="true">
-					<spring:message code="contingut.admin.columna.backoffice"/>
 				</th>
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" style="max-width:50px;">
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">

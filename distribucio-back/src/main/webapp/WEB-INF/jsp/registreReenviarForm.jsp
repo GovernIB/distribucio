@@ -840,20 +840,22 @@
 	</script>
 </head>
 <body>
-	<c:if test="${registres != null}">
-		<dis:seleccioMultiple 
-			items="${registres}" 
-			itemId="id"
-			itemUrl="/registreUser/registre"  
-			itemUrlParam1="id"
-			itemKey="numero"
-			itemText="extracte" 
-			missatgeHeader="registresSeleccionats.anotacions.seleccionades"
-            itemError="potModificar"
-            missatgeError="registresSeleccionats.anotacions.seleccionades.permisos"/>
-	</c:if>
+    <c:if test="${registres != null}">
+        <dis:seleccioMultiple
+                items="${registres}"
+                itemAlerts="${registresAdvertencies}"
+                itemId="id"
+                itemUrl="/registreUser/registre"
+                itemUrlParam1="id"
+                itemKey="numero"
+                itemText="extracte"
+                missatgeHeader="registresSeleccionats.anotacions.seleccionades"
+                itemError="potModificar"
+                missatgeError="registresSeleccionats.anotacions.seleccionades.permisos"/>
+    </c:if>
 
 	<form:form class="form-horizontal" modelAttribute="contingutReenviarCommand" onsubmit="updateConeixement()">
+        <div id="selectedIdsContainer"></div>
 		<form:hidden path="params"/>
 	    <%--<c:choose>
 	    	<c:when test="${isFavoritsPermes}"> --%>

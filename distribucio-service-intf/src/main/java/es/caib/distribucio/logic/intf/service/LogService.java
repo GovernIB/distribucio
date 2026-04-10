@@ -1,7 +1,7 @@
 package es.caib.distribucio.logic.intf.service;
 
-import es.caib.comanda.model.v1.log.FitxerContingut;
-import es.caib.comanda.model.v1.log.FitxerInfo;
+import es.caib.comanda.model.server.monitoring.FitxerContingut;
+import es.caib.comanda.model.server.monitoring.FitxerInfo;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 
 import org.springframework.security.access.prepost.PreAuthorize;

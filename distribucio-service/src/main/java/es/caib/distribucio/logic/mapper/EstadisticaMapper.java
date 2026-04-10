@@ -1,5 +1,6 @@
 package es.caib.distribucio.logic.mapper;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -11,13 +12,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import es.caib.distribucio.logic.intf.util.DatesUtils;
 import org.springframework.stereotype.Component;
 
-import es.caib.comanda.model.v1.estadistica.Dimensio;
-import es.caib.comanda.model.v1.estadistica.Fet;
-import es.caib.comanda.model.v1.estadistica.RegistreEstadistic;
-import es.caib.comanda.model.v1.estadistica.RegistresEstadistics;
-import es.caib.comanda.model.v1.estadistica.Temps;
+import es.caib.comanda.model.server.monitoring.Dimensio;
+import es.caib.comanda.model.server.monitoring.Fet;
+import es.caib.comanda.model.server.monitoring.RegistreEstadistic;
+import es.caib.comanda.model.server.monitoring.RegistresEstadistics;
+//import es.caib.comanda.model.server.monitoring.Temps;
 import es.caib.distribucio.logic.helper.HibernateHelper;
 import es.caib.distribucio.logic.intf.dto.estadistic.DimEnum;
 import es.caib.distribucio.logic.intf.dto.estadistic.DimensioDistribucio;
@@ -83,17 +85,15 @@ public class EstadisticaMapper {
                             .collect(Collectors.toList());
 
                     // Reconstruir el registre estadístic amb els fets ja combinats
-                    return RegistreEstadistic.builder()
+                    return new RegistreEstadistic()
                             .dimensions(dimensions)
-                            .fets(combinedFets)
-                            .build();
+                            .fets(combinedFets);
                 })
                 .collect(Collectors.toList());
 
-        return RegistresEstadistics.builder()
-                .temps(Temps.builder().data(data).build())
-                .fets(mergedRegistresEstadistics)
-                .build();
+        return new RegistresEstadistics()
+                .temps(DatesUtils.toOffsetDateTime(data))
+                .fets(mergedRegistresEstadistics);
     }
     
     // Generar una clau única de les dimensions
@@ -266,10 +266,9 @@ public class EstadisticaMapper {
             fets.add(new FetDistribucio(fet, fetsValors.getOrDefault(fet, x -> null).apply(entity)));
         }
 
-        return RegistreEstadistic.builder()
+        return new RegistreEstadistic()
                 .dimensions(dimensions)
-                .fets(fets)
-                .build();
+                .fets(fets);
     }
     
     private <T> Stream<T> safeStream(List<T> list) {

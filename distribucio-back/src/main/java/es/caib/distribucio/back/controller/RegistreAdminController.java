@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.back.controller;
 
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -67,6 +68,8 @@ import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.intf.service.ServeiService;
 import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Controlador per a la consulta d'arxius pels administradors.
@@ -180,6 +183,7 @@ public class RegistreAdminController extends BaseAdminController {
 	public String registreUserDetall(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
+			@RequestParam(value="annexId", required=false) Integer annexId,
 			@RequestParam(value="registreNumero", required=false) Integer registreNumero,
 			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
 			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
@@ -230,6 +234,7 @@ public class RegistreAdminController extends BaseAdminController {
 				}
 			}
 			model.addAttribute("registre", registreDto);
+			model.addAttribute("annexId", annexId);
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
 			model.addAttribute("ordreColumn", ordreColumn);
@@ -888,7 +893,15 @@ public class RegistreAdminController extends BaseAdminController {
 			logger.error(errMsg, ex);
 			MissatgesHelper.error(request, errMsg);
 		}
-		return "redirect:" + request.getHeader("referer");
+        String referer = request.getHeader("referer");
+
+        URI newUri = UriComponentsBuilder
+                .fromUriString(referer)
+                .replaceQueryParam("annexId", annexId) // reemplaza o añade
+                .build()
+                .toUri();
+
+        return "redirect:" + newUri.toString();
 	}
 	
 	private List<RegistreDto> emplenarModelCopies(

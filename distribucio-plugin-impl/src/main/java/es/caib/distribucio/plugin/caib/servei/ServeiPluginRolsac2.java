@@ -3,13 +3,6 @@
  */
 package es.caib.distribucio.plugin.caib.servei;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +12,6 @@ import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-
 import es.caib.comanda.model.server.monitoring.EstatSalut;
 import es.caib.comanda.model.server.monitoring.IntegracioPeticions;
 import es.caib.distribucio.logic.intf.dto.ServeiDto;
@@ -30,22 +22,30 @@ import es.caib.distribucio.plugin.servei.Servei;
 import es.caib.distribucio.plugin.servei.ServeiPlugin;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
 import io.micrometer.core.instrument.MeterRegistry;
+import lombok.Getter;
+import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Implementació del plugin de consulta de serveis emprant ROLSAC.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties implements ServeiPlugin {
+public class ServeiPluginRolsac2 extends DistribucioAbstractPluginProperties implements ServeiPlugin {
 
 	private Client jerseyClient;
 	private ObjectMapper mapper;
 
-	public ServeiPluginRolsac() {
+	public ServeiPluginRolsac2() {
 		super();
 	}
-	
-	public ServeiPluginRolsac(Properties properties, boolean configuracioEspecifica) {
+
+	public ServeiPluginRolsac2(Properties properties, boolean configuracioEspecifica) {
 		super(properties);
 		salutPluginComponent.setConfiguracioEspecifica(configuracioEspecifica);
 	}
@@ -58,10 +58,10 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 		ProcedimientosResponse response = null;
 		long start = System.currentTimeMillis();
 		try {
-			StringBuilder sb = new StringBuilder(getServiceUrl());
-			response = findServeisRolsac(
-					sb.toString(),
-					"lang=ca&filtro={\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}&filtroPaginacion={\"page\":\"1\", \"size\":\"9999\"}");
+            response = findServeisRolsac(
+					getServiceUrl() + "?lang=ca",
+					"{\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\", " +
+                            "\"filtroPaginacion\": {\"page\":\"0\", \"size\":\"200\"}}");
 		} catch (Exception ex) {
 			salutPluginComponent.incrementarOperacioError();
 			logger.error("No s'han pogut consultar els serveis de ROLSAC (" +
@@ -75,7 +75,7 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 		
 		if (response != null && response.getStatus().equals("200")) {
 			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
-			return response.getResultado();
+			return response.getItems();
 		} else {
 			salutPluginComponent.incrementarOperacioError();
 			logger.error("No s'han pogut consultar els serveis de ROLSAC (" +
@@ -136,12 +136,10 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 		ProcedimientosResponse response = null;
 		try {
 			long start = System.currentTimeMillis();
-			StringBuilder sb = new StringBuilder(getServiceUrl());			
-			String params = "?lang=ca&filtro={\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}";
-			
+
 			response = findServeisRolsac(
-					sb.toString(),
-					params);
+                    getServiceUrl() + "?lang=ca",
+                    "{\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}");
 			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 		} catch (Exception ex) {
 			salutPluginComponent.incrementarOperacioError();
@@ -155,12 +153,12 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 		}
 		
 		if (response != null && response.getStatus().equals("200")) {
-			if (response.getResultado() != null && !response.getResultado().isEmpty()) {
-				for (Servei servei: response.getResultado()) {
+			if (response.getItems() != null && !response.getItems().isEmpty()) {
+				for (Servei servei: response.getItems()) {
 					toProcedmientDto(servei);
 				}
 				
-				return toProcedmientDto(response.getResultado().get(0));
+				return toProcedmientDto(response.getItems().get(0));
 			} else { 
 				return null;
 			}
@@ -209,32 +207,18 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 		return getProperty(
 					"es.caib.distribucio.plugin.servei.rolsac.service.username","-");		
 	}
-	
-	public static class ProcedimientosResponse {
-		private String numeroElementos;
-		private String status;
-		private List<Servei> resultado;
-		public String getNumeroElementos() {
-			return numeroElementos;
-		}
-		public void setNumeroElementos(String numeroElementos) {
-			this.numeroElementos = numeroElementos;
-		}
-		public String getStatus() {
-			return status;
-		}
-		public void setStatus(String status) {
-			this.status = status;
-		}
-		public List<Servei> getResultado() {
-			return resultado;
-		}
-		public void setResultado(List<Servei> resultado) {
-			this.resultado = resultado;
-		}
-	}
 
-	private static final Logger logger = LoggerFactory.getLogger(ServeiPluginRolsac.class);
+    @Getter @Setter
+    public static class ProcedimientosResponse {
+        private Integer totalCount;
+        private String status;
+        private List<Servei> items;
+        private Integer page;
+        private Integer pageSize;
+        private Integer totalPages;
+    }
+
+	private static final Logger logger = LoggerFactory.getLogger(ServeiPluginRolsac2.class);
 
 	// Mètodes de SALUT
 	// /////////////////////////////////////////////////////////////////////////////////////////////

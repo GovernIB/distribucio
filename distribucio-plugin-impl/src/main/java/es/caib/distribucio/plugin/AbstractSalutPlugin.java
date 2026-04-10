@@ -5,9 +5,9 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.base.Strings;
 
 import es.caib.comanda.ms.salut.helper.EstatHelper;
-import es.caib.comanda.model.v1.salut.EstatSalut;
-import es.caib.comanda.model.v1.salut.EstatSalutEnum;
-import es.caib.comanda.model.v1.salut.IntegracioPeticions;
+import es.caib.comanda.model.server.monitoring.EstatSalut;
+import es.caib.comanda.model.server.monitoring.EstatSalutEnum;
+import es.caib.comanda.model.server.monitoring.IntegracioPeticions;
 import es.caib.distribucio.plugin.utils.CuaFifoBool;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -16,7 +16,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import lombok.Setter;
 import lombok.Synchronized;
 
-public class AbstractSalutPlugin  implements SalutPlugin {
+public class AbstractSalutPlugin implements SalutPlugin {
 
     // Mètodes de SALUT
     // /////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,11 +114,9 @@ public class AbstractSalutPlugin  implements SalutPlugin {
         final EstatSalutEnum estatCalculat = calculaEstat(totalPeticionsOk, totalPeticionsError);
         darrerEstat = estatCalculat;
 
-        return EstatSalut.builder()
+        return new EstatSalut()
                 .latencia(duradaMitja)
-                .estat(estatCalculat)
-                .build();
-        
+                .estat(estatCalculat);
     }
 
     private EstatSalutEnum calculaEstat(Long totalPeticionsOk, Long totalPeticionsError) {
@@ -152,16 +150,15 @@ public class AbstractSalutPlugin  implements SalutPlugin {
         Long peticionsOkUltimPeriode = timerOk != null ? timerOk.count() : null;
         Long peticionsErrorUltimPeriode = counterError != null ? (long) counterError.count() : null;
 
-        var integracioPeticions = IntegracioPeticions.builder()
+        var integracioPeticions = new IntegracioPeticions()
                 .totalOk(peticionsOkGlobal)
                 .totalError(peticionsErrorGlobal)
                 .totalTempsMig(tempsMigGlobal)
                 .peticionsOkUltimPeriode(peticionsOkUltimPeriode)
                 .peticionsErrorUltimPeriode(peticionsErrorUltimPeriode)
                 .tempsMigUltimPeriode(tempsMigPeriode)
-                .endpoint(urlPlugin)
 //                .peticionsPerEntorn()
-                .build();
+                .endpoint(urlPlugin);
         resetComptadors();
         return integracioPeticions;
     }

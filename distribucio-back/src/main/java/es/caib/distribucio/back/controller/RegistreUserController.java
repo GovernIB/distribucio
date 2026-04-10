@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import es.caib.distribucio.logic.intf.dto.*;
+import es.caib.distribucio.logic.intf.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,42 +58,12 @@ import es.caib.distribucio.back.helper.ExceptionHelper;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.back.helper.RolHelper;
-import es.caib.distribucio.logic.intf.dto.AlertaDto;
-import es.caib.distribucio.logic.intf.dto.BustiaDto;
-import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
-import es.caib.distribucio.logic.intf.dto.ContingutDto;
-import es.caib.distribucio.logic.intf.dto.DominiDto;
-import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.ErrorDto;
-import es.caib.distribucio.logic.intf.dto.HistogramPendentsEntryDto;
-import es.caib.distribucio.logic.intf.dto.PaginaDto;
-import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto.OrdreDireccioDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
-import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
-import es.caib.distribucio.logic.intf.dto.RegistreDto;
-import es.caib.distribucio.logic.intf.dto.RegistreProcesEstatSimpleEnumDto;
-import es.caib.distribucio.logic.intf.dto.RegistreTipusDocFisicaEnumDto;
-import es.caib.distribucio.logic.intf.dto.ResultatConsultaDto;
-import es.caib.distribucio.logic.intf.dto.ResultatDominiDto;
-import es.caib.distribucio.logic.intf.dto.ServeiDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
-import es.caib.distribucio.logic.intf.dto.UsuariPermisDto;
 import es.caib.distribucio.logic.intf.exception.DominiException;
 import es.caib.distribucio.logic.intf.exception.EmptyMailException;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.exception.PermissionDeniedException;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
-import es.caib.distribucio.logic.intf.service.AlertaService;
-import es.caib.distribucio.logic.intf.service.AplicacioService;
-import es.caib.distribucio.logic.intf.service.BustiaService;
-import es.caib.distribucio.logic.intf.service.ConfigService;
-import es.caib.distribucio.logic.intf.service.ContingutService;
-import es.caib.distribucio.logic.intf.service.DominiService;
-import es.caib.distribucio.logic.intf.service.MetaDadaService;
-import es.caib.distribucio.logic.intf.service.ProcedimentService;
-import es.caib.distribucio.logic.intf.service.RegistreService;
-import es.caib.distribucio.logic.intf.service.ServeiService;
 
 /**
  * Controlador per al manteniment de registres.
@@ -130,6 +102,8 @@ public class RegistreUserController extends BaseUserController {
 	private ProcedimentService procedimentService;
 	@Autowired
 	private ServeiService serveiService;
+    @Autowired
+    private BackofficeService backofficeService;
 
     @RequestMapping(method = RequestMethod.GET)
 	public String registreUserGet(
@@ -155,6 +129,16 @@ public class RegistreUserController extends BaseUserController {
 		model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
 		model.addAttribute("nomCookieSenseAssignar", COOKIE_SENSE_ASSIGNAR);
 		model.addAttribute("mostrarSenseAssignar", mostrarSenseAssignar);
+
+        List<BackofficeDto> backoffices = backofficeService.findByEntitat(
+                entitatActual.getId());
+        BackofficeDto backNull = new BackofficeDto();
+        backNull.setNom("Sense backoffice");
+        backNull.setCodi("senseBackoffice");
+        backoffices.add(backNull);
+        model.addAttribute("backoffices", backoffices);
+        model.addAttribute("estatsPendents", RegistreProcesEstatEnum.estatsPendents);
+        model.addAttribute("estatsProcessats", RegistreProcesEstatEnum.estatsProcessats);
 		return "registreUserList";
 	}
 
@@ -382,6 +366,7 @@ public class RegistreUserController extends BaseUserController {
 	public String registreUserDetall(
 			HttpServletRequest request,
 			@PathVariable Long registreId,
+            @RequestParam(value="annexId", required=false) Integer annexId,
 			@RequestParam(value="registreNumero", required=false) Integer registreNumero,
 			@RequestParam(value="registreTotal", required = false) Integer registreTotal,
 			@RequestParam(value="ordreColumn", required = false) String ordreColumn,
@@ -389,29 +374,7 @@ public class RegistreUserController extends BaseUserController {
 			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			@RequestParam(required=false) Long destiLogic,
 			Model model) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		return getRegistreDetall(
-				request, 
-				registreId, 
-				isVistaMoviments, 
-				destiLogic,
-				registreNumero, 
-				registreTotal, 
-				ordreColumn, 
-				ordreDir, 
-				model);
-	}	
-	
-	private String getRegistreDetall(
-			HttpServletRequest request,
-			Long registreId,
-			boolean isVistaMoviments,
-			Long destiLogic,
-			Integer registreNumero,
-			Integer registreTotal,
-			String ordreColumn,
-			String ordreDir,
-			Model model) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		
+
 		try {
 
 			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
@@ -456,6 +419,7 @@ public class RegistreUserController extends BaseUserController {
 			}
 
 			model.addAttribute("registre", registre);
+            model.addAttribute("annexId", annexId);
 			model.addAttribute("registreNumero", registreNumero);
 			model.addAttribute("registreTotal", registreTotal);
 			model.addAttribute("ordreColumn", ordreColumn);

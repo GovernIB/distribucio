@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Strings;
 
-import es.caib.comanda.model.v1.salut.EstatSalut;
-import es.caib.comanda.model.v1.salut.IntegracioApp;
-import es.caib.comanda.model.v1.salut.IntegracioInfo;
-import es.caib.comanda.model.v1.salut.IntegracioPeticions;
-import es.caib.comanda.model.v1.salut.IntegracioSalut;
+import es.caib.comanda.ms.salut.helper.IntegracioApp;
+import es.caib.comanda.model.server.monitoring.EstatSalut;
+import es.caib.comanda.model.server.monitoring.IntegracioInfo;
+import es.caib.comanda.model.server.monitoring.IntegracioPeticions;
+import es.caib.comanda.model.server.monitoring.IntegracioSalut;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.helper.LoadedPropertiesHelper;
@@ -103,18 +103,17 @@ public abstract class AbstractPluginHelper<T extends SalutPlugin> {
             totalTempsMig += peticionsEntitat.getTotalTempsMig();
             tempsMigUltimPeriode += peticionsEntitat.getTempsMigUltimPeriode();
         }
-        var peticions = IntegracioPeticions.builder()
+        var peticions = new IntegracioPeticions()
                 .totalOk(totalOk)
                 .totalError(totalError)
                 .peticionsOkUltimPeriode(peticionsOkUltimPeriode)
                 .totalTempsMig(totalTempsMig)
                 .peticionsErrorUltimPeriode(peticionsErrorUltimPeriode)
                 .peticionsPerEntorn(peticionsMap)
-                .tempsMigUltimPeriode(tempsMigUltimPeriode)
-                .build();
+                .tempsMigUltimPeriode(tempsMigUltimPeriode);
 
         var codi = getCodiApp().name();
-        return IntegracioSalut.builder().codi(codi).peticions(peticions).build();
+        return new IntegracioSalut().codi(codi).peticions(peticions);
 	}
 	
 	private Map<String, IntegracioSalut> createIntegracionsFromPlugins() {
@@ -137,12 +136,11 @@ public abstract class AbstractPluginHelper<T extends SalutPlugin> {
 
 	private static <T extends SalutPlugin> void mergeGlobalIntegracio(Map<String, IntegracioSalut> integracioResult, T plugin, EstatSalut estatSalut, String codiIntegracio) {
 		integracioResult.merge(GLOBAL,
-				IntegracioSalut.builder()
+				new IntegracioSalut()
 						.codi(codiIntegracio)
 						.estat(estatSalut.getEstat())
 						.latencia(estatSalut.getLatencia())
-						.peticions(plugin.getPeticionsPlugin())
-						.build(),
+						.peticions(plugin.getPeticionsPlugin()),
 				(existing, nou) -> {
 					existing.getPeticions().setTotalOk(existing.getPeticions().getTotalOk() + nou.getPeticions().getTotalOk());
 					existing.getPeticions().setTotalError(existing.getPeticions().getTotalError() + nou.getPeticions().getTotalError());
@@ -151,12 +149,11 @@ public abstract class AbstractPluginHelper<T extends SalutPlugin> {
 	}
 
 	private IntegracioSalut createIntegracioForPlugin(String codiIntegracio, String codiEntitat, EstatSalut estatSalut, T plugin) {
-		return IntegracioSalut.builder()
+		return new IntegracioSalut()
 				.codi(setFormatIntegracio(codiIntegracio, codiEntitat, 16))
 				.estat(estatSalut.getEstat())
 				.latencia(estatSalut.getLatencia())
-				.peticions(plugin.getPeticionsPlugin())
-				.build();
+				.peticions(plugin.getPeticionsPlugin());
 	}
 
 	public List<IntegracioInfo> getIntegracionsInfo() {
@@ -171,10 +168,9 @@ public abstract class AbstractPluginHelper<T extends SalutPlugin> {
 		String codiIntegracio = getCodiApp().name();
 		String nomIntegracio = getCodiApp().getNom();
 
-		return IntegracioInfo.builder()
+		return new IntegracioInfo()
 				.codi(showInfoEspecifica ? setFormatIntegracio(codiIntegracio, entitat.getCodi(), 16) : codiIntegracio)
-				.nom(showInfoEspecifica ? setFormatIntegracio(nomIntegracio, entitat.getCodi(), 255) : nomIntegracio)
-				.build();
+				.nom(showInfoEspecifica ? setFormatIntegracio(nomIntegracio, entitat.getCodi(), 255) : nomIntegracio);
 	}
 
 
