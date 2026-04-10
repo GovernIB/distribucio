@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -310,7 +311,8 @@ public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 		if (errorsMoventAnnexos > 0) {
 			// Informa de l'error a nivell global.
 			arxiuResultat.setErrorCodi(DistribucioArxiuError.ANNEX_ERROR);
-			arxiuResultat.setErrorMessage("Hi ha hagut " + errorsMoventAnnexos + " errors movent " + anotacioRegistreEntrada.getAnnexos() + " annexos.");
+            String annexosString = "[" + anotacioRegistreEntrada.getAnnexos().stream().map(Annex::getTitol).collect(Collectors.joining(", ")) + "]";
+            arxiuResultat.setErrorMessage("Hi ha hagut " + errorsMoventAnnexos + " errors movent " + annexosString + " annexos.");
 		}
 	}
 	
