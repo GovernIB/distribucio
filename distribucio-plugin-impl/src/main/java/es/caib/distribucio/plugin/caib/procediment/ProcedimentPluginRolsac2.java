@@ -69,8 +69,10 @@ public class ProcedimentPluginRolsac2 extends DistribucioAbstractPluginPropertie
                         "{\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\", " +
                                 "\"filtroPaginacion\": {\"page\":\""+ page + "\", \"size\":\"200\"}}");
 
-                procedimientosList.addAll(response.getItems());
-                totalPages = response.getTotalPages();
+                if (response.getItems() != null)
+                    procedimientosList.addAll(response.getItems());
+                if (response.getTotalPages() != null)
+                    totalPages = response.getTotalPages();
                 page++;
             }
 		} catch (Exception ex) {

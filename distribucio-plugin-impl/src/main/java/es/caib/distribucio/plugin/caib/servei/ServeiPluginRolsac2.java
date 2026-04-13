@@ -71,8 +71,10 @@ public class ServeiPluginRolsac2 extends DistribucioAbstractPluginProperties imp
                         "{\"codigoUADir3\":\"" + codiDir3 + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\", " +
                                 "\"filtroPaginacion\": {\"page\":\"" + page + "\", \"size\":\"200\"}}");
 
-                serveisList.addAll(response.getItems());
-                totalPages = response.getTotalPages();
+                if (response.getItems() != null)
+                    serveisList.addAll(response.getItems());
+                if (response.getTotalPages() != null)
+                    totalPages = response.getTotalPages();
                 page++;
             }
 		} catch (Exception ex) {
