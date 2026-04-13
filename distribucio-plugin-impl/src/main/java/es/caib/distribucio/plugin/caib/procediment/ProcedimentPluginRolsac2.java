@@ -148,10 +148,24 @@ public class ProcedimentPluginRolsac2 extends DistribucioAbstractPluginPropertie
 			"codiSia=" + codiSia + ")");
 		ProcedimientosResponse response = null;
 		long start = System.currentTimeMillis();
+
+        List<Procediment> procedimientosList = new ArrayList<>();
+        int totalPages = 1;
+        int page = 0;
+
 		try {
-			response = findProcedimentsRolsac(
-                    getServiceUrl() + "?lang=ca",
-                    "{\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}");
+            while (page < totalPages) {
+                response = findProcedimentsRolsac(
+                        getServiceUrl() + "?lang=ca",
+                        "{\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\", " +
+                                "\"filtroPaginacion\": {\"page\":\""+ page + "\", \"size\":\"200\"}}");
+
+                if (response.getItems() != null)
+                    procedimientosList.addAll(response.getItems());
+                if (response.getTotalPages() != null)
+                    totalPages = response.getTotalPages();
+                page++;
+            }
 			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 		} catch (Exception ex) {
 			salutPluginComponent.incrementarOperacioError();
@@ -165,12 +179,12 @@ public class ProcedimentPluginRolsac2 extends DistribucioAbstractPluginPropertie
 		}
 		
 		if (response != null && response.getStatus().equals("200")) {
-			if (response.getItems() != null && !response.getItems().isEmpty()) {
-				for (Procediment procediment: response.getItems()) {
+			if (!procedimientosList.isEmpty()) {
+				for (Procediment procediment: procedimientosList) {
 					toProcedmientDto(procediment);
 				}
 				
-				return toProcedmientDto(response.getItems().get(0));
+				return toProcedmientDto(procedimientosList.get(0));
 			} else { 
 				return null;
 			}

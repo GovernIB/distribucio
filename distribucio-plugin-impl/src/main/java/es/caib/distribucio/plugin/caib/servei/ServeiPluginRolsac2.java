@@ -149,12 +149,25 @@ public class ServeiPluginRolsac2 extends DistribucioAbstractPluginProperties imp
 		logger.debug("Consulta del servei pel codi SIA (" +
 			"codiSia=" + codiSia + ")");
 		ProcedimientosResponse response = null;
-		try {
-			long start = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
 
-			response = findServeisRolsac(
-                    getServiceUrl() + "?lang=ca",
-                    "{\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\"}");
+        List<Servei> serveisList = new ArrayList<>();
+        int totalPages = 1;
+        int page = 0;
+
+		try {
+            while (page < totalPages) {
+                response = findServeisRolsac(
+                        getServiceUrl() + "?lang=ca",
+                        "{\"codigoSia\":\"" + codiSia + "\",\"estadoSia\":\"A\",\"buscarEnDescendientesUA\":\"1\", " +
+                                "\"filtroPaginacion\": {\"page\":\"" + page + "\", \"size\":\"200\"}}");
+
+                if (response.getItems() != null)
+                    serveisList.addAll(response.getItems());
+                if (response.getTotalPages() != null)
+                    totalPages = response.getTotalPages();
+                page++;
+            }
 			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 		} catch (Exception ex) {
 			salutPluginComponent.incrementarOperacioError();
@@ -168,12 +181,12 @@ public class ServeiPluginRolsac2 extends DistribucioAbstractPluginProperties imp
 		}
 		
 		if (response != null && response.getStatus().equals("200")) {
-			if (response.getItems() != null && !response.getItems().isEmpty()) {
-				for (Servei servei: response.getItems()) {
+			if (!serveisList.isEmpty()) {
+				for (Servei servei: serveisList) {
 					toProcedmientDto(servei);
 				}
 				
-				return toProcedmientDto(response.getItems().get(0));
+				return toProcedmientDto(serveisList.get(0));
 			} else { 
 				return null;
 			}
