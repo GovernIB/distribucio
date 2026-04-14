@@ -723,6 +723,7 @@ public class BustiaServiceImpl implements BustiaService {
 						filtre.getUnitatObsoleta() == null || filtre.getUnitatObsoleta() == false,
 						filtre.getPerDefecte() != null && filtre.getPerDefecte(),
 						filtre.getActiva() != null && filtre.getActiva(),
+						filtre.getPermis() != null && filtre.getPermis(),
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
 				BustiaDto.class,
 				new Converter<BustiaEntity, BustiaDto>() {
