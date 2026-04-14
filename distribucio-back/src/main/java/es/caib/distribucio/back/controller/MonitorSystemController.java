@@ -1,6 +1,5 @@
 package es.caib.distribucio.back.controller;
 
-import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
@@ -15,6 +14,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import es.caib.comanda.model.server.monitoring.InformacioSistema;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,19 +65,23 @@ public class MonitorSystemController extends BaseController {
 		JSONArray blockedtime = new JSONArray();
 		
 		ThreadMXBean bean = ManagementFactory.getThreadMXBean();
-		sistema.add(getMessage(request, "monitor.procesadores")+": " + Runtime.getRuntime().availableProcessors());
-		sistema.add(getMessage(request, "monitor.memoria_disponible")+": " + MonitorHelper.humanReadableByteCount(Runtime.getRuntime().freeMemory()));
+        InformacioSistema systemInfo = es.caib.comanda.ms.salut.helper.MonitorHelper.getInfoSistema();
+		sistema.add(getMessage(request, "monitor.procesadores")+": " + systemInfo.getProcessadors());
+		sistema.add(getMessage(request, "monitor.memoria_disponible")+": " + systemInfo.getMemoriaDisponible());
 		sistema.add(getMessage(request, "monitor.memoria_maxima")+": " + (Runtime.getRuntime().maxMemory() == Long.MAX_VALUE ? "Ilimitada" : MonitorHelper.humanReadableByteCount(Runtime.getRuntime().maxMemory())));
-		sistema.add(getMessage(request, "monitor.memoria_total")+": " + MonitorHelper.humanReadableByteCount(Runtime.getRuntime().totalMemory()));
+		sistema.add(getMessage(request, "monitor.memoria_total")+": " + systemInfo.getMemoriaTotal());
 		sistema.add(getMessage(request, "monitor.os-name")+": " + MonitorHelper.getName());
 		sistema.add(getMessage(request, "monitor.os-arch") + ": " + MonitorHelper.getArch());
 		sistema.add(getMessage(request, "monitor.os-version") + ": " + MonitorHelper.getVersion());
 		sistema.add(getMessage(request, "monitor.carga_cpu") + ": " + MonitorHelper.getProcessCPULoad());
-		
-		for (File root : File.listRoots()) {
-			sistema.add(getMessage(request, "monitor.space.total") + " " + root.getAbsolutePath()+": " + MonitorHelper.humanReadableByteCount(root.getTotalSpace()));
-			sistema.add(getMessage(request, "monitor.space.free") + " " + root.getAbsolutePath()+": " + MonitorHelper.humanReadableByteCount(root.getFreeSpace()));
-		}
+
+        sistema.add(getMessage(request, "monitor.space.total") + " C:\\: " + systemInfo.getEspaiDiscTotal());
+        sistema.add(getMessage(request, "monitor.space.free") +  " C:\\: " + systemInfo.getEspaiDiscLliure());
+
+//		for (File root : File.listRoots()) {
+//			sistema.add(getMessage(request, "monitor.space.total") + " " + root.getAbsolutePath()+": " + MonitorHelper.humanReadableByteCount(root.getTotalSpace()));
+//			sistema.add(getMessage(request, "monitor.space.free") + " " + root.getAbsolutePath()+": " + MonitorHelper.humanReadableByteCount(root.getFreeSpace()));
+//		}
         
 		int numDeadlocked = 0; 
 		if (bean.findMonitorDeadlockedThreads() != null) {
