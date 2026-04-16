@@ -350,7 +350,7 @@ public class BustiaV1Test {
 						
 			        	firmes = new ArrayList<Firma>();
 			            Firma firma = new Firma();
-			            firma.setFitxerNom("annex_firmat.pdf");
+			            firma.setFitxerNom("annex_firma_agil_caib.pdf");
 			            firma.setTipusMime("application/pdf");
 			            firma.setContingut(
 			            		IOUtils.toByteArray(getContingutAnnexFirmat()));
