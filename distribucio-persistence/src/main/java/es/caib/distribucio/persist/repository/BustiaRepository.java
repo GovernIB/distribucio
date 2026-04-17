@@ -157,7 +157,7 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
                 "JOIN ae.aclObjectIdentity ao "+
                 "WHERE ao.aclClass.aclClass like '%.BustiaEntity' "+
                 "GROUP BY ao.objectIdIdentity "+
-                "HAVING COUNT(ae.aclSid) > 1 "+
+                "HAVING COUNT(DISTINCT ae.aclSid) > 1 "+
             "))")
 	Page<BustiaEntity> findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
