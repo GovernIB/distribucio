@@ -17,15 +17,8 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.annotation.PostConstruct;
@@ -48,6 +41,7 @@ import org.fundaciobit.pluginsib.utils.signature.SignatureCommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.convert.DurationStyle;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -1725,16 +1719,22 @@ public class RegistreHelper {
 			SubsistemesHelper.addErrorOperation(SubsistemesEnum.RGB);
 			throwable = th;
 		}
-		int minutesEspera = 1;
 		String tempsEspera = configHelper.getConfig(
-				"es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio");
-		// we convert to minutes to not have to deal with too big numbers out of bounds
-		minutesEspera = ((Integer.parseInt(tempsEspera) / 1000) / 60);
-		if (minutesEspera < 1) {
-			minutesEspera = 1;
-		}			
+				"es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.reintents.execucio");
+
+        ArrayList<Integer> list = null;
+        try {
+            if (tempsEspera != null) {
+                list = Arrays.stream(tempsEspera.split(","))
+                        .map((i) -> i.replace(" ", ""))
+                        .map((i) -> (int) DurationStyle.detectAndParse(i).toMillis())
+                        .collect(Collectors.toCollection(ArrayList::new));
+            }
+        } catch (Exception e) {
+            logger.error("Error no controlat obtenint el temps entre reintents d'enviar a backoffice " , e.getMessage());
+        }
 		for (Long pendentId : pendentsIdsGroupedByRegla) {
-			self.updateBackEnviarDelayData(pendentId, throwable, dataComunicacio, minutesEspera);
+			self.updateBackEnviarDelayData(pendentId, throwable, dataComunicacio, list);
 		}
 		return throwable;
 	}
@@ -1745,14 +1745,14 @@ public class RegistreHelper {
 	 * @param pendentId
 	 * @param throwable
 	 * @param dataComunicacio
-	 * @param minutesEspera
+	 * @param tempsEspera
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateBackEnviarDelayData(
 			Long pendentId, 
 			Throwable throwable, 
 			Date dataComunicacio,
-			int minutesEspera) {
+			List<Integer> tempsEspera) {
 
 		RegistreEntity pend = registreRepository.findOneAmbBloqueig(pendentId);
 		if (throwable == null) {
@@ -1798,12 +1798,14 @@ public class RegistreHelper {
 		}
 		// set delay for another send retry
 		int procesIntents = pend.getProcesIntents();
-		// with every proces intent delay between resends will be longer
-		int delayMinutes = minutesEspera * procesIntents;
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
-		cal.add(Calendar.MINUTE,
-				delayMinutes);
+
+        if (tempsEspera != null && tempsEspera.size() <= procesIntents) {
+            cal.add(Calendar.MILLISECOND, tempsEspera.get(procesIntents -1));
+        } else {
+            cal.add(Calendar.MINUTE, 10 * procesIntents);
+        }
 		pend.updateBackRetryEnviarData(cal.getTime());
 	}
 

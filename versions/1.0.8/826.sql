@@ -1,0 +1,1 @@
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.reintents.execucio',null,'Periode de temps entre reintents','SCHEDULLED_BACKOFFICE','2','0','TEXT',null,null);
