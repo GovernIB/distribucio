@@ -1719,22 +1719,8 @@ public class RegistreHelper {
 			SubsistemesHelper.addErrorOperation(SubsistemesEnum.RGB);
 			throwable = th;
 		}
-		String tempsEspera = configHelper.getConfig(
-				"es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.reintents.execucio");
-
-        ArrayList<Integer> list = null;
-        try {
-            if (tempsEspera != null) {
-                list = Arrays.stream(tempsEspera.split(","))
-                        .map((i) -> i.replace(" ", ""))
-                        .map((i) -> (int) DurationStyle.detectAndParse(i).toMillis())
-                        .collect(Collectors.toCollection(ArrayList::new));
-            }
-        } catch (Exception e) {
-            logger.error("Error no controlat obtenint el temps entre reintents d'enviar a backoffice " , e.getMessage());
-        }
 		for (Long pendentId : pendentsIdsGroupedByRegla) {
-			self.updateBackEnviarDelayData(pendentId, throwable, dataComunicacio, list);
+			self.updateBackEnviarDelayData(pendentId, throwable, dataComunicacio);
 		}
 		return throwable;
 	}
@@ -1751,9 +1737,8 @@ public class RegistreHelper {
 	public void updateBackEnviarDelayData(
 			Long pendentId, 
 			Throwable throwable, 
-			Date dataComunicacio,
-			List<Integer> tempsEspera) {
-
+			Date dataComunicacio) {
+        
 		RegistreEntity pend = registreRepository.findOneAmbBloqueig(pendentId);
 		if (throwable == null) {
 			// remove exception message and increment procesIntents
@@ -1796,16 +1781,34 @@ public class RegistreHelper {
                 }
 			}
 		}
-		// set delay for another send retry
+		// Calcula el temps entre reintents a partir del número de reintents, configuració i valor per defecte #826
 		int procesIntents = pend.getProcesIntents();
+		Integer tempsEntreIntentsMs = null;
+		// Configuració amb expressions ISO-8601 per interpretar amb lava.lang.Duration
+		String configTempsEspera = configHelper.getConfig(
+				"es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.entre.intents");
+		if (configTempsEspera != null && !configTempsEspera.trim().isEmpty()) {
+	        try {
+		        ArrayList<Integer> tempsConfigMs = Arrays.stream(configTempsEspera.split(","))
+	                        .map((i) -> i.trim())
+	                        .map((i) -> (int) DurationStyle.detectAndParse(i).toMillis())
+	                        .collect(Collectors.toCollection(ArrayList::new));
+		        // Per cada intent li toca una expressió però si hi ha més intents que expressions llavors s'hagafa la darrera t = tempsConfigMs[procesIntent-1]
+		        if (!tempsConfigMs.isEmpty()) {
+		        	tempsEntreIntentsMs = tempsConfigMs.get(Math.max(0, Math.min(procesIntents-1, tempsConfigMs.size()-1)));
+		        }
+	        } catch (Exception e) {
+	            logger.error("Error no controlat obtenint el temps configurat entre reintents d'enviar a backoffice \"" 
+	            				+ configTempsEspera + "\": " + e.getMessage());
+	        }
+		}
+		// Si no s'especifica cap propietat llavors el temps són 10 minuts per reintent
+		if (tempsEntreIntentsMs == null) {
+			tempsEntreIntentsMs = procesIntents * 10 * 60000;
+		}
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
-
-        if (tempsEspera != null && tempsEspera.size() <= procesIntents) {
-            cal.add(Calendar.MILLISECOND, tempsEspera.get(procesIntents -1));
-        } else {
-            cal.add(Calendar.MINUTE, 10 * procesIntents);
-        }
+        cal.add(Calendar.MILLISECOND, tempsEntreIntentsMs);
 		pend.updateBackRetryEnviarData(cal.getTime());
 	}
 
