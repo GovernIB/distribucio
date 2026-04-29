@@ -86,7 +86,7 @@
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="true" 
 					placeholderKey="servei.list.columna.unitatOrganitzativa"
-					suggestValue="codi"
+					suggestValue="id"
 					suggestText="codiAndNom" 
 					optionTemplateFunction="formatSelectUnitat" /> 
 			</div>

@@ -72,7 +72,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		PaginaDto<ProcedimentDto> llistaProcediments = null;
         EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
 
-		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), filtre.getUnitatOrganitzativa());
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodiDir3EntitatAndId(entitat.getCodiDir3(), filtre.getUnitatOrganitzativa());
 		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
 		mapeigPropietatsOrdenacio.put("codiProcediment", new String[]{"codi"});
 		llistaProcediments = paginacioHelper.toPaginaDto(

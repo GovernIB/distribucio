@@ -71,7 +71,7 @@ public class ServeiServiceImpl implements ServeiService{
 		PaginaDto<ServeiDto> llistaServeis = null;
         EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
 
-		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), filtre.getUnitatOrganitzativa());
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodiDir3EntitatAndId(entitat.getCodiDir3(), filtre.getUnitatOrganitzativa());
 		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
 		mapeigPropietatsOrdenacio.put("codiServei", new String[]{"codi"});
 		llistaServeis = paginacioHelper.toPaginaDto(

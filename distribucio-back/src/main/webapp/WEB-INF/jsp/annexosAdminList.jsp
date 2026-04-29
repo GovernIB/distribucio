@@ -177,6 +177,7 @@ pageContext.setAttribute(
 		function recuperarNumeroCopies(baseUrl) {
 			$.get(baseUrl)
 			.done(function(resultat) {
+                var actual = "${annexosFiltreCommand.numeroCopia}";
 				$('#numeroCopia').select2('val', '', true);
 				$('#numeroCopia option[value!=""]').remove();
 				
@@ -198,6 +199,7 @@ pageContext.setAttribute(
 						allowClear: true
 				}
 				$('#numeroCopia').select2(select2Options);
+                $('#numeroCopia').val(actual).change();
 			})
 			.fail(function() {
 				alert("<spring:message code="error.jquery.ajax"/>");

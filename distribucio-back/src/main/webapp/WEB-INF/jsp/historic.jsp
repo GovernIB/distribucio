@@ -54,8 +54,8 @@
 	}
 	
 	
-	th, 
-	td, 
+	/*th, */
+	/*td, */
 	#div-btn-accions button span {
 	    word-wrap: break-word;
 	    overflow-wrap: break-word;

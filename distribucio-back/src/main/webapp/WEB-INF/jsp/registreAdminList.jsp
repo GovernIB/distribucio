@@ -235,7 +235,7 @@ $(document).ready(function() {
 	});
 	$('#mostrarInactives').change(function() {
 		$('#bustia').prop('disabled', true);
-		var actual = $('#bustia').val();
+		var actual = "${registreFiltreCommand.bustia}";
 		$('#bustia').select2('val', '', true);
 		$('#bustia option[value!=""]').remove();
 		var baseUrl = "<c:url value='/registreAdmin/busties'/>?mostrarInactives=" + $(this).val();
@@ -390,14 +390,14 @@ function refreshRegistres($modalExecucioMassiva) {
 				<div class="row">
 					<div class="col-md-10">
 						<dis:inputSelect 
-							name="bustia" 
-							optionItems="${replacedByJquery}" 
+							name="bustia"
+							optionItems="${replacedByJquery}"
 							optionValueAttribute="id" 
 							optionTextAttribute="nom" 
 							emptyOption="true" 
 							placeholderKey="bustia.list.filtre.bustia" 
 							inline="true"
-							optionMinimumResultsForSearch="0" 
+							optionMinimumResultsForSearch="0"
 							optionTemplateFunction="formatSelectBustia" />
 					</div>
 					<div class="col-md-2" style="padding-left: 0;">

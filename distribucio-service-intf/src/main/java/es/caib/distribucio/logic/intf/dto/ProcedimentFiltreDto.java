@@ -2,65 +2,20 @@ package es.caib.distribucio.logic.intf.dto;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+@Getter
+@Setter
 public class ProcedimentFiltreDto implements Serializable{
 	
 	private String codi;
 	private String nom;
 	private String codiSia;
 	private ProcedimentEstatEnumDto estat;
-	private String unitatOrganitzativa;
-	private EntitatDto entitat;	
-
-	
-	public String getCodi() {
-		return codi;
-	}
-	
-	public void setCodi(String codi) {
-		this.codi = codi;
-	}
-
-	public String getNom() {
-		return nom;
-	}
-
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	public String getCodiSia() {
-		return codiSia;
-	}
-
-	public void setCodiSia(String codiSia) {
-		this.codiSia = codiSia;
-	}
-
-	public ProcedimentEstatEnumDto getEstat() {
-		return estat;
-	}
-
-	public void setEstat(ProcedimentEstatEnumDto estat) {
-		this.estat = estat;
-	}
-
-	public String getUnitatOrganitzativa() {
-		return unitatOrganitzativa;
-	}
-
-	public void setUnitatOrganitzativa(String unitatOrganitzativa) {
-		this.unitatOrganitzativa = unitatOrganitzativa;
-	}
-
-	public EntitatDto getEntitat() {
-		return entitat;
-	}
-
-	public void setEntitat(EntitatDto entitat) {
-		this.entitat = entitat;
-	}
+	private Long unitatOrganitzativa;
+	private EntitatDto entitat;
 	
 	@Override
 	public String toString() {

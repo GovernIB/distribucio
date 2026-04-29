@@ -243,7 +243,7 @@ $(document).ready(function() {
 	});
 	$('#mostrarInactives').change(function() {
 		//>>> Valor actual bústia destí
-		var actual = $('#bustia').val();
+        var actual = "${registreFiltreCommand.bustia}";
 		var bustiaPerDefecte = '${bustiaPerDefecte}'
 		//>>> Bústia destí
 		$('#bustia').select2('val', '', true);

@@ -169,6 +169,7 @@ public interface UnitatOrganitzativaRepository extends JpaRepository<UnitatOrgan
 			@Param("codiDir3Entitat") String codiDir3Entitat);
 	
 	UnitatOrganitzativaEntity findByCodiDir3EntitatAndCodi(String codiDir3Entitat, String codi);
+    UnitatOrganitzativaEntity findByCodiDir3EntitatAndId(String codiDir3Entitat, Long id);
 
 
 	/** Retorna les unitats orgàniques que són superiors d'una 

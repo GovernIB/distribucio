@@ -1101,7 +1101,7 @@ li[id^="anotacio_"] {
 											</c:choose>
 											<td>
 												<c:if test="${interessat.tipus != 'ADMINISTRACIO' or interessat.tipus != 'ADMIN_LECTURA'}">
-													<button type="button" class="btn btn-default desplegable" href="#detalls_resum_interessats_${status.index}" data-toggle="collapse" aria-expanded="false" aria-controls="detalls_resum_interessats_${status.index}">
+													<button type="button" class="btn btn-default desplegable" data-target="#detalls_resum_interessats_${status.index}" data-toggle="collapse" aria-expanded="false" aria-controls="detalls_resum_interessats_${status.index}">
 														<span class="fa fa-caret-down"></span>
 													</button>
 												</c:if>

@@ -388,7 +388,7 @@ $(document).ready(function() {
 		$(this).blur();
 	});
 	$('#mostrarInactives').change(function() {
-		var actual = $('#bustia').val();
+        var actual = "${registreFiltreCommand.bustia}";
 		var bustiaPerDefecte = '${bustiaPerDefecte}'
 		$('#bustia').select2('val', '', true);
 		$('#bustia option[value!=""]').remove();
