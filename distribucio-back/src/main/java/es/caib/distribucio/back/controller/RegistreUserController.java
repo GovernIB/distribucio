@@ -806,8 +806,8 @@ public class RegistreUserController extends BaseUserController {
 	@RequestMapping(value = "/enviarViaEmail/{contingutId}", method = RequestMethod.POST)
 	public String enviarViaEmailPost(
 			HttpServletRequest request,
+            @RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			@Valid RegistreEnviarViaEmailCommand command,
-			@RequestParam(required=false, defaultValue="false") boolean isVistaMoviments,
 			BindingResult bindingResult,
 			Model model)  {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);

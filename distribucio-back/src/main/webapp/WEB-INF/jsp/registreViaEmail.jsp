@@ -58,5 +58,23 @@
 		</div>
 
 	</form:form>
+
+    <script type="text/javascript">
+        $(function() {
+            $('form').on('submit', function(e) {
+                if (!this.checkValidity()) {
+                    return;
+                }
+
+                var $btn = $('button[type="submit"]');
+                if ($btn.prop('disabled')) {
+                    e.preventDefault();
+                    return;
+                }
+
+                $btn.prop('disabled', true);
+            });
+        });
+    </script>
 </body>
 </html>
