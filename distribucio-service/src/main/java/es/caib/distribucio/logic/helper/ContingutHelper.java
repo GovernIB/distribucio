@@ -227,7 +227,10 @@ public class ContingutHelper {
 			if (registreEntity.getProcesIntents() >= maxReintents) {
 				registreDto.setReintentsEsgotat(true);
 			}
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			registreDto.setProcesIntents(registreEntity.getProcesIntents());
+            if (registreEntity.getBackRetryEnviarData() != null)
+			    registreDto.setBackRetryEnviarDataString(sdf.format(registreEntity.getBackRetryEnviarData()));
 			registreDto.setMaxReintents(maxReintents);
 			registreDto.setMotiuRebuig(registreEntity.getMotiuRebuig());
 			registreDto.setBackObservacions(registreEntity.getBackObservacions());

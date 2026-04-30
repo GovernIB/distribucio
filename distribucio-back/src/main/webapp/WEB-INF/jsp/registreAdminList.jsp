@@ -120,7 +120,11 @@ function formatSelectUnitat(item) {
 	}
 }
 
-$(document).ready(function() {	
+$(document).ready(function() {
+    if (typeof formatDate === 'function') {
+        $.views.helpers({ formatDate: formatDate });
+    }
+
 	$("#reintents .select2").css("width", "29.5rem");
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 	
@@ -570,6 +574,7 @@ function refreshRegistres($modalExecucioMassiva) {
 				<th data-col-name="motiuRebuig" data-visible="false"></th>
 				<th data-col-name="arxiuTancat" data-visible="false"></th>
 				<th data-col-name="documentacioFisicaCodi" data-visible="false"></th>
+				<th data-col-name="backRetryEnviarDataString" data-visible="false"></th>
 				<th data-col-name="numero"><spring:message code="bustia.pendent.columna.numero"/></th>
 				<th data-col-name="extracte"><spring:message code="bustia.pendent.columna.titol"/></th>
 				<th data-col-name="numeroOrigen"><spring:message code="bustia.list.filtre.origen.num"/></th>
@@ -647,6 +652,10 @@ function refreshRegistres($modalExecucioMassiva) {
 							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deProcessarAlBackoffice"/>">
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
 							</span>
+						{{/if}}
+						{{if backRetryEnviarDataString}}
+						    <br/>
+                            <span style="font-size:1rem"> Proper reintent: {{:backRetryEnviarDataString}} </span>
 						{{/if}}
 						</div>
 						{{if motiuRebuig}}
