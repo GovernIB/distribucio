@@ -137,16 +137,16 @@
 			<th data-col-name="unitatOrganitzativa.codi" data-template="#uoTemplate">
 				<spring:message code="procediment.list.columna.unitatOrganitzativa"/>
 				<script id="uoTemplate" type="text/x-jsrender">
-
+                {{if unitatOrganitzativa}}
 					{{if unitatOrganitzativa.estat!='V'}}
 						<span class="fa fa-warning text-warning  pull-right" style="margin-top: 3px;" title="<spring:message code="unitat.filtre.avis.obsoleta"/>"></span>
 					{{/if}}
- 
-					{{:unitatOrganitzativa.codi}} -  {{:unitatOrganitzativa.denominacio}}
 
+					{{:unitatOrganitzativa.codi}} -  {{:unitatOrganitzativa.denominacio}}
+                {{/if}}
 				</script>
 			</th>
-			<th data-col-name="estat" data-orderable="true"><spring:message code="procediment.list.columna.estat"/></th> 
+			<th data-col-name="estat" data-orderable="true"><spring:message code="procediment.list.columna.estat"/></th>
 		</tr>
 	</thead>
 </table>
