@@ -226,6 +226,10 @@ function formatSelectTipusDocumentacio(item) {
 }
 var mostrarSenseAssignar = '${mostrarSenseAssignar}' === 'true';
 $(document).ready(function() {
+    if (typeof formatDate === 'function') {
+        $.views.helpers({ formatDate: formatDate });
+    }
+
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 	$("#contingutBusties").addClass('active');
 	$("#canviVistaReenvios").removeClass('active');
@@ -885,6 +889,10 @@ function refreshRegistres($modalExecucioMassiva) {
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
 							</span>
 						{{/if}}
+						{{if backRetryEnviarDataString}}
+						    <br/>
+                            <span style="font-size:1rem"> Proper reintent: {{:backRetryEnviarDataString}} </span>
+						{{/if}}
 						</div>
 						{{if motiuRebuig}}
 							<div class="d-flex" style="align-items: end;">
@@ -1052,6 +1060,7 @@ function refreshRegistres($modalExecucioMassiva) {
 				<th data-col-name="darrerMovimentOrigenUoAndBustia" data-visible="false" data-orderable="false"></th>
 				<th data-col-name="oficinaDescripcio" data-visible="false" data-orderable="false"></th>
 				<th data-col-name="backCodi" data-visible="false"></th>
+                <th data-col-name="backRetryEnviarDataString" data-visible="false"></th>
 			</tr>
 		</thead>
 	</table>

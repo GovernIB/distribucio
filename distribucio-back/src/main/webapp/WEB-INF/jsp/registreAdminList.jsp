@@ -574,7 +574,6 @@ function refreshRegistres($modalExecucioMassiva) {
 				<th data-col-name="motiuRebuig" data-visible="false"></th>
 				<th data-col-name="arxiuTancat" data-visible="false"></th>
 				<th data-col-name="documentacioFisicaCodi" data-visible="false"></th>
-				<th data-col-name="backRetryEnviarDataString" data-visible="false"></th>
 				<th data-col-name="numero"><spring:message code="bustia.pendent.columna.numero"/></th>
 				<th data-col-name="extracte"><spring:message code="bustia.pendent.columna.titol"/></th>
 				<th data-col-name="numeroOrigen"><spring:message code="bustia.list.filtre.origen.num"/></th>
@@ -816,6 +815,7 @@ function refreshRegistres($modalExecucioMassiva) {
 				<th data-col-name="regla.nom" data-visible="false"></th>
 				<th data-col-name="backCodi" data-visible="false"></th>
 				<th data-col-name="backObservacions" data-visible="false"></th>
+                <th data-col-name="backRetryEnviarDataString" data-visible="false"></th>
 			</tr>
 		</thead>
 	</table>
