@@ -1,6 +1,6 @@
 package es.caib.distribucio.logic.helper.plugin;
 
-import static es.caib.distribucio.logic.intf.dto.IntegracioCodi.PROCEDIMENT;
+import static es.caib.distribucio.logic.intf.dto.IntegracioCodi.SERVEI;
 
 import java.util.HashMap;
 import java.util.List;
@@ -136,7 +136,7 @@ public class ServeiPluginHelper extends AbstractPluginHelper<ServeiPlugin> {
 		if (Strings.isNullOrEmpty(pluginClass)) {
 			var msg = "No està configurada la classe pel plugin de serveis";
 			log.error(msg);
-			throw new SistemaExternException(PROCEDIMENT.name(), msg);
+			throw new SistemaExternException(SERVEI.name(), msg);
 		}
 		
 		if (pluginClass != null && pluginClass.length() > 0) {
@@ -150,7 +150,7 @@ public class ServeiPluginHelper extends AbstractPluginHelper<ServeiPlugin> {
 				plugin.init(meterRegistry, getCodiApp().name() + "_SERVEIS");
 			} catch (Exception ex) {
 				throw new SistemaExternException(
-						PROCEDIMENT.name(),
+						SERVEI.name(),
 						"Error al crear la instància del plugin de serveis amb el nom de la classe " + pluginClass,
 						ex);
 			}
@@ -158,7 +158,7 @@ public class ServeiPluginHelper extends AbstractPluginHelper<ServeiPlugin> {
 			return plugin;
 		} else {
 			throw new SistemaExternException(
-					PROCEDIMENT.name(),
+					SERVEI.name(),
 					"No està configurada la classe pel plugin de serveis");
 		}
 	}
