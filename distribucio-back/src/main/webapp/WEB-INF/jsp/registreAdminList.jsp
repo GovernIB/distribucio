@@ -627,7 +627,11 @@ function refreshRegistres($modalExecucioMassiva) {
 							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
 							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deEnviarAlBackoffice"/>">
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
-							</span>					
+							</span>
+							{{if backRetryEnviarDataString && !reintentsEsgotat }}
+                                <br/>
+                                <span style="font-size:1rem"> Proper reintent: {{:backRetryEnviarDataString}} </span>
+                            {{/if}}
 						{{else procesEstat == 'BACK_COMUNICADA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_COMUNICADA"/>
 							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
@@ -651,10 +655,6 @@ function refreshRegistres($modalExecucioMassiva) {
 							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deProcessarAlBackoffice"/>">
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
 							</span>
-						{{/if}}
-						{{if backRetryEnviarDataString}}
-						    <br/>
-                            <span style="font-size:1rem"> Proper reintent: {{:backRetryEnviarDataString}} </span>
 						{{/if}}
 						</div>
 						{{if motiuRebuig}}

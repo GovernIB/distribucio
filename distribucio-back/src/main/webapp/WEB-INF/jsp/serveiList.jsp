@@ -79,7 +79,7 @@
 			</div>			
 			<div class="col-md-3">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
-				<c:url value="/unitatajax/senseEntitat" var="urlConsultaLlistat"/>
+				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 
 					name="unitatOrganitzativa"
 					urlConsultaInicial="${urlConsultaInicial}" 
