@@ -80,7 +80,7 @@ public class BustiaV1Test {
 	private static final boolean TEST_ANNEX_FIRMA_CADES_ATTACHED = false; //TF05 - CAdES attached
 	private static final boolean TEST_ANNEX_FIRMA_AGIL = false;
 	private static final boolean TEST_ANNEX_PDF = true;
-	private static final boolean TEST_ANNEX_DOC_TECNIC = true; // Indica si adjuntar els documents tècnics de sistra2 com annexos
+	private static final boolean TEST_ANNEX_DOC_TECNIC = false; // Indica si adjuntar els documents tècnics de sistra2 com annexos
 	
 	
 	private static final  Map<String, String> metaDadesMap = new HashMap<String, String>() {{
@@ -350,7 +350,7 @@ public class BustiaV1Test {
 						
 			        	firmes = new ArrayList<Firma>();
 			            Firma firma = new Firma();
-			            firma.setFitxerNom("annex_firma_agil_caib.pdf");
+			            firma.setFitxerNom("annex_firmat.pdf");
 			            firma.setTipusMime("application/pdf");
 			            firma.setContingut(
 			            		IOUtils.toByteArray(getContingutAnnexFirmat()));

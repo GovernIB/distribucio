@@ -86,7 +86,7 @@ public class BackofficeServiceEjb extends AbstractServiceEjb<BackofficeService> 
 	}
 
 	@Override
-	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_USER })
+	@RolesAllowed("**")
 	public List<BackofficeDto> findByEntitat(Long entitatId) throws NotFoundException {
 		return delegateService.findByEntitat(entitatId);
 	}
