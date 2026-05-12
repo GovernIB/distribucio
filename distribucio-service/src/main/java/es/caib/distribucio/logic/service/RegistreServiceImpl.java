@@ -794,7 +794,7 @@ public class RegistreServiceImpl implements RegistreService {
             sqlWhere.append(" AND (");
             sqlWhere.append("  SELECT COUNT(distinct a) FROM r.annexos a");
             sqlWhere.append("  WHERE (r.justificant.id IS NULL OR a.id <> r.justificant.id)");
-            sqlWhere.append("   AND (r.justificantArxiuUuid IS NULL OR a.fitxerArxiuUuid <> r.justificantArxiuUuid)");
+            sqlWhere.append("   AND (r.justificantArxiuUuid IS NULL OR a.fitxerArxiuUuid IS NULL OR a.fitxerArxiuUuid <> r.justificantArxiuUuid)");
             if (!isAdmin)
                 sqlWhere.append("   AND (a.sicresTipusDocument IS NULL OR a.sicresTipusDocument <> '" + RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor() + "')");
             sqlWhere.append("   AND (a.arxiuEstat = '" + AnnexEstat.ESBORRANY + "')");
@@ -864,7 +864,7 @@ public class RegistreServiceImpl implements RegistreService {
 			sqlWhere.append(" AND (");
             sqlWhere.append("  SELECT COUNT(distinct a) FROM r.annexos a");
             sqlWhere.append("  WHERE (r.justificant.id IS NULL OR a.id <> r.justificant.id)");
-            sqlWhere.append("   AND (r.justificantArxiuUuid IS NULL OR a.fitxerArxiuUuid <> r.justificantArxiuUuid)");
+            sqlWhere.append("   AND (r.justificantArxiuUuid IS NULL OR a.fitxerArxiuUuid IS NULL OR a.fitxerArxiuUuid <> r.justificantArxiuUuid)");
             if (!isAdmin)
                 sqlWhere.append("   AND (a.sicresTipusDocument IS NULL OR a.sicresTipusDocument <> '" + RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor() + "')");
             sqlWhere.append(" ) " + this.getNombreAnnexosSize(nombreAnnexos));
