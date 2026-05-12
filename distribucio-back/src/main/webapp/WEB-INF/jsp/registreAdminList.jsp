@@ -143,6 +143,8 @@ $(document).ready(function() {
 		$('#enviatPerEmail').val(null).change();
 		$('#nomesAmbEsborranysBtn').removeClass('active');
 		$('#nomesAmbEsborranys').val(false);
+		$('#ambAnnexosInternsBtn').removeClass('active');
+		$('#ambAnnexosInterns').val(false);
 		$('#sobreescriure').val(null).trigger('change');
 		$('#reintents').val(null).trigger('change');
 	});
@@ -155,6 +157,11 @@ $(document).ready(function() {
 		nomesAmbEsborranys = !$(this).hasClass('active');
 		// Modifica el formulari
 		$('#nomesAmbEsborranys').val(nomesAmbEsborranys);
+	})
+	$('#ambAnnexosInternsBtn').click(function() {
+		ambAnnexosInterns = !$(this).hasClass('active');
+		// Modifica el formulari
+		$('#ambAnnexosInterns').val(ambAnnexosInterns);
 	})
 	var selectButtonsInitialized = false;
 	$('#taulaDades').on( 'draw.dt', function (datatable) {
@@ -422,7 +429,7 @@ function refreshRegistres($modalExecucioMassiva) {
 		<div class="row">
 			<div class="col-md-2">
 				<div class="row">
-					<div class="col-sm-9">
+					<div class="col-sm-7">
 						<dis:inputSelect 
 							name="tipusDocFisica" 
 							netejar="false" 
@@ -434,9 +441,13 @@ function refreshRegistres($modalExecucioMassiva) {
 							inline="true" 
 							optionTemplateFunction="formatSelectTipusDocumentacio"/>
 					</div>
-					<div class="col-sm-3" style="padding-left: 0;">
+					<div class="col-sm-2" style="padding-left: 0;">
 						<button id="nomesAmbEsborranysBtn" style="width: 45px;" title="<spring:message code="contingut.admin.filtre.nomesAmbEsborranys"/>" class="btn btn-default <c:if test="${registreFiltreCommand.nomesAmbEsborranys}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
 						<dis:inputHidden name="nomesAmbEsborranys"/>
+					</div>
+					<div class="col-sm-2">
+                        <button id="ambAnnexosInternsBtn" style="width: 45px;" title="<spring:message code="contingut.admin.filtre.ambAnnexosInterns"/>" class="btn btn-default <c:if test="${registreFiltreCommand.ambAnnexosInterns}">active</c:if>" data-toggle="button"><span class="fa fa-eye"></span></button>
+                        <dis:inputHidden name="ambAnnexosInterns"/>
 					</div>
 				</div>
 			</div>

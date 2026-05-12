@@ -620,9 +620,11 @@ public class RegistreServiceImpl implements RegistreService {
 					filtre.getProcedimentCodi() == null, 
 					filtre.getProcedimentCodi() != null ? filtre.getProcedimentCodi() : "", 
 					filtre.getNombreAnnexes(),
+					filtre.isAmbAnnexosInterns(),
 					filtre.getUsuariAssignatCodi() == null,
 					filtre.getUsuariAssignatCodi() != null ? filtre.getUsuariAssignatCodi() : "",
 					filtre.isMostrarSenseAssignar(),
+                    isAdmin,
 					paginacioHelper.toSpringDataPageable(paginacioParams, mapeigOrdenacio));
 
 			contextTotalfindRegistreByPareAndFiltre.stop();
@@ -709,9 +711,11 @@ public class RegistreServiceImpl implements RegistreService {
 			boolean esNullProcedimentCodi,
 			String procedimentCodi,
 			RegistreNombreAnnexesEnumDto nombreAnnexos,
+			boolean annexosInterns,
 			boolean esNullUsuariAssignatCodi,
 			String usuariAssignatCodi,
 			boolean mostrarSenseAssignar,
+			boolean isAdmin,
 			Pageable pageable) {
 		Object ret = null; // Retorna una llista d'identificadors o una pàgina
 		// Construeix la select
@@ -719,10 +723,10 @@ public class RegistreServiceImpl implements RegistreService {
 		if (!esNullRemitent) {
 			sqlFrom += 		" left outer join r.darrerMoviment.remitent as remitent ";
 		}
-		if (nombreAnnexos != null) {
-			sqlFrom += 		" left outer join r.annexos as annex ";
-								//" with (r.justificant.id <> annex.id and r.justificantArxiuUuid <> annex.fitxerArxiuUuid) ";
-		}
+//		if (nombreAnnexos != null) {
+//			sqlFrom += 		" left outer join r.annexos as annex ";
+//								//" with (r.justificant.id <> annex.id and r.justificantArxiuUuid <> annex.fitxerArxiuUuid) ";
+//		}
 		// Where
 		Map<String, Object> parametres = new HashMap<>();
 		StringBuilder sqlWhere = new StringBuilder(" where ");
@@ -787,7 +791,20 @@ public class RegistreServiceImpl implements RegistreService {
 			sqlWhere.append("and r.procesError != null ");
 		}
 		if (nomesAmbEsborranys) {
-			sqlWhere.append("and r.annexosEstatEsborrany > 0 ");
+            sqlWhere.append(" AND (");
+            sqlWhere.append("  SELECT COUNT(distinct a) FROM r.annexos a");
+            sqlWhere.append("  WHERE (r.justificant.id IS NULL OR a.id <> r.justificant.id)");
+            sqlWhere.append("   AND (r.justificantArxiuUuid IS NULL OR a.fitxerArxiuUuid <> r.justificantArxiuUuid)");
+            if (!isAdmin)
+                sqlWhere.append("   AND (a.sicresTipusDocument IS NULL OR a.sicresTipusDocument <> '" + RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor() + "')");
+            sqlWhere.append("   AND (a.arxiuEstat = '" + AnnexEstat.ESBORRANY + "')");
+            sqlWhere.append(" ) > 0");
+		}
+		if (annexosInterns && isAdmin) {
+            sqlWhere.append(" AND (");
+            sqlWhere.append("  SELECT COUNT(distinct a) FROM r.annexos a");
+            sqlWhere.append("  WHERE (a.sicresTipusDocument = '" + RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor() + "')");
+            sqlWhere.append(" ) > 0");
 		}
 		if (!esNullInteressat) {
 			sqlWhere.append("and (select count(interessat) ");
@@ -844,7 +861,13 @@ public class RegistreServiceImpl implements RegistreService {
 			sqlWhere.append("and r.agafatPer is null ");
 		}
 		if (nombreAnnexos != null) {
-			sqlWhere.append("and r.annexos.size " + this.getNombreAnnexosSize(nombreAnnexos));
+			sqlWhere.append(" AND (");
+            sqlWhere.append("  SELECT COUNT(distinct a) FROM r.annexos a");
+            sqlWhere.append("  WHERE (r.justificant.id IS NULL OR a.id <> r.justificant.id)");
+            sqlWhere.append("   AND (r.justificantArxiuUuid IS NULL OR a.fitxerArxiuUuid <> r.justificantArxiuUuid)");
+            if (!isAdmin)
+                sqlWhere.append("   AND (a.sicresTipusDocument IS NULL OR a.sicresTipusDocument <> '" + RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor() + "')");
+            sqlWhere.append(" ) " + this.getNombreAnnexosSize(nombreAnnexos));
 		}
 		StringBuilder sqlOrder = new StringBuilder();
 		if (pageable != null && pageable.getSort() != null) {
@@ -919,37 +942,37 @@ public class RegistreServiceImpl implements RegistreService {
 
 	private Object getNombreAnnexosSize(RegistreNombreAnnexesEnumDto nombreAnnexos) {
 		// 			sqlWhere.append("and r.annexos.size > 100 ");
-		String ret = "= 1";
+		String ret = "= 0";
 		switch (nombreAnnexos) {
 			case AMB_1:
-				ret = "= 2 ";
+				ret = "= 1 ";
 				break;
 			case AMB_2:
-				ret = "= 3 ";
+				ret = "= 2 ";
 				break;
 			case AMB_3:
-				ret = "= 4 ";
+				ret = "= 3 ";
 				break;
 			case AMB_4:
-				ret = "= 5 ";
+				ret = "= 4 ";
 				break;
 			case AMB_5:
-				ret = "= 6 ";
+				ret = "= 5 ";
 				break;
 			case DE_6_A_10:
-				ret = "between 7 and 11 ";
+				ret = "between 6 and 10 ";
 				break;
 			case DE_11_A_20:
-				ret = "between 12 and 21 ";
+				ret = "between 11 and 20 ";
 				break;
 			case DE_21_A_50:
-				ret = "between 22 and 51 ";
+				ret = "between 21 and 50 ";
 				break;
 			case DE_51_A_100:
-				ret = "between 52 and 101 ";
+				ret = "between 51 and 100 ";
 				break;
 			case MES_DE_100:
-				ret = "> 101 ";
+				ret = "> 100 ";
 				break;
 		}
 		return ret;
@@ -1285,9 +1308,11 @@ public class RegistreServiceImpl implements RegistreService {
 				filtre.getProcedimentCodi() == null, 
 				filtre.getProcedimentCodi() != null ? filtre.getProcedimentCodi() : "", 
 				filtre.getNombreAnnexes(),
+                filtre.isAmbAnnexosInterns(),
 				filtre.getUsuariAssignatCodi() == null,
 				filtre.getUsuariAssignatCodi() != null ? filtre.getUsuariAssignatCodi() : "",
 				filtre.isMostrarSenseAssignar(),
+                isAdmin,
 				null);
 	
 

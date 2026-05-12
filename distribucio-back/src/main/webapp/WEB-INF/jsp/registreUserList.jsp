@@ -118,15 +118,15 @@ span.select2-container {
 	width: 100% !important;
 }
 
-button#nomesAmbErrorsBtn, 
-button#nomesAmbEsborranysBtn, 
+button#nomesAmbErrorsBtn,
+button#nomesAmbEsborranysBtn,
 button#mostrarInactivesBtn,
 button#mostrarSenseAssignarBtn {
 	width: 100% !important;
 }
 
-button#nomesAmbErrorsBtn span.fa-warning, 
-button#nomesAmbEsborranysBtn span.fa-warning, 
+button#nomesAmbErrorsBtn span.fa-warning,
+button#nomesAmbEsborranysBtn span.fa-warning,
 button#mostrarInactivesBtn i{
 	position: relative !important;
 	margin-left: -5px !important;
@@ -892,10 +892,6 @@ function refreshRegistres($modalExecucioMassiva) {
                         <span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deProcessarAlBackoffice"/>">
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
 							</span>
-						{{/if}}
-						{{if backRetryEnviarDataString}}
-						    <br/>
-                            <span style="font-size:1rem"> Proper reintent: {{:backRetryEnviarDataString}} </span>
 						{{/if}}
 						</div>
 						{{if motiuRebuig}}

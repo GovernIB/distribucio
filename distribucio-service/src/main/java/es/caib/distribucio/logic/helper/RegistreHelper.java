@@ -2598,23 +2598,13 @@ public class RegistreHelper {
 				true);
 		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());	
 		// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
-		for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
-			if ((registre.getJustificant() != null && registreAnotacio.getJustificant().getId().equals(annexDto.getId()))
-					|| registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(annexDto.getFitxerArxiuUuid()) ) {
-				registreAnotacio.getAnnexos().remove(annexDto);
-				break;
-			}
-		}
-		if ("tothom".equalsIgnoreCase(rolActual)) {
-			List<RegistreAnnexDto> registreAnnexos = new ArrayList<RegistreAnnexDto>();
-			for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
-				if (annexDto.getSicresTipusDocument() == null 
-						|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor().equals(annexDto.getSicresTipusDocument())) {
-					registreAnnexos.add(annexDto);
-				}
-			}
-			registreAnotacio.setAnnexos(registreAnnexos);
-		}
+        registreAnotacio.setAnnexos(
+                registreAnotacio.getAnnexos().stream().filter(p ->
+                        (registre.getJustificant() == null || !registre.getJustificant().getId().equals(p.getId()))
+                        && (registre.getJustificantArxiuUuid() == null || !registre.getJustificantArxiuUuid().equals(p.getFitxerArxiuUuid()))
+                        && (!"tothom".equalsIgnoreCase(rolActual) || p.getSicresTipusDocument() == null || !RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor().equals(p.getSicresTipusDocument())) )
+                        .collect(Collectors.toList())
+        );
 		return registreAnotacio;
 	}
 	
