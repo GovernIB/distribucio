@@ -399,7 +399,9 @@ public class ExecucioMassivaHelper {
 	/** Valida que l'anotació estigui pendent de bústia o que estigui pendent d'Arxiu i hagi esgotat els reintents. */
 	private void revisarEstatPerMarcarProcessat(RegistreDto registreDto) {
 		if (registreDto.getProcesEstat() != RegistreProcesEstatEnum.BUSTIA_PENDENT
-				&& !(registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT && registreDto.isReintentsEsgotat())) {
+				&& !(registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT && registreDto.isReintentsEsgotat())
+				&& !(registreDto.getProcesEstat() == RegistreProcesEstatEnum.BACK_ERROR && registreDto.isReintentsEsgotat())
+        ) {
 			throw new ValidationException(
 					messageHelper.getMessage(
 							"execucio.massiva.helper.marcar.processat.validacio.estat",
