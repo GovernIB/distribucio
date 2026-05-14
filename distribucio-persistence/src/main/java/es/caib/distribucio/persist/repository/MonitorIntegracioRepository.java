@@ -6,6 +6,7 @@ package es.caib.distribucio.persist.repository;
 import java.util.Date;
 import java.util.List;
 
+import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,22 +37,27 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			"MonitorIntegracioEntity mon " + 
 			"where " + 
 			"mon.codi like :codiMonitor " + 
-			"and (:isDataNula = true or mon.data between :data and :dataFi) " + 
-			"and (:isNullDescripcio = true or lower(mon.descripcio) like lower('%'||:descripcio||'%')) " + 
+			"and (:isDataNula = true or mon.data >= :data) " +
+			"and (:isDataFiNula = true or mon.data < :dataFi) " +
+			"and (:isNullDescripcio = true or lower(mon.descripcio) like lower('%'||:descripcio||'%')) " +
 			"and (:isNullUsuari = true or lower(mon.codiUsuari) like lower('%'||:usuari||'%'))" + 
 			"and (:isNullEstat = true or mon.estat = :estat) " +
+			"and (:isNullTipus = true or mon.tipus = :tipus) " +
 			"and (:isNullEntitat = true or lower(mon.codiEntitat) like lower('%'||:entitat||'%'))")
 	Page<MonitorIntegracioEntity> findByFiltrePaginat(
-			@Param("codiMonitor") String codiMonitor, 
-			@Param("isDataNula") boolean isDataNula, 
-			@Param("data") Date data, 
-			@Param("dataFi") Date dataFi, 
-			@Param("isNullDescripcio") boolean isNullDescripcio, 
-			@Param("descripcio") String descripcio, 
-			@Param("isNullUsuari") boolean isNullUsuari, 
-			@Param("usuari") String usuari, 
-			@Param("isNullEstat") boolean isNullEstat, 
+			@Param("codiMonitor") String codiMonitor,
+			@Param("isDataNula") boolean isDataNula,
+			@Param("data") Date data,
+            @Param("isDataFiNula") boolean isDataFiNula,
+			@Param("dataFi") Date dataFi,
+			@Param("isNullDescripcio") boolean isNullDescripcio,
+			@Param("descripcio") String descripcio,
+			@Param("isNullUsuari") boolean isNullUsuari,
+			@Param("usuari") String usuari,
+			@Param("isNullEstat") boolean isNullEstat,
 			@Param("estat") IntegracioAccioEstatEnumDto estat,
+			@Param("isNullTipus") boolean isNullTipus,
+			@Param("tipus") IntegracioAccioTipusEnumDto tipus,
             @Param("isNullEntitat") boolean isNullEntitat,
             @Param("entitat") String entitat,
             Pageable pageable);

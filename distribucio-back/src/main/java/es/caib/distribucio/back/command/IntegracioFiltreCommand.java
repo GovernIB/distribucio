@@ -8,6 +8,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.back.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioFiltreDto;
 
 /**
@@ -21,11 +22,13 @@ import es.caib.distribucio.logic.intf.dto.IntegracioFiltreDto;
 public class IntegracioFiltreCommand {
 	
 	private String codi;
-	private Date data;
-	private String descripcio;
-	private String usuari;
-	private IntegracioAccioEstatEnumDto estat;
     private String entitat;
+    private IntegracioAccioEstatEnumDto estat;
+    private IntegracioAccioTipusEnumDto tipus;
+	private String descripcio;
+    private Date dataInici;
+    private Date dataFi;
+	private String usuari;
 
 	public static IntegracioFiltreCommand asCommand(IntegracioFiltreDto dto) {
 		IntegracioFiltreCommand command = ConversioTipusHelper.convertir(

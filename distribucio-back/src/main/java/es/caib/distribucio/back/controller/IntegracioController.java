@@ -11,6 +11,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import es.caib.distribucio.back.helper.*;
+import es.caib.distribucio.logic.intf.dto.*;
+import es.caib.distribucio.logic.intf.service.EntitatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.back.command.IntegracioFiltreCommand;
-import es.caib.distribucio.back.helper.DatatablesHelper;
 import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
-import es.caib.distribucio.back.helper.EnumHelper;
-import es.caib.distribucio.back.helper.MissatgesHelper;
-import es.caib.distribucio.back.helper.RequestSessionHelper;
-import es.caib.distribucio.logic.intf.dto.IntegracioDiagnosticDto;
-import es.caib.distribucio.logic.intf.dto.IntegracioDto;
-import es.caib.distribucio.logic.intf.dto.IntegracioEnumDto;
-import es.caib.distribucio.logic.intf.dto.MonitorIntegracioDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.logic.intf.service.ConfigService;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
@@ -58,6 +52,8 @@ public class IntegracioController extends BaseAdminController {
 	private ConfigService configService;
 	@Autowired
 	private AplicacioService aplicacioService;
+	@Autowired
+	private EntitatService entitatService;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String get(
@@ -106,6 +102,9 @@ public class IntegracioController extends BaseAdminController {
 					SESSION_ATTRIBUTE_FILTRE,
 					filtreCommand);
 		}
+        List<EntitatDto> entitatsAccessibles = EntitatHelper.findEntitatsAccessibles(request, entitatService);
+        model.addAttribute("entitats", entitatsAccessibles);
+
 		model.addAttribute(filtreCommand);
 		model.addAttribute(
 				"codiActual",

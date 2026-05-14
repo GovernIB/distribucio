@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
@@ -20,6 +21,8 @@ import java.util.Random;
 
 import javax.annotation.Resource;
 
+import es.caib.distribucio.logic.intf.dto.*;
+import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,15 +38,6 @@ import es.caib.distribucio.logic.helper.GestioDocumentalHelper;
 import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
-import es.caib.distribucio.logic.intf.dto.IntegracioAccioEstatEnumDto;
-import es.caib.distribucio.logic.intf.dto.IntegracioDiagnosticDto;
-import es.caib.distribucio.logic.intf.dto.IntegracioDto;
-import es.caib.distribucio.logic.intf.dto.IntegracioFiltreDto;
-import es.caib.distribucio.logic.intf.dto.MonitorIntegracioDto;
-import es.caib.distribucio.logic.intf.dto.MonitorIntegracioParamDto;
-import es.caib.distribucio.logic.intf.dto.PaginaDto;
-import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 import es.caib.distribucio.persist.entity.MonitorIntegracioEntity;
 import es.caib.distribucio.persist.entity.MonitorIntegracioParamEntity;
@@ -141,34 +135,31 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 	public PaginaDto<MonitorIntegracioDto> findPaginat(PaginacioParamsDto paginacioParams, IntegracioFiltreDto integracioFiltreDto/*String codiMonitor*/) {
 		logger.debug("Consulta de totes les monitorIntegracios paginades (" +
 				"paginacioParams=" + paginacioParams + ")");
-		boolean isDataNula = integracioFiltreDto.getData() == null;
-		Calendar c = new GregorianCalendar();
-		Date data = integracioFiltreDto.getData();
-		Date dataFi = new Date();
-		if (data != null) {
-			c.setTime(data);
-			data = c.getTime();
-			c.add(Calendar.DAY_OF_YEAR, 1);
-			dataFi = c.getTime();
-		}
+		Date data = integracioFiltreDto.getDataInici();
+		Date dataFi = integracioFiltreDto.getDataFi()!=null ?DateUtils.addDays(integracioFiltreDto.getDataFi(), 1) :null;
+
 		String codiMonitor = integracioFiltreDto.getCodi();
 		String descripcio = integracioFiltreDto.getDescripcio();
-		String usuari = integracioFiltreDto.getUsuari();
+		String usuari = null;
 		IntegracioAccioEstatEnumDto estat = integracioFiltreDto.getEstat();
+		IntegracioAccioTipusEnumDto tipus = integracioFiltreDto.getTipus();
         String entitat = integracioFiltreDto.getEntitat();
 		PaginaDto<MonitorIntegracioDto> resposta;
 		resposta = paginacioHelper.toPaginaDto(
 				monitorIntegracioRepository.findByFiltrePaginat(
 						codiMonitor,
-						isDataNula,
-						data, 
-						dataFi, 
+                        data == null,
+						data,
+						dataFi == null,
+						dataFi,
 						descripcio == null || descripcio.isEmpty(),
-						descripcio != null && !descripcio.isEmpty() ? descripcio : "", 
+						descripcio != null && !descripcio.isEmpty() ? descripcio : "",
 						usuari == null || usuari.isEmpty(), 
 						usuari != null && !usuari.isEmpty() ? usuari : "",
-						estat == null, 
+						estat == null,
 						estat != null ? estat : IntegracioAccioEstatEnumDto.OK,
+						tipus == null,
+                        tipus,
                         entitat == null || entitat.isEmpty(),
                         entitat != null && !entitat.isEmpty() ? entitat : "",
 						paginacioHelper.toSpringDataPageable(paginacioParams)),
