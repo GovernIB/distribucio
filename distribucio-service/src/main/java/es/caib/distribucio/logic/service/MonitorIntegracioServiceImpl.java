@@ -140,7 +140,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 
 		String codiMonitor = integracioFiltreDto.getCodi();
 		String descripcio = integracioFiltreDto.getDescripcio();
-		String usuari = null;
+		String usuari = integracioFiltreDto.getUsuari();
 		IntegracioAccioEstatEnumDto estat = integracioFiltreDto.getEstat();
 		IntegracioAccioTipusEnumDto tipus = integracioFiltreDto.getTipus();
         String entitat = integracioFiltreDto.getEntitat();
