@@ -117,7 +117,8 @@ public class ServeiHelper {
 						servei.getCodigoSIA(),
 						ServeiEstatEnumDto.VIGENT,						
 						unitatOrganitzativa,
-						entitatEntity).built();
+						entitatEntity,
+                        servei.isComun()).built();
 				serveiRepository.save(serveiEntity);
 			} else {
 				// Servei existent. Comprova si s'ha d'actualitzar el servei
@@ -133,11 +134,15 @@ public class ServeiHelper {
 				if (!serveiEntity.getEstat().equals(ServeiEstatEnumDto.VIGENT)) {
 					campsActualtizats.add("Estat: \"" + ServeiEstatEnumDto.EXTINGIT + "\" -> \"" + 
 										ServeiEstatEnumDto.VIGENT + "\"");
-				}			
+				}
 				if (!unitatOrganitzativa.getId().equals(serveiEntity.getUnitatOrganitzativa().getId())) {
 					campsActualtizats.add("Unitat organitzativa: \"" + serveiEntity.getUnitatOrganitzativa().getCodiAndNom() + "\" -> \"" +
 							unitatOrganitzativa.getCodiAndNom() + "\"");
 				}
+                if (!servei.isComun().equals(serveiEntity.getComu())) {
+                    campsActualtizats.add("Comu: \"" + serveiEntity.getComu() + "\" -> \"" +
+                            servei.isComun() + "\"");
+                }
 				if (campsActualtizats.size() > 0) {
 					serveiEntity.update(
 							servei.getCodigo(), 
@@ -145,7 +150,8 @@ public class ServeiHelper {
 							servei.getCodigoSIA(),
 							ServeiEstatEnumDto.VIGENT,							
 							unitatOrganitzativa,
-							entitatEntity);					
+							entitatEntity,
+                            servei.isComun());
 				} 
 			}
 		} catch(Exception e) {

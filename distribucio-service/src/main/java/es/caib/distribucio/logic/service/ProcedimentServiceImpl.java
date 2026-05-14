@@ -87,7 +87,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 						filtre.getCodiSia() == null || filtre.getCodiSia().isEmpty(), 
 						filtre.getCodiSia() != null ? filtre.getCodiSia() : "", 
 						filtre.getEstat() == null, 
-						filtre.getEstat(),						
+						filtre.getEstat(),
+                        filtre.isNomesComu(),
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)), 
 				ProcedimentDto.class);
 
@@ -202,7 +203,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 							procediment.getCodigoSIA(),
 							ProcedimentEstatEnumDto.VIGENT,
 							unitatOrganitzativa, 
-							entitat).built();
+							entitat,
+                            procediment.isComun()).built();
 					procedimentRepository.save(procedimentEntity);
 				} else {
 					procedimentEntity.update(
@@ -211,7 +213,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 							procediment.getCodigoSIA(),
 							ProcedimentEstatEnumDto.VIGENT,
 							unitatOrganitzativa, 
-							entitat);
+							entitat,
+                            procediment.isComun());
 					procedimentRepository.save(procedimentEntity);
 				}
 			}

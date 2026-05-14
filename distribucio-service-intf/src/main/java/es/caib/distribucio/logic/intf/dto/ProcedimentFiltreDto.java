@@ -16,6 +16,7 @@ public class ProcedimentFiltreDto implements Serializable{
 	private ProcedimentEstatEnumDto estat;
 	private Long unitatOrganitzativa;
 	private EntitatDto entitat;
+    private boolean nomesComu;
 	
 	@Override
 	public String toString() {

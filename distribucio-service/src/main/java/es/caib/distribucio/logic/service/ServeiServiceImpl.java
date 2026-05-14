@@ -86,7 +86,8 @@ public class ServeiServiceImpl implements ServeiService{
 						filtre.getCodiSia() == null || filtre.getCodiSia().isEmpty(), 
 						filtre.getCodiSia() != null ? filtre.getCodiSia() : "", 
 						filtre.getEstat() == null, 
-						filtre.getEstat(),						
+						filtre.getEstat(),
+                        filtre.isNomesComu(),
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)), 
 				ServeiDto.class);
 
@@ -201,7 +202,8 @@ public class ServeiServiceImpl implements ServeiService{
 							servei.getCodigoSIA(),
 							ServeiEstatEnumDto.VIGENT,
 							unitatOrganitzativa, 
-							entitat).built();
+							entitat,
+                            servei.isComun()).built();
 					serveiRepository.save(serveiEntity);
 				} else {
 					serveiEntity.update(
@@ -210,7 +212,8 @@ public class ServeiServiceImpl implements ServeiService{
 							servei.getCodigoSIA(),
 							ServeiEstatEnumDto.VIGENT,
 							unitatOrganitzativa, 
-							entitat);
+							entitat,
+                            servei.isComun());
 					serveiRepository.save(serveiEntity);
 				}
 			}

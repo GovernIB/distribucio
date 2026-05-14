@@ -51,11 +51,24 @@
 		
 		button#netejarFiltre, 
 		button#filtrar {
-			width: 50%;
+			/*width: 50%;*/
 		}
 	</style>
 	
 	<script>
+        $(document).ready(function() {
+            $('#netejarFiltre').click(function (e) {
+                $('#nomesComuBtn').removeClass('active');
+                $('#nomesComu').val(false);
+            });
+
+            $('#nomesComuBtn').click(function () {
+                nomesComu = !$(this).hasClass('active');
+                // Modifica el formulari
+                $('#nomesComu').val(nomesComu);
+            })
+        })
+
 		function formatSelectUnitat(item) {
 			if (!item.id) {
 			    return item.text;
@@ -94,12 +107,18 @@
 				<dis:inputSelect name="estat"  netejar="true" optionEnum="ServeiEstatEnumDto" placeholderKey="servei.list.columna.estat" emptyOption="true" inline="true"/>			
 			</div>
 		</div>
-		<div class="row">		
-			<div class="col-md-9"></div>
+		<div class="row">
+			<div class="col-md-2">
+                <div class="col-md-2" style="padding-left: 0;">
+                    <button id="nomesComuBtn" style="width: 45px;" title="<spring:message code="servei.list.filter.nomesComu"/>" class="btn btn-default <c:if test="${serveiFiltreCommand.nomesComu}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
+                    <dis:inputHidden name="nomesComu"/>
+                </div>
+            </div>
+			<div class="col-md-7"></div>
 			<div class="col-md-3 d-flex justify-content-end">
 				<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
-				<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-				<button type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 			</div>
 		</div>
 	</form:form>
@@ -146,6 +165,12 @@
 
 				</script>
 			</th>
+            <th data-col-name="comu" data-template="#cellComuTemplate" data-orderable="false">
+                <spring:message code="servei.list.columna.comu"/>
+                <script id="cellComuTemplate" type="text/x-jsrender">
+                    {{if comu}}<span class="fa fa-check"></span>{{/if}}
+                </script>
+            </th>
 			<th data-col-name="estat" data-orderable="true"><spring:message code="servei.list.columna.estat"/></th> 
 		</tr>
 	</thead>

@@ -24,6 +24,7 @@ public class Procediment {
     @JsonProperty("link_unidadAdministrativa")
     @JsonAlias("linkUnidadAdministrativaInstructora")
 	private Link unidadAdministrativa;
+    private Boolean comun;
 
 	public String getCodigo() {
 		return codigo;
@@ -55,4 +56,5 @@ public class Procediment {
 	public void setUnidadAdministrativa(Link unidadAdministrativa) {
 		this.unidadAdministrativa = unidadAdministrativa;
 	}
+    public Boolean isComun() { return comun; }
 }

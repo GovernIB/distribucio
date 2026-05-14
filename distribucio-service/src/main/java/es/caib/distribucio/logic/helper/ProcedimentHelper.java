@@ -117,7 +117,8 @@ public class ProcedimentHelper {
 						procediment.getCodigoSIA(),
 						ProcedimentEstatEnumDto.VIGENT,						
 						unitatOrganitzativa,
-						entitatEntity).built();
+						entitatEntity,
+                        procediment.isComun()).built();
 				procedimentRepository.save(procedimentEntity);
 			} else {
 				// Procediment existent. Comprova si s'ha d'actualitzar el procediment
@@ -138,6 +139,10 @@ public class ProcedimentHelper {
 					campsActualtizats.add("Unitat organitzativa: \"" + procedimentEntity.getUnitatOrganitzativa().getCodiAndNom() + "\" -> \"" +
 							unitatOrganitzativa.getCodiAndNom() + "\"");
 				}
+                if (!procediment.isComun().equals(procedimentEntity.getComu())) {
+                    campsActualtizats.add("Comu: \"" + procedimentEntity.getComu() + "\" -> \"" +
+                            procediment.isComun() + "\"");
+                }
 				if (campsActualtizats.size() > 0) {
 					procedimentEntity.update(
 							procediment.getCodigo(), 
@@ -145,7 +150,8 @@ public class ProcedimentHelper {
 							procediment.getCodigoSIA(),
 							ProcedimentEstatEnumDto.VIGENT,							
 							unitatOrganitzativa,
-							entitatEntity);					
+							entitatEntity,
+                            procediment.isComun());
 				} 
 			}
 		} catch(Exception e) {

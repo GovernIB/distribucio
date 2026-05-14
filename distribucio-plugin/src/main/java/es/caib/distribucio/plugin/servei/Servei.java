@@ -24,6 +24,7 @@ public class Servei {
 	private Link unidadAdministrativa;
 	@JsonProperty("link_organoInstructor")
 	private Link organoInstructor;
+    private Boolean comun;
 
 	public String getCodigo() {
 		return codigo;
@@ -61,4 +62,5 @@ public class Servei {
 	public void setOrganoInstructor(Link organoInstructor) {
 		this.organoInstructor = organoInstructor;
 	}
+    public Boolean isComun() { return comun; }
 }

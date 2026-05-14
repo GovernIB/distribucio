@@ -33,7 +33,8 @@ public interface ProcedimentRepository extends JpaRepository<ProcedimentEntity, 
 			"and (:isCodiNull = true or lower(pro.codi) like lower('%'||:codi||'%')) " + 
 			"and (:isNomNull = true or lower(pro.nom) like lower('%'||:nom||'%')) " + 
 			"and (:isCodiSiaNull = true or lower(pro.codiSia) like lower('%'||:codiSia||'%'))" + 
-			"and (:isEstatNull = true or pro.estat = :estat)")
+			"and (:isEstatNull = true or pro.estat = :estat)" +
+			"and (:nomesComu = false or pro.comu = true)")
 	Page<ProcedimentEntity> findAmbFiltrePaginat(
 			@Param("entitatId") Long entitatId, 
 			@Param("isNullUnitatOrganitzativa") boolean isNullUnitatOrganitzativa, 
@@ -46,6 +47,7 @@ public interface ProcedimentRepository extends JpaRepository<ProcedimentEntity, 
 			@Param("codiSia") String codiSia, 
 			@Param("isEstatNull") boolean isEstatNull, 
 			@Param("estat") ProcedimentEstatEnumDto estat,
+            @Param("nomesComu") boolean nomesComu,
 			Pageable pageable);
 		
 	@Query( "from " + 
