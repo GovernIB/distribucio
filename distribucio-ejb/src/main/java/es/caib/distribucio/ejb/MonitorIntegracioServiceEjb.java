@@ -67,8 +67,8 @@ public class MonitorIntegracioServiceEjb extends AbstractServiceEjb<MonitorInteg
 
 	@Override
 	@RolesAllowed(BaseConfig.ROLE_SUPER)
-	public Map<String, Integer> countErrors(int numeroHores) {
-		return delegateService.countErrors(numeroHores);
+	public Map<String, Integer> countErrors(IntegracioFiltreDto integracioFiltreDto) {
+		return delegateService.countErrors(integracioFiltreDto);
 	}
 	
 	@Override

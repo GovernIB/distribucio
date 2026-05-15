@@ -171,13 +171,29 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public Map<String, Integer> countErrors(int numeroHores) {
-		DateTime date = new DateTime();
-		long dataInici = date.getMillis() - (numeroHores * 60*60*1000);
-		DateTime dataIniciDate = new DateTime(dataInici);
+	public Map<String, Integer> countErrors(IntegracioFiltreDto integracioFiltreDto) {
+        Date data = integracioFiltreDto.getDataInici();
+        Date dataFi = integracioFiltreDto.getDataFi()!=null ?DateUtils.addDays(integracioFiltreDto.getDataFi(), 1) :null;
+
+        String descripcio = integracioFiltreDto.getDescripcio();
+        String usuari = integracioFiltreDto.getUsuari();
+        IntegracioAccioTipusEnumDto tipus = integracioFiltreDto.getTipus();
+        String entitat = integracioFiltreDto.getEntitat();
 		
 		Map<String, Integer> errors = new HashMap<String, Integer>();
-		List<Object[]> resultats = monitorIntegracioRepository.countErrorsGroupByCodi(dataIniciDate.toDate());
+		List<Object[]> resultats = monitorIntegracioRepository.countErrorsGroupByCodi(
+                data == null,
+                data,
+                dataFi == null,
+                dataFi,
+                descripcio == null || descripcio.isEmpty(),
+                descripcio != null && !descripcio.isEmpty() ? descripcio : "",
+                usuari == null || usuari.isEmpty(),
+                usuari != null && !usuari.isEmpty() ? usuari : "",
+                tipus == null,
+                tipus,
+                entitat == null || entitat.isEmpty(),
+                entitat != null && !entitat.isEmpty() ? entitat : "");
 		for (Object[] resultat : resultats) {
 			errors.put(
 					(String) resultat[0], 

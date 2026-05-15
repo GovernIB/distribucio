@@ -1,0 +1,1 @@
+DELETE FROM DIS_CONFIG WHERE KEY = 'es.caib.distribucio.monitor.integracio.errors.temps';

@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.back.command.IntegracioFiltreCommand;
 import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
-import es.caib.distribucio.logic.intf.service.ConfigService;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 
 /**
@@ -48,8 +47,6 @@ public class IntegracioController extends BaseAdminController {
 	
 	@Autowired
 	private MonitorIntegracioService monitorIntegracioService;
-	@Autowired
-	private ConfigService configService;
 	@Autowired
 	private AplicacioService aplicacioService;
 	@Autowired
@@ -76,15 +73,9 @@ public class IntegracioController extends BaseAdminController {
 			Model model) {
 		
 		IntegracioFiltreCommand filtreCommand = getFiltreCommand(request);
-				
-		String numeroHoresPropietat = configService.getTempsErrorsMonitorIntegracio();
-		if (numeroHoresPropietat == null) {
-			numeroHoresPropietat = "48";
-		}
-		model.addAttribute("numeroHoresPropietat", numeroHoresPropietat);
-		
+
 		// Fa una llista de les diferents integracions i els errors actuals
-		List<IntegracioDto> integracions = this.getIntegracionsIErrors(numeroHoresPropietat);
+		List<IntegracioDto> integracions = this.getIntegracionsIErrors(filtreCommand);
 		
 		model.addAttribute(
 				"integracions",
@@ -167,15 +158,17 @@ public class IntegracioController extends BaseAdminController {
 	/** Mètode per consultar les integracions i els errors.*/
 	@ResponseBody
 	@RequestMapping(value = "integracions", method = RequestMethod.GET)
-	public List<IntegracioDto> getIntegracionsIErrors(String numeroHoresPropietat) {
+	public List<IntegracioDto> getIntegracionsIErrors(IntegracioFiltreCommand filtreCommand) {
 		List<IntegracioDto> integracions = monitorIntegracioService.integracioFindAll();
-		if (numeroHoresPropietat == null) {
-			numeroHoresPropietat = configService.getTempsErrorsMonitorIntegracio();
-		}
-		int numeroHores = Integer.parseInt(numeroHoresPropietat != null ? numeroHoresPropietat : "48");
+//		if (numeroHoresPropietat == null) {
+//			numeroHoresPropietat = configService.getTempsErrorsMonitorIntegracio();
+//		}
+//		int numeroHores = Integer.parseInt(numeroHoresPropietat != null ? numeroHoresPropietat : "48");
 		
 		// Consulta el número d'errors per codi d'integracio
-		Map<String, Integer> errors = monitorIntegracioService.countErrors(numeroHores);
+		Map<String, Integer> errors = monitorIntegracioService.countErrors(
+                IntegracioFiltreCommand.asDto(filtreCommand)
+        );
 		
 		for (IntegracioDto integracio: integracions) {
 			for (IntegracioEnumDto integracioEnum: IntegracioEnumDto.values()) {

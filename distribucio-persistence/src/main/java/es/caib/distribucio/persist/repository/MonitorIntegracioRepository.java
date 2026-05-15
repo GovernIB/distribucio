@@ -70,11 +70,27 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 
 	@Query(	"select mon.codi, count(mon)" +
 			"from MonitorIntegracioEntity mon " +
-			"where mon.estat = 'ERROR' " + 
-			"and mon.data >= :dataInici " + 
-			"group by mon.codi ")
+			" where mon.estat = 'ERROR' " +
+            " and (:isDataNula = true or mon.data >= :data) " +
+            " and (:isDataFiNula = true or mon.data < :dataFi) " +
+            " and (:isNullDescripcio = true or lower(mon.descripcio) like lower('%'||:descripcio||'%')) " +
+            " and (:isNullUsuari = true or lower(mon.codiUsuari) like lower('%'||:usuari||'%'))" +
+            " and (:isNullTipus = true or mon.tipus = :tipus) " +
+            " and (:isNullEntitat = true or lower(mon.codiEntitat) like lower('%'||:entitat||'%'))" +
+			" group by mon.codi ")
 	public List<Object[]> countErrorsGroupByCodi(
-			@Param("dataInici") Date dataInici);
+            @Param("isDataNula") boolean isDataNula,
+            @Param("data") Date data,
+            @Param("isDataFiNula") boolean isDataFiNula,
+            @Param("dataFi") Date dataFi,
+            @Param("isNullDescripcio") boolean isNullDescripcio,
+            @Param("descripcio") String descripcio,
+            @Param("isNullUsuari") boolean isNullUsuari,
+            @Param("usuari") String usuari,
+            @Param("isNullTipus") boolean isNullTipus,
+            @Param("tipus") IntegracioAccioTipusEnumDto tipus,
+            @Param("isNullEntitat") boolean isNullEntitat,
+            @Param("entitat") String entitat);
 
 	@Query(	"select count(mon)" +
 			"from MonitorIntegracioEntity mon " +

@@ -51,9 +51,6 @@ public interface ConfigService {
 	@PreAuthorize("isAuthenticated()")
 	public void setEntitatPerPropietat(EntitatDto entitatDto);
 
-	@PreAuthorize("isAuthenticated()")
-	public String getTempsErrorsMonitorIntegracio() ;
-
 	public String getConfig(String key);
 
 	public Long getConfigAsLong(String key);
