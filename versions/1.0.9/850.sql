@@ -1,2 +1,2 @@
-ALTER TABLE dis_servei ADD comu NUMBER(1);
-ALTER TABLE dis_procediment ADD comu NUMBER(1);
+ALTER TABLE dis_servei ADD comu NUMBER(1) DEFAULT 0 NOT NULL;
+ALTER TABLE dis_procediment ADD comu NUMBER(1) DEFAULT 0 NOT NULL;

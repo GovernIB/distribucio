@@ -57,7 +57,7 @@ public class ServeiEntity extends DistribucioAuditable<Long>{
 	private EntitatEntity entitat;
 
     @Column(name = "comu")
-    private Boolean comu;
+    private boolean comu;
 
 	public void update(
 			String codi, 
@@ -66,7 +66,7 @@ public class ServeiEntity extends DistribucioAuditable<Long>{
 			ServeiEstatEnumDto estat, 
 			UnitatOrganitzativaEntity unitatOrganitzativa, 
 			EntitatEntity entitat,
-            Boolean comu) {
+            boolean comu) {
 		this.codi = codi;
 		this.nom = nom;
 		this.codiSia = codiSia;
@@ -83,7 +83,7 @@ public class ServeiEntity extends DistribucioAuditable<Long>{
 			ServeiEstatEnumDto estat, 
 			UnitatOrganitzativaEntity unitatOrganitzativa, 
 			EntitatEntity entitat,
-            Boolean comu) {
+            boolean comu) {
 		return new Builder(
 				codi, 
 				nom, 
@@ -103,7 +103,7 @@ public class ServeiEntity extends DistribucioAuditable<Long>{
 				ServeiEstatEnumDto estat, 
 				UnitatOrganitzativaEntity unitatOrganitzativa, 
 				EntitatEntity entitat,
-                Boolean comu) {
+                boolean comu) {
 			built = new ServeiEntity();
 			built.codi = codi;
 			built.nom = nom;

@@ -23,7 +23,7 @@ public class ProcedimentDto implements Comparable<ProcedimentDto>{
 	private ProcedimentEstatEnumDto estat;
 	private UnitatOrganitzativaDto unitatOrganitzativa;
 	private EntitatDto entitat;
-	private Boolean comu;
+	private boolean comu;
 
 	public String getCodiNom() {
 		return codiSia + " - " + nom;

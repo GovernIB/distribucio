@@ -139,8 +139,8 @@ public class ServeiHelper {
 					campsActualtizats.add("Unitat organitzativa: \"" + serveiEntity.getUnitatOrganitzativa().getCodiAndNom() + "\" -> \"" +
 							unitatOrganitzativa.getCodiAndNom() + "\"");
 				}
-                if (!servei.isComun().equals(serveiEntity.getComu())) {
-                    campsActualtizats.add("Comu: \"" + serveiEntity.getComu() + "\" -> \"" +
+                if (servei.isComun() != serveiEntity.isComu()) {
+                    campsActualtizats.add("Comu: \"" + serveiEntity.isComu() + "\" -> \"" +
                             servei.isComun() + "\"");
                 }
 				if (campsActualtizats.size() > 0) {

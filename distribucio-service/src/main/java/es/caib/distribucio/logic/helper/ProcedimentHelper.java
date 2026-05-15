@@ -139,8 +139,8 @@ public class ProcedimentHelper {
 					campsActualtizats.add("Unitat organitzativa: \"" + procedimentEntity.getUnitatOrganitzativa().getCodiAndNom() + "\" -> \"" +
 							unitatOrganitzativa.getCodiAndNom() + "\"");
 				}
-                if (!procediment.isComun().equals(procedimentEntity.getComu())) {
-                    campsActualtizats.add("Comu: \"" + procedimentEntity.getComu() + "\" -> \"" +
+                if (procediment.isComun() != procedimentEntity.isComu()) {
+                    campsActualtizats.add("Comu: \"" + procedimentEntity.isComu() + "\" -> \"" +
                             procediment.isComun() + "\"");
                 }
 				if (campsActualtizats.size() > 0) {
