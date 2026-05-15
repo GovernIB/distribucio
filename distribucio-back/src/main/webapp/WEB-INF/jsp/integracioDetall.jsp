@@ -10,6 +10,75 @@
 <head>
 	<title>${titol}</title>
 	<dis:modalHead/>
+
+    <style>
+        .pre-wrapper { position: relative; }
+
+        .btn-copiar-pre {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #f8f9fa;
+            border: 1px solid rgba(0,0,0,0.15);
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .btn-copiar-pre:hover { opacity: 1; background: #e9ecef; }
+        .btn-copiar-pre.copiado {
+            border-color: #28a745;
+            color: #28a745;
+            background: #f0fff4;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function() {
+            $('.btn-copiar-pre').on('click', function() {
+                var $btn = $(this);
+                var $pre = $($btn.data('target'));
+                var texto = $pre.text();
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(texto).then(function() {
+                        mostrarExito($btn);
+                    }).catch(function() {
+                        fallbackCopy(texto, $btn);
+                    });
+                } else {
+                    fallbackCopy(texto, $btn);
+                }
+            });
+        });
+
+        function mostrarExito($btn) {
+            var $icon = $btn.find('span');
+            $icon.removeClass('fa-copy').addClass('fa-check');
+            $btn.addClass('copiado').attr('title', '');
+
+            setTimeout(function() {
+                $icon.removeClass('fa-check').addClass('fa-copy');
+                $btn.removeClass('copiado').attr('title', '<spring:message code="integracio.detall.camp.excepcio.copyBtn.label"/>');
+            }, 2000);
+        }
+
+        function fallbackCopy(text, $btn) {
+            var $temp = $('<textarea>').css({ position: 'fixed', opacity: 0 });
+            $('body').append($temp);
+            $temp.val(text).select();
+            try {
+                document.execCommand('copy');
+                mostrarExito($btn);
+            } catch (err) {
+                console.error('No se pudo copiar:', err);
+                alert('<spring:message code="integracio.detall.camp.excepcio.copyBtn.error"/>');
+            }
+            $temp.remove();
+        }
+    </script>
 </head>
 <body>
 	<c:if test="${not empty integracio}">
@@ -39,7 +108,6 @@
 			<c:if test="${integracio.estat == 'ERROR'}">
 				<dt><spring:message code="integracio.detall.camp.error.desc"/></dt>
 				<dd>
-				<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 					${fn:escapeXml(integracio.errorDescripcio)}
 				</dd>
 				<dt><spring:message code="integracio.detall.camp.excepcio.missatge"/></dt>
@@ -47,7 +115,12 @@
 			</c:if>
 		</dl>
 		<c:if test="${integracio.estat == 'ERROR' && not empty integracio.excepcioMessage}">
-			<pre style="height:300px">${fn:escapeXml(integracio.excepcioStacktrace)}</pre>
+            <div class="pre-wrapper">
+                <pre  id="codigoEjemplo" style="height:300px">${fn:escapeXml(integracio.excepcioStacktrace)}</pre>
+                <button type="button" class="btn-copiar-pre" data-target="#codigoEjemplo" title="<spring:message code="integracio.detall.camp.excepcio.copyBtn.label"/>">
+                    <span class="fa fa-copy"></span>
+                </button>
+            </div>
 		</c:if>
 	</c:if>
 	<div id="modal-botons">
