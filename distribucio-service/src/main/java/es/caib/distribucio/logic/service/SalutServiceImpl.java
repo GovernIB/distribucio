@@ -2,16 +2,7 @@ package es.caib.distribucio.logic.service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.DoubleSummaryStatistics;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -69,10 +60,15 @@ public class SalutServiceImpl implements SalutService {
 	                    ArrayList::new));
 
         List<BackofficeEntity> backofficeList = backofficeRepository.findAll();
-        for (BackofficeEntity backoffice: backofficeList) {
-            integracionsInfo.add(new IntegracioInfo().codi(backoffice.getCodi()).nom(backoffice.getNom()));
+        Set<String> codigosVistos = new HashSet<>();
+        for (BackofficeEntity backoffice : backofficeList) {
+            if (codigosVistos.add(backoffice.getCodi())) {
+                integracionsInfo.add(new IntegracioInfo()
+                        .codi(backoffice.getCodi())
+                        .nom(backoffice.getNom()));
+            }
         }
-		return integracionsInfo;
+        return integracionsInfo;
 	}
 
 	@Override
