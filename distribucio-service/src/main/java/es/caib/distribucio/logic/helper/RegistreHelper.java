@@ -1571,10 +1571,10 @@ public class RegistreHelper {
 				}				
 			}
 			logger.trace(">>> Despres de cridar backoffice WS "+ backofficeDesti.getCodi());
-            SubsistemesHelper.addSuccessOperation(backofficeDesti.getCodi(), System.currentTimeMillis() - t0);
+            BackofficeSalutHelper.addSuccessOperation(backofficeDesti, System.currentTimeMillis() - t0);
 			return null;
         } catch (Exception ex) {
-            SubsistemesHelper.addErrorOperation(backofficeDesti.getCodi());
+            BackofficeSalutHelper.addErrorOperation(backofficeDesti);
 			String errorDescripcio = "";
 			if (!ids.isEmpty()) {
 				errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions al backoffice " + backofficeDesti.getNom();

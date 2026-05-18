@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 
 import es.caib.comanda.model.server.monitoring.*;
 import es.caib.comanda.ms.salut.helper.MonitorHelper;
+import es.caib.distribucio.logic.helper.BackofficeSalutHelper;
+import es.caib.distribucio.logic.helper.BackofficeSalutHelper.Metrics;
 import es.caib.distribucio.persist.entity.BackofficeEntity;
 import es.caib.distribucio.persist.repository.BackofficeRepository;
 import org.apache.commons.lang3.time.DateUtils;
@@ -57,15 +59,19 @@ public class SalutServiceImpl implements SalutService {
     private final RestTemplate restTemplate;
     private final PluginHelper pluginHelper;
     private final AvisRepository avisRepository;
-    
-	@Override
+
+    @Override
 	public List<IntegracioInfo> getIntegracions() {
 		List<IntegracioInfo> integracionsInfo = pluginHelper.getPluginHelpers().stream()
 	            .flatMap(helper -> helper.getIntegracionsInfo().stream())
 	            .collect(Collectors.collectingAndThen(
 	                    Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(IntegracioInfo::getCodi))),
 	                    ArrayList::new));
-		
+
+        List<BackofficeEntity> backofficeList = backofficeRepository.findAll();
+        for (BackofficeEntity backoffice: backofficeList) {
+            integracionsInfo.add(new IntegracioInfo().codi(backoffice.getCodi()).nom(backoffice.getNom()));
+        }
 		return integracionsInfo;
 	}
 
@@ -74,10 +80,6 @@ public class SalutServiceImpl implements SalutService {
         List<SubsistemaInfo> subsistemes = new ArrayList<>();
         for(SubsistemesHelper.SubsistemesEnum subsistema: SubsistemesHelper.SubsistemesEnum.values()) {
             subsistemes.add(new SubsistemaInfo().codi(subsistema.name()).nom(subsistema.getNom()));
-        }
-        List<BackofficeEntity> backofficeList = backofficeRepository.findAll();
-        for (BackofficeEntity backoffice: backofficeList) {
-            subsistemes.add(new SubsistemaInfo().codi(backoffice.getCodi()).nom(backoffice.getNom()));
         }
         return subsistemes;
 	}
@@ -292,6 +294,55 @@ public class SalutServiceImpl implements SalutService {
                         .peticions(combinada);
 
                 result.add(combinadaSalut);
+            }
+        }
+
+        List<Metrics> integracionsInfo = BackofficeSalutHelper.getInfo();
+        Map<String, List<Metrics>> map = integracionsInfo.stream()
+                .collect(Collectors.groupingBy(Metrics::getCodi));
+
+        for (Map.Entry<String, List<Metrics>> entry : map.entrySet()) {
+            String codiApp = entry.getKey();
+            List<Metrics> llista = entry.getValue();
+
+            if (llista.size() == 1) {
+                // Si només hi ha un plugin del sistema extern: retornar tal qual
+                Metrics backoffice = llista.get(0);
+                IntegracioSalut backofficeSalut = backoffice.getSalutInfo();
+                result.add(backofficeSalut);
+            } else {
+                // Si hi ha múltiples plugins (serveis/procediments): combinar
+                IntegracioPeticions integracioPeticions = new IntegracioPeticions()
+                        .totalOk(0L)
+                        .totalError(0L)
+                        .totalTempsMig(0)
+                        .peticionsOkUltimPeriode(0L)
+                        .peticionsErrorUltimPeriode(0L)
+                        .tempsMigUltimPeriode(0);
+
+                for (Metrics m : llista) {
+                    IntegracioPeticions peticio = m.getSalutInfo().getPeticions();
+                    integracioPeticions.setTotalOk(integracioPeticions.getTotalOk() + peticio.getTotalOk());
+                    integracioPeticions.setTotalError(integracioPeticions.getTotalError() + peticio.getTotalError());
+                    integracioPeticions.setPeticionsOkUltimPeriode(integracioPeticions.getPeticionsOkUltimPeriode() + peticio.getPeticionsOkUltimPeriode());
+                    integracioPeticions.setPeticionsErrorUltimPeriode(integracioPeticions.getPeticionsErrorUltimPeriode() + peticio.getPeticionsErrorUltimPeriode());
+
+                    if (peticio.getTotalTempsMig() > integracioPeticions.getTotalTempsMig()) {
+                        integracioPeticions.setTotalTempsMig(peticio.getTotalTempsMig());
+                    }
+                    if (peticio.getTempsMigUltimPeriode() > integracioPeticions.getTempsMigUltimPeriode()) {
+                        integracioPeticions.setTempsMigUltimPeriode(peticio.getTempsMigUltimPeriode());
+                    }
+
+                    integracioPeticions.getPeticionsPerEntorn()
+                            .put(m.getEntitat(), peticio);
+                }
+
+                IntegracioSalut integracioBackoffice = new IntegracioSalut()
+                        .codi(codiApp)
+                        .peticions(integracioPeticions)
+                        .estat(BackofficeSalutHelper.calculateHealth(llista));
+                result.add(integracioBackoffice);
             }
         }
 
