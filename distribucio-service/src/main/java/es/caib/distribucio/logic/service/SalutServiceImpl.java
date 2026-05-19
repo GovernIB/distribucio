@@ -365,7 +365,7 @@ public class SalutServiceImpl implements SalutService {
     private EstatSalutEnum recuperarEstat(EstatSalutEnum e1, EstatSalutEnum e2) {
         if (e1 == EstatSalutEnum.UP   || e2 == EstatSalutEnum.UP)   return EstatSalutEnum.UP;
         if (e1 == EstatSalutEnum.DOWN || e2 == EstatSalutEnum.DOWN) return EstatSalutEnum.DOWN;
-        return null;
+        return EstatSalutEnum.UNKNOWN;
     }
 
 }
