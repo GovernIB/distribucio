@@ -50,18 +50,18 @@ public class BackofficeSalutHelper {
         public Counter counterErrorLocal;
         public EstatSalutEnum darrerEstat = EstatSalutEnum.UNKNOWN;
 
-        public Metrics(String codi, String entitat, String endpoint) {
+        public Metrics(Long id, String codi, String entitat, String endpoint) {
             this.codi = codi;
             this.entitat = entitat;
             this.endpoint = endpoint;
 
             // Globals al registry principal (si disponible)
-            this.timerOkGlobal = registry.timer("backoffice." + codi);
-            this.counterErrorGlobal = registry.counter("backoffice." + codi + ".errors");
+            this.timerOkGlobal = registry.timer("backoffice." + id);
+            this.counterErrorGlobal = registry.counter("backoffice." + id + ".errors");
 
             // Locals per a salut
-            this.timerOkLocal = localRegistry.timer("backoffice." + codi + ".local");
-            this.counterErrorLocal = localRegistry.counter("backoffice." + codi + ".local.errors");
+            this.timerOkLocal = localRegistry.timer("backoffice." + id + ".local");
+            this.counterErrorLocal = localRegistry.counter("backoffice." + id + ".local.errors");
         }
 
         public void addSuccess(Long duracio) {
@@ -144,6 +144,7 @@ public class BackofficeSalutHelper {
         Metrics metrica = METRICS.get(String.valueOf(id));
         if (metrica == null) {
             metrica = new Metrics(
+                    id,
                     codi,
                     entitatCodi,
                     endpoint
@@ -158,6 +159,7 @@ public class BackofficeSalutHelper {
         Metrics metrica = METRICS.get(String.valueOf(backoffice.getId()));
         if (metrica == null) {
             metrica = new Metrics(
+                    backoffice.getId(),
                     backoffice.getCodi(),
                     backoffice.getEntitat().getCodi(),
                     backoffice.getUrl()
