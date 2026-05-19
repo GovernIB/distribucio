@@ -76,7 +76,9 @@ public class EstadisticaMapper {
                                 .reduce(Double::sum) // Suma els valors existents
                                 .orElse(null);       // Si no hi ha valors -> null
 
-                        sumFets.put(fet, sum);
+                        if (sum != null) {
+                            sumFets.put(fet, sum);
+                        }
                     }
                     
                     // Reconstruir la llista de fets combinats
@@ -263,7 +265,10 @@ public class EstadisticaMapper {
             Map<FetEnum, Function<T, Long>> fetsValors) {
         List<Fet> fets = new ArrayList<>();
         for (FetEnum fet : FetEnum.values()) {
-            fets.add(new FetDistribucio(fet, fetsValors.getOrDefault(fet, x -> null).apply(entity)));
+        	FetDistribucio fd = new FetDistribucio(fet, fetsValors.getOrDefault(fet, x -> null).apply(entity));
+        	if (fd.getValor() != null) {
+                fets.add(fd);
+        	}
         }
 
         return new RegistreEstadistic()
