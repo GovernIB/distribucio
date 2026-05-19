@@ -86,6 +86,55 @@ public class ServeiPluginRolsac extends DistribucioAbstractPluginProperties impl
 		}
 	}
 
+    @Override
+    public Servei findAmbCodi(
+            String codi) throws SistemaExternException {
+        logger.debug("Consulta del servei de l'unitat organitzativa (" +
+                "codi=" + codi + ")");
+        ProcedimientosResponse response = null;
+        long start = System.currentTimeMillis();
+
+        Servei servei = null;
+        try {StringBuilder url = new StringBuilder(getServiceUrl()+"/"+codi);
+            logger.debug("Enviant petició HTTP a l'arxiu (" +
+                    "url=" + url.toString() + ", " +
+                    "tipus=application/json)");
+            ClientResponse res = getJerseyClient()
+                    .resource(url.toString())
+                    .accept("application/json")
+//                    .type("application/json")
+                    .post(ClientResponse.class, "");
+            String json = res.getEntity(String.class);
+            response = mapper.readValue(
+                    json,
+                    TypeFactory.defaultInstance().constructType(ProcedimientosResponse.class));
+
+            if (response.getResultado() != null && response.getResultado().size() == 1)
+                servei = response.getResultado().get(0);
+        } catch (Exception ex) {
+            salutPluginComponent.incrementarOperacioError();
+            logger.error("No s'han pogut consultar el servei de ROLSAC (" +
+                            "codi=" + codi + ")",
+                    ex);
+            throw new SistemaExternException(
+                    "No s'han pogut consultar el servei de ROLSAC (" +
+                            "codi=" + codi + ")",
+                    ex);
+        }
+
+        if (response != null && response.getStatus().equals("200")) {
+            salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
+            return servei;
+        } else {
+            salutPluginComponent.incrementarOperacioError();
+            logger.error("No s'han pogut consultar el servei de ROLSAC (" +
+                    "codi=" + codi + "). Resposta rebuda amb el codi " + response.getStatus());
+            throw new SistemaExternException(
+                    "No s'han pogut consultar el servei de ROLSAC (" +
+                            "codi=" + codi + "). Resposta rebuda amb el codi " + response.getStatus());
+        }
+    }
+
 	private Client getJerseyClient() {
 		if (jerseyClient == null) {
 			jerseyClient = new Client();

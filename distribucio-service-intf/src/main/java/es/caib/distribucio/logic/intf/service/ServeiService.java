@@ -26,13 +26,20 @@ public interface ServeiService {
 			ServeiFiltreDto filtre, 
 			PaginacioParamsDto paginacioParams);
 
-	/** 
+    /**
+     * Mètode per actualitzar un servei disponibles.
+     * @throws Exception
+     *
+     */
+    public void findAndUpdateServei(Long entitatId, String serveiCodi) throws Exception;
+
+	/**
 	 * Mètode per actualitzar la llista de serveis disponibles.
 	 * @throws Exception 
 	 * 
 	 */
 	public void findAndUpdateServeis(Long entitatId) throws Exception;
-	
+
 
 	/** 
 	 * Mètode per cercar serveis pel seu codiSia.

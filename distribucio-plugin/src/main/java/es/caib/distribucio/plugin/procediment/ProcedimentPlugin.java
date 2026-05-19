@@ -17,6 +17,17 @@ import es.caib.distribucio.plugin.SistemaExternException;
  */
 public interface ProcedimentPlugin extends IntegracioPlugin, SalutPlugin {
 
+    /**
+     * Retorna un procediment.
+     *
+     * @param codi
+     *            Codi de l'unitat.
+     * @return un procediment.
+     * @throws SistemaExternException
+     *            Si es produeix un error al consultar el procediment.
+     */
+    public Procediment findAmbCodi(String codi) throws SistemaExternException;
+
 	/**
 	 * Retorna els procediment associats a una unitat organitzativa.
 	 * 

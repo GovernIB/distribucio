@@ -41,7 +41,7 @@
 			margin: 4px 1.5rem 0 0; 
 		}
 		
-		tbody tr.selectable td #div-btn-accions #btn-accions span.caret {
+		tbody td #div-btn-accions #btn-accions span.caret {
 			margin: 8px 0 0 2px; 
 		}
 		
@@ -170,7 +170,25 @@
                     {{if comu}}<span class="fa fa-check"></span>{{/if}}
                 </script>
             </th>
-			<th data-col-name="estat" data-orderable="true"><spring:message code="procediment.list.columna.estat"/></th>
+            <th data-col-name="estat" data-orderable="true"><spring:message code="procediment.list.columna.estat"/></th>
+            <th data-col-name="codi" data-orderable="false" data-template="#cellAccionsContingutTemplate">
+                <script id="cellAccionsContingutTemplate" type="text/x-jsrender">
+                    <div id="div-btn-accions" class="dropdown">
+                        <button id="btn-accions" class="btn btn-primary" data-toggle="dropdown" style="display:flex;">
+                            <span class="fa fa-cog"></span>
+                            <span class="hidden_dis"><spring:message code="comu.boto.accions"/></span>
+                            <span class="caret"></span></button>
+                        <ul class="dropdown-menu dropdown-center-high menu-items-not-selected">
+                            <li>
+                                <a href="<c:url value="/procediment/{{:codi}}/actualitzar"/>">
+                                    <span class="fa fa-download"></span> <spring:message code="procediment.taula.actualitzar"/>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </script>
+            </th>
+            <th data-col-name="codi" data-visible="false"></th>
 		</tr>
 	</thead>
 </table>

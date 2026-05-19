@@ -26,6 +26,13 @@ public interface ProcedimentService {
 			ProcedimentFiltreDto filtre, 
 			PaginacioParamsDto paginacioParams);
 
+    /**
+     * Mètode per actualitzar un procediment disponibles.
+     * @throws Exception
+     *
+     */
+    public void findAndUpdateProcediment(Long entitatId, String procedimentCodi) throws Exception;
+
 	/** 
 	 * Mètode per actualitzar la llista de procediments disponibles.
 	 * @throws Exception 

@@ -36,6 +36,15 @@ public class ProcedimentPluginMock implements ProcedimentPlugin {
 		return response;
 	}
 
+    @Override
+    public Procediment findAmbCodi(
+            String codi) throws SistemaExternException {
+        Procediment response = new Procediment();
+        response.setCodigo(codi);
+        response.setCodigoSIA("1315");
+        return response;
+    }
+
 	@Override
 	public String getUsuariIntegracio() {
 		return "ProcedimentsMock";

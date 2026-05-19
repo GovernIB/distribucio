@@ -33,7 +33,7 @@ import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.plugin.procediment.Procediment;
 
 /**
- * Implementació del servei de gestió de procediments.
+ * Implementació del procediment de gestió de procediments.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -95,6 +95,51 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		
 		return llistaProcediments;
 	}
+
+    @Override
+    @Transactional
+    public void findAndUpdateProcediment(Long entitatId, String procedimentCodi) throws Exception {
+        EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
+
+        Procediment procediment = null;
+        int reintents = 1;
+        boolean errorConsultaServeis = false;
+        Exception exConsultaServeis = null;
+        String errMsg = "-";
+        do {
+            try {
+                procediment = pluginHelper.procedimentGetByCodi(procedimentCodi);
+            } catch (Exception e) {
+                exConsultaServeis = e;
+                errMsg = "Error consultant el procediment per codi: " + procedimentCodi;
+            }
+            errorConsultaServeis = reintents++ >= 3;
+        }
+        while (procediment == null && !errorConsultaServeis);
+
+        // Comprova si hi ha hagut errors consultant els procediments
+        if (errorConsultaServeis && exConsultaServeis != null) {
+            String errorMessage = exConsultaServeis.getMessage() != null ? exConsultaServeis.getMessage() : errMsg;
+            throw new Exception(errorMessage, exConsultaServeis);
+        }
+
+        if (procediment == null) {
+            throw new Exception(
+                    "No s'ha obtingut cap resultat per la consulta de procediment: (" + procedimentCodi + ")"
+            );
+        }
+
+        // Crea un Map amb els procediments de Distribucio per codi
+        Map<String, Procediment> procedimentMap = new HashMap<String, Procediment>();
+        procedimentMap.put(procediment.getCodigo(), procediment);
+
+        // Deshabilita els procediments que no hagi retornat Distribucio
+        procedimentHelper.actualtizarProcedimentsNoVigents(entitat, procedimentMap);
+
+        // Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
+        Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
+        procedimentHelper.actualitzaProcediment(procediment, unitatsOrganitzatives, entitat);
+    }
 
 	/** Mètode per trobar i actualitzar els procediments. Es pot fer manualment o des de la tasca
 	 * programada.

@@ -99,6 +99,46 @@ public class ProcedimentPluginRolsac2 extends DistribucioAbstractPluginPropertie
 		}
 	}
 
+    @Override
+    public Procediment findAmbCodi(
+            String codi) throws SistemaExternException {
+        logger.debug("Consulta dels procediments de l'unitat organitzativa (" +
+                "codi=" + codi + ")");
+        ProcedimentPluginRolsac2.ProcedimientosResponse response = null;
+        long start = System.currentTimeMillis();
+
+        Procediment procediment = null;
+        try {
+            response = findProcedimentsRolsac(
+                    getServiceUrl() + "/" + codi + "?lang=ca",
+                    "");
+
+            if (response.getItems() != null && response.getItems().size() == 1)
+                procediment = response.getItems().get(0);
+        } catch (Exception ex) {
+            salutPluginComponent.incrementarOperacioError();
+            logger.error("No s'han pogut consultar el procediment de ROLSAC (" +
+                            "codi=" + codi + ")",
+                    ex);
+            throw new SistemaExternException(
+                    "No s'han pogut consultar el procediment de ROLSAC (" +
+                            "codi=" + codi + ")",
+                    ex);
+        }
+
+        if (response != null && response.getStatus().equals("200")) {
+            salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
+            return procediment;
+        } else {
+            salutPluginComponent.incrementarOperacioError();
+            logger.error("No s'han pogut consultar el procediment de ROLSAC (" +
+                    "codi=" + codi + "). Resposta rebuda amb el codi " + response.getStatus());
+            throw new SistemaExternException(
+                    "No s'han pogut consultar el procediment de ROLSAC (" +
+                            "codi=" + codi + "). Resposta rebuda amb el codi " + response.getStatus());
+        }
+    }
+
 	private Client getJerseyClient() {
 		if (jerseyClient == null) {
 			jerseyClient = new Client();
