@@ -16,8 +16,8 @@ import javax.xml.ws.BindingProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.caib.comanda.model.v1.salut.EstatSalut;
-import es.caib.comanda.model.v1.salut.IntegracioPeticions;
+import es.caib.comanda.model.server.monitoring.EstatSalut;
+import es.caib.comanda.model.server.monitoring.IntegracioPeticions;
 import es.caib.dir3caib.ws.api.catalogo.CatComunidadAutonomaTF;
 import es.caib.dir3caib.ws.api.catalogo.CatEntidadGeograficaTF;
 import es.caib.dir3caib.ws.api.catalogo.CatLocalidadTF;

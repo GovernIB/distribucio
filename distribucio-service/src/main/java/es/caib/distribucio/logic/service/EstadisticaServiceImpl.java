@@ -1,6 +1,6 @@
 package es.caib.distribucio.logic.service;
 
-import static es.caib.comanda.model.v1.estadistica.Format.LONG;
+import static es.caib.comanda.model.server.monitoring.Format.LONG;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import es.caib.comanda.model.v1.estadistica.DimensioDesc;
-import es.caib.comanda.model.v1.estadistica.IndicadorDesc;
-import es.caib.comanda.model.v1.estadistica.RegistresEstadistics;
+import es.caib.comanda.model.server.monitoring.DimensioDesc;
+import es.caib.comanda.model.server.monitoring.IndicadorDesc;
+import es.caib.comanda.model.server.monitoring.RegistresEstadistics;
 import es.caib.distribucio.logic.intf.dto.estadistic.DimEnum;
 import es.caib.distribucio.logic.intf.dto.estadistic.FetEnum;
 import es.caib.distribucio.logic.intf.dto.historic.HistoricTipusEnumDto;
@@ -64,21 +64,21 @@ public class EstadisticaServiceImpl implements EstadisticaService {
 				.collect(Collectors.toList());
 
 		return List.of(
-				DimensioDesc.builder().codi(DimEnum.ENT.name()).nom(DimEnum.ENT.getNom()).descripcio(DimEnum.ENT.getDescripcio()).valors(entitatCodis).build(),
-				DimensioDesc.builder().codi(DimEnum.UNT.name()).nom(DimEnum.UNT.getNom()).descripcio(DimEnum.UNT.getDescripcio()).valors(unitatCodis).build(),
-				DimensioDesc.builder().codi(DimEnum.BST.name()).nom(DimEnum.BST.getNom()).descripcio(DimEnum.BST.getDescripcio()).valors(bustiaNoms).build(),
-				DimensioDesc.builder().codi(DimEnum.TIP.name()).nom(DimEnum.TIP.getNom()).descripcio(DimEnum.TIP.getDescripcio()).valors(tipus).build());
+				new DimensioDesc().codi(DimEnum.ENT.name()).nom(DimEnum.ENT.getNom()).descripcio(DimEnum.ENT.getDescripcio()).valors(entitatCodis),
+				new DimensioDesc().codi(DimEnum.UNT.name()).nom(DimEnum.UNT.getNom()).descripcio(DimEnum.UNT.getDescripcio()).valors(unitatCodis),
+				new DimensioDesc().codi(DimEnum.BST.name()).nom(DimEnum.BST.getNom()).descripcio(DimEnum.BST.getDescripcio()).valors(bustiaNoms),
+				new DimensioDesc().codi(DimEnum.TIP.name()).nom(DimEnum.TIP.getNom()).descripcio(DimEnum.TIP.getDescripcio()).valors(tipus));
 	}
 
 	@Override
 	public List<IndicadorDesc> getIndicadors() {
 		return Arrays.stream(FetEnum.values())
-			    .map(f -> IndicadorDesc.builder()
+			    .map(f -> new IndicadorDesc()
 			        .codi(f.name())
 			        .nom(f.getNom())
 			        .descripcio(f.getDescripcio())
 			        .format(LONG) // De moment sempre long
-			        .build())
+                )
 			    .collect(Collectors.toList());
 	}
 

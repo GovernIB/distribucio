@@ -106,6 +106,11 @@
 				window.location.replace(webutilContextPath() + "/bustiaAdminOrganigrama");
 			});
 
+            $('#permisBtn').click(function() {
+                permis = !$(this).hasClass('active');
+                // Modifica el formulari
+                $('#permis').val(permis);
+            })
 		});
 	</script>
 </head>
@@ -140,16 +145,20 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="row col-md-6">
-				<div class="col-md-4" style="padding-left: 30px;">
+			<div class="row col-md-8">
+				<div class="col-md-3" style="padding-left: 30px;">
 					<dis:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
 				</div>
-				<div class="col-md-4" style="padding-left: 30px;">
+				<div class="col-md-3" style="padding-left: 30px;">
 					<dis:inputCheckbox name="perDefecte" inline="true" textKey="bustia.list.filtre.perDefecte"/>
 				</div>
-				<div class="col-md-4" style="padding-left: 30px;">
+				<div class="col-md-3" style="padding-left: 30px;">
 					<dis:inputCheckbox name="activa" inline="true" textKey="bustia.list.filtre.activa"/>
-				</div>			
+				</div>
+                <div class="col-md-3">
+                    <button id="permisBtn" style="width: 45px;" title="<spring:message code="bustia.list.filtre.permis"/>" class="btn btn-default <c:if test="${bustiaFiltreCommand.permis}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
+                    <dis:inputHidden name="permis"/>
+                </div>
 			</div>
 			<div class="col-md-3 pull-right">
 				<div class="pull-right">

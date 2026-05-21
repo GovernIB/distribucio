@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import es.caib.distribucio.back.helper.RolHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,7 +154,7 @@ public class EntitatController extends BaseController {
 		EntitatDto entitatActual = EntitatHelper.getEntitatActual(request);
 		
 		if (entitatActual != null) {
-			if (entitatActual.getLogoCapBytes() != null) {
+			if (!RolHelper.isRolActualSuperusuari(request) && entitatActual.getLogoCapBytes() != null) {
 				writeFileToResponse(
 						"Logo_cap.png",
 						entitatActual.getLogoCapBytes(),

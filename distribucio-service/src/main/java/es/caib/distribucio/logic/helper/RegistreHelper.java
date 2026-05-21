@@ -18,7 +18,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.annotation.PostConstruct;
@@ -36,13 +36,12 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.ws.soap.SOAPFaultException;
 
-import es.caib.distribucio.logic.intf.service.RegistreService;
-import es.caib.distribucio.persist.repository.*;
 import org.apache.commons.io.FilenameUtils;
 import org.fundaciobit.pluginsib.utils.signature.SignatureCommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.convert.DurationStyle;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -108,6 +107,7 @@ import es.caib.distribucio.logic.intf.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
 import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
@@ -124,6 +124,15 @@ import es.caib.distribucio.persist.entity.RegistreFirmaDetallEntity;
 import es.caib.distribucio.persist.entity.RegistreInteressatEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
 import es.caib.distribucio.persist.entity.UsuariEntity;
+import es.caib.distribucio.persist.repository.BackofficeRepository;
+import es.caib.distribucio.persist.repository.ContingutComentariRepository;
+import es.caib.distribucio.persist.repository.ContingutLogRepository;
+import es.caib.distribucio.persist.repository.EntitatRepository;
+import es.caib.distribucio.persist.repository.RegistreAnnexFirmaRepository;
+import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
+import es.caib.distribucio.persist.repository.RegistreFirmaDetallRepository;
+import es.caib.distribucio.persist.repository.RegistreInteressatRepository;
+import es.caib.distribucio.persist.repository.RegistreRepository;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.distribucio.plugin.distribucio.DistribucioRegistreFirma;
@@ -1562,8 +1571,10 @@ public class RegistreHelper {
 				}				
 			}
 			logger.trace(">>> Despres de cridar backoffice WS "+ backofficeDesti.getCodi());
+            BackofficeSalutHelper.addSuccessOperation(backofficeDesti, System.currentTimeMillis() - t0);
 			return null;
         } catch (Exception ex) {
+            BackofficeSalutHelper.addErrorOperation(backofficeDesti);
 			String errorDescripcio = "";
 			if (!ids.isEmpty()) {
 				errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions al backoffice " + backofficeDesti.getNom();
@@ -1708,16 +1719,8 @@ public class RegistreHelper {
 			SubsistemesHelper.addErrorOperation(SubsistemesEnum.RGB);
 			throwable = th;
 		}
-		int minutesEspera = 1;
-		String tempsEspera = configHelper.getConfig(
-				"es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio");
-		// we convert to minutes to not have to deal with too big numbers out of bounds
-		minutesEspera = ((Integer.parseInt(tempsEspera) / 1000) / 60);
-		if (minutesEspera < 1) {
-			minutesEspera = 1;
-		}			
 		for (Long pendentId : pendentsIdsGroupedByRegla) {
-			self.updateBackEnviarDelayData(pendentId, throwable, dataComunicacio, minutesEspera);
+			self.updateBackEnviarDelayData(pendentId, throwable, dataComunicacio);
 		}
 		return throwable;
 	}
@@ -1728,15 +1731,14 @@ public class RegistreHelper {
 	 * @param pendentId
 	 * @param throwable
 	 * @param dataComunicacio
-	 * @param minutesEspera
+	 * @param tempsEspera
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateBackEnviarDelayData(
 			Long pendentId, 
 			Throwable throwable, 
-			Date dataComunicacio,
-			int minutesEspera) {
-
+			Date dataComunicacio) {
+        
 		RegistreEntity pend = registreRepository.findOneAmbBloqueig(pendentId);
 		if (throwable == null) {
 			// remove exception message and increment procesIntents
@@ -1779,14 +1781,34 @@ public class RegistreHelper {
                 }
 			}
 		}
-		// set delay for another send retry
+		// Calcula el temps entre reintents a partir del número de reintents, configuració i valor per defecte #826
 		int procesIntents = pend.getProcesIntents();
-		// with every proces intent delay between resends will be longer
-		int delayMinutes = minutesEspera * procesIntents;
+		Integer tempsEntreIntentsMs = null;
+		// Configuració amb expressions ISO-8601 per interpretar amb lava.lang.Duration
+		String configTempsEspera = configHelper.getConfig(
+				"es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.entre.intents");
+		if (configTempsEspera != null && !configTempsEspera.trim().isEmpty()) {
+	        try {
+		        ArrayList<Integer> tempsConfigMs = Arrays.stream(configTempsEspera.split(","))
+	                        .map((i) -> i.trim())
+	                        .map((i) -> (int) DurationStyle.detectAndParse(i).toMillis())
+	                        .collect(Collectors.toCollection(ArrayList::new));
+		        // Per cada intent li toca una expressió però si hi ha més intents que expressions llavors s'hagafa la darrera t = tempsConfigMs[procesIntent-1]
+		        if (!tempsConfigMs.isEmpty()) {
+		        	tempsEntreIntentsMs = tempsConfigMs.get(Math.max(0, Math.min(procesIntents-1, tempsConfigMs.size()-1)));
+		        }
+	        } catch (Exception e) {
+	            logger.error("Error no controlat obtenint el temps configurat entre reintents d'enviar a backoffice \"" 
+	            				+ configTempsEspera + "\": " + e.getMessage());
+	        }
+		}
+		// Si no s'especifica cap propietat llavors el temps són 10 minuts per reintent
+		if (tempsEntreIntentsMs == null) {
+			tempsEntreIntentsMs = procesIntents * 10 * 60000;
+		}
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
-		cal.add(Calendar.MINUTE,
-				delayMinutes);
+        cal.add(Calendar.MILLISECOND, tempsEntreIntentsMs);
 		pend.updateBackRetryEnviarData(cal.getTime());
 	}
 
@@ -2576,23 +2598,13 @@ public class RegistreHelper {
 				true);
 		contingutHelper.tractarInteressats(registreAnotacio.getInteressats());	
 		// Traiem el justificant de la llista d'annexos si té el mateix id o uuid
-		for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
-			if ((registre.getJustificant() != null && registreAnotacio.getJustificant().getId().equals(annexDto.getId()))
-					|| registre.getJustificantArxiuUuid() != null && registre.getJustificantArxiuUuid().equals(annexDto.getFitxerArxiuUuid()) ) {
-				registreAnotacio.getAnnexos().remove(annexDto);
-				break;
-			}
-		}
-		if ("tothom".equalsIgnoreCase(rolActual)) {
-			List<RegistreAnnexDto> registreAnnexos = new ArrayList<RegistreAnnexDto>();
-			for (RegistreAnnexDto annexDto : registreAnotacio.getAnnexos()) {
-				if (annexDto.getSicresTipusDocument() == null 
-						|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor().equals(annexDto.getSicresTipusDocument())) {
-					registreAnnexos.add(annexDto);
-				}
-			}
-			registreAnotacio.setAnnexos(registreAnnexos);
-		}
+        registreAnotacio.setAnnexos(
+                registreAnotacio.getAnnexos().stream().filter(p ->
+                        (registre.getJustificant() == null || !registre.getJustificant().getId().equals(p.getId()))
+                        && (registre.getJustificantArxiuUuid() == null || !registre.getJustificantArxiuUuid().equals(p.getFitxerArxiuUuid()))
+                        && (!"tothom".equalsIgnoreCase(rolActual) || p.getSicresTipusDocument() == null || !RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor().equals(p.getSicresTipusDocument())) )
+                        .collect(Collectors.toList())
+        );
 		return registreAnotacio;
 	}
 	

@@ -79,14 +79,14 @@
 			</div>			
 			<div class="col-md-3">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
-				<c:url value="/unitatajax/senseEntitat" var="urlConsultaLlistat"/>
+				<c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
 				<dis:inputSuggest 
 					name="unitatOrganitzativa"
 					urlConsultaInicial="${urlConsultaInicial}" 
 					urlConsultaLlistat="${urlConsultaLlistat}" 
 					inline="true" 
 					placeholderKey="servei.list.columna.unitatOrganitzativa"
-					suggestValue="codi"
+					suggestValue="id"
 					suggestText="codiAndNom" 
 					optionTemplateFunction="formatSelectUnitat" /> 
 			</div>

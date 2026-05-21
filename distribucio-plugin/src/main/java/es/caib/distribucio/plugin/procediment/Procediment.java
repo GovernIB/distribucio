@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.plugin.procediment;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import es.caib.distribucio.plugin.Link;
@@ -17,8 +18,11 @@ public class Procediment {
 	private String codigo;
 	private String codigoSIA;
 	private String codigoSia;
+    @JsonProperty("nombre")
+    @JsonAlias("nombreProcedimientoWorkFlow")
 	private String nombre;
-	@JsonProperty("link_unidadAdministrativa")
+    @JsonProperty("link_unidadAdministrativa")
+    @JsonAlias("linkUnidadAdministrativaInstructora")
 	private Link unidadAdministrativa;
 
 	public String getCodigo() {

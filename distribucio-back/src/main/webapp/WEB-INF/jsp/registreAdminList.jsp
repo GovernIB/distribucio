@@ -49,7 +49,12 @@
 	}
 	tbody tr.selectable td span.caret {
 		margin: 8px 0 0 2px; 
-	}	
+	}
+
+    button#netejarFiltre,
+    button#filtrar {
+        width: 50%;
+    }
 	
 .fila-desactivada {
   position: relative;
@@ -115,7 +120,11 @@ function formatSelectUnitat(item) {
 	}
 }
 
-$(document).ready(function() {	
+$(document).ready(function() {
+    if (typeof formatDate === 'function') {
+        $.views.helpers({ formatDate: formatDate });
+    }
+
 	$("#reintents .select2").css("width", "29.5rem");
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 	
@@ -134,6 +143,8 @@ $(document).ready(function() {
 		$('#enviatPerEmail').val(null).change();
 		$('#nomesAmbEsborranysBtn').removeClass('active');
 		$('#nomesAmbEsborranys').val(false);
+		$('#ambAnnexosInternsBtn').removeClass('active');
+		$('#ambAnnexosInterns').val(false);
 		$('#sobreescriure').val(null).trigger('change');
 		$('#reintents').val(null).trigger('change');
 	});
@@ -146,6 +157,11 @@ $(document).ready(function() {
 		nomesAmbEsborranys = !$(this).hasClass('active');
 		// Modifica el formulari
 		$('#nomesAmbEsborranys').val(nomesAmbEsborranys);
+	})
+	$('#ambAnnexosInternsBtn').click(function() {
+		ambAnnexosInterns = !$(this).hasClass('active');
+		// Modifica el formulari
+		$('#ambAnnexosInterns').val(ambAnnexosInterns);
 	})
 	var selectButtonsInitialized = false;
 	$('#taulaDades').on( 'draw.dt', function (datatable) {
@@ -230,7 +246,7 @@ $(document).ready(function() {
 	});
 	$('#mostrarInactives').change(function() {
 		$('#bustia').prop('disabled', true);
-		var actual = $('#bustia').val();
+		var actual = "${registreFiltreCommand.bustia}";
 		$('#bustia').select2('val', '', true);
 		$('#bustia option[value!=""]').remove();
 		var baseUrl = "<c:url value='/registreAdmin/busties'/>?mostrarInactives=" + $(this).val();
@@ -385,14 +401,14 @@ function refreshRegistres($modalExecucioMassiva) {
 				<div class="row">
 					<div class="col-md-10">
 						<dis:inputSelect 
-							name="bustia" 
-							optionItems="${replacedByJquery}" 
+							name="bustia"
+							optionItems="${replacedByJquery}"
 							optionValueAttribute="id" 
 							optionTextAttribute="nom" 
 							emptyOption="true" 
 							placeholderKey="bustia.list.filtre.bustia" 
 							inline="true"
-							optionMinimumResultsForSearch="0" 
+							optionMinimumResultsForSearch="0"
 							optionTemplateFunction="formatSelectBustia" />
 					</div>
 					<div class="col-md-2" style="padding-left: 0;">
@@ -413,7 +429,7 @@ function refreshRegistres($modalExecucioMassiva) {
 		<div class="row">
 			<div class="col-md-2">
 				<div class="row">
-					<div class="col-sm-9">
+					<div class="col-sm-7">
 						<dis:inputSelect 
 							name="tipusDocFisica" 
 							netejar="false" 
@@ -425,9 +441,13 @@ function refreshRegistres($modalExecucioMassiva) {
 							inline="true" 
 							optionTemplateFunction="formatSelectTipusDocumentacio"/>
 					</div>
-					<div class="col-sm-3" style="padding-left: 0;">
+					<div class="col-sm-2" style="padding-left: 0;">
 						<button id="nomesAmbEsborranysBtn" style="width: 45px;" title="<spring:message code="contingut.admin.filtre.nomesAmbEsborranys"/>" class="btn btn-default <c:if test="${registreFiltreCommand.nomesAmbEsborranys}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
 						<dis:inputHidden name="nomesAmbEsborranys"/>
+					</div>
+					<div class="col-sm-2">
+                        <button id="ambAnnexosInternsBtn" style="width: 45px;" title="<spring:message code="contingut.admin.filtre.ambAnnexosInterns"/>" class="btn btn-default <c:if test="${registreFiltreCommand.ambAnnexosInterns}">active</c:if>" data-toggle="button"><span class="fa fa-eye"></span></button>
+                        <dis:inputHidden name="ambAnnexosInterns"/>
 					</div>
 				</div>
 			</div>
@@ -618,7 +638,11 @@ function refreshRegistres($modalExecucioMassiva) {
 							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
 							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deEnviarAlBackoffice"/>">
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
-							</span>					
+							</span>
+							{{if backRetryEnviarDataString && !reintentsEsgotat }}
+                                <br/>
+                                <span style="font-size:1rem"> Proper reintent: {{:backRetryEnviarDataString}} </span>
+                            {{/if}}
 						{{else procesEstat == 'BACK_COMUNICADA'}}
 							<spring:message code="registre.proces.estat.enum.BACK_COMUNICADA"/>
 							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
@@ -737,7 +761,10 @@ function refreshRegistres($modalExecucioMassiva) {
 				</th>
 				<th data-col-name="interessatsResum" data-orderable="false">
 					<spring:message code="bustia.pendent.columna.interessats"/>
-				</th>				
+				</th>
+                <th data-col-name="backCodi" data-orderable="true">
+                    <spring:message code="contingut.admin.columna.backoffice"/>
+                </th>
 				<th data-col-name="numComentaris"   style ="text-align: center;" data-orderable="false" data-template="#cellPermisosTemplate">							
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
 						<a href="./contingut/{{:id}}/comentaris/?isVistaMoviments=false" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default">
@@ -745,9 +772,6 @@ function refreshRegistres($modalExecucioMassiva) {
 							<span class="badge">{{:numComentaris}}</span>
 						</a>
 					</script>
-				</th>
-				<th data-col-name="backCodi" data-orderable="true">
-					<spring:message code="contingut.admin.columna.backoffice"/>
 				</th>
 				<th data-col-name="id" data-orderable="false" data-template="#cellAccionsContingutTemplate" style="max-width:50px;">
 					<script id="cellAccionsContingutTemplate" type="text/x-jsrender">
@@ -802,6 +826,7 @@ function refreshRegistres($modalExecucioMassiva) {
 				<th data-col-name="regla.nom" data-visible="false"></th>
 				<th data-col-name="backCodi" data-visible="false"></th>
 				<th data-col-name="backObservacions" data-visible="false"></th>
+                <th data-col-name="backRetryEnviarDataString" data-visible="false"></th>
 			</tr>
 		</thead>
 	</table>

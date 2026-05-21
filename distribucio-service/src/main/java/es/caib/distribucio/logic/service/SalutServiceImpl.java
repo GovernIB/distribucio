@@ -1,22 +1,17 @@
 package es.caib.distribucio.logic.service;
 
-import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.DoubleSummaryStatistics;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import es.caib.comanda.model.v1.salut.*;
+import es.caib.comanda.model.server.monitoring.*;
+import es.caib.comanda.ms.salut.helper.MonitorHelper;
+import es.caib.distribucio.logic.helper.BackofficeSalutHelper;
+import es.caib.distribucio.logic.helper.BackofficeSalutHelper.Metrics;
+import es.caib.distribucio.persist.entity.BackofficeEntity;
+import es.caib.distribucio.persist.repository.BackofficeRepository;
 import org.apache.commons.lang3.time.DateUtils;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -28,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
-import es.caib.distribucio.logic.helper.MonitorHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper;
 import es.caib.distribucio.logic.helper.plugin.AbstractPluginHelper;
@@ -48,33 +42,42 @@ public class SalutServiceImpl implements SalutService {
 	
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
+
+    @Autowired
+    private BackofficeRepository backofficeRepository;
 	
 	private final JdbcTemplate jdbcTemplate;
     private final RestTemplate restTemplate;
     private final PluginHelper pluginHelper;
     private final AvisRepository avisRepository;
-    
-	@Override
+
+    @Override
 	public List<IntegracioInfo> getIntegracions() {
 		List<IntegracioInfo> integracionsInfo = pluginHelper.getPluginHelpers().stream()
 	            .flatMap(helper -> helper.getIntegracionsInfo().stream())
 	            .collect(Collectors.collectingAndThen(
 	                    Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(IntegracioInfo::getCodi))),
 	                    ArrayList::new));
-		
-		return integracionsInfo;
+
+        List<BackofficeEntity> backofficeList = backofficeRepository.findAll();
+        Set<String> codigosVistos = new HashSet<>();
+        for (BackofficeEntity backoffice : backofficeList) {
+            if (codigosVistos.add(backoffice.getCodi())) {
+                integracionsInfo.add(new IntegracioInfo()
+                        .codi(backoffice.getCodi())
+                        .nom(backoffice.getNom()));
+            }
+        }
+        return integracionsInfo;
 	}
 
 	@Override
 	public List<SubsistemaInfo> getSubsistemes() {
-		return List.of(
-				SubsistemaInfo.builder().codi("AWS").nom("Alta Registre WS").build(),
-				SubsistemaInfo.builder().codi("BKC").nom("Backoffice consulta").build(), 
-				SubsistemaInfo.builder().codi("BKE").nom("Backoffice canvi estat").build(),
-				SubsistemaInfo.builder().codi("BKL").nom("Backoffice llistar").build(),
-				SubsistemaInfo.builder().codi("RGB").nom("Aplicar Regla tipus Backoffice").build(),
-				SubsistemaInfo.builder().codi("GDO").nom("Gestió documental FileSystem").build()
-		);
+        List<SubsistemaInfo> subsistemes = new ArrayList<>();
+        for(SubsistemesHelper.SubsistemesEnum subsistema: SubsistemesHelper.SubsistemesEnum.values()) {
+            subsistemes.add(new SubsistemaInfo().codi(subsistema.name()).nom(subsistema.getNom()));
+        }
+        return subsistemes;
 	}
 
 	@Override
@@ -84,20 +87,19 @@ public class SalutServiceImpl implements SalutService {
         var integracions = checkIntegracions();             // Integracions
 //        var altres = checkAltres();                         // Altres
         var missatges = checkMissatges();                   // Missatges
-        InformacioSistema systemInfo = es.caib.comanda.ms.salut.helper.MonitorHelper.getInfoSistema(); // Informacio sistema
 
         SubsistemesHelper.SubsistemesInfo subsistemesInfo = SubsistemesHelper.getSubsistemesInfo();
-        var subsistemes = subsistemesInfo.getSubsistemesSalut();  // Subsistemes
+        List<SubsistemaSalut> subsistemes = subsistemesInfo.getSubsistemesSalut();  // Subsistemes
         var estatGlobalSubsistemes = subsistemesInfo.getEstatGlobal();
         
         if (EstatSalutEnum.UP.equals(estatSalut.getEstat()) && !EstatSalutEnum.UP.equals(estatGlobalSubsistemes) && !EstatSalutEnum.UNKNOWN.equals(estatGlobalSubsistemes)) {
-            estatSalut = EstatSalut.builder()
+            estatSalut = new EstatSalut()
                     .estat(estatGlobalSubsistemes)
-                    .latencia(estatSalut.getLatencia())
-                    .build();
+                    .latencia(estatSalut.getLatencia());
         }
-        
-        return SalutInfo.builder()
+
+        InformacioSistema systemInfo = MonitorHelper.getInfoSistema();
+        return new SalutInfo()
                 .codi("DIS")
                 .versio(versio)
                 .data(DatesUtils.toOffsetDateTime(new Date()))
@@ -107,34 +109,33 @@ public class SalutServiceImpl implements SalutService {
                 .subsistemes(subsistemes)
 //                .altres(altres)
                 .missatges(missatges)
-                .informacioSistema(systemInfo)
-                .build();
+                .informacioSistema(systemInfo);
 	}
 	
     @Override
     public List<ContextInfo> getContexts(String baseUrl) {
         return List.of(
-                ContextInfo.builder()
+                new ContextInfo()
                         .codi("BACK")
                         .nom("Backoffice")
                         .path(baseUrl + "/distribucioback")
                         .manuals(List.of(
-                                Manual.builder().nom("Manual d'usuari").path("https://github.com/GovernIB/distribucio/blob/dis-1.0/doc/pdf/02_Distribucio_Manual_Usuari.pdf").build(),
-                                Manual.builder().nom("Manual d'administració").path("https://github.com/GovernIB/distribucio/blob/dis-1.0/doc/pdf/02_Distribucio_Manual_Administrador.pdf").build()))
-                        .build(),
-                ContextInfo.builder()
+                                new Manual().nom("Manual d'usuari").path("https://github.com/GovernIB/distribucio/blob/dis-1.0/doc/pdf/02_Distribucio_Manual_Usuari.pdf"),
+                                new Manual().nom("Manual d'administració").path("https://github.com/GovernIB/distribucio/blob/dis-1.0/doc/pdf/02_Distribucio_Manual_Administrador.pdf")))
+                        ,
+                new ContextInfo()
                         .codi("INT")
                         .nom("API interna")
                         .path(baseUrl + "/distribucioapi/interna")
-                        .manuals(List.of(Manual.builder().nom("Manual d'integració").path("https://github.com/GovernIB/distribucio/blob/dis-1.0/doc/pdf/03_Distribucio_Manual_Integració.pdf").build()))
+                        .manuals(List.of(new Manual().nom("Manual d'integració").path("https://github.com/GovernIB/distribucio/blob/dis-1.0/doc/pdf/03_Distribucio_Manual_Integració.pdf")))
                         .api(baseUrl + "/distribucioapi/interna")
-                        .build(),
-                ContextInfo.builder()
+                        ,
+                new ContextInfo()
                         .codi("EXT")
                         .nom("API externa")
                         .path(baseUrl + "/distribucioapi/externa")
                         .api(baseUrl + "/distribucioapi/externa")
-                        .build()
+
         );
     }
 	
@@ -156,10 +157,9 @@ public class SalutServiceImpl implements SalutService {
         Instant end = Instant.now();
         Integer latency = (int) Duration.between(start, end).toMillis();
 
-        return EstatSalut.builder()
+        return new EstatSalut()
                 .estat(estat)
-                .latencia(latency)
-                .build();
+                .latencia(latency);
     }
     
     private EstatSalut executePerformanceTest() {
@@ -178,10 +178,9 @@ public class SalutServiceImpl implements SalutService {
                     .mapToDouble(result -> result.getPrimaryResult().getScore())
                     .summaryStatistics();
 
-            return EstatSalut.builder()
+            return new EstatSalut()
                     .estat(EstatSalutEnum.UP)
-                    .latencia((int) Math.round(stats.getAverage()))
-                    .build();
+                    .latencia((int) Math.round(stats.getAverage()));
         } catch (RunnerException e) {
             throw new RuntimeException(e);
         }
@@ -195,12 +194,11 @@ public class SalutServiceImpl implements SalutService {
             jdbcTemplate.execute("SELECT ID FROM DIS_ENTITAT WHERE ID = 1");
             Instant end = Instant.now();
 
-            return EstatSalut.builder()
+            return new EstatSalut()
                     .estat(EstatSalutEnum.UP)
-                    .latencia((int) Duration.between(start, end).toMillis())
-                    .build();
+                    .latencia((int) Duration.between(start, end).toMillis());
         } catch (Exception e) {
-            return EstatSalut.builder().estat(EstatSalutEnum.DOWN).build();
+            return new EstatSalut().estat(EstatSalutEnum.DOWN);
         }
     }
     
@@ -276,24 +274,71 @@ public class SalutServiceImpl implements SalutService {
                                   .orElse(null);
                 }
                 
-                IntegracioPeticions combinada = IntegracioPeticions.builder()
+                IntegracioPeticions combinada = new IntegracioPeticions()
                         .totalOk(totalOk)
                         .totalError(totalError)
                         .totalTempsMig(totalTempsMig)
                         .peticionsOkUltimPeriode(peticionsOkUltimPeriode)
                         .peticionsErrorUltimPeriode(peticionsErrorUltimPeriode)
                         .tempsMigUltimPeriode(tempsMigUltimPeriode)
-                        .peticionsPerEntorn(peticionsPerEntorn)
-                        .build();
+                        .peticionsPerEntorn(peticionsPerEntorn);
 
-                IntegracioSalut combinadaSalut = IntegracioSalut.builder()
+                IntegracioSalut combinadaSalut = new IntegracioSalut()
                         .codi(codiApp)
                         .estat(estat)
                         .latencia(maxLatencia)
-                        .peticions(combinada)
-                        .build();
+                        .peticions(combinada);
 
                 result.add(combinadaSalut);
+            }
+        }
+
+        List<Metrics> integracionsInfo = BackofficeSalutHelper.getInfo();
+        Map<String, List<Metrics>> map = integracionsInfo.stream()
+                .collect(Collectors.groupingBy(Metrics::getCodi));
+
+        for (Map.Entry<String, List<Metrics>> entry : map.entrySet()) {
+            String codiApp = entry.getKey();
+            List<Metrics> llista = entry.getValue();
+
+            if (llista.size() == 1) {
+                // Si només hi ha un plugin del sistema extern: retornar tal qual
+                Metrics backoffice = llista.get(0);
+                IntegracioSalut backofficeSalut = backoffice.getSalutInfo();
+                result.add(backofficeSalut);
+            } else {
+                // Si hi ha múltiples plugins (serveis/procediments): combinar
+                IntegracioPeticions integracioPeticions = new IntegracioPeticions()
+                        .totalOk(0L)
+                        .totalError(0L)
+                        .totalTempsMig(0)
+                        .peticionsOkUltimPeriode(0L)
+                        .peticionsErrorUltimPeriode(0L)
+                        .tempsMigUltimPeriode(0);
+
+                for (Metrics m : llista) {
+                    IntegracioPeticions peticio = m.getSalutInfo().getPeticions();
+                    integracioPeticions.setTotalOk(integracioPeticions.getTotalOk() + peticio.getTotalOk());
+                    integracioPeticions.setTotalError(integracioPeticions.getTotalError() + peticio.getTotalError());
+                    integracioPeticions.setPeticionsOkUltimPeriode(integracioPeticions.getPeticionsOkUltimPeriode() + peticio.getPeticionsOkUltimPeriode());
+                    integracioPeticions.setPeticionsErrorUltimPeriode(integracioPeticions.getPeticionsErrorUltimPeriode() + peticio.getPeticionsErrorUltimPeriode());
+
+                    if (peticio.getTotalTempsMig() > integracioPeticions.getTotalTempsMig()) {
+                        integracioPeticions.setTotalTempsMig(peticio.getTotalTempsMig());
+                    }
+                    if (peticio.getTempsMigUltimPeriode() > integracioPeticions.getTempsMigUltimPeriode()) {
+                        integracioPeticions.setTempsMigUltimPeriode(peticio.getTempsMigUltimPeriode());
+                    }
+
+                    integracioPeticions.getPeticionsPerEntorn()
+                            .put(m.getEntitat(), peticio);
+                }
+
+                IntegracioSalut integracioBackoffice = new IntegracioSalut()
+                        .codi(codiApp)
+                        .peticions(integracioPeticions)
+                        .estat(BackofficeSalutHelper.calculateHealth(llista));
+                result.add(integracioBackoffice);
             }
         }
 
@@ -323,32 +368,32 @@ public class SalutServiceImpl implements SalutService {
         }
     }
 
-    public List<DetallSalut> checkAltres() {
-    	String totalSpace = null, freeSpace = null;
-        // Nombre de cores (CPU)
-        var os = MonitorHelper.getName() + " " + MonitorHelper.getVersion() + " (" + MonitorHelper.getArch() + ")";
-
-        try {
-            for (File root : File.listRoots()) {
-    			totalSpace = MonitorHelper.humanReadableByteCount(root.getTotalSpace());
-    			freeSpace = MonitorHelper.humanReadableByteCount(root.getFreeSpace());
-    		}
-            
-            return List.of(
-                    DetallSalut.builder().codi("PRC").nom("Processadors").valor(String.valueOf(Runtime.getRuntime().availableProcessors())).build(),
-                    DetallSalut.builder().codi("SCPU").nom("Càrrega del sistema").valor(MonitorHelper.getSystemCpuLoad()).build(),
-                    DetallSalut.builder().codi("PCPU").nom("Càrrega del procés").valor(MonitorHelper.getProcessCPULoad()).build(),
-                    DetallSalut.builder().codi("MED").nom("Memòria disponible").valor(MonitorHelper.humanReadableByteCount(Runtime.getRuntime().freeMemory())).build(),
-                    DetallSalut.builder().codi("MET").nom("Memòria total").valor(MonitorHelper.humanReadableByteCount(Runtime.getRuntime().totalMemory())).build(),
-                    DetallSalut.builder().codi("EDT").nom("Espai de disc total").valor(totalSpace).build(),
-                    DetallSalut.builder().codi("EDL").nom("Espai de disc lliure").valor(freeSpace).build(),
-                    DetallSalut.builder().codi("SO").nom("Sistema operatiu").valor(os).build());
-
-        } catch (Exception e) {
-        	log.error("Salut: No s'ha pogut obtenir informació del sistema amb la implementació de Sun", e);
-            return null;
-        }
-    }
+//    public List<DetallSalut> checkAltres() {
+//    	String totalSpace = null, freeSpace = null;
+//        // Nombre de cores (CPU)
+//        var os = MonitorHelper.getName() + " " + MonitorHelper.getVersion() + " (" + MonitorHelper.getArch() + ")";
+//
+//        try {
+//            for (File root : File.listRoots()) {
+//    			totalSpace = MonitorHelper.humanReadableByteCount(root.getTotalSpace());
+//    			freeSpace = MonitorHelper.humanReadableByteCount(root.getFreeSpace());
+//    		}
+//
+//            return List.of(
+//                    DetallSalut.builder().codi("PRC").nom("Processadors").valor(String.valueOf(Runtime.getRuntime().availableProcessors())).build(),
+//                    DetallSalut.builder().codi("SCPU").nom("Càrrega del sistema").valor(MonitorHelper.getSystemCpuLoad()).build(),
+//                    DetallSalut.builder().codi("PCPU").nom("Càrrega del procés").valor(MonitorHelper.getProcessCPULoad()).build(),
+//                    DetallSalut.builder().codi("MED").nom("Memòria disponible").valor(MonitorHelper.humanReadableByteCount(Runtime.getRuntime().freeMemory())).build(),
+//                    DetallSalut.builder().codi("MET").nom("Memòria total").valor(MonitorHelper.humanReadableByteCount(Runtime.getRuntime().totalMemory())).build(),
+//                    DetallSalut.builder().codi("EDT").nom("Espai de disc total").valor(totalSpace).build(),
+//                    DetallSalut.builder().codi("EDL").nom("Espai de disc lliure").valor(freeSpace).build(),
+//                    DetallSalut.builder().codi("SO").nom("Sistema operatiu").valor(os).build());
+//
+//        } catch (Exception e) {
+//        	log.error("Salut: No s'ha pogut obtenir informació del sistema amb la implementació de Sun", e);
+//            return null;
+//        }
+//    }
 
     public List<MissatgeSalut> checkMissatges() {
         List<MissatgeSalut> missatges = new ArrayList<>();
@@ -367,7 +412,7 @@ public class SalutServiceImpl implements SalutService {
     private EstatSalutEnum recuperarEstat(EstatSalutEnum e1, EstatSalutEnum e2) {
         if (e1 == EstatSalutEnum.UP   || e2 == EstatSalutEnum.UP)   return EstatSalutEnum.UP;
         if (e1 == EstatSalutEnum.DOWN || e2 == EstatSalutEnum.DOWN) return EstatSalutEnum.DOWN;
-        return null;
+        return EstatSalutEnum.UNKNOWN;
     }
 
 }

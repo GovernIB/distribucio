@@ -5,8 +5,8 @@ import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
-import es.caib.comanda.model.v1.log.FitxerContingut;
-import es.caib.comanda.model.v1.log.FitxerInfo;
+import es.caib.comanda.model.server.monitoring.FitxerContingut;
+import es.caib.comanda.model.server.monitoring.FitxerInfo;
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import lombok.experimental.Delegate;
 import java.util.concurrent.BlockingQueue;

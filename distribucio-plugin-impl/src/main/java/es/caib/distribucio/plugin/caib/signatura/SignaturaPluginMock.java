@@ -10,9 +10,9 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
 
-import es.caib.comanda.model.v1.salut.EstatSalut;
-import es.caib.comanda.model.v1.salut.EstatSalutEnum;
-import es.caib.comanda.model.v1.salut.IntegracioPeticions;
+import es.caib.comanda.model.server.monitoring.EstatSalut;
+import es.caib.comanda.model.server.monitoring.EstatSalutEnum;
+import es.caib.comanda.model.server.monitoring.IntegracioPeticions;
 import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
@@ -96,12 +96,12 @@ public class SignaturaPluginMock extends DistribucioAbstractPluginProperties imp
 
 	@Override
 	public EstatSalut getEstatPlugin() {
-		return EstatSalut.builder().estat(EstatSalutEnum.UP).latencia(1).build();
+		return new EstatSalut().estat(EstatSalutEnum.UP).latencia(1);
 	}
 
 	@Override
 	public IntegracioPeticions getPeticionsPlugin() {
-		return IntegracioPeticions.builder().build();
+		return new IntegracioPeticions();
 	}
 	
 }

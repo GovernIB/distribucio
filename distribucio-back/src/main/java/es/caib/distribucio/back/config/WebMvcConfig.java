@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.back.config;
 
+import es.caib.distribucio.back.interceptor.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -15,19 +16,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.opensymphony.module.sitemesh.filter.PageFilter;
-
-import es.caib.distribucio.back.interceptor.AccesAdminInterceptor;
-import es.caib.distribucio.back.interceptor.AccesMetadadaInterceptor;
-import es.caib.distribucio.back.interceptor.AccesSuperInterceptor;
-import es.caib.distribucio.back.interceptor.AjaxInterceptor;
-import es.caib.distribucio.back.interceptor.AplicacioInterceptor;
-import es.caib.distribucio.back.interceptor.AvisosInterceptor;
-import es.caib.distribucio.back.interceptor.ElementsPendentsBustiaInterceptor;
-import es.caib.distribucio.back.interceptor.LlistaEntitatsInterceptor;
-import es.caib.distribucio.back.interceptor.LlistaRolsInterceptor;
-import es.caib.distribucio.back.interceptor.ModalInterceptor;
-import es.caib.distribucio.back.interceptor.NodecoInterceptor;
-import es.caib.distribucio.back.interceptor.SessioInterceptor;
 
 /**
  * Configuració de Spring MVC.
@@ -57,6 +45,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	private ElementsPendentsBustiaInterceptor elementsPendentsBustiaInterceptor;
 	@Autowired
 	private AvisosInterceptor avisosInterceptor;
+	@Autowired
+	private AccesUserInterceptor accesUserInterceptor;
 	@Autowired
 	private AccesAdminInterceptor accesAdminInterceptor;
 	@Autowired
@@ -107,6 +97,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 		registry.addInterceptor(ajaxInterceptor).excludePathPatterns(excludedPathPatterns);
 		registry.addInterceptor(elementsPendentsBustiaInterceptor).excludePathPatterns(excludedPathPatterns);
 		registry.addInterceptor(avisosInterceptor).excludePathPatterns(excludedPathPatterns);
+        registry.addInterceptor(accesUserInterceptor).addPathPatterns(new String[] {
+                "/registreUser**",
+        });
 		registry.addInterceptor(accesAdminInterceptor).addPathPatterns(new String[] {
 				"/bustiaAdminOrganigrama**",
 				"/bustiaAdminOrganigrama/**",

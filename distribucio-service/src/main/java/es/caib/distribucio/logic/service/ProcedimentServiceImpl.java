@@ -72,7 +72,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		PaginaDto<ProcedimentDto> llistaProcediments = null;
         EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
 
-		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), filtre.getUnitatOrganitzativa());
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodiDir3EntitatAndId(entitat.getCodiDir3(), filtre.getUnitatOrganitzativa());
 		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
 		mapeigPropietatsOrdenacio.put("codiProcediment", new String[]{"codi"});
 		llistaProcediments = paginacioHelper.toPaginaDto(
@@ -136,49 +136,51 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 		} 
 		while (procedimentList == null && !errorConsultaProcediments);
 		
-		// Comprova si hi ha hagut errors consultant els procediments
-		if (errorConsultaProcediments) {
+		try {
+			// Comprova si hi ha hagut errors consultant els procediments
+			if (errorConsultaProcediments) {
+				String errorMessage = exConsultaProcediments.getMessage() != null ? exConsultaProcediments.getMessage() : errMsg;
+				throw new Exception(errorMessage, exConsultaProcediments);
+			}
+
+			if (procedimentList == null || procedimentList.isEmpty()) {
+				throw new Exception(
+						"No s'ha obtingut cap llista o resultat per la consulta de procediments: (llista " + (procedimentList == null? "nul·la" :  "buida") + ")"
+				);
+			}
+			
+			// Processa els procediments consultats
+			msgInfo="S'han obtingut " + procedimentList.size() + " procediments vigents a Distribucio.";
+			logger.info(msgInfo);
+			progres.setEstat(Estat.ACTUALITZANT);
+			progres.setTotal(procedimentList.size());
+			
+			// Crea un Map amb els procediments de Distribucio per codi
+			Map<String, Procediment> procedimentMap = new HashMap<String, Procediment>();
+			for (Procediment procediment : procedimentList) {
+				procedimentMap.put(procediment.getCodigo(), procediment);
+			}
+			
+			// Deshabilita els procediments que no hagi retornat Distribucio
+			procedimentHelper.actualtizarProcedimentsNoVigents(entitat, procedimentMap);
+			
+			// Processa tots els procediments, actualitza-ne la informació, donant-los d'alta i revisant la seva UO		
+			msgInfo = "Es procedeix a processar els " + procedimentList.size() + " procediments consultats a Distribucio.";
+			logger.info(msgInfo);
+			
+			// Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
+			Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
+			for (Procediment procediment : procedimentList) {
+				// Tracta el procediment en una transacció a part.
+				procedimentHelper.actualitzaProcediment(procediment, unitatsOrganitzatives, entitat);
+				progres.incProcessats();
+			}
+			
+			progres.setEstat(UpdateProgressDto.Estat.FINALITZAT);
+		} catch (Exception e) {
 			progres.setEstat(UpdateProgressDto.Estat.ERROR);
-			String errorMessage = exConsultaProcediments.getMessage();
-			if (errorMessage != null)
-				progres.setErrorMsg(errorMessage);
-			else
-				progres.setErrorMsg(errMsg);
-			throw new Exception(errMsg, exConsultaProcediments);
+			progres.setErrorMsg(e.getMessage());			
 		}
-		if (procedimentList == null || procedimentList.isEmpty()) {
-			throw new Exception(
-					"No s'ha obtingut cap llista o resultat per la consulta de procediments: (llista " + (procedimentList == null? "nul·la" :  "buida") + ")"
-			);
-		}
-		
-		// Processa els procediments consultats
-		msgInfo="S'han obtingut " + procedimentList.size() + " procediments vigents a Distribucio.";
-		logger.info(msgInfo);
-		progres.setEstat(Estat.ACTUALITZANT);
-		progres.setTotal(procedimentList.size());
-		
-		// Crea un Map amb els procediments de Distribucio per codi
-		Map<String, Procediment> procedimentMap = new HashMap<String, Procediment>();
-		for (Procediment procediment : procedimentList) {
-			procedimentMap.put(procediment.getCodigo(), procediment);
-		}
-		
-		// Deshabilita els procediments que no hagi retornat Distribucio
-		procedimentHelper.actualtizarProcedimentsNoVigents(entitat, procedimentMap);
-		
-		// Processa tots els procediments, actualitza-ne la informació, donant-los d'alta i revisant la seva UO		
-		msgInfo = "Es procedeix a processar els " + procedimentList.size() + " procediments consultats a Distribucio.";
-		logger.info(msgInfo);
-		
-		// Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
-		Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
-		for (Procediment procediment : procedimentList) {
-			// Tracta el procediment en una transacció a part.
-			procedimentHelper.actualitzaProcediment(procediment, unitatsOrganitzatives, entitat);
-			progres.incProcessats();
-		}
-		progres.setEstat(UpdateProgressDto.Estat.FINALITZAT);
 	}
 
 	@Transactional

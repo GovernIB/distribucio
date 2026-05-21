@@ -2,8 +2,8 @@ package es.caib.distribucio.plugin.caib.arxiu;
 
 import java.util.Properties;
 
-import es.caib.comanda.model.v1.salut.EstatSalut;
-import es.caib.comanda.model.v1.salut.IntegracioPeticions;
+import es.caib.comanda.model.server.monitoring.EstatSalut;
+import es.caib.comanda.model.server.monitoring.IntegracioPeticions;
 import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.arxiu.ArxiuPlugin;
 import es.caib.pluginsib.arxiu.api.ArxiuException;

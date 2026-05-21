@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import es.caib.comanda.model.v1.estadistica.DimensioDesc;
-import es.caib.comanda.model.v1.estadistica.EstadistiquesInfo;
-import es.caib.comanda.model.v1.estadistica.IndicadorDesc;
-import es.caib.comanda.model.v1.estadistica.RegistresEstadistics;
+import es.caib.comanda.model.server.monitoring.DimensioDesc;
+import es.caib.comanda.model.server.monitoring.EstadistiquesInfo;
+import es.caib.comanda.model.server.monitoring.IndicadorDesc;
+import es.caib.comanda.model.server.monitoring.RegistresEstadistics;
 import es.caib.distribucio.logic.intf.service.EstadisticaService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -34,12 +34,10 @@ public class EstadistiquesController {
     public EstadistiquesInfo statsInfo() throws IOException {
 		List<DimensioDesc> dimensions = estadisticaService.getDimensions();
         List<IndicadorDesc> indicadors = estadisticaService.getIndicadors();
-        return EstadistiquesInfo.
-        		builder().
-        		codi("DIS").
-        		dimensions(dimensions).
-        		indicadors(indicadors).
-        		build();
+        return new EstadistiquesInfo()
+                .codi("DIS")
+                .dimensions(dimensions)
+                .indicadors(indicadors);
 	}	
 	
 	@GetMapping("")

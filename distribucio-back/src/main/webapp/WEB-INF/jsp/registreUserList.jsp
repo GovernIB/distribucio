@@ -118,15 +118,15 @@ span.select2-container {
 	width: 100% !important;
 }
 
-button#nomesAmbErrorsBtn, 
-button#nomesAmbEsborranysBtn, 
+button#nomesAmbErrorsBtn,
+button#nomesAmbEsborranysBtn,
 button#mostrarInactivesBtn,
 button#mostrarSenseAssignarBtn {
 	width: 100% !important;
 }
 
-button#nomesAmbErrorsBtn span.fa-warning, 
-button#nomesAmbEsborranysBtn span.fa-warning, 
+button#nomesAmbErrorsBtn span.fa-warning,
+button#nomesAmbEsborranysBtn span.fa-warning,
 button#mostrarInactivesBtn i{
 	position: relative !important;
 	margin-left: -5px !important;
@@ -226,18 +226,39 @@ function formatSelectTipusDocumentacio(item) {
 }
 var mostrarSenseAssignar = '${mostrarSenseAssignar}' === 'true';
 $(document).ready(function() {
+    if (typeof formatDate === 'function') {
+        $.views.helpers({ formatDate: formatDate });
+    }
+
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
 	$("#contingutBusties").addClass('active');
 	$("#canviVistaReenvios").removeClass('active');
-	
-	$('#netejarFiltre').click(function(e) {
-		$('#bustia').val('');
-		$('#procesEstatSimple').val('PENDENT').change();
-		$('#mostrarInactives').val(false).change();
-		$('#mostrarInactivesBtn').removeClass('active');
-		$('#tipusDocFisica').val('').change();
-		$('#enviatPerEmail').val(null).change();
-	});
+
+    $('#netejarFiltre').click(function(e) {
+        $('#bustia').val('');
+        $('#procesEstatSimple').val('PENDENT').change();
+        $('#mostrarInactives').val(false).change();
+        $('#mostrarInactivesBtn').removeClass('active');
+        $('#tipusDocFisica').val('').change();
+        $('#nomesAmbErrorsBtn').removeClass('active');
+        $('#nomesAmbErrors').val(false);
+        $('#estat').val(null).trigger('change');
+        $('#enviatPerEmail').val(null).change();
+        $('#nomesAmbEsborranysBtn').removeClass('active');
+        $('#nomesAmbEsborranys').val(false);
+        $('#sobreescriure').val(null).trigger('change');
+        $('#reintents').val(null).trigger('change');
+    });
+    $('#nomesAmbErrorsBtn').click(function() {
+        nomesAmbErrors = !$(this).hasClass('active');
+        // Modifica el formulari
+        $('#nomesAmbErrors').val(nomesAmbErrors);
+    })
+    $('#nomesAmbEsborranysBtn').click(function() {
+        nomesAmbEsborranys = !$(this).hasClass('active');
+        // Modifica el formulari
+        $('#nomesAmbEsborranys').val(nomesAmbEsborranys);
+    })
 
 	var selectButtonsInitialized = false;
 
@@ -371,7 +392,7 @@ $(document).ready(function() {
 		$(this).blur();
 	});
 	$('#mostrarInactives').change(function() {
-		var actual = $('#bustia').val();
+        var actual = "${registreFiltreCommand.bustia}";
 		var bustiaPerDefecte = '${bustiaPerDefecte}'
 		$('#bustia').select2('val', '', true);
 		$('#bustia option[value!=""]').remove();
@@ -395,6 +416,46 @@ $(document).ready(function() {
 			});
 	});
 	$('#mostrarInactives').change();
+
+    (function(){
+        const $procSelect = $('select[name="procesEstatSimple"]');
+        const $estatSelect = $('select[name="estat"]');
+
+        const $opcionsOriginals = $estatSelect.find('option').clone();
+
+        const pendents = [
+            <c:forEach var="e" items="${estatsPendents}" varStatus="s">
+            '${e}'<c:if test="${!s.last}">,</c:if>
+            </c:forEach>
+        ];
+        const processats = [
+            <c:forEach var="e" items="${estatsProcessats}" varStatus="s">
+            '${e}'<c:if test="${!s.last}">,</c:if>
+            </c:forEach>
+        ];
+
+        function actualitzarOpcionsEstat() {
+            const valorProc = $procSelect.val();
+            let valorsValids = [];
+
+            if (valorProc === 'PENDENT') valorsValids = pendents;
+            else if (valorProc === 'PROCESSAT') valorsValids = processats;
+            else valorsValids = pendents.concat(processats);
+
+            const valorActual = $estatSelect.val();
+            $estatSelect.empty().append(
+                $opcionsOriginals.filter(function() {
+                    const v = $(this).val();
+                    return v === '' || valorsValids.includes(v);
+                })
+            );
+            $estatSelect.val(valorActual);
+        }
+
+        $procSelect.on('change', actualitzarOpcionsEstat);
+
+        actualitzarOpcionsEstat();
+    })();
 	
 	$('#showModalProcesEstatButton').click(function(e) {
 		$('#modalProcesEstat').modal();
@@ -509,156 +570,156 @@ function refreshRegistres($modalExecucioMassiva) {
 </script>
 </head>
 <body>
+    <form:form action="" method="post" cssClass="well" modelAttribute="registreFiltreCommand">
+        <button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
+        <div class="row">
+            <div class="col-md-2">
+                <dis:inputText name="numero" inline="true" placeholderKey="bustia.list.filtre.numero"/>
+            </div>
+            <div class="col-md-2">
+                <dis:inputText name="titol" inline="true" placeholderKey="bustia.list.filtre.titol"/>
+            </div>
 
+            <div class="col-md-3">
+                <dis:inputText name="numeroOrigen" inline="true" placeholderKey="bustia.list.filtre.origen.num"/>
+            </div>
+            <div class="col-md-3">
+                <c:url value="/userajax/remitent" var="urlConsultaInicial"/>
+                <c:url value="/userajax/remitent" var="urlConsultaLlistat"/>
+                <dis:inputSuggest
+                        name="remitent"
+                        urlConsultaInicial="${urlConsultaInicial}"
+                        urlConsultaLlistat="${urlConsultaLlistat}"
+                        placeholderKey="bustia.list.filtre.remitent"
+                        suggestValue="nom"
+                        suggestText="codiAndNom"
+                        inline="true"/>
+            </div>
+            <div class="col-md-2">
+                <dis:inputText name="interessat" inline="true" placeholderKey="bustia.list.filtre.interessat"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <dis:inputDate name="dataRecepcioInici" inline="true" placeholderKey="bustia.list.filtre.data.rec.inical"/>
+            </div>
+            <div class="col-md-2">
+                <dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="bustia.list.filtre.data.rec.final"/>
+            </div>
+            <div class="col-md-3">
 
-	<form:form action="" method="post" cssClass="well" modelAttribute="registreFiltreCommand">
-		<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
-		<div class="row">
-			<div class="col-md-2">
-				<dis:inputText name="numero" inline="true" placeholderKey="bustia.list.filtre.numero"/>
-			</div>
-			<div class="col-md-2">
-				<dis:inputText name="titol" inline="true" placeholderKey="bustia.list.filtre.titol"/>
-			</div>
-			
-			<div class="col-md-3">
-				<dis:inputText name="numeroOrigen" inline="true" placeholderKey="bustia.list.filtre.origen.num"/>
-			</div>
-			<div class="col-md-3">
-				<c:url value="/userajax/remitent" var="urlConsultaInicial"/>
-				<c:url value="/userajax/remitent" var="urlConsultaLlistat"/>
-				<dis:inputSuggest 
-					name="remitent" 
-					urlConsultaInicial="${urlConsultaInicial}" 
-					urlConsultaLlistat="${urlConsultaLlistat}" 
-					placeholderKey="bustia.list.filtre.remitent"
-					suggestValue="nom"
-					suggestText="codiAndNom"
-					inline="true"/>
-			</div>
-			<div class="col-md-2">
-				<dis:inputSelect name="procesEstatSimple"  netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-2">
-				<dis:inputDate name="dataRecepcioInici" inline="true" placeholderKey="bustia.list.filtre.data.rec.inical"/>
-			</div>
-			<div class="col-md-2">
-				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="bustia.list.filtre.data.rec.final"/>
-			</div>
-			<div class="col-md-3">
-				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
-				<c:url value="/unitatajax/nomesUnitatsAmbBusties" var="urlConsultaLlistat"/>
-				<dis:inputSuggest 
-					name="unitatId"
-					urlConsultaInicial="${urlConsultaInicial}" 
-					urlConsultaLlistat="${urlConsultaLlistat}" 
-					inline="true" 
-					placeholderKey="contingut.admin.filtre.uo"
-					suggestValue="id"
-					suggestText="codiAndNom" 
-					optionTemplateFunction="formatSelectUnitat" />
-			</div>
-			<div class="col-md-3">
-				<div class="row">
-					<div class="col-md-10">
-						<dis:inputSelect 
-							name="bustia" 
-							optionItems="${replacedByJquery}" 
-							optionValueAttribute="id" 
-							optionTextAttribute="nom" 
-							emptyOption="true" 
-							placeholderKey="bustia.list.filtre.bustia" 
-							inline="true"
-							optionMinimumResultsForSearch="0" 
-							optionTemplateFunction="formatSelectBustia" />
-					</div>
-					<div class="col-md-2" style="padding-left: 0;">
-						<button id="mostrarInactivesBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
-							<span class="fa-stack" aria-hidden="true">
-								<i class="fa fa-inbox fa-stack-1x"></i>
-		    	    			<i class="fa fa-ban fa-stack-2x"></i>
-		   					</span>
-						</button>
-						<dis:inputHidden name="mostrarInactives"/>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-2">
-				<dis:inputText name="interessat" inline="true" placeholderKey="bustia.list.filtre.interessat"/>
-			</div>	
-		</div>
-		<div class="row">	
-			<div class="col-md-2">
-				<dis:inputSelect name="enviatPerEmail" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
-			</div>		
-			<div class="col-md-4">			
-				<dis:inputSelect 
-					name="tipusDocFisica" 
-					netejar="false" 
-					optionItems="${tipusDocumentacio}" 
-					optionValueAttribute="value" 
-					optionTextKeyAttribute="text" 
-					placeholderKey="bustia.list.filtre.tipusDocFisica" 
-					emptyOption="true" 
-					inline="true" 
-					optionTemplateFunction="formatSelectTipusDocumentacio"/>
-			</div>	
-			<div class="col-md-3">			
-				<c:url value="/procedimentajax/procediment" var="urlConsultaInicial"/>
-				<c:url value="/procedimentajax/procediments" var="urlConsultaLlistat"/>
-				<dis:inputSuggest 
-					name="procedimentCodi"
-					urlConsultaInicial="${urlConsultaInicial}" 
-					urlConsultaLlistat="${urlConsultaLlistat}" 
-					inline="true" 
-					placeholderKey="registre.admin.list.filtre.procediment"
-					suggestValue="codiSia"
-					suggestText="codiNom" />
-			</div>
-			<c:if test="${isPermesAssignarAnotacions}">
-				<div class="col-md-3">
-					<div class="row">
-					<div class="col-md-10">
-						<dis:inputSelect 
-							name="usuariAssignatCodi" 
-							optionItems="${replacedByJquery}" 
-							optionValueAttribute="codi" 
-							optionTextAttribute="nom" 
-							emptyOption="true" 
-							placeholderKey="bustia.list.filtre.usuari.assignat" 
-							inline="true"
-							optionMinimumResultsForSearch="0" />
-						</div>
-						<div class="col-md-2" style="padding-left: 0;">
-							<button id="mostrarSenseAssignarBtn" title="<spring:message code="bustia.list.filtre.sense.assignar"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarSenseAssignar}"> active</c:if>" data-toggle="button">
-								<span class="fa-stack" aria-hidden="true">
-									<i class="fa fa-user fa-stack-1x"></i>
-			    	    			<i class="fa fa-ban fa-stack-2x"></i>
-			   					</span>
-							</button>
-							<dis:inputHidden name="mostrarSenseAssignar"/>
-						</div>
-					</div>
-				</div>
-			</c:if>
-			<c:if test="${! isPermesAssignarAnotacions}">
-				<div class="col-md-2 d-flex">
-					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-					<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-				</div>
-			</c:if>
-		</div>
-		<c:if test="${isPermesAssignarAnotacions}">
-			<div class="row">
-				<div class="col-md-2 d-flex" style="float: right;">
-					<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
-					<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-				</div>
-			</div>
-		</c:if>
-	</form:form>
+                <c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
+                <c:url value="/unitatajax/nomesUnitatsAmbBusties" var="urlConsultaLlistat"/>
+                <dis:inputSuggest
+                        name="unitatId"
+                        urlConsultaInicial="${urlConsultaInicial}"
+                        urlConsultaLlistat="${urlConsultaLlistat}"
+                        inline="true"
+                        placeholderKey="contingut.admin.filtre.uo"
+                        suggestValue="id"
+                        suggestText="codiAndNom"
+                        optionTemplateFunction="formatSelectUnitat" />
+            </div>
+            <div class="col-md-3">
+                <div class="row">
+                    <div class="col-md-10">
+                        <dis:inputSelect
+                                name="bustia"
+                                optionItems="${replacedByJquery}"
+                                optionValueAttribute="id"
+                                optionTextAttribute="nom"
+                                emptyOption="true"
+                                placeholderKey="bustia.list.filtre.bustia"
+                                inline="true"
+                                optionMinimumResultsForSearch="0"
+                                optionTemplateFunction="formatSelectBustia" />
+                    </div>
+                    <div class="col-md-2" style="padding-left: 0;">
+                        <button id="mostrarInactivesBtn"  title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
+                                <span class="fa-stack" aria-hidden="true">
+                                    <i class="fa fa-inbox fa-stack-1x"></i>
+                                    <i class="fa fa-ban fa-stack-2x"></i>
+                                </span>
+                        </button>
+                        <dis:inputHidden name="mostrarInactives"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <dis:inputSelect name="enviatPerEmail" netejar="false" optionEnum="RegistreEnviatPerEmailEnumDto" placeholderKey="bustia.list.filtre.back.email" emptyOption="true" inline="true"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <dis:inputSelect
+                                name="tipusDocFisica"
+                                netejar="false"
+                                optionItems="${tipusDocumentacio}"
+                                optionValueAttribute="value"
+                                optionTextKeyAttribute="text"
+                                placeholderKey="bustia.list.filtre.tipusDocFisica"
+                                emptyOption="true"
+                                inline="true"
+                                optionTemplateFunction="formatSelectTipusDocumentacio"/>
+                    </div>
+                    <div class="col-sm-3" style="padding-left: 0;">
+                        <button id="nomesAmbEsborranysBtn" style="width: 45px;" title="<spring:message code="contingut.admin.filtre.nomesAmbEsborranys"/>" class="btn btn-default <c:if test="${registreFiltreCommand.nomesAmbEsborranys}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
+                        <dis:inputHidden name="nomesAmbEsborranys"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <dis:inputSelect name="backCodi" placeholderKey="bustia.list.filtre.back.codi" optionItems="${backoffices}" emptyOption="true" optionValueAttribute="codi" optionTextAttribute="nom" inline="true" optionMinimumResultsForSearch="0"/>
+            </div>
+            <div class="col-md-3">
+                <dis:inputSelect name="procesEstatSimple"  netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
+            </div>
+            <div class="col-md-3">
+                <div class="row">
+                    <div class="col-md-10">
+                        <dis:inputSelect name="estat" inline="true" netejar="false" optionEnum="RegistreProcesEstatEnum" placeholderKey="contingut.admin.filtre.estat.especific" emptyOption="true"/>
+                    </div>
+                    <div class="col-md-2" style="padding-left: 0;">
+                        <button id="nomesAmbErrorsBtn" style="width: 45px;" title="<spring:message code="contingut.admin.filtre.nomesAmbErrors"/>" class="btn btn-default <c:if test="${registreFiltreCommand.nomesAmbErrors}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
+                        <dis:inputHidden name="nomesAmbErrors"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-2">
+                <dis:inputSelect
+                        name="nombreAnnexes"
+                        netejar="true"
+                        optionEnum="RegistreNombreAnnexesEnumDto"
+                        placeholderKey="registre.filtre.camp.formulari"
+                        emptyOption="true"
+                        inline="true"/>
+            </div>
+            <div class="col-md-3">
+                <c:url value="/procedimentserveiajax/procedimentservei" var="urlConsultaInicial"/>
+                <c:url value="/procedimentserveiajax/procedimentserveis" var="urlConsultaLlistat"/>
+                <dis:inputSuggest
+                        name="procedimentCodi"
+                        urlConsultaInicial="${urlConsultaInicial}"
+                        urlConsultaLlistat="${urlConsultaLlistat}"
+                        inline="true"
+                        placeholderKey="registre.admin.list.filtre.procedimentservei"
+                        suggestValue="codiSia"
+                        suggestText="codiNom" />
+            </div>
+            <div class="col-md-3">
+                <dis:inputSelect id="reintents" name="reintents" netejar="true" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>
+            </div>
+            <div class="col-md-2 d-flex">
+                <button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+                <button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+            </div>
+        </div>
+    </form:form>
 	
 	<c:set var="rol" value="user"/>	
 	<script id="botonsTemplate" type="text/x-jsrender">
@@ -776,57 +837,70 @@ function refreshRegistres($modalExecucioMassiva) {
 			
 <!-- 				<th data-col-name="procesEstat" data-orderable="true" data-template="#estatTemplate"> -->
 					<spring:message code="bustia.pendent.columna.estat"/> <span class="fa fa-list" id="showModalProcesEstatButton" title="<spring:message code="bustia.user.proces.estat.legend"/>" style="cursor:over; opacity: 0.5"></span>
-					<script id="estatTemplate" type="text/x-jsrender">
-						<div class="d-flex">
-						<div>
-						{{if procesEstat == 'ARXIU_PENDENT'}}
-							<spring:message code="registre.proces.estat.enum.ARXIU_PENDENT"/>
-
-							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deGuardarAnnexosAlArxiu"/>">
+                    <script id="estatTemplate" type="text/x-jsrender">
+                        <div class="d-flex">
+                        <div>
+                        {{if procesEstat == 'ARXIU_PENDENT'}}
+                        <spring:message code="registre.proces.estat.enum.ARXIU_PENDENT"/>
+                        <span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deGuardarAnnexosAlArxiu"/>">
 								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/{{:maxReintents}})
 							</span>
 						{{else procesEstat == 'REGLA_PENDENT'}}
-							<spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/>
-							{{if regla != null}}
-								<br> <span class="regla-nom" style="font-size:1rem">{{:regla.nom}}</span>
-							{{else}}
-								<span class="fa fa-exclamation-triangle text-danger" title="<spring:message code="registre.admin.list.icon.annexos.estat.pendent.regla.sense.regla"/>"> </span>
+                        <spring:message code="registre.proces.estat.enum.REGLA_PENDENT"/>
+                        {{if regla != null}}
+                            <br> <span class="regla-nom" style="font-size:1rem">{{:regla.nom}}</span>
+                        {{else}}
+                            <span class="fa fa-exclamation-triangle text-danger" title="<spring:message code="registre.admin.list.icon.annexos.estat.pendent.regla.sense.regla"/>"> </span>
 							{{/if}}
+							<span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deProcessarRegla"/>">
+								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
+							</span>
 						{{else procesEstat == 'BUSTIA_PENDENT'}}
-							<spring:message code="registre.proces.estat.enum.BUSTIA_PENDENT"/>
-						{{else procesEstat == 'BUSTIA_PROCESSADA'}}
-							<spring:message code="registre.proces.estat.enum.BUSTIA_PROCESSADA"/>
-						{{else procesEstat == 'BACK_PENDENT'}}
-							<spring:message code="registre.proces.estat.enum.BACK_PENDENT"/>
-							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
+                        <spring:message code="registre.proces.estat.enum.BUSTIA_PENDENT"/>
+                        {{else procesEstat == 'BUSTIA_PROCESSADA'}}
+                        <spring:message code="registre.proces.estat.enum.BUSTIA_PROCESSADA"/>
+                        {{else procesEstat == 'BACK_PENDENT'}}
+                        <spring:message code="registre.proces.estat.enum.BACK_PENDENT"/>
+                            <br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
+                            <span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deEnviarAlBackoffice"/>">
+								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
+							</span>
+							{{if backRetryEnviarDataString && !reintentsEsgotat}}
+                                <br/>
+                                <span style="font-size:1rem"> Proper reintent: {{:backRetryEnviarDataString}} </span>
+                            {{/if}}
 						{{else procesEstat == 'BACK_COMUNICADA'}}
-							<spring:message code="registre.proces.estat.enum.BACK_COMUNICADA"/>
-							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
-						{{else procesEstat == 'BACK_REBUDA'}}
-							<spring:message code="registre.proces.estat.enum.BACK_REBUDA"/>
-							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
-						{{else procesEstat == 'BACK_PROCESSADA'}}
-							{{if backCodi == null}}
-								<spring:message code="registre.proces.estat.enum.BACK_PROCESSADA"/>
-							{{else backCodi != null}}
-								<spring:message code="registre.proces.estat.detall.BACK_PROCESSADA"/>
-								<br> <span class="" style="font-size:1rem">{{:backCodi}}</span>
-							{{/if}}
-						{{else procesEstat == 'BACK_REBUTJADA'}}
-							<spring:message code="registre.proces.estat.enum.BACK_REBUTJADA"/>
-							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
-						{{else procesEstat == 'BACK_ERROR'}}
-							<spring:message code="registre.proces.estat.enum.BACK_ERROR"/>		
-							<br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>					
+                        <spring:message code="registre.proces.estat.enum.BACK_COMUNICADA"/>
+                        <br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
+                    {{else procesEstat == 'BACK_REBUDA'}}
+                        <spring:message code="registre.proces.estat.enum.BACK_REBUDA"/>
+                        <br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
+                    {{else procesEstat == 'BACK_PROCESSADA'}}
+                        <spring:message code="registre.proces.estat.detall.BACK_PROCESSADA"/>
+                        <br> <span class="" style="font-size:1rem">{{:backCodi}}</span>
+                    {{else procesEstat == 'BACK_REBUTJADA'}}
+                        <spring:message code="registre.proces.estat.enum.BACK_REBUTJADA"/>
+                        {{if backObservacions != ''}}
+                            <span class="d-inline-flex align-items-center">
+                                <span class="fa fa-exclamation-circle text-warning ms-1" title="{{:backObservacions}}"></span>
+                            </span>
+                        {{/if}}
+                        <br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
+                    {{else procesEstat == 'BACK_ERROR'}}
+                        <spring:message code="registre.proces.estat.enum.BACK_ERROR"/>
+                        <br> <span class="back-codi" style="font-size:1rem">{{:backCodi}}</span>
+                        <span {{if reintentsEsgotat}} style="color: #a94442" {{else}} style="color: #8a6d3b" {{/if}} title="<spring:message code="contingut.registre.reintents.msg.seHanRealizat"/> {{:procesIntents}} <spring:message code="contingut.registre.reintents.msg.intentsDeUnMaximDe"/> {{:maxReintents}} <spring:message code="contingut.registre.reintents.msg.deProcessarAlBackoffice"/>">
+								(<spring:message code="contingut.registre.reintents.msg.reintent"/> {{:procesIntents}}/ {{:maxReintents}})
+							</span>
 						{{/if}}
 						</div>
 						{{if motiuRebuig}}
 							<div class="d-flex" style="align-items: end;">
     							<span class="fa fa-exclamation-circle text-warning" title="{{:motiuRebuig}}"></span>
-							</div>						
+							</div>
 						{{/if}}
 						</div>
-					</script>
+                    </script>
 				</th>
 				<th data-col-name="procesError" data-orderable="false" data-template="#procesErrorTemplate">
 
@@ -898,6 +972,9 @@ function refreshRegistres($modalExecucioMassiva) {
 				<th data-col-name="agafatPer.nom" data-visible="${isPermesAssignarAnotacions}">
 +					<spring:message code="bustia.pendent.columna.agafat"/>
 +				</th>
+                <th data-col-name="backCodi" data-orderable="true">
+                    <spring:message code="contingut.admin.columna.backoffice"/>
+                </th>
 				<th data-col-name="numComentaris" data-orderable="false" data-template="#cellPermisosTemplate">							
 					<script id="cellPermisosTemplate" type="text/x-jsrender">
 						<a href="./contingut/{{:id}}/comentaris" data-toggle="modal" data-refresh-tancar="true" data-modal-id="comentaris{{:id}}" class="btn btn-default">
@@ -983,6 +1060,7 @@ function refreshRegistres($modalExecucioMassiva) {
 				<th data-col-name="darrerMovimentOrigenUoAndBustia" data-visible="false" data-orderable="false"></th>
 				<th data-col-name="oficinaDescripcio" data-visible="false" data-orderable="false"></th>
 				<th data-col-name="backCodi" data-visible="false"></th>
+                <th data-col-name="backRetryEnviarDataString" data-visible="false"></th>
 			</tr>
 		</thead>
 	</table>

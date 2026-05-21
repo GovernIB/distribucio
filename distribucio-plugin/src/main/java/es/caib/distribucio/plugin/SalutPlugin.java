@@ -1,7 +1,7 @@
 package es.caib.distribucio.plugin;
 
-import es.caib.comanda.model.v1.salut.EstatSalut;
-import es.caib.comanda.model.v1.salut.IntegracioPeticions;
+import es.caib.comanda.model.server.monitoring.EstatSalut;
+import es.caib.comanda.model.server.monitoring.IntegracioPeticions;
 import io.micrometer.core.instrument.MeterRegistry;
 
 public interface SalutPlugin {

@@ -28,6 +28,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.EntityComprovarHelper;
 import es.caib.distribucio.logic.helper.GestioDocumentalHelper;
@@ -251,6 +252,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 	public IntegracioDiagnosticDto diagnostic(String codiIntegracio,  UsuariDto usuari) {
 		IntegracioDiagnosticDto diagnostic = new IntegracioDiagnosticDto();
 		String accioDescripcio;
+		String codiDir3 = "A04003003";
 		try {
 			switch (codiIntegracio) {
 			case "USUARIS": 
@@ -262,7 +264,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 				
 			case "UNITATS":
 				 Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-				pluginHelper.findAmbPare("A04003003", timestamp, timestamp);
+				pluginHelper.findAmbPare(codiDir3, timestamp, timestamp);
 				accioDescripcio = "Consulta unitats donat un pare";
 				diagnostic.setProva(accioDescripcio);
 				diagnostic.setCorrecte(true); 
@@ -311,14 +313,14 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 				break;
 				
 			case "PROCEDIMENT":
-				pluginHelper.procedimentFindByCodiDir3("A04019281");
+				pluginHelper.procedimentFindByCodiDir3(codiDir3);
 				accioDescripcio = "Consulta dels procediments pel codi DIR3";
 				diagnostic.setProva(accioDescripcio);
 				diagnostic.setCorrecte(true); 
 				break;
 				
 			case "SERVEI":
-				pluginHelper.serveiFindByCodiDir3("A04019281");
+				pluginHelper.serveiFindByCodiDir3(codiDir3);
 				accioDescripcio = "Consulta dels serveis pel codi DIR3";
 				diagnostic.setProva(accioDescripcio);
 				diagnostic.setCorrecte(true); 

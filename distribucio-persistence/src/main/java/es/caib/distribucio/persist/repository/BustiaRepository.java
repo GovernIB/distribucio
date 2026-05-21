@@ -150,7 +150,15 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			"and (:esCodisUnitatsSuperiorsBuida = true or b.unitatOrganitzativa.codi in (:codisUnitatsSuperiors)) " +
 			"and (:esNullFiltreEstat = true or (b.unitatOrganitzativa.estat like 'E') or (b.unitatOrganitzativa.estat = 'A') or (b.unitatOrganitzativa.estat = 'T'))" +
 			"and (:perDefecte = false or b.perDefecte = true) " +
-			"and (:activa = false or b.activa = true)")
+			"and (:activa = false or b.activa = true) " +
+            "and (:permis = false or b.id IN ( "+
+                "SELECT ao.objectIdIdentity "+
+                "FROM AclEntryEntity ae "+
+                "JOIN ae.aclObjectIdentity ao "+
+                "WHERE ao.aclClass.aclClass like '%.BustiaEntity' "+
+                "GROUP BY ao.objectIdIdentity "+
+                "HAVING COUNT(DISTINCT ae.aclSid) > 1 "+
+            "))")
 	Page<BustiaEntity> findByEntitatAndUnitatAndBustiaNomAndPareNotNullFiltrePaginat(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esNullFiltreUnitat") boolean esNullFiltreUnitat,
@@ -162,6 +170,7 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 			@Param("esNullFiltreEstat") boolean esNullFiltreEstat,
 			@Param("perDefecte") boolean perDefecte,
 			@Param("activa") boolean activa,
+			@Param("permis") boolean permis,
 			Pageable pageable);
 	
 	@Query(	"from " +

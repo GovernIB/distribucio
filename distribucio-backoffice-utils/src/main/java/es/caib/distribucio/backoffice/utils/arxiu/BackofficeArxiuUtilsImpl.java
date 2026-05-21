@@ -310,7 +310,19 @@ public class BackofficeArxiuUtilsImpl implements BackofficeArxiuUtils {
 		if (errorsMoventAnnexos > 0) {
 			// Informa de l'error a nivell global.
 			arxiuResultat.setErrorCodi(DistribucioArxiuError.ANNEX_ERROR);
-			arxiuResultat.setErrorMessage("Hi ha hagut " + errorsMoventAnnexos + " errors movent " + anotacioRegistreEntrada.getAnnexos() + " annexos.");
+            StringBuilder annexosString = new StringBuilder("[");
+            int annexosErrors = 0;
+            for (ArxiuResultatAnnex  annexResultat : arxiuResultat.getResultatAnnexos()) {
+            	if (annexResultat.getErrorCodi() != 0) {
+                	annexosString.append(annexResultat.getAnnex().getTitol());
+                	annexosErrors ++;
+                	if (annexosErrors++ < errorsMoventAnnexos) {
+                		annexosString.append(", ");
+                	}            		
+            	}
+            }
+            annexosString.append("]");
+			arxiuResultat.setErrorMessage("Hi ha hagut " + errorsMoventAnnexos + " errors movent els annexos " + annexosString);
 		}
 	}
 	

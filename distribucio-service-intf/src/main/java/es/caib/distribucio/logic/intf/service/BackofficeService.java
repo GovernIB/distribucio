@@ -113,7 +113,7 @@ public interface BackofficeService {
 			Long entitatId,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
 
-	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
+	@PreAuthorize("isAuthenticated()")
 	public List<BackofficeDto> findByEntitat(Long entitatId) throws NotFoundException;
 
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")

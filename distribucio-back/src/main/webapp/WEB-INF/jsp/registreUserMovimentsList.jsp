@@ -243,7 +243,7 @@ $(document).ready(function() {
 	});
 	$('#mostrarInactives').change(function() {
 		//>>> Valor actual bústia destí
-		var actual = $('#bustia').val();
+        var actual = "${registreFiltreCommand.bustia}";
 		var bustiaPerDefecte = '${bustiaPerDefecte}'
 		//>>> Bústia destí
 		$('#bustia').select2('val', '', true);
@@ -274,7 +274,7 @@ $(document).ready(function() {
 	});
 	$('#mostrarInactivesOrigen').change(function() {
 		//>>> Valor actual bústia origen
-		var actualOrigen = $('#bustiaOrigen').val();
+        var actualOrigen = "${registreFiltreCommand.bustiaOrigen}";
 		//>>> Bústia origen
 		$('#bustiaOrigen').select2('val', '', true);
 		$('#bustiaOrigen option[value!=""]').remove();
@@ -290,6 +290,7 @@ $(document).ready(function() {
 					}
 				}
 				$('#bustiaOrigen').val(actualOrigen).change();
+                $('#filtrar').submit();
 			})
 			.fail(function() {
 				alert("<spring:message code="error.jquery.ajax"/>");

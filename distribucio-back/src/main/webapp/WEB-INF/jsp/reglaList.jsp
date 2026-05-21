@@ -438,7 +438,7 @@
 				<th data-col-name="bustiaFiltreNom" data-orderable="false"><spring:message code="regla.list.columna.bustia.nom"/></th>
 				
 				
-				<th data-col-name="presencial" data-orderable="true" data-template="#presencialTemplate">
+				<th data-col-name="presencial" data-orderable="false" data-template="#presencialTemplate">
 					<spring:message code="regla.list.columna.presencial"/>
 					<script id="presencialTemplate" type="text/x-jsrender">
 						{{if presencial == 'SI'}}
@@ -479,7 +479,7 @@
 						{{if activa}}<span class="fa fa-check"></span>{{/if}}
 					</script>
 				</th>
-				<th data-col-name="aturarAvaluacio" data-template="#cellAturarAvaluacioTemplate" data-orderable="true">
+				<th data-col-name="aturarAvaluacio" data-template="#cellAturarAvaluacioTemplate" data-orderable="false">
 					<spring:message code="regla.list.columna.aturarAvaluacio"/>
 					<script id="cellAturarAvaluacioTemplate" type="text/x-jsrender">
 						{{if aturarAvaluacio}}<span class="fa fa-check"></span>{{/if}}

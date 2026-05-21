@@ -181,7 +181,6 @@ public class ServeiHelper {
 				UnitatAdministrativa unitatAdministrativa = null;
 				String codi = unidadAdministrativaCodigo;
 				boolean error = false;
-				Exception ex = null;				
 				do {
 					// Consulta de la unitat administrativa per codi a Rolsac amb 5 reintents
 					int reintents = 0;
@@ -190,12 +189,10 @@ public class ServeiHelper {
 							unitatAdministrativa = 
 									pluginHelper.procedimentGetUnitatAdministrativa(codi);
 						} catch (Exception e) {
-							reintents++;
-							ex = e;
 							logger.error("Error consultant la unitat organitzativa amb codi " + codi + " a Rolsac: pel servei " +
-										servei.getCodigoSia()  + ex.toString());
-							error = reintents++ >= 5;
+										servei.getCodigoSia()  + e.toString());
 						}
+                        error = reintents++ >= 5;
 					} while (unitatAdministrativa == null && !error);
 					
 					if (unitatAdministrativa != null) {

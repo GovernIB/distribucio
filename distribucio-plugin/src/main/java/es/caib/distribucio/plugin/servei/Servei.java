@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.plugin.servei;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import es.caib.distribucio.plugin.Link;
@@ -19,6 +20,7 @@ public class Servei {
 	private String codigoSia;
 	private String nombre;
 	@JsonProperty("link_unidadAdministrativa")
+    @JsonAlias("linkUnidadAdministrativaInstructora")
 	private Link unidadAdministrativa;
 	@JsonProperty("link_organoInstructor")
 	private Link organoInstructor;

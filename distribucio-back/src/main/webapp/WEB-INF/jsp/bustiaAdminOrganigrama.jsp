@@ -316,6 +316,12 @@
 			window.location.replace(webutilContextPath() + "/bustiaAdmin");
 		});
 
+        $('#permisBtn').click(function() {
+            permis = !$(this).hasClass('active');
+            // Modifica el formulari
+            $('#permis').val(permis);
+        })
+
         var bustiaModifiedId = ${empty bustiaModifiedId ? 'null' : bustiaModifiedId};
         if (bustiaModifiedId != null) {
             var $arbre = $('#arbreUnitatsOrganitzatives');
@@ -386,18 +392,22 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-md-6 row">
-				<div class="col-md-4" style="padding-left: 30px;">
+			<div class="col-md-8 row">
+				<div class="col-md-3" style="padding-left: 30px;">
 					<dis:inputCheckbox name="unitatObsoleta" inline="true" textKey="bustia.list.filtre.obsolataUnitat"/>
 				</div>	
-				<div class="col-md-4" style="padding-left: 30px;">
+				<div class="col-md-3" style="padding-left: 30px;">
 					<dis:inputCheckbox name="perDefecte" inline="true" textKey="bustia.list.filtre.perDefecte"/>
 				</div>
-				<div class="col-md-4" style="padding-left: 30px;">
+				<div class="col-md-3" style="padding-left: 30px;">
 					<dis:inputCheckbox name="activa" inline="true" textKey="bustia.list.filtre.activa"/>
-				</div>					
+				</div>
+                <div class="col-md-3">
+                    <button id="permisBtn" style="width: 45px;" title="<spring:message code="bustia.list.filtre.permis"/>" class="btn btn-default <c:if test="${bustiaFiltreOrganigramaCommand.permis}">active</c:if>" data-toggle="button"><span class="fa fa-warning"></span></button>
+                    <dis:inputHidden name="permis"/>
+                </div>
 			</div>
-			<div class="col-md-6 pull-right">				
+			<div class="col-md-4 pull-right">
 				<div class="pull-right">		
 				
 				

@@ -71,7 +71,7 @@ public class ServeiServiceImpl implements ServeiService{
 		PaginaDto<ServeiDto> llistaServeis = null;
         EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
 
-		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodiDir3EntitatAndCodi(entitat.getCodiDir3(), filtre.getUnitatOrganitzativa());
+		UnitatOrganitzativaEntity unitatOrganitzativa = unitatOrganitzativaRepository.findByCodiDir3EntitatAndId(entitat.getCodiDir3(), filtre.getUnitatOrganitzativa());
 		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
 		mapeigPropietatsOrdenacio.put("codiServei", new String[]{"codi"});
 		llistaServeis = paginacioHelper.toPaginaDto(
@@ -135,49 +135,51 @@ public class ServeiServiceImpl implements ServeiService{
 		} 
 		while (serveiList == null && !errorConsultaServeis);
 		
-		// Comprova si hi ha hagut errors consultant els serveis
-		if (errorConsultaServeis) {
+		try {
+			// Comprova si hi ha hagut errors consultant els serveis
+			if (errorConsultaServeis) {
+				String errorMessage = exConsultaServeis.getMessage() != null ? exConsultaServeis.getMessage() : errMsg;
+				throw new Exception(errorMessage, exConsultaServeis);
+			}
+			
+			if (serveiList == null || serveiList.isEmpty()) {
+				throw new Exception(
+						"No s'ha obtingut cap llista o resultat per la consulta de serveis: (llista " + (serveiList == null? "nul·la" :  "buida") + ")"
+				);
+			}
+			
+			// Processa els serveis consultats
+			msgInfo="S'han obtingut " + serveiList.size() + " serveis vigents a Rolsac.";
+			logger.info(msgInfo);
+			progres.setEstat(Estat.ACTUALITZANT);
+			progres.setTotal(serveiList.size());
+			
+			// Crea un Map amb els serveis de Distribucio per codi
+			Map<String, Servei> serveiMap = new HashMap<String, Servei>();
+			for (Servei servei : serveiList) {
+				serveiMap.put(servei.getCodigo(), servei);
+			}
+			
+			// Deshabilita els serveis que no hagi retornat Distribucio
+			serveiHelper.actualtizarServeisNoVigents(entitat, serveiMap);
+			
+			// Processa tots els serveis, actualitza-ne la informació, donant-los d'alta i revisant la seva UO		
+			msgInfo = "Es procedeix a processar els " + serveiList.size() + " serveis consultats a Rolsac.";
+			logger.info(msgInfo);
+			
+			// Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
+			Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
+			for (Servei servei : serveiList) {
+				// Tracta el servei en una transacció a part.
+				serveiHelper.actualitzaServei(servei, unitatsOrganitzatives, entitat);
+				progres.incProcessats();
+			}
+			
+			progres.setEstat(UpdateProgressDto.Estat.FINALITZAT);
+		} catch(Exception e) {
 			progres.setEstat(UpdateProgressDto.Estat.ERROR);
-			String errorMessage = exConsultaServeis.getMessage();
-			if (errorMessage != null)
-				progres.setErrorMsg(errorMessage);
-			else
-				progres.setErrorMsg(errMsg);
-			throw new Exception(errMsg, exConsultaServeis);
+			progres.setErrorMsg(e.getMessage());
 		}
-		if (serveiList == null || serveiList.isEmpty()) {
-			throw new Exception(
-					"No s'ha obtingut cap llista o resultat per la consulta de serveis: (llista " + (serveiList == null? "nul·la" :  "buida") + ")"
-			);
-		}
-		
-		// Processa els serveis consultats
-		msgInfo="S'han obtingut " + serveiList.size() + " serveis vigents a Rolsac.";
-		logger.info(msgInfo);
-		progres.setEstat(Estat.ACTUALITZANT);
-		progres.setTotal(serveiList.size());
-		
-		// Crea un Map amb els serveis de Distribucio per codi
-		Map<String, Servei> serveiMap = new HashMap<String, Servei>();
-		for (Servei servei : serveiList) {
-			serveiMap.put(servei.getCodigo(), servei);
-		}
-		
-		// Deshabilita els serveis que no hagi retornat Distribucio
-		serveiHelper.actualtizarServeisNoVigents(entitat, serveiMap);
-		
-		// Processa tots els serveis, actualitza-ne la informació, donant-los d'alta i revisant la seva UO		
-		msgInfo = "Es procedeix a processar els " + serveiList.size() + " serveis consultats a Rolsac.";
-		logger.info(msgInfo);
-		
-		// Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
-		Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
-		for (Servei servei : serveiList) {
-			// Tracta el servei en una transacció a part.
-			serveiHelper.actualitzaServei(servei, unitatsOrganitzatives, entitat);
-			progres.incProcessats();
-		}
-		progres.setEstat(UpdateProgressDto.Estat.FINALITZAT);
 	}
 
 	@Transactional

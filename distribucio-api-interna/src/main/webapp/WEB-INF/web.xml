@@ -39,10 +39,34 @@
 	</security-constraint>
 	<security-constraint>
 		<web-resource-collection>
-			<web-resource-name>Secured areas</web-resource-name>
+			<web-resource-name>Backoffice areas</web-resource-name>
 			<url-pattern>/backoffice/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>DIS_BACKWS</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Regla areas</web-resource-name>
 			<url-pattern>/regla/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>DIS_REGLA</role-name>
+		</auth-constraint>
+	</security-constraint>
+    <security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Bustia areas</web-resource-name>
 			<url-pattern>/bustia/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>DIS_BSTWS</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+            <web-resource-name>Comanda areas</web-resource-name>
             <url-pattern>/v1/estadistiques</url-pattern>
             <url-pattern>/v1/estadistiques/*</url-pattern>
             <url-pattern>/v1/logs</url-pattern>
@@ -50,7 +74,7 @@
             <url-pattern>/v1/salut/info</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>**</role-name>
+			<role-name>DIS_COM</role-name>
 		</auth-constraint>
 	</security-constraint>
 </web-app>
