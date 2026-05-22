@@ -455,7 +455,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 
 		try {
 //			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, isVistaMoviments);
-            EntitatDto entitatActual = getEntitatActualComprovantPermis(request, "admin");
+            EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 
             List<RegistreDto> registresSeleccionats = registreService.findMultiple(
                     entitatActual.getId(),
@@ -718,7 +718,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 			}
 			
 //			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
-            EntitatDto entitatActual = getEntitatActualComprovantPermis(request, "admin");
+            EntitatDto entitatActual = getEntitatActualComprovantPermis(request, rol);
 
             List<RegistreDto> registresSeleccionats = registreService.findMultiple(
                     entitatActual.getId(),
