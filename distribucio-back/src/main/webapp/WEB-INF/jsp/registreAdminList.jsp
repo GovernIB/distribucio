@@ -82,6 +82,11 @@
 	background-color: #f9f9f9 !important;
 }
 
+.dropdown-menu > li.disabled > a,
+.dropdown-menu > li.disabled > a:hover {
+    pointer-events: none;
+    cursor: not-allowed;
+}
 </style>
 	
 <script>
@@ -208,25 +213,25 @@ $(document).ready(function() {
 				// Afegeix els paràmetres a l'enllaç de la fila
 				$(this).data('href', $(this).data('href') + '?' + params.toString());
 				
-				var isPendentExecucioMassiva = $('#taulaDades').dataTable().api().row($(this)).data()['pendentExecucioMassiva'];
-				if (isPendentExecucioMassiva) {
-					const $row = $(this);
-					
-					// Desactivam la fila
-					$row.addClass('fila-desactivada');
+				<%--var isPendentExecucioMassiva = $('#taulaDades').dataTable().api().row($(this)).data()['pendentExecucioMassiva'];--%>
+				<%--if (isPendentExecucioMassiva) {--%>
+				<%--	const $row = $(this);--%>
+				<%--	--%>
+				<%--	// Desactivam la fila--%>
+				<%--	$row.addClass('fila-desactivada');--%>
 
-					// Desactivam boyo i enllac
-					$row.find('button, a').attr('disabled', true).css('pointer-events', 'none');
+				<%--	// Desactivam boyo i enllac--%>
+				<%--	$row.find('button, a').attr('disabled', true).css('pointer-events', 'none');--%>
 
-					var title = "<spring:message code="accio.massiva.icona.pendent"/>";
-					
-					// Afegir overlay i rellotge
-					if ($row.find('.overlay-desactivada').length === 0) {
-					  $row.append('<div class="overlay-desactivada"> ' +
-									'<span class="fa fa-clock-o icona-rellotge" title="' + title + '"></span> ' +
-								   '</div>');	
-					}
-				}
+				<%--	var title = "<spring:message code="accio.massiva.icona.pendent"/>";--%>
+				<%--	--%>
+				<%--	// Afegir overlay i rellotge--%>
+				<%--	if ($row.find('.overlay-desactivada').length === 0) {--%>
+				<%--	  $row.append('<div class="overlay-desactivada"> ' +--%>
+				<%--					'<span class="fa fa-clock-o icona-rellotge" title="' + title + '"></span> ' +--%>
+				<%--				   '</div>');	--%>
+				<%--	}--%>
+				<%--}--%>
 			}
 		});
 	} ).on('selectionchange.dataTable', function (e, accio, ids) {
@@ -552,6 +557,11 @@ function refreshRegistres($modalExecucioMassiva) {
 							<spring:message code="bustia.pendent.accio.enviarIProcessar"/>
 						</a></li>
 				  </c:if>
+                  <c:if test="${downloadAnnexosEnabled}">
+                    <li><a href="massiva/descarregarZip/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+                        <span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
+                    </a></li>
+                  </c:if>
 				</ul>
 			</div>
 		</div>
@@ -725,6 +735,9 @@ function refreshRegistres($modalExecucioMassiva) {
 								<span class="fa fa-warning text-danger" title="<spring:message code="registre.proces.estat.enum.default"/>"> </span>&nbsp;
 							{{/if}}
 						{{/if}}
+						{{if pendentExecucioMassiva}}
+						    <span class="fa fa-clock-o text-warning" title="<spring:message code="accio.massiva.icona.pendent"/>"></span>
+						{{/if}}
 						</p>
 						</div>
 						</center>
@@ -791,12 +804,12 @@ function refreshRegistres($modalExecucioMassiva) {
 								<li role="separator" class="divider"></li>
 								<li{{if procesEstat == 'ARXIU_PENDENT'}} class="disabled" {{/if}}><a data-refresh-tancar="true" {{if procesEstat != 'ARXIU_PENDENT'}} href="./registreUser/classificar/{{:id}}" {{/if}}  data-toggle="modal"><span class="fa fa-inbox"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.classificar"/> ...</a></li>
 								<li role="separator" class="divider"></li>
-								<li {{if procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat}} class="disabled" {{/if}}><a data-refresh-tancar="true" {{if !(procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat)}} href="./registreUser/enviarViaEmail/{{:id}}?isVistaMoviments=false" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
-								<li><a data-refresh-tancar="true" href="./registreUser/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
+								<li {{if pendentExecucioMassiva || (procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat)}} class="disabled" {{/if}}><a data-refresh-tancar="true" {{if !(procesEstat == 'ARXIU_PENDENT' && !reintentsEsgotat)}} href="./registreUser/enviarViaEmail/{{:id}}?isVistaMoviments=false" {{/if}} data-toggle="modal"><span class="fa fa-envelope"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/>...</a></li>
+								<li {{if pendentExecucioMassiva}} class="disabled" {{/if}}><a data-refresh-tancar="true" href="./registreUser/pendent/{{:id}}/reenviar" data-toggle="modal" data-maximized="true"><span class="fa fa-send"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.reenviar"/>...</a></li>
 								{{if procesEstatSimple == 'PENDENT'}}
-									<li {{if !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat) || procesEstat == 'BACK_REBUTJADA')}} class="disabled" {{/if}}><a data-refresh-tancar="true" {{if procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat)  || procesEstat == 'BACK_REBUTJADA'}} href="./registreUser/pendent/{{:id}}/marcarProcessat" {{/if}} data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
+									<li {{if pendentExecucioMassiva || !(procesEstat == 'BUSTIA_PENDENT' || (procesEstat == 'BACK_ERROR' && reintentsEsgotat) || (procesEstat == 'ARXIU_PENDENT' && reintentsEsgotat) || procesEstat == 'BACK_REBUTJADA')}} class="disabled" {{/if}}><a data-refresh-tancar="true" href="./registreUser/pendent/{{:id}}/marcarProcessat" data-toggle="modal"><span class="fa fa-check-circle-o"></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.marcar.processat"/>...</a></li>
 									{{if !sobreescriure && !arxiuTancat}}
-										<li><a data-refresh-tancar="true" href="./registreAdmin/{{:id}}/marcarSobreescriure"><span class="fa fa-history"></span>&nbsp;&nbsp;<spring:message code="registre.admin.list.accio.marcar.sobreescriure"/>...</a></li>
+										<li {{if pendentExecucioMassiva}} class="disabled" {{/if}}><a data-refresh-tancar="true" href="./registreAdmin/{{:id}}/marcarSobreescriure"><span class="fa fa-history"></span>&nbsp;&nbsp;<spring:message code="registre.admin.list.accio.marcar.sobreescriure"/>...</a></li>
 									{{/if}}
 								{{/if}}
 								{{if procesEstat == 'BUSTIA_PROCESSADA'}}

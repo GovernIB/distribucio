@@ -4,11 +4,16 @@
 package es.caib.distribucio.logic.intf.dto;
 
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Informació d'un procediment.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter
+@Setter
 public class ProcedimentDto implements Comparable<ProcedimentDto>{
 
 	private Long id;
@@ -18,49 +23,8 @@ public class ProcedimentDto implements Comparable<ProcedimentDto>{
 	private ProcedimentEstatEnumDto estat;
 	private UnitatOrganitzativaDto unitatOrganitzativa;
 	private EntitatDto entitat;
+	private boolean comu;
 
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getCodi() {
-		return codi;
-	}
-	public void setCodi(String codi) {
-		this.codi = codi;
-	}
-	public String getNom() {
-		return nom;
-	}
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-	public String getCodiSia() {
-		return codiSia;
-	}
-	public void setCodiSia(String codiSia) {
-		this.codiSia = codiSia;
-	}
-	public ProcedimentEstatEnumDto getEstat() {
-		return estat;
-	}
-	public void setEstat(ProcedimentEstatEnumDto estat) {
-		this.estat = estat;
-	}
-	public UnitatOrganitzativaDto getUnitatOrganitzativa() {
-		return unitatOrganitzativa;
-	}
-	public void setUnitatOrganitzativa(UnitatOrganitzativaDto unitatOrganitzativa) {
-		this.unitatOrganitzativa = unitatOrganitzativa;
-	}
-	public EntitatDto getEntitat() {
-		return entitat;
-	}
-	public void setEntitat(EntitatDto entitat) {
-		this.entitat = entitat;
-	}
 	public String getCodiNom() {
 		return codiSia + " - " + nom;
 	}

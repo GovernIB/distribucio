@@ -19,6 +19,7 @@ public class ServeiFiltreCommand {
 	private ServeiEstatEnumDto estat;
 	private Long unitatOrganitzativa;
 	private EntitatDto entitat;
+    private boolean nomesComu;
 	
 	public static ServeiFiltreCommand asCommand(ServeiFiltreDto dto) {
 		ServeiFiltreCommand command = ConversioTipusHelper.convertir(

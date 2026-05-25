@@ -1,6 +1,7 @@
 package es.caib.distribucio.back.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -9,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import es.caib.distribucio.back.command.ServeiFiltreCommand;
 import es.caib.distribucio.back.helper.DatatablesHelper;
@@ -22,6 +20,8 @@ import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 import es.caib.distribucio.logic.intf.service.ServeiService;
+
+import java.io.IOException;
 
 /**
  * Controlador per al manteniment dels serveis.
@@ -161,6 +161,33 @@ public class ServeiController extends BaseAdminController{
 				"serveiUpdateForm",
 				"servei.controller.actualitzar.ok");
 	}
+
+    @RequestMapping(value = "/{serveiCodi}/actualitzar", method = RequestMethod.GET)
+    public String actualitzarServei(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @PathVariable String serveiCodi) throws IOException {
+        try {
+            EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+            serveiService.findAndUpdateServei(entitatActual.getId(), serveiCodi);
+
+            MissatgesHelper.success(
+                    request,
+                    getMessage(
+                            request,
+                            "servei.controller.actualitzar.ok"));
+        } catch (Exception e) {
+            String errMsg = getMessage(
+                    request,
+                    "servei.controller.actualitzar.error",
+                    new Object[] {e.getMessage()});
+            logger.error(errMsg);
+            MissatgesHelper.error(
+                    request,
+                    errMsg);
+        }
+        return "redirect:" + request.getHeader("referer");
+    }
 
 	@RequestMapping(value = "/actualitzar/progres", method = RequestMethod.GET)
 	@ResponseBody

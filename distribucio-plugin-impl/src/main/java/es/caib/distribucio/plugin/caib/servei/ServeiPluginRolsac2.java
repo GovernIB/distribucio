@@ -18,7 +18,6 @@ import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.plugin.AbstractSalutPlugin;
 import es.caib.distribucio.plugin.DistribucioAbstractPluginProperties;
 import es.caib.distribucio.plugin.SistemaExternException;
-import es.caib.distribucio.plugin.procediment.Procediment;
 import es.caib.distribucio.plugin.servei.Servei;
 import es.caib.distribucio.plugin.servei.ServeiPlugin;
 import es.caib.distribucio.plugin.utils.PropertiesHelper;
@@ -98,6 +97,46 @@ public class ServeiPluginRolsac2 extends DistribucioAbstractPluginProperties imp
 			throw new SistemaExternException(
 					"No s'han pogut consultar els serveis de ROLSAC (" +
 					"codiDir3=" + codiDir3 + "). Resposta rebuda amb el codi " + response.getStatus());
+		}
+	}
+
+	@Override
+	public Servei findAmbCodi(
+			String codi) throws SistemaExternException {
+		logger.debug("Consulta del servei de l'unitat organitzativa (" +
+				"codi=" + codi + ")");
+		ProcedimientosResponse response = null;
+		long start = System.currentTimeMillis();
+
+        Servei servei = null;
+        try {
+            response = findServeisRolsac(
+                    getServiceUrl() + "/" + codi + "?lang=ca",
+                    "");
+
+            if (response.getItems() != null && response.getItems().size() == 1)
+                servei = response.getItems().get(0);
+		} catch (Exception ex) {
+			salutPluginComponent.incrementarOperacioError();
+			logger.error("No s'han pogut consultar el servei de ROLSAC (" +
+					"codi=" + codi + ")",
+					ex);
+			throw new SistemaExternException(
+					"No s'han pogut consultar el servei de ROLSAC (" +
+					"codi=" + codi + ")",
+					ex);
+		}
+
+		if (response != null && response.getStatus().equals("200")) {
+			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
+			return servei;
+		} else {
+			salutPluginComponent.incrementarOperacioError();
+			logger.error("No s'han pogut consultar el servei de ROLSAC (" +
+					"codi=" + codi + "). Resposta rebuda amb el codi " + response.getStatus());
+			throw new SistemaExternException(
+					"No s'han pogut consultar el servei de ROLSAC (" +
+					"codi=" + codi + "). Resposta rebuda amb el codi " + response.getStatus());
 		}
 	}
 

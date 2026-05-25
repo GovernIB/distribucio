@@ -86,13 +86,59 @@ public class ServeiServiceImpl implements ServeiService{
 						filtre.getCodiSia() == null || filtre.getCodiSia().isEmpty(), 
 						filtre.getCodiSia() != null ? filtre.getCodiSia() : "", 
 						filtre.getEstat() == null, 
-						filtre.getEstat(),						
+						filtre.getEstat(),
+                        filtre.isNomesComu(),
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)), 
 				ServeiDto.class);
 
 		
 		return llistaServeis;
 	}
+
+    @Override
+    @Transactional
+    public void findAndUpdateServei(Long entitatId, String serveiCodi) throws Exception {
+        EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
+
+        Servei servei = null;
+        int reintents = 1;
+        boolean errorConsultaServeis = false;
+        Exception exConsultaServeis = null;
+        String errMsg = "-";
+        do {
+            try {
+                servei = pluginHelper.serveiGetByCodi(serveiCodi);
+            } catch (Exception e) {
+                exConsultaServeis = e;
+                errMsg = "Error consultant el servei per codi: " + serveiCodi;
+            }
+            errorConsultaServeis = reintents++ >= 3;
+        }
+        while (servei == null && !errorConsultaServeis);
+
+        // Comprova si hi ha hagut errors consultant els serveis
+        if (errorConsultaServeis && exConsultaServeis != null) {
+            String errorMessage = exConsultaServeis.getMessage() != null ? exConsultaServeis.getMessage() : errMsg;
+            throw new Exception(errorMessage, exConsultaServeis);
+        }
+
+        if (servei == null) {
+            throw new Exception(
+                    "No s'ha obtingut cap resultat per la consulta de servei: (" + serveiCodi + ")"
+            );
+        }
+
+        // Crea un Map amb els serveis de Distribucio per codi
+        Map<String, Servei> serveiMap = new HashMap<String, Servei>();
+        serveiMap.put(servei.getCodigo(), servei);
+
+        // Deshabilita els serveis que no hagi retornat Distribucio
+        serveiHelper.actualtizarServeisNoVigents(entitat, serveiMap);
+
+        // Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
+        Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
+        serveiHelper.actualitzaServei(servei, unitatsOrganitzatives, entitat);
+    }
 
 	/** Mètode per trobar i actualitzar els serveis. Es pot fer manualment o des de la tasca
 	 * programada.
@@ -201,7 +247,8 @@ public class ServeiServiceImpl implements ServeiService{
 							servei.getCodigoSIA(),
 							ServeiEstatEnumDto.VIGENT,
 							unitatOrganitzativa, 
-							entitat).built();
+							entitat,
+                            servei.isComun()).built();
 					serveiRepository.save(serveiEntity);
 				} else {
 					serveiEntity.update(
@@ -210,7 +257,8 @@ public class ServeiServiceImpl implements ServeiService{
 							servei.getCodigoSIA(),
 							ServeiEstatEnumDto.VIGENT,
 							unitatOrganitzativa, 
-							entitat);
+							entitat,
+                            servei.isComun());
 					serveiRepository.save(serveiEntity);
 				}
 			}

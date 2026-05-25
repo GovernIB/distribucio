@@ -16,6 +16,7 @@ public class ServeiFiltreDto implements Serializable{
 	private ServeiEstatEnumDto estat;
 	private Long unitatOrganitzativa;
 	private EntitatDto entitat;
+    private boolean nomesComu;
 	
 	@Override
 	public String toString() {

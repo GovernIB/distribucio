@@ -117,6 +117,44 @@ public class ProcedimentPluginHelper extends AbstractPluginHelper<ProcedimentPlu
 					ex);
 		}
 	}
+
+    public Procediment procedimentGetByCodi(String procedimentCodi) {
+        String accioDescripcio = "Consulta dels procediments pel codi " + procedimentCodi;
+
+        ProcedimentPlugin procedimentPlugin = this.getPlugin();
+        String usuariIntegracio = procedimentPlugin.getUsuariIntegracio();
+
+        Map<String, String> accioParams = new HashMap<String, String>();
+        long t0 = System.currentTimeMillis();
+        try {
+            //codiDir3 = "A04003003";
+            Procediment procediments = getPlugin().findAmbCodi(procedimentCodi);
+            // RegistreNumero no cal!!!
+            integracioHelper.addAccioOk(
+                    IntegracioHelper.INTCODI_SERVEI,
+                    accioDescripcio,
+                    usuariIntegracio,
+                    accioParams,
+                    IntegracioAccioTipusEnumDto.ENVIAMENT,
+                    System.currentTimeMillis() - t0);
+            return procediments;
+        } catch (Exception ex) {
+            String errorDescripcio = "Error al accedir al plugin de procediments: " + ex.getMessage();
+            integracioHelper.addAccioError(
+                    IntegracioHelper.INTCODI_SERVEI,
+                    accioDescripcio,
+                    usuariIntegracio,
+                    accioParams,
+                    IntegracioAccioTipusEnumDto.ENVIAMENT,
+                    System.currentTimeMillis() - t0,
+                    errorDescripcio,
+                    ex);
+            throw new SistemaExternException(
+                    IntegracioHelper.INTCODI_SERVEI,
+                    errorDescripcio,
+                    ex);
+        }
+    }
 	
 	public UnitatAdministrativa procedimentGetUnitatAdministrativa(String codi) {
 		String accioDescripcio = "Consulta de la unitat organitzativa per codi " + codi;

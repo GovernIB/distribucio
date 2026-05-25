@@ -33,7 +33,8 @@ public interface ServeiRepository extends JpaRepository<ServeiEntity, Long>{
 			"and (:isCodiNull = true or lower(srv.codi) like lower('%'||:codi||'%')) " + 
 			"and (:isNomNull = true or lower(srv.nom) like lower('%'||:nom||'%')) " + 
 			"and (:isCodiSiaNull = true or lower(srv.codiSia) like lower('%'||:codiSia||'%'))" + 
-			"and (:isEstatNull = true or srv.estat = :estat)")
+			"and (:isEstatNull = true or srv.estat = :estat)" +
+			"and (:nomesComu = false or srv.comu = true)")
 	Page<ServeiEntity> findAmbFiltrePaginat(
 			@Param("entitatId") Long entitatId, 
 			@Param("isNullUnitatOrganitzativa") boolean isNullUnitatOrganitzativa, 
@@ -46,6 +47,7 @@ public interface ServeiRepository extends JpaRepository<ServeiEntity, Long>{
 			@Param("codiSia") String codiSia, 
 			@Param("isEstatNull") boolean isEstatNull, 
 			@Param("estat") ServeiEstatEnumDto estat,
+			@Param("nomesComu") boolean nomesComu,
 			Pageable pageable);
 	
 	

@@ -36,6 +36,15 @@ public class ServeiPluginMock implements ServeiPlugin {
 	}
 
 	@Override
+	public Servei findAmbCodi(
+			String codi) throws SistemaExternException {
+		Servei response = new Servei();
+		response.setCodigo(codi);
+		response.setCodigoSIA("1315");
+		return response;
+	}
+
+	@Override
 	public String getUsuariIntegracio() {
 		return "ServeisMock";
 	}

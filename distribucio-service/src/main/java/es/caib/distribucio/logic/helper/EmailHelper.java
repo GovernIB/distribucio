@@ -213,6 +213,29 @@ public class EmailHelper {
         }
     }
 
+    public void sendEmailAccioMassiva(ExecucioMassivaEntity em, List<String> errors) {
+        int maxDies = Integer.parseInt(configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.caducitat", "10"));
+        UsuariEntity user = em.getUsuari();
+
+        try {
+            SimpleMailMessage missatge = new SimpleMailMessage();
+            missatge.setTo(user.getEmailAlternatiu() != null ? user.getEmailAlternatiu() : user.getEmail());
+            missatge.setFrom(getRemitent());
+            missatge.setSubject(this.getPrefixDistribucio() + " Fi de la tasca de descàrrega de " + em.getContinguts().size() + " anotacions");
+
+            String mssg = "L'informem de que la tasca programada amb data "
+                    + new Date() + " de " + em.getContinguts().size() + " anotacions ha finalitzat i té disponible durant "
+                    + maxDies + " dies el document per a la seva descàrrega \n" +
+                    "Enllaç al document: " + configHelper.getConfig("es.caib.distribucio.app.base.url") + "/massiva/descarregar/" + em.getNomDocument() + "/0 \n" +
+                    "Errors: " + errors.size();
+
+            missatge.setText(mssg);
+            mailSender.send(missatge);
+        } catch (Exception e) {
+            logger.error("S'ha produit un error al intentar enviar correu a l'usuari " + user.getNom(), e.getMessage());
+        }
+    }
+
     public void sendEmailRepresentantBackoffice(BackofficeEntity backoffice) {
         try {
             SimpleMailMessage missatge = new SimpleMailMessage();

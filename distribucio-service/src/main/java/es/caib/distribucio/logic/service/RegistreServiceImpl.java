@@ -807,7 +807,7 @@ public class RegistreServiceImpl implements RegistreService {
             sqlWhere.append(" ) > 0");
 		}
 		if (!esNullInteressat) {
-			sqlWhere.append("and (select count(interessat) ");
+			sqlWhere.append(" and (select count(interessat) ");
 			sqlWhere.append("			from r.interessats as interessat ");
 			sqlWhere.append("			where ");
 			sqlWhere.append("				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') ");

@@ -85,6 +85,14 @@ function esborrarEntrades() {
 	});
 }
 
+function formatSelectEntitat(item) {
+    if (item.id) {
+        return $("<span> " + item.id + " - " + item.text + " </span>")
+    } else {
+        return $("<span> " + item.text + " </span>");
+    }
+}
+
 </script>
 	
 	
@@ -96,21 +104,25 @@ function esborrarEntrades() {
 		<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
 		
 		<div class="row">
-			<div class="col-md-3">
-				<dis:inputDate name="data" inline="true" placeholderKey="integracio.list.filtre.data"/>
-			</div>
-			<div class="col-md-3">
-				<dis:inputText name="descripcio" inline="true" placeholderKey="integracio.list.filtre.descripcio"/>
-			</div>			
-			<div class="col-md-3">
-				<dis:inputText name="usuari" inline="true" placeholderKey="integracio.list.filtre.usuari"/>
-			</div>
-			<div class="col-md-3">
-				<dis:inputSelect name="estat" inline="true" placeholderKey="integracio.list.filtre.estat" optionEnum="IntegracioAccioEstatEnumDto" emptyOption="true"/>
-			</div>
             <div class="col-md-3">
-                <dis:inputText name="entitat" inline="true" placeholderKey="integracio.list.filtre.entitat"/>
+                <dis:inputSelect
+                        name="entitat"
+                        netejar="true"
+                        optionItems="${entitats}"
+                        optionValueAttribute="codi"
+                        optionTextAttribute="nom"
+                        placeholderKey="integracio.list.filtre.entitat"
+                        emptyOption="true"
+                        inline="true"
+                        optionTemplateFunction="formatSelectEntitat"/>
             </div>
+            <div class="col-md-3"><dis:inputSelect name="estat" inline="true" placeholderKey="integracio.list.filtre.estat" optionEnum="IntegracioAccioEstatEnumDto" emptyOption="true"/></div>
+            <div class="col-md-3"><dis:inputSelect name="tipus" inline="true" placeholderKey="integracio.list.filtre.tipus" optionEnum="IntegracioAccioTipusEnumDto" emptyOption="true"/></div>
+			<div class="col-md-3"><dis:inputText name="descripcio" inline="true" placeholderKey="integracio.list.filtre.descripcio"/></div>
+            <div class="col-md-3"><dis:inputDate name="dataInici" inline="true" placeholderKey="integracio.list.filtre.dataInici"/></div>
+            <div class="col-md-3"><dis:inputDate name="dataFi" inline="true" placeholderKey="integracio.list.filtre.dataFi"/></div>
+			<div class="col-md-3"><dis:inputText name="usuari" inline="true" placeholderKey="integracio.list.filtre.usuari"/></div>
+<%--            <div class="col-md-3"><dis:inputText name="aplicacio" inline="true" placeholderKey="integracio.list.filtre.aplicacio"/></div>--%>
 			<div class="col-md-4 pull-right">
 				<div class="pull-right">
 					<a href="<c:url value='/integracio'/>/diagnostic" class="btn btn-success" data-toggle="modal" data-maximized="true"><span class="fa fa-th-list"></span> <spring:message code="integracio.boto.diagnostic"/></a>

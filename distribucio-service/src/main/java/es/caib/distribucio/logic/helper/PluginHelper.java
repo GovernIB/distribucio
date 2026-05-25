@@ -286,6 +286,10 @@ public class PluginHelper {
 	public List<Procediment> procedimentFindByCodiDir3(String codiDir3) {
 		return procedimentPluginHelper.procedimentFindByCodiDir3(codiDir3);
 	}
+
+    public Procediment procedimentGetByCodi(String codi) {
+        return procedimentPluginHelper.procedimentGetByCodi(codi);
+    }
 	
 	public boolean isServeiPluginActiu() {
 		return serveiPluginHelper.isActiu();
@@ -293,6 +297,10 @@ public class PluginHelper {
 
 	public List<Servei> serveiFindByCodiDir3(String codiDir3) {
 		return serveiPluginHelper.serveiFindByCodiDir3(codiDir3);
+	}
+
+	public Servei serveiGetByCodi(String codi) {
+		return serveiPluginHelper.serveiGetByCodi(codi);
 	}
 	
 	/** Consulta de l'unitat organitzativa d'un servei.

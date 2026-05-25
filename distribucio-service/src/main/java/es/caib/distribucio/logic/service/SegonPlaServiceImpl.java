@@ -5,6 +5,10 @@ package es.caib.distribucio.logic.service;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -22,7 +26,8 @@ import java.util.stream.Collectors;
 import es.caib.distribucio.logic.helper.*;
 import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.persist.entity.*;
-import es.caib.distribucio.persist.repository.ContingutComentariRepository;
+import es.caib.distribucio.persist.repository.*;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +58,6 @@ import es.caib.distribucio.persist.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.entity.UsuariEntity;
-import es.caib.distribucio.persist.repository.ContingutMovimentEmailRepository;
-import es.caib.distribucio.persist.repository.EntitatRepository;
-import es.caib.distribucio.persist.repository.UsuariRepository;
 
 /**
  * Implementació dels mètodes per a gestionar accions en segon pla.
@@ -103,6 +105,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
     private RegistreServiceImpl registreServiceImpl;
 	@Autowired
 	private SegonPlaConfig schedulingConfig;
+    @Autowired
+    private ExecucioMassivaRepository execucioMassivaRepository;
 
     private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
 
@@ -299,6 +303,38 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 
         long stopTime = new Date().getTime();
         logger.debug("Fi de tasca programada (" + stopTime + "): enviar correu de les anotacions amb error de processament " + (stopTime - startTime) + "ms");
+    }
+
+    @Override
+    public void esborrarZipAccionsMassives() {
+        long startTime = new Date().getTime();
+        logger.debug("Execució de tasca programada (" + startTime + "): esborrar ZIPs d'accions massives");
+
+        try {
+            int maxDies = Integer.parseInt(configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.caducitat", "10"));
+            Date dataLimit = DateUtils.addDays(
+                    Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()), -maxDies);
+
+            List<ExecucioMassivaEntity> emList = execucioMassivaRepository.findZipByDataLimit(dataLimit);
+            for (ExecucioMassivaEntity em : emList) {
+                String directoriDesti = configHelper.getConfig("es.caib.distribucio.fitxers");
+
+                try {
+                    Path path = Paths.get(directoriDesti + em.getNomDocument());
+                    if (path.toFile().delete()) {
+                        em.setNomDocument(null);
+                        execucioMassivaRepository.saveAndFlush(em);
+                    }
+                } catch (Exception e) {
+                    logger.error("S'ha produit un error al intentar esborrar el document " + em.getNomDocument(), e);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("S'ha produit un error al intentar esborrar ZIPs d'accions massives", e);
+        }
+
+        long stopTime = new Date().getTime();
+        logger.debug("Fi de tasca programada (" + stopTime + "): esborrar ZIPs d'accions massives " + (stopTime - startTime) + "ms");
     }
 
     @Override

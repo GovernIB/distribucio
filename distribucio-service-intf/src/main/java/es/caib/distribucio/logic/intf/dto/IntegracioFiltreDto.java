@@ -16,13 +16,15 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 @Getter
 @Setter
 public class IntegracioFiltreDto implements Serializable {
-	
-	private String codi;
-	private Date data;
-	private String descripcio;
-	private String usuari;
-	private IntegracioAccioEstatEnumDto estat;
+
+    private String codi;
     private String entitat;
+    private IntegracioAccioEstatEnumDto estat;
+    private IntegracioAccioTipusEnumDto tipus;
+    private String descripcio;
+    private Date dataInici;
+    private Date dataFi;
+    private String usuari;
 
 	@Override
 	public String toString() {

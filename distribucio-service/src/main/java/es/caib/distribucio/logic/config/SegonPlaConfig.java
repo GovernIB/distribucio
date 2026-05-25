@@ -57,6 +57,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
     private final String codiActualitzarProcediments = "actualitzarProcediments";
     private final String codiActualitzarServeis = "actualitzarServeis";
     private final String codiEnviarEmailsAnotacionsErrorProcessament = "enviarEmailsAnotacionsErrorProcessament";
+    private final String codiEsborrarZipAccionsMassives = "esborrarZipAccionsMassives";
     private final String codiExecucionMassives = "execucionsMassives";
 
     @Bean
@@ -383,6 +384,26 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 },
                 getTrigger(codiEnviarEmailsAnotacionsErrorProcessament)
             );
+
+        addTask(
+                codiEsborrarZipAccionsMassives,
+                new Runnable() {
+                    @SneakyThrows
+                    @Override
+                    public void run() {
+                        monitorTasquesService.inici(codiEsborrarZipAccionsMassives);
+                        try {
+                            segonPlaService.esborrarZipAccionsMassives();
+                            monitorTasquesService.fi(codiEsborrarZipAccionsMassives);
+                        } catch (Throwable th) {
+                            tractarErrorTascaSegonPla(th, codiEsborrarZipAccionsMassives);
+                        } finally {
+                            SecurityContextHolder.clearContext();
+                        }
+                    }
+                },
+                getTrigger(codiEsborrarZipAccionsMassives)
+        );
     } //Fi de configureTasks
 
     private Date getPeriodicTriggerNextExecutionTime(TriggerContext triggerContext, String taskCodi, Long value) {
@@ -618,6 +639,22 @@ public class SegonPlaConfig implements SchedulingConfigurer {
 					if (value == null)
 						value = Long.valueOf("60000");
                     return getPeriodicTriggerNextExecutionTime(triggerContext, taskCodi, value);
+                }
+            };
+        } else if (taskCodi.equals(codiEsborrarZipAccionsMassives)) {
+            return new Trigger() {
+                @Override
+                public Date nextExecutionTime(TriggerContext triggerContext) {
+                    String value = null;
+                    try {
+                        value = configService.getConfig("es.caib.distribucio.exportar.annex.zip.caducitat.cron");
+                    } catch (Exception e) {
+                        log.warn("Error consultant la propietat per la propera execució per esborrar els ZIPs d'accions massives");
+                    }
+                    if (value == null) {
+                        value = "0 0 0 * * *";
+                    }
+                    return getCronTriggerNextExecutionTime(triggerContext, taskCodi, value);
                 }
             };
         }

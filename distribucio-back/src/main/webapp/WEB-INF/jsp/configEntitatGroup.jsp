@@ -11,6 +11,7 @@
             let div = $(e.currentTarget).parent().parent().next();
             div.empty();
             let span = $(e.currentTarget).find("span");
+            console.log("div", div)
             if ($(div).is(":visible")) {
                 span.removeClass("fa-caret-up");
                 span.addClass("fa-caret-down");
@@ -47,7 +48,7 @@
                             string += '<input id="' + keyReplaced + '" class="form-control entitat-input" type="password" maxlength="2048" value="' + entitat.value + '"' + disabled + ' ' + placeHolder + '>';
                         } else if(entitat.typeCode === "BOOL") {
                             let checked = entitat.value === "true" ? 'checked' : '';
-                            string += '<input id="' + keyReplaced + '" name="booleanValue" class="visualitzar entitat-input" type="checkbox" ' + disabled + ' ' + checked + '>';
+                            string += '<input id="' + keyReplaced + '" class="visualitzar entitat-input" type="checkbox" ' + disabled + ' ' + checked + '>';
                         } else if (entitat.validValues && entitat.validValues.length > 2) {
                             string += '<select id="' + keyReplaced + '" class="form-control ' + disabled + '>';
                             let selected = "";

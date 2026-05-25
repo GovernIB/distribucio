@@ -246,6 +246,7 @@ public class ConversioTipusHelper {
 									.anyMatch(emc -> ExecucioMassivaContingutEstatDto.PAUSADA.equals(emc.getEstat()));
 						target.setEmcPausat(emcPausat);
 						target.setParametres(source.getParametres());
+                        target.setNomDocument(source.getNomDocument());
 						return target;
 					}
 				});
