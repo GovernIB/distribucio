@@ -29,5 +29,20 @@ public interface ExecucioMassivaRepository extends JpaRepository<ExecucioMassiva
 	List<ExecucioMassivaEntity> findMassivesAmbPendentsByEntitatPerProcessar(
 			@Param("ara") Date ara, 
 			@Param("entitatId") Long entitatId);
-	
+
+    @Query("select e " +
+        "from ExecucioMassivaEntity e " +
+        "where e.dataFi < :dataLimit " +
+        "	and e.nomDocument is not null")
+	List<ExecucioMassivaEntity> findZipByDataLimit(
+			@Param("dataLimit") Date dataLimit);
+
+    @Query("select COUNT(e) " +
+        "from ExecucioMassivaEntity e " +
+        "where e.dataCreacio >= :data " +
+        "   and e.tipus = 'DESCARREGAR'" +
+        "   and e.usuari.codi = :user")
+	Integer countNombreAccionsMassives(
+            @Param("user") String user,
+			@Param("data") Date data);
 }

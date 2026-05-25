@@ -74,6 +74,10 @@ public class ExecucioMassivaEntity extends DistribucioAuditable<Long> {
 	@Column(name = "parametres")
 	private String parametres;
 
+    @Setter
+	@Column(name = "nom_document")
+	private String nomDocument;
+
 	public void addContingut(ExecucioMassivaContingutEntity execucioMassivaContingut) {
 		getContinguts().add(execucioMassivaContingut);
 	}

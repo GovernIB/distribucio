@@ -43,6 +43,8 @@ public interface SegonPlaService {
 
 	void enviarEmailsAnotacionsErrorProcessament();
 
+	void esborrarZipAccionsMassives();
+
 	void canviEstatComunicatAPendent();
 
 

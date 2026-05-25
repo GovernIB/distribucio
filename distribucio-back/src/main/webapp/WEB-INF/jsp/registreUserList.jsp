@@ -760,9 +760,14 @@ function refreshRegistres($modalExecucioMassiva) {
 						</a></li>	
 						<li><a href="registreComun/exportar/${rol}?format=csv">
 							<span class="fa fa-download"></span> <spring:message code="registre.user.accio.grup.exportar.filtre.anotacio.csv"/>
-						</a></li>			
+						</a></li>
+                        <c:if test="${downloadAnnexosEnabled}">
+						<li><a href="massiva/descarregarZip/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+							<span class="fa fa-download"></span> <spring:message code="registre.annex.descarregar.zip"/>
+                        </a></li>
+                        </c:if>
 					</ul>
-					
+
 			</div>
 		</div>
 	</script>

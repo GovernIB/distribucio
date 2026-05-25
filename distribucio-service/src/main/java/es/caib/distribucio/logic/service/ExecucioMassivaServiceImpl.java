@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
+import es.caib.distribucio.logic.helper.*;
+import es.caib.distribucio.logic.intf.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +24,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.logic.helper.ConversioTipusHelper;
-import es.caib.distribucio.logic.helper.EntityComprovarHelper;
-import es.caib.distribucio.logic.helper.ExecucioMassivaHelper;
-import es.caib.distribucio.logic.helper.PluginHelper;
-import es.caib.distribucio.logic.helper.UsuariHelper;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaAccioDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaEstatDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import es.caib.distribucio.persist.entity.EntitatEntity;
@@ -182,7 +173,11 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 
 			if (ems != null && ems.size() > 0) {
 				ExecucioMassivaEntity em = ems.get(0);
-				if (em.getContinguts() != null) {
+                if (ExecucioMassivaTipusDto.DESCARREGAR.equals(em.getTipus())) {
+                    try {
+                        execucioMassivaHelper.descarregarAnnexos(entitatId, em.getId());
+                    } catch (Exception ignore) {}
+                } else if (em.getContinguts() != null) {
 					execucioMassivaHelper.updateProcessantNewTransaction(em, new Date());
 
 					for (ExecucioMassivaContingutEntity emc: em.getContinguts()) {

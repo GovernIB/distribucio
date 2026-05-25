@@ -10,8 +10,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import es.caib.distribucio.back.command.*;
+import es.caib.distribucio.back.helper.*;
+import es.caib.distribucio.logic.helper.ExecucioMassivaHelper;
+import es.caib.distribucio.logic.intf.dto.*;
+import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,30 +34,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import es.caib.distribucio.back.command.ContingutReenviarCommand;
-import es.caib.distribucio.back.command.ContingutReenviarMassiveCommand;
-import es.caib.distribucio.back.command.MarcarProcessatCommand;
-import es.caib.distribucio.back.command.MassiveCommand;
-import es.caib.distribucio.back.command.RegistreClassificarCommand;
-import es.caib.distribucio.back.command.RegistreEnviarIProcessarCommand;
-import es.caib.distribucio.back.command.RegistreEnviarIProcessarMassiveCommand;
-import es.caib.distribucio.back.command.RegistreEnviarViaEmailCommand;
-import es.caib.distribucio.back.command.RegistreFiltreCommand;
-import es.caib.distribucio.back.helper.EnumHelper;
-import es.caib.distribucio.back.helper.MissatgesHelper;
-import es.caib.distribucio.back.helper.RequestSessionHelper;
-import es.caib.distribucio.back.helper.RolHelper;
-import es.caib.distribucio.logic.intf.dto.BustiaDto;
-import es.caib.distribucio.logic.intf.dto.ElementTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaAccioDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaTipusDto;
-import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
-import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
-import es.caib.distribucio.logic.intf.dto.RegistreDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
@@ -86,6 +68,8 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	private AnnexosService annexosService;
 	@Autowired
 	private BustiaService bustiaService;
+    @Autowired
+    private ExecucioMassivaHelper execucioMassivaHelper;
 
     private RegistreFiltreCommand getFiltreCommand(
             HttpServletRequest request) {
@@ -230,6 +214,37 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		}
 		
 		return "redirect:/modal/massiva/consulta/" + pagina;
+	}
+
+	@RequestMapping(value = "/descarregar/{execicioId}/{pagina}", method = RequestMethod.GET)
+	public String downloadExecucioMassiva(
+			HttpServletRequest request,
+            HttpServletResponse response,
+			@PathVariable Long execicioId,
+			@PathVariable Long pagina) {
+
+		if (RolHelper.isRolActualUsuari(request)) {
+			getEntitatActualComprovantPermisos(request);
+		}
+
+		try {
+            EntitatDto entitat = getEntitatActual(request);
+            FitxerDto fitxer = execucioMassivaHelper.descarregarDocumentExecMassiva(entitat.getId(), execicioId);
+
+            writeFileToResponse(fitxer.getNom(),
+                    fitxer.getContingut(),
+                    response);
+            return null;
+		} catch (Exception e) {
+			MissatgesHelper.error(
+					request,
+					getMessage(
+							request,
+							"accio.massiva.controller.accion.download.ko")
+					);
+		}
+
+        return "redirect:/modal/massiva/consulta/" + pagina;
 	}
 
 	@RequestMapping(value = "/pausar/{execucioMassivaId}/{pagina}", method = RequestMethod.GET)
@@ -489,6 +504,70 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
         return registreReenviarGet(request, isVistaMoviments, model, rol);
 	}
 	
+
+	@RequestMapping(value = "/descarregarZip/{rol}", method = RequestMethod.GET)
+	public String descarregarZipDocumentacioGet(
+			HttpServletRequest request,
+			Model model, 
+			@PathVariable String rol) {
+		List<Long> registresSeleccionats = obtenirIdsSeleccioRegistres(request, rol, false);
+		List<RegistreDto> registres = obtenirSeleccioRegistres(request, rol, false);
+		
+		String redireccio = comprovarExistenciaExecucioMassivaPendent(
+				request, 
+				"redirect:../registreUser", 
+				registresSeleccionats);
+		
+		if (redireccio != null)
+			return redireccio;
+		
+		DescarregarZipCommand command = new DescarregarZipCommand();
+		model.addAttribute("descarregarZipCommand", command);
+		model.addAttribute("registres", registres);
+        execucioMassivaHelper.chechFormDescargaMassiva(registres, model);
+
+		return "registreUserDescarregarZip";
+	}
+
+    @RequestMapping(value = "/descarregarZip/{rol}", method = RequestMethod.POST)
+    public String descarregarZipDocumentacioPost(
+            HttpServletRequest request,
+            @PathVariable String rol,
+            @Valid DescarregarZipCommand command,
+            BindingResult bindingResult,
+            Model model) {
+
+        try {
+            List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
+
+            if (!execucioMassivaHelper.chechFormDescargaMassiva(registresSeleccionats, model) || bindingResult.hasErrors()) {
+                omplirModelAmbRegistres(request, rol, model);
+                return "registreUserDescarregarZip";
+            }
+
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("estructuraCarpetes", command.isEstructuraCarpetes());
+            params.put("versioImprimible", command.isVersioImprimible());
+            params.put("nomDocument", command.getNomDocument());
+            params.put("rolActual", rol);
+            return executarAccioMassivaRegistres(
+                    request,
+                    rol,
+                    registresSeleccionats,
+                    ExecucioMassivaTipusDto.DESCARREGAR,
+                    params,
+                    "redirect:../registreUser");
+        } catch (Exception e) {
+            MissatgesHelper.error(
+                    request,
+                    getMessage(
+                            request,
+                            "accio.massiva.controller.accion.crear.ko")
+            );
+        }
+
+        return "registreUserDescarregarZip";
+    }
 
 	@RequestMapping(value = "/marcarProcessat/{rol}", method = RequestMethod.GET)
 	public String registreMarcarProcessatGet(

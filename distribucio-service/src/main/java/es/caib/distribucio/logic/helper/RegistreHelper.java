@@ -2289,7 +2289,7 @@ public class RegistreHelper {
 	 * @param annex
 	 * @return
 	 */
-	private boolean potGenerarVersioImprimible(RegistreAnnexEntity annex) {
+	public boolean potGenerarVersioImprimible(RegistreAnnexEntity annex) {
 		// Si no està firmat no cal la versió imprimible
 		if (AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat()) && (annex.getFirmes() == null || annex.getFirmes().isEmpty())) {
 			return false;
