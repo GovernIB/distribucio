@@ -14,7 +14,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import es.caib.distribucio.logic.helper.ConfigHelper;
+import es.caib.distribucio.logic.intf.service.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,15 +60,6 @@ import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
-import es.caib.distribucio.logic.intf.service.AplicacioService;
-import es.caib.distribucio.logic.intf.service.BackofficeService;
-import es.caib.distribucio.logic.intf.service.BustiaService;
-import es.caib.distribucio.logic.intf.service.ContingutService;
-import es.caib.distribucio.logic.intf.service.MetaDadaService;
-import es.caib.distribucio.logic.intf.service.ProcedimentService;
-import es.caib.distribucio.logic.intf.service.RegistreService;
-import es.caib.distribucio.logic.intf.service.ServeiService;
-import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -104,7 +95,7 @@ public class RegistreAdminController extends BaseAdminController {
 	@Autowired
 	private ServeiService serveiService;
     @Autowired
-    private ConfigHelper configHelper;
+    private ConfigService configService;
 
     @RequestMapping(method = RequestMethod.GET)
 	public String registreAdminGet(
@@ -128,7 +119,7 @@ public class RegistreAdminController extends BaseAdminController {
         model.addAttribute("estatsPendents", RegistreProcesEstatEnum.estatsPendents);
         model.addAttribute("estatsProcessats", RegistreProcesEstatEnum.estatsProcessats);
         model.addAttribute("downloadAnnexosEnabled",
-                configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.enabled"));
+                configService.getConfig("es.caib.distribucio.exportar.annex.zip.enabled"));
 
         return "registreAdminList";
 	}

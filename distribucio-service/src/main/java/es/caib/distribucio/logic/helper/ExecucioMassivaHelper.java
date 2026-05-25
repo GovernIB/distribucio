@@ -436,35 +436,6 @@ public class ExecucioMassivaHelper {
         }
     }
 
-    private void marcarExecucioAmbError(ExecucioMassivaEntity em, String reason) {
-        for (ExecucioMassivaContingutEntity contingut : em.getContinguts()) {
-            this.updateErrorNewTransaction(contingut, new Date(), reason);
-        }
-        this.updateFinalitzatNewTransaction(em, new Date());
-    }
-
-    public FitxerDto descarregarDocumentExecMassiva(Long entitatId, Long execucioId) {
-        FitxerDto resultat = new FitxerDto();
-
-        try {
-            String directoriDesti = configHelper.getConfig("es.caib.distribucio.fitxers");
-            ExecucioMassivaEntity execucioMassiva = execucioMassivaRepository.findById(execucioId).get();
-            String nomDocument = execucioMassiva.getNomDocument();
-
-            byte[] bytes = Files.readAllBytes(Paths.get(directoriDesti + nomDocument));
-            resultat.setContingut(bytes);
-            if (nomDocument.contains("/")) {
-                resultat.setNom(
-                        nomDocument.substring(nomDocument.lastIndexOf("/") + 1));
-            } else {
-                resultat.setNom(nomDocument);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return resultat;
-    }
-
     private String getZipRecursNom(String nomEntrada, List<String> nomsArxius) {
         int contador = 0;
         for (String nom : nomsArxius) {
@@ -481,71 +452,11 @@ public class ExecucioMassivaHelper {
         return nomEntrada;
     }
 
-    public boolean chechFormDescargaMassiva(List<RegistreDto> registres, Model model) {
-        List<String> errors = new ArrayList<>();
-        int maxExec = Integer.parseInt(configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.exec.max", "5"));
-        int maxSize = Integer.parseInt(configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.mida.max", "10"));
-
-        boolean enabled = "true".equals(configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.enabled"));
-        int exec = this.getNumeroExecucioMasiva();
-        double midaAproximada = this.getMidaAproximada(registres);
-
-        if (exec >= maxExec) {
-            errors.add(messageHelper.getMessage("registre.annex.descarregar.zip.exec.max", new Object[] {maxExec}));
+    private void marcarExecucioAmbError(ExecucioMassivaEntity em, String reason) {
+        for (ExecucioMassivaContingutEntity contingut : em.getContinguts()) {
+            this.updateErrorNewTransaction(contingut, new Date(), reason);
         }
-        if (midaAproximada > (maxSize * 1024 * 1024)) {
-            errors.add(messageHelper.getMessage("registre.annex.descarregar.zip.size.max", new Object[] {String.format("%.2f", midaAproximada / 1024 / 1024), maxSize}));
-        } else {
-            model.addAttribute("midaMaxima", maxSize);
-        }
-        if (!enabled) {
-            errors.add("La acción masiva no està habilitada");
-        }
-
-        model.addAttribute("errors", errors);
-        model.addAttribute("disabled", !errors.isEmpty());
-        return errors.isEmpty();
-    }
-
-    private double getMidaAproximada(List<RegistreDto> registresSeleccionats) {
-        double tamany = 0;
-        for (RegistreDto registre : registresSeleccionats) {
-            for (RegistreAnnexDto annexos : registre.getAnnexos()) {
-                tamany += annexos.getFitxerTamany() * obtenirRatioCompresio(annexos.getFitxerTipusMime());
-            }
-        }
-        return tamany;
-    }
-
-    private double obtenirRatioCompresio(String mime) {
-        if (mime == null) return 0.80; // Fallback seguro
-        String m = mime.toLowerCase();
-
-        //  Textos y datos (alta compresión)
-        if (m.startsWith("text/") || m.contains("json") || m.contains("xml") || m.contains("csv") || m.contains("sql")) {
-            return 0.30; // ~70% reducción
-        }
-        // 📑 PDF
-        if (m.equals("application/pdf")) return 0.70;
-        // 🖼️ Imágenes (ya están comprimidas)
-        if (m.startsWith("image/")) return 0.95;
-        //  Office legacy (.doc, .xls, .ppt)
-        if (m.contains("msword") || m.contains("ms-excel") || m.contains("ms-powerpoint")) return 0.40;
-        // 📦 Office moderno (.docx, .xlsx, .pptx) → ya son ZIP internamente
-        if (m.contains("openxmlformats")) return 0.95;
-        // ️ Archivos comprimidos / Multimedia
-        if (m.contains("zip") || m.contains("rar") || m.contains("7z") ||
-                m.startsWith("video/") || m.startsWith("audio/")) {
-            return 0.99; // Prácticamente 0% compresión
-        }
-        // 🔹 Fallback genérico
-        return 0.80;
-    }
-
-    private int getNumeroExecucioMasiva() {
-        String user = SecurityContextHolder.getContext().getAuthentication().getName();
-        Date date = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
-        return execucioMassivaRepository.countNombreAccionsMassives(user, date);
+        this.updateFinalitzatNewTransaction(em, new Date());
     }
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)

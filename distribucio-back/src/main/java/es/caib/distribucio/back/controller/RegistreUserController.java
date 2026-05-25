@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.service.*;
 import org.apache.commons.lang.StringUtils;
@@ -105,8 +104,6 @@ public class RegistreUserController extends BaseUserController {
 	private ServeiService serveiService;
     @Autowired
     private BackofficeService backofficeService;
-    @Autowired
-    private ConfigHelper configHelper;
 
     @RequestMapping(method = RequestMethod.GET)
 	public String registreUserGet(
@@ -143,7 +140,7 @@ public class RegistreUserController extends BaseUserController {
         model.addAttribute("estatsPendents", RegistreProcesEstatEnum.estatsPendents);
         model.addAttribute("estatsProcessats", RegistreProcesEstatEnum.estatsProcessats);
         model.addAttribute("downloadAnnexosEnabled",
-                configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.enabled"));
+                configService.getConfig("es.caib.distribucio.exportar.annex.zip.enabled"));
 		return "registreUserList";
 	}
 

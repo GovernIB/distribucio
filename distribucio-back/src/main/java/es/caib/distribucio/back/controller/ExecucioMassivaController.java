@@ -15,7 +15,6 @@ import javax.validation.Valid;
 
 import es.caib.distribucio.back.command.*;
 import es.caib.distribucio.back.helper.*;
-import es.caib.distribucio.logic.helper.ExecucioMassivaHelper;
 import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
 import org.slf4j.Logger;
@@ -68,8 +67,6 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	private AnnexosService annexosService;
 	@Autowired
 	private BustiaService bustiaService;
-    @Autowired
-    private ExecucioMassivaHelper execucioMassivaHelper;
 
     private RegistreFiltreCommand getFiltreCommand(
             HttpServletRequest request) {
@@ -229,7 +226,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 
 		try {
             EntitatDto entitat = getEntitatActual(request);
-            FitxerDto fitxer = execucioMassivaHelper.descarregarDocumentExecMassiva(entitat.getId(), execicioId);
+            FitxerDto fitxer = execucioMassivaService.descarregarDocumentExecMassiva(entitat.getId(), execicioId);
 
             writeFileToResponse(fitxer.getNom(),
                     fitxer.getContingut(),
@@ -524,7 +521,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		DescarregarZipCommand command = new DescarregarZipCommand();
 		model.addAttribute("descarregarZipCommand", command);
 		model.addAttribute("registres", registres);
-        execucioMassivaHelper.chechFormDescargaMassiva(registres, model);
+        execucioMassivaService.chechFormDescargaMassiva(registres, model);
 
 		return "registreUserDescarregarZip";
 	}
@@ -540,7 +537,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
         try {
             List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
 
-            if (!execucioMassivaHelper.chechFormDescargaMassiva(registresSeleccionats, model) || bindingResult.hasErrors()) {
+            if (!execucioMassivaService.chechFormDescargaMassiva(registresSeleccionats, model) || bindingResult.hasErrors()) {
                 omplirModelAmbRegistres(request, rol, model);
                 return "registreUserDescarregarZip";
             }
