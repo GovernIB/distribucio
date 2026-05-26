@@ -35,6 +35,7 @@ public class MonitorIntegracioHelper {
 						monitorIntegracio.getEstat(),
 						monitorIntegracio.getCodiUsuari(),
 						monitorIntegracio.getCodiEntitat(),
+						monitorIntegracio.getNumeroRegistre(),
 						monitorIntegracio.getErrorDescripcio(),
 						monitorIntegracio.getExcepcioMessage(),
 						monitorIntegracio.getExcepcioStacktrace()).build());

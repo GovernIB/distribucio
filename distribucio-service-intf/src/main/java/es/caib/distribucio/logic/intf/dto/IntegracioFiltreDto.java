@@ -25,6 +25,7 @@ public class IntegracioFiltreDto implements Serializable {
     private Date dataInici;
     private Date dataFi;
     private String usuari;
+    private String numeroRegistre;
 
 	@Override
 	public String toString() {

@@ -113,7 +113,7 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 				first = false;
 			}
 		}
-		String accioDescripcio = "Nou registre d'entrada " + origen + " ";
+		String accioDescripcio = "Nou registre d'entrada " + origen;
 		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("entitat", entitatOArrel);
@@ -178,7 +178,8 @@ public class BustiaV1WsServiceImpl implements BustiaV1WsService {
 					ex);
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_BUSTIAWS,
-					accioDescripcio + " de l'anotació " + registreEntrada.getNumero(),
+                    registreEntrada.getNumero(),
+					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
 					IntegracioAccioTipusEnumDto.RECEPCIO,

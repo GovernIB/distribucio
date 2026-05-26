@@ -101,6 +101,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 						monitorIntegracio.getEstat(),
 						monitorIntegracio.getCodiUsuari(),
 						monitorIntegracio.getCodiEntitat(),
+						monitorIntegracio.getNumeroRegistre(),
 						monitorIntegracio.getErrorDescripcio(),
 						monitorIntegracio.getExcepcioMessage(),
 						monitorIntegracio.getExcepcioStacktrace()).build());
@@ -144,6 +145,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 		IntegracioAccioEstatEnumDto estat = integracioFiltreDto.getEstat();
 		IntegracioAccioTipusEnumDto tipus = integracioFiltreDto.getTipus();
         String entitat = integracioFiltreDto.getEntitat();
+        String numeroRegistre = integracioFiltreDto.getNumeroRegistre();
 		PaginaDto<MonitorIntegracioDto> resposta;
 		resposta = paginacioHelper.toPaginaDto(
 				monitorIntegracioRepository.findByFiltrePaginat(
@@ -162,6 +164,8 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
                         tipus,
                         entitat == null || entitat.isEmpty(),
                         entitat != null && !entitat.isEmpty() ? entitat : "",
+                        numeroRegistre == null || numeroRegistre.isEmpty(),
+                        numeroRegistre,
 						paginacioHelper.toSpringDataPageable(paginacioParams)),
 				MonitorIntegracioDto.class);	
 		return resposta;
@@ -179,6 +183,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
         String usuari = integracioFiltreDto.getUsuari();
         IntegracioAccioTipusEnumDto tipus = integracioFiltreDto.getTipus();
         String entitat = integracioFiltreDto.getEntitat();
+        String numeroRegistre = integracioFiltreDto.getNumeroRegistre();
 		
 		Map<String, Integer> errors = new HashMap<String, Integer>();
 		List<Object[]> resultats = monitorIntegracioRepository.countErrorsGroupByCodi(
@@ -193,7 +198,9 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
                 tipus == null,
                 tipus,
                 entitat == null || entitat.isEmpty(),
-                entitat != null && !entitat.isEmpty() ? entitat : "");
+                entitat != null && !entitat.isEmpty() ? entitat : "",
+                numeroRegistre == null || numeroRegistre.isEmpty(),
+                numeroRegistre);
 		for (Object[] resultat : resultats) {
 			errors.put(
 					(String) resultat[0], 

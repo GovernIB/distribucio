@@ -608,8 +608,8 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		
 		//creating info for integracio logs
 		String accioDescripcio = annex.getFitxerArxiuUuid() != null ?
-				"Modificar document annex " +  obtenirNumeroRegistre() 
-				: "Creant document annex"  + obtenirNumeroRegistre();
+				"Modificar document annex"
+				: "Creant document annex";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("id", annex.getId().toString());
 		accioParams.put("titol", annex.getTitol());
@@ -674,7 +674,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 
 				integracioAddAccioOk(
 						integracioArxiuCodi,
+                        this.getUsuariIntegracio(),
 						accioDescripcio,
+                        this.getUsuariIntegracio(),
 						accioParams,
 						System.currentTimeMillis() - t0);
 			} else if (DocumentEstat.DEFINITIU.equals(estatDocument)) {
@@ -700,7 +702,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				contingutFitxer = getArxiuPlugin().documentModificar(document);
 				integracioAddAccioOk(
 						integracioArxiuCodi,
+                        this.getUsuariIntegracio(),
 						accioDescripcio,
+                        this.getUsuariIntegracio(),
 						accioParams,
 						System.currentTimeMillis() - t0);
 			}
@@ -719,7 +723,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			}
 			integracioAddAccioError(
 					integracioArxiuCodi,
+                    this.getUsuariIntegracio(),
 					accioDescripcio,
+                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - t0,
 					errorDescripcio,
@@ -1020,6 +1026,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 												signatura.getContingut().length : "-"));
 			integracioAddAccioOk(
 					integracioSignaturaCodi,
+                    null,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -1029,6 +1036,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			String errorDescripcio = "Error al firmar document en servidor. ";
 			integracioAddAccioError(
 					integracioSignaturaCodi,
+                    null,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -1080,7 +1088,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			boolean ambContingut) throws SistemaExternException {
 		Document documentDetalls = null;
 		
-		String accioDescripcio = "Obtenint detalls del document " + obtenirNumeroRegistre();
+		String accioDescripcio = "Obtenint detalls del document";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("arxiuUuid", arxiuUuid);
 		accioParams.put("versio", versio);
@@ -1094,7 +1102,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			integracioAddAccioOk(
 					integracioArxiuCodi,
+                    obtenirNumeroRegistre(),
 					accioDescripcio,
+                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - start);
 		} catch (Exception ex) {
@@ -1103,10 +1113,12 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			if (ex.getCause() != null && !ex.getCause().getClass().equals(ex.getClass())) {
 				excMsg += ": " + ex.getCause().getMessage();
 			}
-			String errorDescripcio = "Error al obtenir detalls del document " + obtenirNumeroRegistre() + ": " + excMsg;
+			String errorDescripcio = "Error al obtenir detalls del document : " + excMsg;
 			integracioAddAccioError(
 					integracioArxiuCodi,
+                    obtenirNumeroRegistre(),
 					accioDescripcio,
+                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - start,
 					errorDescripcio,
@@ -1549,7 +1561,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	
 	private String obtenirNumeroRegistre() {
 		if (TemporalThreadStorage.get("numeroRegistre") != null)
-			return " de l'anotació " + TemporalThreadStorage.get("numeroRegistre");
+			return "" + TemporalThreadStorage.get("numeroRegistre");
 		
 		return "";
 	}
@@ -1562,15 +1574,17 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			Map<String, String> parametres,
 			long tempsResposta) {
 		this.integracioAddAccioOk(
-				integracioCodi, 
-				descripcio, 
+				integracioCodi,
+                null,
+				descripcio,
 				this.getUsuariIntegracio(),
-				parametres, 
+				parametres,
 				tempsResposta);
 	}
 	
 	private void integracioAddAccioOk(
 			String integracioCodi,
+            String registreNumero,
 			String descripcio,
 			String usuariIntegracio,
 			Map<String, String> parametres,
@@ -1578,6 +1592,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		if (integracioManager != null) {
 			integracioManager.addAccioOk(
 					integracioCodi,
+                    registreNumero,
 					descripcio,
 					usuariIntegracio,
 					parametres,
@@ -1593,17 +1608,19 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			String errorDescripcio,
 			Throwable throwable) {
 		this.integracioAddAccioError(
-				integracioCodi, 
-				descripcio, 
-				this.getUsuariIntegracio(), 
-				parametres, 
-				tempsResposta, 
-				errorDescripcio, 
+				integracioCodi,
+                null,
+				descripcio,
+				this.getUsuariIntegracio(),
+				parametres,
+				tempsResposta,
+				errorDescripcio,
 				throwable);
 	}
 
 	private void integracioAddAccioError(
 			String integracioCodi,
+            String registreNumero,
 			String descripcio,
 			String usuariIntegracio,
 			Map<String, String> parametres,
@@ -1613,6 +1630,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		if (integracioManager != null) {
 			integracioManager.addAccioError(
 					integracioCodi,
+                    registreNumero,
 					descripcio,
 					usuariIntegracio,
 					parametres,

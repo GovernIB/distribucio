@@ -119,23 +119,6 @@ public class IntegracioHelper {
 				
 		return integracions;
 	}
-
-	public void addAccioOk(
-			String integracioCodi,
-			String registreNumero,
-			String descripcio,
-			String usuariIntegracio,
-			Map<String, String> parametres,
-			IntegracioAccioTipusEnumDto tipus,
-			long tempsResposta) {
-		this.addAccioOk(
-				integracioCodi,				
-				descripcio + " de l'anotació " + registreNumero, 
-				usuariIntegracio, 
-				parametres, 
-				tipus, 
-				tempsResposta);		
-	}
 	
 	public void addAccioOk(IntegracioInfo info, boolean obtenirUsuari) {
 		
@@ -175,20 +158,39 @@ public class IntegracioHelper {
 			Map<String, String> parametres,
 			IntegracioAccioTipusEnumDto tipus,
 			long tempsResposta) {
-		MonitorIntegracioDto accio = new MonitorIntegracioDto();
-		accio.setCodi(integracioCodi);
-		accio.setData(new Date());
-		accio.setDescripcio(descripcio);
-		accio.setCodiUsuari(usuariIntegracio);
-		accio.setCodiEntitat(ConfigHelper.getEntitatActualCodi());
-		accio.setTipus(tipus);
-		accio.setTempsResposta(tempsResposta);
-		accio.setEstat(IntegracioAccioEstatEnumDto.OK);
-
-		monitorIntegracioService.create(accio);
-
-		logger.debug(descripcio + ", Parametres: " + parametres + ", Temps resposta: " + tempsResposta);
+        this.addAccioOk(
+                integracioCodi,
+                null,
+                descripcio,
+                usuariIntegracio,
+                parametres,
+                tipus,
+                tempsResposta);
 	}
+
+    public void addAccioOk(
+            String integracioCodi,
+            String registreNumero,
+            String descripcio,
+            String usuariIntegracio,
+            Map<String, String> parametres,
+            IntegracioAccioTipusEnumDto tipus,
+            long tempsResposta) {
+        MonitorIntegracioDto accio = new MonitorIntegracioDto();
+        accio.setCodi(integracioCodi);
+        accio.setData(new Date());
+        accio.setDescripcio(descripcio);
+        accio.setCodiUsuari(usuariIntegracio);
+        accio.setCodiEntitat(ConfigHelper.getEntitatActualCodi());
+        accio.setNumeroRegistre(registreNumero);
+        accio.setTipus(tipus);
+        accio.setTempsResposta(tempsResposta);
+        accio.setEstat(IntegracioAccioEstatEnumDto.OK);
+
+        monitorIntegracioService.create(accio);
+
+        logger.debug(descripcio + ", Parametres: " + parametres + ", Temps resposta: " + tempsResposta);
+    }
 	
 	
 //	public void addAccioError(
@@ -210,27 +212,6 @@ public class IntegracioHelper {
 //				null);
 //	}
 
-	public void addAccioError(
-			String integracioCodi,	
-			String registreNumero,
-			String descripcio,
-			String usuariIntegracio,
-			Map<String, String> parametres,
-			IntegracioAccioTipusEnumDto tipus,
-			long tempsResposta,
-			String errorDescripcio,
-			Throwable throwable) {
-		this.addAccioError(
-				integracioCodi,
-				descripcio + " de l'anotació " + registreNumero, 
-				usuariIntegracio,
-				parametres,
-				tipus,
-				tempsResposta,
-				errorDescripcio + " " + registreNumero,
-				throwable);		
-	}
-
 	public void addAccioError(IntegracioInfo info, String errorDescripcio, Throwable throwable) {
 		this.addAccioError(
 				info.getCodi().name(), 
@@ -244,7 +225,7 @@ public class IntegracioHelper {
 	}
 
 	public void addAccioError(
-			String integracioCodi,			
+			String integracioCodi,
 			String descripcio,
 			String usuariIntegracio,
 			Map<String, String> parametres,
@@ -252,32 +233,55 @@ public class IntegracioHelper {
 			long tempsResposta,
 			String errorDescripcio,
 			Throwable throwable) {
-		MonitorIntegracioDto accio = new MonitorIntegracioDto();
-		accio.setCodi(integracioCodi);
-		accio.setData(new Date());
-		accio.setDescripcio(descripcio);
-		accio.setCodiUsuari(usuariIntegracio);
-		accio.setCodiEntitat(ConfigHelper.getEntitatActualCodi());
-		accio.setTipus(tipus);
-		accio.setTempsResposta(tempsResposta);
-		accio.setEstat(IntegracioAccioEstatEnumDto.ERROR);
-		accio.setErrorDescripcio(errorDescripcio);
-		if (throwable != null){
-			accio.setExcepcioMessage(
-					ExceptionUtils.getMessage(throwable));
-			accio.setExcepcioStacktrace(
-					ExceptionUtils.getStackTrace(throwable));
-		}
-		accio.setParametres(this.buildParams(parametres));
-		monitorIntegracioService.create(accio);
-		logger.error("Error d'integracio " + descripcio + ": " + errorDescripcio + "("
-				+ "integracioCodi=" + integracioCodi + ", "
-				+ "parametres=" + parametres + ", "
-				+ "tipus=" + tipus + ", "
-				+ "usuariIntegracio=" + usuariIntegracio + ", "
-				+ "tempsResposta=" + tempsResposta + ")",
-				throwable);
+        this.addAccioError(
+                integracioCodi,
+                null,
+                descripcio,
+                usuariIntegracio,
+                parametres,
+                tipus,
+                tempsResposta,
+                errorDescripcio,
+                throwable);
 	}
+
+    public void addAccioError(
+            String integracioCodi,
+            String registreNumero,
+            String descripcio,
+            String usuariIntegracio,
+            Map<String, String> parametres,
+            IntegracioAccioTipusEnumDto tipus,
+            long tempsResposta,
+            String errorDescripcio,
+            Throwable throwable) {
+        MonitorIntegracioDto accio = new MonitorIntegracioDto();
+        accio.setCodi(integracioCodi);
+        accio.setData(new Date());
+        accio.setDescripcio(descripcio);
+        accio.setCodiUsuari(usuariIntegracio);
+        accio.setCodiEntitat(ConfigHelper.getEntitatActualCodi());
+        accio.setNumeroRegistre(registreNumero);
+        accio.setTipus(tipus);
+        accio.setTempsResposta(tempsResposta);
+        accio.setEstat(IntegracioAccioEstatEnumDto.ERROR);
+        accio.setErrorDescripcio(errorDescripcio);
+        if (throwable != null){
+            accio.setExcepcioMessage(
+                    ExceptionUtils.getMessage(throwable));
+            accio.setExcepcioStacktrace(
+                    ExceptionUtils.getStackTrace(throwable));
+        }
+        accio.setParametres(this.buildParams(parametres));
+        monitorIntegracioService.create(accio);
+        logger.error("Error d'integracio " + descripcio + ": " + errorDescripcio + "("
+                        + "integracioCodi=" + integracioCodi + ", "
+                        + "parametres=" + parametres + ", "
+                        + "tipus=" + tipus + ", "
+                        + "usuariIntegracio=" + usuariIntegracio + ", "
+                        + "tempsResposta=" + tempsResposta + ")",
+                throwable);
+    }
 
 
 	private List<MonitorIntegracioParamDto> buildParams(Map<String, String> parametres) {

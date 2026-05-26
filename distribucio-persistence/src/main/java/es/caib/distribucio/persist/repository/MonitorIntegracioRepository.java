@@ -43,7 +43,9 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			"and (:isNullUsuari = true or lower(mon.codiUsuari) like lower('%'||:usuari||'%'))" + 
 			"and (:isNullEstat = true or mon.estat = :estat) " +
 			"and (:isNullTipus = true or mon.tipus = :tipus) " +
-			"and (:isNullEntitat = true or lower(mon.codiEntitat) like lower('%'||:entitat||'%'))")
+			"and (:isNullEntitat = true or lower(mon.codiEntitat) like lower('%'||:entitat||'%')) " +
+			"and (:isNullNumeroRegistre = true or lower(mon.numeroRegistre) like lower('%'||:numeroRegistre||'%')) "
+    )
 	Page<MonitorIntegracioEntity> findByFiltrePaginat(
 			@Param("codiMonitor") String codiMonitor,
 			@Param("isDataNula") boolean isDataNula,
@@ -60,6 +62,8 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
 			@Param("tipus") IntegracioAccioTipusEnumDto tipus,
             @Param("isNullEntitat") boolean isNullEntitat,
             @Param("entitat") String entitat,
+            @Param("isNullNumeroRegistre") boolean isNullNumeroRegistre,
+            @Param("numeroRegistre") String numeroRegistre,
             Pageable pageable);
 
 	@Query(	" 	select count(mon) " + 
@@ -77,6 +81,7 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
             " and (:isNullUsuari = true or lower(mon.codiUsuari) like lower('%'||:usuari||'%'))" +
             " and (:isNullTipus = true or mon.tipus = :tipus) " +
             " and (:isNullEntitat = true or lower(mon.codiEntitat) like lower('%'||:entitat||'%'))" +
+            " and (:isNullNumeroRegistre = true or lower(mon.numeroRegistre) like lower('%'||:numeroRegistre||'%'))" +
 			" group by mon.codi ")
 	public List<Object[]> countErrorsGroupByCodi(
             @Param("isDataNula") boolean isDataNula,
@@ -90,7 +95,9 @@ public interface MonitorIntegracioRepository extends JpaRepository<MonitorIntegr
             @Param("isNullTipus") boolean isNullTipus,
             @Param("tipus") IntegracioAccioTipusEnumDto tipus,
             @Param("isNullEntitat") boolean isNullEntitat,
-            @Param("entitat") String entitat);
+            @Param("entitat") String entitat,
+            @Param("isNullNumeroRegistre") boolean isNullNumeroRegistre,
+            @Param("numeroRegistre") String numeroRegistre);
 
 	@Query(	"select count(mon)" +
 			"from MonitorIntegracioEntity mon " +

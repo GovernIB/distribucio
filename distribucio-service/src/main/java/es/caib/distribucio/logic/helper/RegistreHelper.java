@@ -1497,9 +1497,9 @@ public class RegistreHelper {
 		long t0 = System.currentTimeMillis();
 		String accioDescripcio = "Comunicar ";
 		if (ids.size() == 1) {
-			accioDescripcio += " l'anotació " + ids.get(0).getIdentificador();
+			accioDescripcio += "l'anotació";
 		} else {
-			accioDescripcio +=  ids.size() + " anotacions";
+			accioDescripcio += ids.size() + " anotacions";
 		}
 		accioDescripcio += " al backoffice " + backofficeDesti.getCodi();
 		String usuari = null;
@@ -1585,15 +1585,30 @@ public class RegistreHelper {
                     errorDescripcio = "No s'ha pogut probar la connexió amb el backoffice " + backofficeDesti.getCodi();
                 }
 			}
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_BACKOFFICE,
-					accioDescripcio,
-					usuari,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
+
+            if (ids.size()==1) {
+                String identificador = ids.get(0).getIdentificador();
+                integracioHelper.addAccioError(
+                        IntegracioHelper.INTCODI_BACKOFFICE,
+                        identificador,
+                        accioDescripcio,
+                        usuari,
+                        accioParams,
+                        IntegracioAccioTipusEnumDto.ENVIAMENT,
+                        System.currentTimeMillis() - t0,
+                        errorDescripcio,
+                        ex);
+            } else {
+                integracioHelper.addAccioError(
+                        IntegracioHelper.INTCODI_BACKOFFICE,
+                        accioDescripcio,
+                        usuari,
+                        accioParams,
+                        IntegracioAccioTipusEnumDto.ENVIAMENT,
+                        System.currentTimeMillis() - t0,
+                        errorDescripcio,
+                        ex);
+            }
 			return new SistemaExternException(
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					errorDescripcio,

@@ -122,7 +122,7 @@ function formatSelectEntitat(item) {
             <div class="col-md-3"><dis:inputDate name="dataInici" inline="true" placeholderKey="integracio.list.filtre.dataInici"/></div>
             <div class="col-md-3"><dis:inputDate name="dataFi" inline="true" placeholderKey="integracio.list.filtre.dataFi"/></div>
 			<div class="col-md-3"><dis:inputText name="usuari" inline="true" placeholderKey="integracio.list.filtre.usuari"/></div>
-<%--            <div class="col-md-3"><dis:inputText name="aplicacio" inline="true" placeholderKey="integracio.list.filtre.aplicacio"/></div>--%>
+			<div class="col-md-3"><dis:inputText name="numeroRegistre" inline="true" placeholderKey="integracio.list.filtre.numeroRegistre"/></div>
 			<div class="col-md-4 pull-right">
 				<div class="pull-right">
 					<a href="<c:url value='/integracio'/>/diagnostic" class="btn btn-success" data-toggle="modal" data-maximized="true"><span class="fa fa-th-list"></span> <spring:message code="integracio.boto.diagnostic"/></a>
@@ -168,6 +168,7 @@ function formatSelectEntitat(item) {
 				<th data-col-name="excepcioMessage" data-visible="false"></th>
 				<th data-col-name="excepcioStacktrace" data-visible="false"></th>
 				<th data-col-name="data" data-orderable="true" data-converter="datetime" width="150px"><spring:message code="integracio.list.columna.data"/></th>				
+				<th data-col-name="numeroRegistre" data-orderable="true"><spring:message code="integracio.list.columna.numeroRegistre"/></th>
 				<th data-col-name="descripcio" data-orderable="true"><spring:message code="integracio.list.columna.descripcio"/></th>
 				<th data-col-name="tipus" data-orderable="true"><spring:message code="integracio.list.columna.tipus"/></th>
 				<th data-col-name="codiUsuari" data-orderable="true"><spring:message code="integracio.list.columna.usuari"/></th>

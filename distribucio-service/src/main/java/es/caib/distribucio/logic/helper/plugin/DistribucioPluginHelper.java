@@ -99,7 +99,7 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 		String accioDescripcio = "Creant contenidor pels documents annexos";
 		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("registreNumero", registreNumero);
+//		accioParams.put("registreNumero", registreNumero);
 		accioParams.put("unitatOrganitzativaCodi", unitatOrganitzativaCodi);
 		long t0 = System.currentTimeMillis();
 		try {
@@ -147,7 +147,7 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 		String accioDescripcio = "Guardant document annex a dins el contenidor";
 		String usuariIntegracio = this.getUsuariAutenticat();		
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("registreNumero", registreNumero);
+//		accioParams.put("registreNumero", registreNumero);
 		accioParams.put("unitatOrganitzativaCodi", unitatOrganitzativaCodi);
 		accioParams.put("annexTitol", annex.getTitol());
 		accioParams.put("fitxerNom", annex.getFitxerNom());
@@ -272,13 +272,13 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 	}
 
 	public void arxiuDocumentSetDefinitiu(RegistreAnnexEntity annex) {
-		String accioDescripcio = "Canviant el document \"" + annex.getTitol() + "\" de l'anotació " + annex.getRegistre().getNumero() + " a definitiu";
+		String accioDescripcio = "Canviant el document \"" + annex.getTitol() + "\" a definitiu";
 		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("annexUuid", annex.getFitxerArxiuUuid());
 		accioParams.put("annexTitol", annex.getTitol());
 		accioParams.put("annexFirmesSize", String.valueOf(annex.getFirmes() != null ? annex.getFirmes().size() : 0));
-		accioParams.put("registreNumero", annex.getRegistre().getNumero());
+//		accioParams.put("registreNumero", annex.getRegistre().getNumero());
 		accioParams.put("entitat", annex.getRegistre().getEntitat().getCodi());
 		long t0 = System.currentTimeMillis();
 		try {
@@ -292,7 +292,7 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 					IntegracioAccioTipusEnumDto.ENVIAMENT,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
-			String errorDescripcio = "Error posant com a definitiu un annex per l'anotació " + annex.getRegistre().getNumero();
+			String errorDescripcio = "Error posant com a definitiu un annex";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,
 					annex.getRegistre().getNumero(),
@@ -347,12 +347,14 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 						new IntegracioManager() {
 							public void addAccioOk(
 									String integracioCodi,
+									String registreNumero,
 									String descripcio,
 									String usuariIntegracio,
 									Map<String, String> parametres,
 									long tempsResposta) {
 								integracioHelper.addAccioOk(
 										integracioCodi,
+                                        registreNumero,
 										descripcio,
 										usuariIntegracio,
 										parametres,
@@ -361,6 +363,7 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 							}
 							public void addAccioError(
 									String integracioCodi,
+                                    String registreNumero,
 									String descripcio,
 									String usuariIntegracio,
 									Map<String, String> parametres,
@@ -369,6 +372,7 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 									Throwable throwable) {
 								integracioHelper.addAccioError(
 										integracioCodi,
+                                        registreNumero,
 										descripcio,
 										usuariIntegracio,
 										parametres,

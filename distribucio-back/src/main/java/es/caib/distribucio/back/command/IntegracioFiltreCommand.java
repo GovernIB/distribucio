@@ -29,6 +29,7 @@ public class IntegracioFiltreCommand {
     private Date dataInici;
     private Date dataFi;
 	private String usuari;
+	private String numeroRegistre;
 
 	public static IntegracioFiltreCommand asCommand(IntegracioFiltreDto dto) {
 		IntegracioFiltreCommand command = ConversioTipusHelper.convertir(
