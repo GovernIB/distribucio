@@ -2206,7 +2206,8 @@ public class RegistreServiceImpl implements RegistreService {
 			if (firmaEntity.getGesdocFirmaId() != null) {
 				ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
 				gestioDocumentalHelper.gestioDocumentalGet(
-						firmaEntity.getGesdocFirmaId(), 
+						firmaEntity.getGesdocFirmaId(),
+                        firmaEntity.getFitxerNom(),
 						GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
 						streamAnnexFirma,
 						registre.getNumero());

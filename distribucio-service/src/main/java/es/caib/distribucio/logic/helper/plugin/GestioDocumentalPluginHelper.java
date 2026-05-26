@@ -56,13 +56,15 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 	
 	public void gestioDocumentalGet(
 			String id,
+            String nom,
 			String agrupacio,
 			OutputStream contingutOut,
 			String registreNumero) {
-		String accioDescripcio = "Consultant document a dins la gestió documental";
+		String accioDescripcio = "Consultant document \"" + nom + "\" a dins la gestió documental";
 		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("id", id);
+		accioParams.put("nom", nom);
 		accioParams.put("agrupacio", agrupacio);
 		long t0 = System.currentTimeMillis();
 		try {

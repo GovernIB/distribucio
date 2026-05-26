@@ -942,7 +942,8 @@ public class ContingutHelper {
 					// Copia el contingut dins la gestió documental per no compartir contingut que s'esborrarà en guardar-se a l'Arxiu
 					ByteArrayOutputStream contingutOut = new ByteArrayOutputStream();
 					gestioDocumentalHelper.gestioDocumentalGet(
-							registreAnnex.getGesdocDocumentId(), 
+							registreAnnex.getGesdocDocumentId(),
+                            registreAnnex.getTitol(),
 							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
 							contingutOut,
 							registreOriginal.getNumero());
@@ -983,7 +984,8 @@ public class ContingutHelper {
 						// Copia la firma dins la gestió documental per no compartir contingut que s'esborrarà en guardar-se a l'Arxiu
 						ByteArrayOutputStream contingutOut = new ByteArrayOutputStream();
 						gestioDocumentalHelper.gestioDocumentalGet(
-								firma.getGesdocFirmaId(), 
+								firma.getGesdocFirmaId(),
+                                firma.getFitxerNom(),
 								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
 								contingutOut,
 								registreOriginal.getNumero());

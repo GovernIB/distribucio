@@ -144,7 +144,7 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 			String uuidExpedient,
 			DocumentEniRegistrableDto documentEniRegistrableDto, 
 			String procedimentCodi) {
-		String accioDescripcio = "Guardant document annex a dins el contenidor";
+		String accioDescripcio = "Guardant document annex \"" + annex.getTitol() + "\" a dins el contenidor";
 		String usuariIntegracio = this.getUsuariAutenticat();		
 		Map<String, String> accioParams = new HashMap<String, String>();
 //		accioParams.put("registreNumero", registreNumero);
@@ -217,6 +217,7 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 		try {
 			TemporalThreadStorage.set("numeroRegistre", registreNumero);
 			Document documentDetalls = getPlugin().documentDescarregar(arxiuUuid, versio, ambContingut, ambVersioImprimible);
+            accioDescripcio += " \"" + documentDetalls.getNom() + "\"";
 			TemporalThreadStorage.clear();
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_DISTRIBUCIO,

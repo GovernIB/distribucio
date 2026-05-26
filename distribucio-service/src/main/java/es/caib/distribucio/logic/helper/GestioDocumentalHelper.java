@@ -36,13 +36,15 @@ public class GestioDocumentalHelper {
 
 	public void gestioDocumentalGet(
 			String id,
+			String nom,
 			String agrupacio,
 			OutputStream contingutOut,
 			String registreNumero) {
 		
 		pluginHelper.gestioDocumentalGet(
-				id, 
-				agrupacio, 
+				id,
+                nom,
+				agrupacio,
 				contingutOut,
 				registreNumero);
 	}	

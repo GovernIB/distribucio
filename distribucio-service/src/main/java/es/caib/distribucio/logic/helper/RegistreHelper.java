@@ -604,7 +604,7 @@ public class RegistreHelper {
 				byte[] firmaContingut = null;
 				
 				if (annexFirma.getGesdocFirmaId() != null) {
-					firmaContingut = this.getFirmaContingut(annexFirma.getGesdocFirmaId(),registre.getNumero());
+					firmaContingut = this.getFirmaContingut(annexFirma.getGesdocFirmaId(),annexFirma.getFitxerNom(),registre.getNumero());
 				} else if(firmaDistribucioContingut != null) {
 					firmaContingut = firmaDistribucioContingut;
 				}
@@ -1002,11 +1002,11 @@ public class RegistreHelper {
 					// Si encara no està a l'Arxiu o està en estat esborrany recupera el fitxer de firma de la gesió documental.
 					if (annex.getFitxerArxiuUuid() == null || AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat())) {
 						if (documentContingut != null && "TF04".equals(firma.getTipus())) { // <> TF04 CAdDES dettached (unica firma realment dettached)
-							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId(),registre.getNumero());
+							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId(),firma.getFitxerNom(),registre.getNumero());
 						}
 						
 						if (documentContingut == null) {
-							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId(),registre.getNumero());
+							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId(),firma.getFitxerNom(),registre.getNumero());
 						}
 					} else {
 						// Altrament obté la 1a firma de l'Arxiu
@@ -1196,6 +1196,7 @@ public class RegistreHelper {
 						ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
 						gestioDocumentalHelper.gestioDocumentalGet(
 								registreAnnexEntity.getGesdocDocumentId(),
+                                registreAnnexEntity.getFitxerNom(),
 								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
 								streamAnnex,
 								registre.getNumero());
@@ -1203,7 +1204,7 @@ public class RegistreHelper {
 					}
 					byte[] firmaContingut = null;
 					if (registreAnnexFirmaEntity.getGesdocFirmaId() != null && !registreAnnexFirmaEntity.getGesdocFirmaId().isEmpty()) {
-						firmaContingut = this.getFirmaContingut(registreAnnexFirmaEntity.getGesdocFirmaId(),registre.getNumero());
+						firmaContingut = this.getFirmaContingut(registreAnnexFirmaEntity.getGesdocFirmaId(),registreAnnexFirmaEntity.getFitxerNom(),registre.getNumero());
 					}
 					ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(
 							registreAnnexEntity.getFitxerNom(),
@@ -2210,7 +2211,7 @@ public class RegistreHelper {
 	          !registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF02") && !registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF04")) {
 	    		RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(0);
 	    		if (firmaEntity.getGesdocFirmaId() != null) {
-	    			byte[] firmaContingut = this.getFirmaContingut(firmaEntity.getGesdocFirmaId(),registre.getNumero());
+	    			byte[] firmaContingut = this.getFirmaContingut(firmaEntity.getGesdocFirmaId(),firmaEntity.getFitxerNom(),registre.getNumero());
 	    			fitxerDto.setNom(firmaEntity.getFitxerNom());
 	    			fitxerDto.setContentType(firmaEntity.getTipusMime());
 	    			fitxerDto.setContingut(firmaContingut);
@@ -2219,7 +2220,8 @@ public class RegistreHelper {
 	    		if (registreAnnexEntity.getGesdocDocumentId() != null) {
 	    			ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
 	    			gestioDocumentalHelper.gestioDocumentalGet(
-	    					registreAnnexEntity.getGesdocDocumentId(), 
+	    					registreAnnexEntity.getGesdocDocumentId(),
+                            registreAnnexEntity.getFitxerNom(),
 	    					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
 	    					streamAnnex,
 	    					registre.getNumero());
@@ -2234,7 +2236,8 @@ public class RegistreHelper {
 	    		if (registreAnnexEntity.getGesdocDocumentId() != null) {
 	    			ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
 	    			gestioDocumentalHelper.gestioDocumentalGet(
-	    					registreAnnexEntity.getGesdocDocumentId(), 
+	    					registreAnnexEntity.getGesdocDocumentId(),
+                            registreAnnexEntity.getFitxerNom(),
 	    					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
 	    					streamAnnex,
 	    					registre.getNumero());
@@ -2279,12 +2282,13 @@ public class RegistreHelper {
 	}
 
 	/** Consulta el contingut de la firma en la gestió documental. */
-	private byte[] getFirmaContingut(String gesdocFirmaId, String registreNumero) {
+	private byte[] getFirmaContingut(String gesdocFirmaId, String nom, String registreNumero) {
 		byte[] firmaContingut = null;
 		if (gesdocFirmaId != null) {
 			ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
 			gestioDocumentalHelper.gestioDocumentalGet(
-					gesdocFirmaId, 
+					gesdocFirmaId,
+                    nom,
 					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
 					streamAnnexFirma,
 					registreNumero);

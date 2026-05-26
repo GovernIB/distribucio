@@ -53,7 +53,8 @@ public class SignaturaPluginHelper extends AbstractPluginHelper<SignaturaPlugin>
 				"Prova firma en servidor diagnòstic Distribucio", 
 				imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_firma.pdf")), 
 				"application/pdf", 
-				"TD99");
+				"TD99",
+                null);
 		
 		return resposta != null && resposta.getTipusFirma() != null;
 	}
@@ -63,11 +64,12 @@ public class SignaturaPluginHelper extends AbstractPluginHelper<SignaturaPlugin>
 			String motiu,
 			byte[] contingut, 
 			String mime,
-			String tipusDocumental) {
+			String tipusDocumental,
+            String numeroRegistre) {
 		
 		SignaturaPlugin pluginSignar = this.getPlugin();
 
-		String accioDescripcio = "Firma en servidor de document annex de l'anotació de registre";
+		String accioDescripcio = "Firma en servidor de document annex \"" + nom + "\"";
 		String usuariIntegracio = "";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("nom", nom);
@@ -96,6 +98,7 @@ public class SignaturaPluginHelper extends AbstractPluginHelper<SignaturaPlugin>
 			// PENDENT DE REVISAR COM OBTENIR EL NUMERO DE REGISTRE
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_SIGNATURA,
+                    numeroRegistre,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -108,6 +111,7 @@ public class SignaturaPluginHelper extends AbstractPluginHelper<SignaturaPlugin>
 			log.error(msgError, ex);
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_SIGNATURA,
+                    numeroRegistre,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,

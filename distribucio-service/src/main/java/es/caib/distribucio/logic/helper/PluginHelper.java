@@ -244,14 +244,16 @@ public class PluginHelper {
 			String motiu,
 			byte[] contingut, 
 			String mime,
-			String tipusDocumental) {
+			String tipusDocumental,
+            String numeroRegistre) {
 		return signaturaPluginHelper.signarDocument(
 				id, 
 				nom, 
 				motiu, 
 				contingut, 
 				mime, 
-				tipusDocumental);
+				tipusDocumental,
+                numeroRegistre);
 	}
 
 	public boolean isDadesExternesPluginActiu() {
@@ -322,11 +324,13 @@ public class PluginHelper {
 
 	public void gestioDocumentalGet(
 			String id,
+			String nom,
 			String agrupacio,
 			OutputStream contingutOut,
 			String registreNumero) {
 		gestioDocumentalPluginHelper.gestioDocumentalGet(
-				id, 
+				id,
+                nom,
 				agrupacio, 
 				contingutOut, 
 				registreNumero);

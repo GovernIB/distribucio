@@ -305,7 +305,8 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 						"Prova firma en servidor diagnòstic Distribucio", 
 						imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_firma.pdf")), 
 						"application/pdf", 
-						"TD99");
+						"TD99",
+                        null);
 				accioDescripcio = "Comunicació amb el plugin de firma en servidor correcta";
 				diagnostic.setProva(accioDescripcio);
 				diagnostic.setCorrecte(true); 

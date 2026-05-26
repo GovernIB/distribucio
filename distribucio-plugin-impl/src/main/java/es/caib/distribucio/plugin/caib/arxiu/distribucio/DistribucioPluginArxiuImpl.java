@@ -1099,6 +1099,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					arxiuUuid,
 					versio,
 					ambContingut);
+            accioDescripcio += " \"" + documentDetalls.getNom() + "\"";
 			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			integracioAddAccioOk(
 					integracioArxiuCodi,

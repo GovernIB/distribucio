@@ -558,7 +558,8 @@ public class ReglaHelper {
 			if (annex.getGesdocDocumentId() != null) {
 				ByteArrayOutputStream baos_doc = new ByteArrayOutputStream();
 				gestioDocumentalHelper.gestioDocumentalGet(
-					annex.getGesdocDocumentId(), 
+					annex.getGesdocDocumentId(),
+                    annex.getFitxerNom(),
 					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
 					baos_doc,
 					anotacio.getNumero());
