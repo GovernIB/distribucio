@@ -164,10 +164,9 @@
 </form:form>
 
 <script id="botonsTemplate" type="text/x-jsrender">
+<c:if test="${isRolActualAdministrador}">
     <div class="text-right">
-        <c:if test="${isRolActualAdministrador}">
-            <a class="btn btn-default" href="backoffice/new" data-toggle="modal" data-datatable-id="backoffice"><span class="fa fa-plus"></span>&nbsp;<spring:message code="backoffice.boto.nou"/></a>
-        </c:if>
+        <a class="btn btn-default" href="backoffice/new" data-toggle="modal" data-datatable-id="backoffice"><span class="fa fa-plus"></span>&nbsp;<spring:message code="backoffice.boto.nou"/></a>
 
         <div class="btn-group">
             <button id="seleccioAll" title="<spring:message code="bustia.pendent.contingut.seleccio.tots"/>" class="btn btn-default"><span class="fa fa-check-square-o"></span></button>
@@ -184,6 +183,7 @@
             </ul>
         </div>
     </div>
+</c:if>
 </script>
 
 	<table
@@ -193,7 +193,7 @@
 <%--		data-info-type="search" --%>
 		class="table table-striped table-bordered"
         data-botons-template="#botonsTemplate"
-        data-selection-enabled="true"
+        data-selection-enabled="${isRolActualAdministrador}"
         data-rowhref-toggle="modal"
         data-refresh-tancar="true"
 		data-state-save="true"
