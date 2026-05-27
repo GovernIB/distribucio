@@ -2,6 +2,7 @@ package es.caib.distribucio.logic.service;
 
 import java.util.List;
 
+import es.caib.distribucio.logic.intf.dto.BackofficeFiltreDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -190,6 +191,7 @@ public class BackofficeServiceImpl implements BackofficeService {
 	@Override
 	public PaginaDto<BackofficeDto> findByEntitatPaginat(
 			Long entitatId,
+            BackofficeFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
@@ -197,11 +199,13 @@ public class BackofficeServiceImpl implements BackofficeService {
 				false,
 				false);
 
-		Page<BackofficeEntity> page = backofficeRepository.findByEntitat(
+		Page<BackofficeEntity> page = backofficeRepository.findByFiltrePaginat(
 				entitat,
-				paginacioParams.getFiltre() == null,
-				paginacioParams.getFiltre(),
-				paginacioHelper.toSpringDataPageable(paginacioParams));
+                filtre.getCodi() == null, filtre.getCodi(),
+                filtre.getNom() == null, filtre.getNom(),
+                filtre.getUrl() == null, filtre.getUrl(),
+                filtre.getTipus() == null, filtre.getTipus(),
+                paginacioHelper.toSpringDataPageable(paginacioParams));
 		
 		
 		PaginaDto<BackofficeDto> pageDto = paginacioHelper.toPaginaDto(
@@ -230,8 +234,26 @@ public class BackofficeServiceImpl implements BackofficeService {
 				BackofficeDto.class);
 	}
 
-	
-	
-	private static final Logger logger = LoggerFactory.getLogger(BackofficeServiceImpl.class);	
+    @Override
+    public List<Long> findBackofficeIds(Long entitatId, BackofficeFiltreDto filtre) throws NotFoundException {
+        logger.debug("Cercant els backoffice segons el filtre ("
+                + "entitatId=" + entitatId + ", "
+                + "filtre=" + filtre + ")");
+        EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+                entitatId,
+                false,
+                true,
+                false);
+
+        return backofficeRepository.findIdsByFiltre(
+                entitat,
+                filtre.getCodi() == null, filtre.getCodi(),
+                filtre.getNom() == null, filtre.getNom(),
+                filtre.getUrl() == null, filtre.getUrl(),
+                filtre.getTipus() == null, filtre.getTipus()
+        );
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(BackofficeServiceImpl.class);
 	
 }

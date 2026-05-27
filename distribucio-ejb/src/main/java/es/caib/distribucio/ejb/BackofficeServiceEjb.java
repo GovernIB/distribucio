@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.BackofficeDto;
+import es.caib.distribucio.logic.intf.dto.BackofficeFiltreDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
@@ -78,11 +79,24 @@ public class BackofficeServiceEjb extends AbstractServiceEjb<BackofficeService> 
 	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
 	public PaginaDto<BackofficeDto> findByEntitatPaginat(
 			Long entitatId,
+            BackofficeFiltreDto filtre,
 			PaginacioParamsDto paginacioParams)
 			throws NotFoundException {
 		return delegateService.findByEntitatPaginat(
-				entitatId, 
+				entitatId,
+                filtre,
 				paginacioParams);
+	}
+
+	@Override
+	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
+	public List<Long> findBackofficeIds(
+			Long entitatId,
+            BackofficeFiltreDto filtre)
+			throws NotFoundException {
+		return delegateService.findBackofficeIds(
+				entitatId,
+                filtre);
 	}
 
 	@Override
