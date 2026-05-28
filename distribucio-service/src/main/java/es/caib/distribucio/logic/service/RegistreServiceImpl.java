@@ -2271,8 +2271,8 @@ public class RegistreServiceImpl implements RegistreService {
 								zipItems,
 								executor,
 								errors,
-								ambVersioImprimible);
-						
+								ambVersioImprimible && registreHelper.potGenerarVersioImprimible(annex));
+
 						wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
 						executor.execute(wrappedRunnable);					}
 				}
