@@ -817,6 +817,7 @@ li[id^="anotacio_"] {
                     </c:if>
 					
 					<!-- ENVIAR VIA EMAIL -->
+                    <c:if test="${registre.potModificar}">
 					<c:choose>
 						<c:when test="${registre.procesEstat == 'ARXIU_PENDENT'} && ${!registre.reintentsEsgotat}">
 							<li class="disabled"><a id="accioEnviarEmail" href="#"><span class=""></span>&nbsp;&nbsp;<spring:message code="bustia.pendent.accio.enviarViaEmail"/> ...</a></li>
@@ -830,6 +831,7 @@ li[id^="anotacio_"] {
 							</li>
 						</c:otherwise>
 					</c:choose>
+                    </c:if>
 					
 					<%-- REENVIAR --%>
                     <c:if test="${registre.potModificar}">

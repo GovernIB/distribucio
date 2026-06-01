@@ -339,7 +339,7 @@ public class RegistreAdminController extends BaseAdminController {
 				seleccio.add(id);
 			}
 		} else {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 			seleccio.addAll(
 					registreService.findRegistreIds(

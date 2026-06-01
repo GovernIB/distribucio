@@ -165,14 +165,14 @@
 
 				</script>
 			</th>
-            <th data-col-name="comu" data-template="#cellComuTemplate" data-orderable="false">
+            <th data-col-name="comu" data-template="#cellComuTemplate" data-orderable="true">
                 <spring:message code="servei.list.columna.comu"/>
                 <script id="cellComuTemplate" type="text/x-jsrender">
                     {{if comu}}<span class="fa fa-check"></span>{{/if}}
                 </script>
             </th>
 			<th data-col-name="estat" data-orderable="true"><spring:message code="servei.list.columna.estat"/></th>
-            <th data-col-name="codi" data-orderable="false" data-template="#cellAccionsContingutTemplate">
+            <th data-col-name="codi" data-orderable="false" data-visible="${isRolActualAdministrador}" data-template="#cellAccionsContingutTemplate">
                 <script id="cellAccionsContingutTemplate" type="text/x-jsrender">
                     <div id="div-btn-accions" class="dropdown">
                         <button id="btn-accions" class="btn btn-primary" data-toggle="dropdown" style="display:flex;">

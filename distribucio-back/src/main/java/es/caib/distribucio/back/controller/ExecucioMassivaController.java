@@ -1276,6 +1276,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
         List<RegistreDto> registresModificables = registresSeleccionats;
         switch (tipus) {
             case ENVIAR_VIA_EMAIL:
+            case DESCARREGAR:
                 break;
             default:
                 registresModificables = registresSeleccionats.stream()

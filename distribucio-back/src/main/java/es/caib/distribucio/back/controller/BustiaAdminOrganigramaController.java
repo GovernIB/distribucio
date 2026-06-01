@@ -90,7 +90,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 			BindingResult bindingResult,
 			Model model,
 			@RequestParam(value = "accio", required = false) String accio) {
-		getEntitatActualComprovantPermisAdmin(request);
+        getEntitatActualComprovantPermisAdminLectura(request);
 		if ("netejar".equals(accio)) {
 			RequestSessionHelper.esborrarObjecteSessio(
 					request,
@@ -407,7 +407,7 @@ public class BustiaAdminOrganigramaController extends BaseAdminController {
 	private void omplirModel(
 			HttpServletRequest request,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 
         BustiaFiltreCommand bustiaFiltreOrganigramaCommand = getFiltreOrganigramaCommand(request);
 		

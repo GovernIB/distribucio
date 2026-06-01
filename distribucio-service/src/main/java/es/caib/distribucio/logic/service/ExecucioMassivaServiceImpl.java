@@ -397,7 +397,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
             model.addAttribute("midaMaxima", maxSize);
         }
         if (!enabled) {
-            errors.add("La acción masiva no està habilitada");
+            errors.add(messageHelper.getMessage("registre.annex.descarregar.zip.disabled", new Object[] {}));
         }
 
         model.addAttribute("errors", errors);
