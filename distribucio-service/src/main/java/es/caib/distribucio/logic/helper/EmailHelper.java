@@ -226,7 +226,7 @@ public class EmailHelper {
             String mssg = "L'informem de que la tasca programada amb data "
                     + new Date() + " de " + em.getContinguts().size() + " anotacions ha finalitzat i té disponible durant "
                     + maxDies + " dies el document per a la seva descàrrega \n" +
-                    "Enllaç al document: " + configHelper.getConfig("es.caib.distribucio.app.base.url") + "/massiva/descarregar/" + em.getNomDocument() + "/0 \n" +
+                    "Enllaç al document: " + configHelper.getConfig("es.caib.distribucio.app.base.url") + "/massiva/descarregar/" + em.getId() + "/0 \n" +
                     "Errors: " + errors.size();
 
             missatge.setText(mssg);
