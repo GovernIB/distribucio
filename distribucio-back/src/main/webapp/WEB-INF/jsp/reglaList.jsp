@@ -399,7 +399,7 @@
 		data-toggle="datatable" 
 		data-url="<c:url value="/regla/datatable"/>" 
 		data-filter="#reglaFiltreCommand" 
-		data-drag-enabled="${isRolActualAdministrador}"  
+		data-drag-enabled="${isRolActualAdministrador}"
 		data-default-order="0" 
 		data-default-dir="asc" 
 		class="table table-striped table-bordered" 

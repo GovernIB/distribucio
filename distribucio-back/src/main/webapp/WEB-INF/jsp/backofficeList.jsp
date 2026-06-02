@@ -121,6 +121,8 @@
             }
 
             if (doAction) {
+                $('.loading').fadeIn();
+                $('#contingut-missatges').hide();
                 $.get(
                     "backoffice/accioMassiva",
                     {accio: accio},
@@ -133,6 +135,12 @@
 	</script>
 </head>
 <body>
+
+<div class="loading" style="display: none">
+    <div style="display: flex; justify-content: center; margin-bottom: 15px">
+        <span class="fa fa-circle-o-notch fa-2x fa-spin fa-fw"></span>
+    </div>
+</div>
 
 <form:form action="" method="post" cssClass="well" modelAttribute="backofficeFiltreCommand">
     <div class="row">

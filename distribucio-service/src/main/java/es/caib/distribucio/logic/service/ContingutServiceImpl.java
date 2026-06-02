@@ -822,7 +822,8 @@ public class ContingutServiceImpl implements ContingutService {
             List<UnitatOrganitzativaEntity> uoSuperiorEntityList = unitatOrganitzativaRepository.findAllByCodi(uoSuperior);
             for(UnitatOrganitzativaEntity uoSuperiorEntity :uoSuperiorEntityList) {
 				EntitatEntity entitat = entitatRepository.findByCodiDir3(uoSuperiorEntity.getCodiDir3Entitat());
-				codisUosSuperiors.addAll(bustiaHelper.getCodisUnitatsSuperiors(entitat, uoSuperior)); 
+                if (entitat != null)
+				    codisUosSuperiors.addAll(bustiaHelper.getCodisUnitatsSuperiors(entitat, uoSuperior));
 			}
 		} else {
 			// no es filtra per UO

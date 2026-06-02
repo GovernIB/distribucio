@@ -183,6 +183,7 @@ button#filtrar {
 }
 
 .fila-desactivada.selected {
+    color: inherit !important;
 	background-color: #f9f9f9 !important;
 }
 
@@ -190,6 +191,17 @@ button#filtrar {
 .dropdown-menu > li.disabled > a:hover {
     pointer-events: none;
     cursor: not-allowed;
+}
+
+tr.fila-desactivada td:not(:last-child) {
+    pointer-events: none;
+    cursor: not-allowed;
+}
+tr.fila-desactivada .fa,
+tr.fila-desactivada button,
+tr.fila-desactivada a {
+    pointer-events: auto;
+    cursor: pointer;
 }
 </style>
 <script>
@@ -331,26 +343,16 @@ $(document).ready(function() {
 				if (isReactivat) {
 					$(this).css('background-color', '#c3c2c1');
 				}
-				
-				<%--var isPendentExecucioMassiva = $('#taulaDades').dataTable().api().row($(this)).data()['pendentExecucioMassiva'];--%>
-				<%--if (isPendentExecucioMassiva) {--%>
-				<%--	const $row = $(this);--%>
-				<%--	--%>
-				<%--	// Desactivam la fila--%>
-				<%--	$row.addClass('fila-desactivada');--%>
 
-				<%--	// Desactivam boyo i enllac--%>
-				<%--	$row.find('button, a').attr('disabled', true).css('pointer-events', 'none');--%>
+                var isPendentExecucioMassiva = $('#taulaDades').dataTable().api().row($(this)).data()['pendentExecucioMassiva'];
+                if (isPendentExecucioMassiva) {
+                    const $row = $(this);
+                    $row.addClass('fila-desactivada');
 
-				<%--	var title = "<spring:message code="accio.massiva.icona.pendent"/>";--%>
-				<%--	--%>
-				<%--	// Afegir overlay i rellotge--%>
-				<%--	if ($row.find('.overlay-desactivada').length === 0) {--%>
-				<%--	  $row.append('<div class="overlay-desactivada"> ' +--%>
-				<%--					'<span class="fa fa-clock-o icona-rellotge" title="' + title + '"></span> ' +--%>
-				<%--				   '</div>');	--%>
-				<%--	}--%>
-				<%--}--%>
+                    <%--var title = "<spring:message code="accio.massiva.icona.pendent"/>";--%>
+                    <%--$row.find('.fa-square-o').after($('<span class="fa fa-square" title="' + title + '"/>'));--%>
+                    $row.find('.fa-square-o').remove();
+                }
 			}
 		});
 		

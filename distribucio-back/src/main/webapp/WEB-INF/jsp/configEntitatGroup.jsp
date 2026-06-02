@@ -157,7 +157,7 @@
 		var iconConfig = '#' + keyReplaced.id + '_button_config i';
 		$(iconConfig).addClass('fa-circle-o-notch');
 		$(iconConfig).addClass('fa-spin');
-		debugger;
+		// debugger;
     	var configKey = keyReplaced.id.replaceAll('_', '.').replaceAll('..','_');
     	var inputEvent = document.getElementById(keyReplaced.id);
     	var buttonTrash = document.getElementById(keyReplaced.id + '_button_trash');
@@ -210,6 +210,8 @@
 		    		$(iconConfig).removeClass('fa-circle-o-notch');
 		    		$(iconConfig).removeClass('fa-spin');
 		    		if (nameEvent == 'trash') {
+                        $('#' + keyReplaced.id).val(null);
+                        $('#' + keyReplaced.id).prop('checked', false);
 		        		$(iconConfig).removeClass('fa-save');
 		        		$(iconConfig).addClass('fa-pencil');
 		        		$(iconSave).removeClass('fa-save');
