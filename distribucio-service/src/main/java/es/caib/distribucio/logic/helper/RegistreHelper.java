@@ -1990,6 +1990,7 @@ public class RegistreHelper {
 		String gestioDocumentalId = null;
 		if (registreAnnex.getFitxerContingut() != null && isRegistreArxiuPendent) {
 			gestioDocumentalId = gestioDocumentalHelper.gestioDocumentalCreate(
+                    registreAnnex.getFitxerNom(),
 					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
 					registreAnnex.getFitxerContingut(),
 					registre.getNumero());
@@ -2051,6 +2052,7 @@ public class RegistreHelper {
 		RegistreEntity registre = annex.getRegistre();
 		if (firma.getContingut() != null) {
 			gestioDocumentalId = gestioDocumentalHelper.gestioDocumentalCreate(
+                    annex.getFitxerNom(),
 					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP,
 					firma.getContingut(),
 					registre.getNumero());

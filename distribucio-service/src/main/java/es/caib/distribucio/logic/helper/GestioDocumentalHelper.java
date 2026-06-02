@@ -50,22 +50,28 @@ public class GestioDocumentalHelper {
 	}	
 
 	public String gestioDocumentalCreate(
+			String nom,
 			String agrupacio,
 			byte[] contingut,
 			String registreNumero) {
 		
 		return pluginHelper.gestioDocumentalCreate(
-				agrupacio, 
+                nom,
+				agrupacio,
 				contingut,
-				registreNumero);	
+				registreNumero);
 	}
 
 	public void gestioDocumentalDelete(
 			String id,
-			String agrupacio) {
+			String nom,
+			String agrupacio,
+			String registreNumero) {
 		pluginHelper.gestioDocumentalDelete(
-				id, 
-				agrupacio);
+				id,
+                nom,
+				agrupacio,
+                registreNumero);
 	}
 
 	/** Esborra els documents temporals. Programa un esborrat en el cas que el commit vagi bé, si no els temporals no s'han d'esborrar. 
@@ -128,7 +134,7 @@ public class GestioDocumentalHelper {
 				for (String identificador : identificadors.get(agrupacio)) {
 					logger.debug("Esborrar arxiu temporal agrupacio=" + agrupacio + ", identificador=" + identificador);
 					try {
-						gestioDocumentalDelete(identificador, agrupacio);
+						gestioDocumentalDelete(identificador, null, agrupacio, null);
 					} catch(Exception e) {
 						logger.error("Error esborrant l'annex amb id " + identificador + " i agrupacio " + agrupacio + " del gestor documental: " + e.getMessage(), e);
 					}

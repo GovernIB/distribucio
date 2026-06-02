@@ -949,6 +949,7 @@ public class ContingutHelper {
 							registreOriginal.getNumero());
 					byte[] contingut = contingutOut.toByteArray();
 					gestioDocumentalId = gestioDocumentalHelper.gestioDocumentalCreate(
+                            registreAnnex.getFitxerNom(),
 							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
 							contingut,
 							registreOriginal.getNumero());
@@ -991,6 +992,7 @@ public class ContingutHelper {
 								registreOriginal.getNumero());
 						byte[] contingut = contingutOut.toByteArray();
 						gestioDocumentalFirmaId = gestioDocumentalHelper.gestioDocumentalCreate(
+                                firma.getFitxerNom(),
 								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
 								contingut,
 								registreOriginal.getNumero());

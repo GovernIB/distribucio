@@ -49,8 +49,8 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 
 	@Override
 	public boolean diagnosticar(Map<String, IntegracioDiagnostic> diagnostics) throws Exception {
-		var id = gestioDocumentalCreate(GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, new byte[0], null);
-		gestioDocumentalDelete(id, GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP);
+		var id = gestioDocumentalCreate("diagnostic_gestor_documental", GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, new byte[0], null);
+		gestioDocumentalDelete(id, "diagnostic_gestor_documental", GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, null);
 		return true;
 	}
 	
@@ -104,10 +104,11 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 	}
 
 	public String gestioDocumentalCreate(
+            String nom,
 			String agrupacio,
 			byte[] contingut,
 			String registreNumero) {
-		String accioDescripcio = "Creant nou document a dins la gestió documental";
+		String accioDescripcio = "Creant nou document \"" + nom + "\" a dins la gestió documental";
 		String usuariIntegracio = this.getUsuariAutenticat();		
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("agrupacio", agrupacio);
@@ -154,8 +155,10 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 
 	public void gestioDocumentalDelete(
 			String id,
-			String agrupacio) {
-		String accioDescripcio = "Esborrant document a dins la gestió documental";
+            String nom,
+			String agrupacio,
+            String registreNumero) {
+		String accioDescripcio = "Esborrant document \"" + nom + "\" a dins la gestió documental";
 		String usuariIntegracio = this.getUsuariAutenticat();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("id", id);
@@ -170,6 +173,7 @@ public class GestioDocumentalPluginHelper extends AbstractPluginHelper<GestioDoc
 			// PENDENT DE REVISAR COM OBTENIR EL NUMERO DE REGISTRE
 			integracioHelper.addAccioOk(
 					IntegracioHelper.INTCODI_GESDOC,
+                    registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,

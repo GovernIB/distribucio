@@ -366,8 +366,8 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 
 	private void provaGestioDocumental() {
 		// PENDENT DE REVISAR COM OBTENIR EL NUMERO DE REGISTRE
-		String indenti = pluginHelper.gestioDocumentalCreate(GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, new byte[0], "");
-		pluginHelper.gestioDocumentalDelete(indenti, GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP);
+		String indenti = pluginHelper.gestioDocumentalCreate("diagnostic_gestor_documental", GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, new byte[0], null);
+		pluginHelper.gestioDocumentalDelete(indenti, "diagnostic_gestor_documental", GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, null);
 	}
 	
 	public static byte[] imputAByte(InputStream input) throws IOException

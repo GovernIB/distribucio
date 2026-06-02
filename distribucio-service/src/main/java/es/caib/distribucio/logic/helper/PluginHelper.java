@@ -337,17 +337,19 @@ public class PluginHelper {
 	}
 
 	public String gestioDocumentalCreate(
+            String nom,
 			String agrupacio,
 			byte[] contingut,
 			String registreNumero) {
 		return gestioDocumentalPluginHelper.gestioDocumentalCreate(
+                nom,
 				agrupacio, 
 				contingut, 
 				registreNumero);
 	}
 
-	public void gestioDocumentalDelete(String id, String agrupacio) {
-		gestioDocumentalPluginHelper.gestioDocumentalDelete(id, agrupacio);
+	public void gestioDocumentalDelete(String id, String nom, String agrupacio, String registreNumero) {
+		gestioDocumentalPluginHelper.gestioDocumentalDelete(id, nom, agrupacio, registreNumero);
 	}
 
 	public void resetPlugins() {
