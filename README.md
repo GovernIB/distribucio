@@ -30,7 +30,7 @@ Per projectes amb Java 7:
 >- [distribucio-rest-client-0.9.51](https://github.com/GovernIB/maven/tree/gh-pages/maven/es/caib/distribucio/distribucio-rest-client/0.9.51): Client REST per a backoffices de Distribucio.
 
 Per projectes amb Java 11:
->- [distribucio-backoffice-utils-1.0.1](https://github.com/GovernIB/maven/tree/gh-pages/maven/es/caib/distribucio/distribucio-backoffice-utils/1.0.1): Llibreria d'utilitats per a backoffices de Distribucio.
+>- [distribucio-backoffice-utils-1.0.8](https://github.com/GovernIB/maven/tree/gh-pages/maven/es/caib/distribucio/distribucio-backoffice-utils/1.0.8): Llibreria d'utilitats per a backoffices de Distribucio.
 >- [distribucio-rest-client-1.0.7](https://github.com/GovernIB/maven/tree/gh-pages/maven/es/caib/distribucio/distribucio-rest-client/1.0.7): Client REST per a backoffices de Distribucio.
 
 
