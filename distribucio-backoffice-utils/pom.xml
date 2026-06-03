@@ -5,10 +5,10 @@
 	<parent>
 		<groupId>es.caib.distribucio</groupId>
 		<artifactId>distribucio</artifactId>
-		<version>1.0.8.1</version>
+		<version>1.0.8</version>
 	</parent>
 	<artifactId>distribucio-backoffice-utils</artifactId>
-	<version>1.0.8.1</version>
+	<version>1.0.8</version>
 	<dependencies>
 		<dependency>
 			<groupId>javax.xml.ws</groupId>
@@ -97,8 +97,11 @@
 			-->
 			<!-- Javadoc 
 			<plugin>
-				<opId>org.apache.maven.plugins</opId>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+			        <doclint>none</doclint>
+    			</configuration>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
