@@ -11,7 +11,6 @@
             let div = $(e.currentTarget).parent().parent().next();
             div.empty();
             let span = $(e.currentTarget).find("span");
-            console.log("div", div)
             if ($(div).is(":visible")) {
                 span.removeClass("fa-caret-up");
                 span.addClass("fa-caret-down");
