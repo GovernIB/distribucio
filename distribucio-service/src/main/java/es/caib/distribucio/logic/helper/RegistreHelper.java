@@ -2147,12 +2147,24 @@ public class RegistreHelper {
 	    RegistreEntity registre = registreAnnexEntity.getRegistre();
 	    FitxerDto fitxerDto = new FitxerDto();
 	    String titol = registreAnnexEntity.getFitxerNom().replace(".pdf", "_imprimible.pdf");
-	    if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
+
+        String imprimibleUrl = configHelper.getConfig("es.caib.distribucio.pluginsib.arxiu.caib.conversio.imprimible.url");
+        boolean endsWithUuid = imprimibleUrl.endsWith("/uuid") || imprimibleUrl.endsWith("/uuid/");
+        if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
 	    	if (this.potGenerarVersioImprimible(registreAnnexEntity)) {
 	    		try {
 	    			TemporalThreadStorage.set("numeroRegistre", registre.getNumero());
-	    			fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid(), titol);
+	    			fitxerDto = pluginHelper.arxiuDocumentImprimible(
+                            (endsWithUuid ?"":"/uuid/") +
+                            registreAnnexEntity.getFitxerArxiuUuid(), titol);
 	    		} catch (Exception ex) {
+                    if (!endsWithUuid) {
+                        try {
+                            return pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFirmaCsv(), titol);
+                        } catch (Exception e) {
+                            throw new Exception("Error no controlat consultant la versió imprimible: " + e.getMessage());
+                        }
+                    }
 	    			throw new Exception("Error no controlat consultant la versió imprimible: " + ex.getMessage());
 	    		}
 	    	} else {
