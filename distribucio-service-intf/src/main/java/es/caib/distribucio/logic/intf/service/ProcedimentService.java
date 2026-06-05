@@ -31,7 +31,7 @@ public interface ProcedimentService {
      * @throws Exception
      *
      */
-    public void findAndUpdateProcediment(Long entitatId, String procedimentCodi) throws Exception;
+    public ProcedimentDto findAndUpdateProcediment(Long entitatId, String procedimentCodi) throws Exception;
 
 	/** 
 	 * Mètode per actualitzar la llista de procediments disponibles.

@@ -230,8 +230,8 @@ $(document).ready(function() {
 					const $row = $(this);
 					$row.addClass('fila-desactivada');
 
-                    <%--var title = "<spring:message code="accio.massiva.icona.pendent"/>";--%>
-                    <%--$row.find('.fa-square-o').after($('<span class="fa fa-square" title="' + title + '"/>'));--%>
+                    var title = "<spring:message code="accio.massiva.icona.pendent"/>";
+                    $row.find('.fa-square-o').after($('<div class="fa fa-clock-o text-warning" title="' + title + '" onclick="event.stopPropagation();"/>'));
                     $row.find('.fa-square-o').remove();
 				}
 			}

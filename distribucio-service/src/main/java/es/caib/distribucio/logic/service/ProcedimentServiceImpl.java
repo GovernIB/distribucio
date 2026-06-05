@@ -98,7 +98,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 
     @Override
     @Transactional
-    public void findAndUpdateProcediment(Long entitatId, String procedimentCodi) throws Exception {
+    public ProcedimentDto findAndUpdateProcediment(Long entitatId, String procedimentCodi) throws Exception {
         EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
 
         Procediment procediment = null;
@@ -129,16 +129,11 @@ public class ProcedimentServiceImpl implements ProcedimentService{
             );
         }
 
-        // Crea un Map amb els procediments de Distribucio per codi
-        Map<String, Procediment> procedimentMap = new HashMap<String, Procediment>();
-        procedimentMap.put(procediment.getCodigo(), procediment);
-
-        // Deshabilita els procediments que no hagi retornat Distribucio
-        procedimentHelper.actualtizarProcedimentsNoVigents(entitat, procedimentMap);
-
         // Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
         Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
-        procedimentHelper.actualitzaProcediment(procediment, unitatsOrganitzatives, entitat);
+        ProcedimentDto procedimentDto = procedimentHelper.actualitzaProcediment(procediment, unitatsOrganitzatives, entitat);
+        
+        return procedimentDto;
     }
 
 	/** Mètode per trobar i actualitzar els procediments. Es pot fer manualment o des de la tasca

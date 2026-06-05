@@ -97,7 +97,7 @@ public class ServeiServiceImpl implements ServeiService{
 
     @Override
     @Transactional
-    public void findAndUpdateServei(Long entitatId, String serveiCodi) throws Exception {
+    public ServeiDto findAndUpdateServei(Long entitatId, String serveiCodi) throws Exception {
         EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
 
         Servei servei = null;
@@ -128,16 +128,9 @@ public class ServeiServiceImpl implements ServeiService{
             );
         }
 
-        // Crea un Map amb els serveis de Distribucio per codi
-        Map<String, Servei> serveiMap = new HashMap<String, Servei>();
-        serveiMap.put(servei.getCodigo(), servei);
-
-        // Deshabilita els serveis que no hagi retornat Distribucio
-        serveiHelper.actualtizarServeisNoVigents(entitat, serveiMap);
-
-        // Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
-        Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
-        serveiHelper.actualitzaServei(servei, unitatsOrganitzatives, entitat);
+        ServeiDto serveiDto = serveiHelper.actualitzaServei(servei, new HashMap<String, UnitatOrganitzativaEntity>(), entitat);
+        
+        return serveiDto;
     }
 
 	/** Mètode per trobar i actualitzar els serveis. Es pot fer manualment o des de la tasca

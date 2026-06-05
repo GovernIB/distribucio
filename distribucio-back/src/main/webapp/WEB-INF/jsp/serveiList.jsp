@@ -182,7 +182,7 @@
                         <ul class="dropdown-menu dropdown-center-high menu-items-not-selected">
                             <li>
                                 <a href="<c:url value="/servei/{{:codi}}/actualitzar"/>">
-                                    <span class="fa fa-download"></span> <spring:message code="servei.taula.actualitzar"/>
+                                    <span class="fa fa-refresh"></span> <spring:message code="servei.taula.actualitzar.servei"/>
                                 </a>
                             </li>
                         </ul>

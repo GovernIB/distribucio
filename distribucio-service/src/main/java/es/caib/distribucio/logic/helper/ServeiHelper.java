@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.ServeiEstatEnumDto;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.ServeiEntity;
@@ -41,6 +42,8 @@ public class ServeiHelper {
 
 	@Resource
 	private PluginHelper pluginHelper;
+	@Autowired
+	private ConversioTipusHelper conversioTipusHelper;
 	
 	/** Consutla la llista de serveis de BBDD i marca com a extingits els que no hagi retornat la consulta a Rolsac.
 	 * 
@@ -92,7 +95,7 @@ public class ServeiHelper {
 	 * 			La entitat per a actualitzar el servei
 	 */
 	@Transactional( propagation = Propagation.REQUIRES_NEW)
-	public void actualitzaServei(
+	public ServeiDto actualitzaServei(
 			Servei servei, 
 			Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives,
 			EntitatEntity entitatEntity) {
@@ -101,6 +104,7 @@ public class ServeiHelper {
 		msgInfo = servei.getCodigoSIA() + " - " + servei.getNombre();
 		logger.info(msgInfo);
 
+		ServeiEntity serveiEntity = null;
 		try {
 			// Determina la unitat organitzativa
 			UnitatOrganitzativaEntity unitatOrganitzativa = this.resoldreUnitatOrganitzativa(
@@ -108,7 +112,7 @@ public class ServeiHelper {
 					servei,
 					entitatEntity.getCodiDir3());		
 			// Consulta el servei a la BBDD
-			ServeiEntity serveiEntity = serveiRepository.findByCodi(entitatEntity.getId(), servei.getCodigo());
+			serveiEntity = serveiRepository.findByCodi(entitatEntity.getId(), servei.getCodigo());
 			if (serveiEntity == null) {
 				// Crea el nou servei
 				serveiEntity = ServeiEntity.getBuilder(
@@ -156,7 +160,10 @@ public class ServeiHelper {
 			}
 		} catch(Exception e) {
 			logger.error("Error actualitzant el servei: " + e.toString());		
-		}		
+		}
+		return conversioTipusHelper.convertir(
+				serveiEntity, 
+				ServeiDto.class);
 	}
 
 	

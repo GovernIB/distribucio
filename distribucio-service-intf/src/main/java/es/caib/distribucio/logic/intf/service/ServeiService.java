@@ -31,7 +31,7 @@ public interface ServeiService {
      * @throws Exception
      *
      */
-    public void findAndUpdateServei(Long entitatId, String serveiCodi) throws Exception;
+    public ServeiDto findAndUpdateServei(Long entitatId, String serveiCodi) throws Exception;
 
 	/**
 	 * Mètode per actualitzar la llista de serveis disponibles.

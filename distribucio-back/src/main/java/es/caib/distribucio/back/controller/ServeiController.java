@@ -1,5 +1,7 @@
 package es.caib.distribucio.back.controller;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -10,7 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.caib.distribucio.back.command.ServeiFiltreCommand;
 import es.caib.distribucio.back.helper.DatatablesHelper;
@@ -18,10 +24,9 @@ import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 import es.caib.distribucio.logic.intf.service.ServeiService;
-
-import java.io.IOException;
 
 /**
  * Controlador per al manteniment dels serveis.
@@ -169,13 +174,14 @@ public class ServeiController extends BaseAdminController{
             @PathVariable String serveiCodi) throws IOException {
         try {
             EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
-            serveiService.findAndUpdateServei(entitatActual.getId(), serveiCodi);
+            ServeiDto servei = serveiService.findAndUpdateServei(entitatActual.getId(), serveiCodi);
 
             MissatgesHelper.success(
                     request,
                     getMessage(
                             request,
-                            "servei.controller.actualitzar.ok"));
+                            "servei.controller.actualitzar.servei.ok",
+                            new Object[] {servei.getCodiSia(), servei.getNom()}));
         } catch (Exception e) {
             String errMsg = getMessage(
                     request,

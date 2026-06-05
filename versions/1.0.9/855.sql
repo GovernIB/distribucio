@@ -1,3 +1,6 @@
+-- #855 Afegir columna i filtre de número de registre al monitor
+
+-- Afegeix la columna al monitor
 ALTER TABLE dis_mon_int ADD numero_registre VARCHAR(1024);
 
 -- SELECT id,

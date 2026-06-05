@@ -33,6 +33,11 @@ public class ServeiServiceEjb extends AbstractServiceEjb<ServeiService> implemen
 	}
 
 	@Override
+    public ServeiDto findAndUpdateServei(Long entitatId, String serveiCodi) throws Exception {
+		return delegateService.findAndUpdateServei(entitatId, serveiCodi);
+	}
+
+	@Override
 	public void findAndUpdateServeis(Long entitatId) throws Exception {
 		delegateService.findAndUpdateServeis(entitatId);
 	}

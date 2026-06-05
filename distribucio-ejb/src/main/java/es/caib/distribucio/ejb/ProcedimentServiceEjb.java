@@ -38,6 +38,11 @@ public class ProcedimentServiceEjb extends AbstractServiceEjb<ProcedimentService
 	}
 
 	@Override
+	public ProcedimentDto findAndUpdateProcediment(Long entitatId, String procedimentCodi) throws Exception {
+		return delegateService.findAndUpdateProcediment(entitatId, procedimentCodi);
+	}
+
+	@Override
 	public ProcedimentDto findByCodiSia(Long entitatId, String codiSia) {
 		return delegateService.findByCodiSia(entitatId, codiSia);		
 	}

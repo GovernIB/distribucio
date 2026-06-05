@@ -392,7 +392,7 @@ pageContext.setAttribute(
                     <c:choose>
                         <c:when test="${exm.nomDocument != null}">
                             <div class="col-xs-1">
-                                <a id="detall-button" href='<c:url value="../descarregar/${exm.id}/${pagina}"/>'>
+                                <a id="detall-button" href='<c:url value="../descarregar/${exm.id}/${pagina}"/>' onclick="event.stopPropagation();">
                                     <span class="fa fa-download fa-2x" title="<spring:message code="accio.massiva.header.accion.dowload"/>"></span>
                                 </a>
                             </div>

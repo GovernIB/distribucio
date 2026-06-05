@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.ProcedimentEntity;
@@ -41,6 +42,8 @@ public class ProcedimentHelper {
 
 	@Resource
 	private PluginHelper pluginHelper;
+	@Autowired
+	private ConversioTipusHelper conversioTipusHelper;
 	
 	/** Consutla la llista de procediments de BBDD i marca com a extingits els que no hagi retornat la consulta a Distribucio.
 	 * 
@@ -92,15 +95,12 @@ public class ProcedimentHelper {
 	 * 			La entitat per a actualitzar el procediment
 	 */
 	@Transactional( propagation = Propagation.REQUIRES_NEW)
-	public void actualitzaProcediment(
+	public ProcedimentDto actualitzaProcediment(
 			Procediment procediment, 
 			Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives,
 			EntitatEntity entitatEntity) {
 		
-		String msgInfo;
-		msgInfo = procediment.getCodigoSIA() + " - " + procediment.getNombre();
-		logger.info(msgInfo);
-
+		ProcedimentEntity procedimentEntity = null;
 		try {
 			// Determina la unitat organitzativa
 			UnitatOrganitzativaEntity unitatOrganitzativa = this.resoldreUnitatOrganitzativa(
@@ -108,7 +108,7 @@ public class ProcedimentHelper {
 					procediment,
 					entitatEntity.getCodiDir3());
 			// Consulta el procediment a la BBDD
-			ProcedimentEntity procedimentEntity = procedimentRepository.findByCodi(entitatEntity.getId(), procediment.getCodigo());
+			procedimentEntity = procedimentRepository.findByCodi(entitatEntity.getId(), procediment.getCodigo());
 			if (procedimentEntity == null) {
 				// Crea el nou procediment
 				procedimentEntity = ProcedimentEntity.getBuilder(
@@ -157,6 +157,9 @@ public class ProcedimentHelper {
 		} catch(Exception e) {
 			logger.error("Error actualitzant el procediment: " + e.toString());		
 		}		
+		return conversioTipusHelper.convertir(
+				procedimentEntity, 
+				ProcedimentDto.class);				
 	}
 
 	
