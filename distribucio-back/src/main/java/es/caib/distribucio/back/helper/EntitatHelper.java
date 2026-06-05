@@ -5,17 +5,15 @@ package es.caib.distribucio.back.helper;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.service.EntitatService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Utilitat per a gestionar les entitats de l'usuari actual.

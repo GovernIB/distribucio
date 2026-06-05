@@ -17,7 +17,15 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -78,7 +86,6 @@ import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.logic.intf.dto.DocumentNtiTipoFirmaEnumDto;
-import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.FitxerDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
@@ -107,7 +114,6 @@ import es.caib.distribucio.logic.intf.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
 import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
-import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
@@ -216,8 +222,6 @@ public class RegistreHelper {
     private EmailHelper emailHelper;
     @Autowired
     private BackofficeRepository backofficeRepository;
-    @Autowired
-    private RegistreService registreService;
 
     @PostConstruct
 	public void postContruct() {
@@ -2654,8 +2658,7 @@ public class RegistreHelper {
 	}
 
 	public int getEnviarIdsAnotacionsMaxReintentsProperty(EntitatEntity entitat) {
-		EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
-		String maxReintents = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
+		String maxReintents = configHelper.getConfigForEntitat(entitat != null ? entitat.getCodi() : null, "es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
 		} else {
@@ -2702,9 +2705,7 @@ public class RegistreHelper {
 		// Per cada entitat
 		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
 			
-			EntitatDto entitatDto = new EntitatDto();
-			entitatDto.setCodi(entitat.getCodi());
-			ConfigHelper.setEntitat(entitatDto);
+			ConfigHelper.setEntitatActualCodi(entitat.getCodi());
 
 			int maxReintents = this.getEnviarIdsAnotacionsMaxReintentsProperty(entitat);
 		
@@ -2797,7 +2798,5 @@ public class RegistreHelper {
 		return resultat;
 	}
 	
-	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
-
 }

@@ -41,17 +41,13 @@ public class ConfigHelper {
 	private Environment springEnvironment;
 
 	/** Per guardar l'entitat actual per a les propietats multi entitat. */
-	private static ThreadLocal<EntitatDto> entitat = new ThreadLocal<>();
+	private static ThreadLocal<String> entitatActualCodi = new ThreadLocal<>();
 
-	public static EntitatDto getEntitat() {
-		return entitat.get();
-	}
-	public static void setEntitat(EntitatDto entitat) {
-		ConfigHelper.entitat.set(entitat);
+	public static void setEntitatActualCodi(String entitatActualCodi) {
+		ConfigHelper.entitatActualCodi.set(entitatActualCodi);
 	}
 	public static String getEntitatActualCodi() {
-		EntitatDto entitat = getEntitat();
-		return entitat != null ? entitat.getCodi() : null;
+		return entitatActualCodi.get();
 	}
 
 	@PostConstruct
@@ -113,8 +109,7 @@ public class ConfigHelper {
 
 	@Transactional(readOnly = true)
 	public String getConfig(String key) {
-		EntitatDto entitatActual = ConfigHelper.entitat.get();
-		return this.getConfig(entitatActual, key);
+		return this.getConfigForEntitat(ConfigHelper.getEntitatActualCodi(), key);
 	}
 
 	@Transactional(readOnly = true)

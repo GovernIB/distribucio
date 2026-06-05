@@ -210,7 +210,7 @@ public class ConfigServiceImpl implements ConfigService {
 
 	@Override
 	public void setEntitatPerPropietat(EntitatDto entitatDto) {
-		ConfigHelper.setEntitat(entitatDto);
+		ConfigHelper.setEntitatActualCodi(entitatDto != null ? entitatDto.getCodi() : null);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigServiceImpl.class);

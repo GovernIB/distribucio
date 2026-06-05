@@ -1281,8 +1281,7 @@ public class ContingutHelper {
 	}
 
 	public int getEnviarIdsAnotacionsMaxReintentsProperty(EntitatEntity entitat) {
-		EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
-		String maxReintents = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
+		String maxReintents = configHelper.getConfigForEntitat(entitat != null ? entitat.getCodi() : null, "es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
 		} else {

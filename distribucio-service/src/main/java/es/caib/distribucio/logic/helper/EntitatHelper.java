@@ -17,8 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.logic.intf.exception.PropietatNotFoundException;
+import es.caib.distribucio.persist.repository.EntitatRepository;
 
 /**
  * Mètodes comuns per la gestió del logo de l'entitat
@@ -30,6 +32,8 @@ public class EntitatHelper {
 
 	@Autowired
 	private ConfigHelper configHelper;
+	@Autowired
+	private EntitatRepository entitatRepository;
 
 	public void createLogo(
 			String entitatCodi,
@@ -107,6 +111,18 @@ public class EntitatHelper {
 					ex);
 		}
 	}
+	
+	/** Consulta el codi d'entitat per un id d'entitat. */
+	@Transactional(readOnly = true)
+	public String getCodiEntitat(Long entitatId) {
+		return entitatRepository.getCodiEntitatPerId(entitatId);
+	}
+
+	/** Consulta el codi d'entitat per una anotació concreta. */
+	@Transactional(readOnly = true)
+	public String getCodiEntitatRegistre(Long anotacioId) {
+		return entitatRepository.getCodiEntitatPerAnotacioId(anotacioId);
+	}
 
 	private String getLogosDir() {
 		String propertyNom = "es.caib.distribucio.entitat.logos.base.dir";
@@ -117,4 +133,5 @@ public class EntitatHelper {
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(EntitatHelper.class);
+
 }

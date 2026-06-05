@@ -4,13 +4,11 @@
 package es.caib.distribucio.logic.helper;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ma.glasnost.orika.*;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 
@@ -43,8 +41,12 @@ import es.caib.distribucio.persist.entity.MetaDadaEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.CustomMapper;
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
-import ma.glasnost.orika.metadata.ClassMapBuilder;
 import ma.glasnost.orika.metadata.Type;
 /**
  * Helper per a convertir entre diferents formats de documents.
@@ -59,7 +61,6 @@ public class ConversioTipusHelper {
 	/**
 	 * 
 	 */
-	@SuppressWarnings("deprecation")
 	public ConversioTipusHelper() {
 		// mapperFactory = new DefaultMapperFactory.Builder().build();
 		MappingContext.Factory mappingContextFactory = new MappingContext.Factory();

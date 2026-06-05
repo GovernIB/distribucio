@@ -3,29 +3,24 @@ package es.caib.distribucio.logic.helper;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.mail.MessagingException;
 
-import es.caib.distribucio.logic.intf.dto.*;
-import es.caib.distribucio.logic.intf.registre.FileNameOption;
-import es.caib.distribucio.logic.intf.registre.RegistreAnnexSicresTipusDocumentEnum;
-import es.caib.distribucio.logic.intf.service.*;
-import es.caib.distribucio.persist.entity.*;
-import es.caib.distribucio.persist.repository.EntitatRepository;
-import es.caib.distribucio.persist.repository.RegistreRepository;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,11 +29,30 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaEstatDto;
+import es.caib.distribucio.logic.intf.dto.FitxerDto;
+import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
+import es.caib.distribucio.logic.intf.dto.RegistreDto;
+import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
+import es.caib.distribucio.logic.intf.registre.FileNameOption;
+import es.caib.distribucio.logic.intf.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.logic.intf.service.AnnexosService;
+import es.caib.distribucio.logic.intf.service.BustiaService;
+import es.caib.distribucio.logic.intf.service.ContingutService;
+import es.caib.distribucio.logic.intf.service.RegistreService;
+import es.caib.distribucio.persist.entity.EntitatEntity;
+import es.caib.distribucio.persist.entity.ExecucioMassivaContingutEntity;
+import es.caib.distribucio.persist.entity.ExecucioMassivaEntity;
+import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
+import es.caib.distribucio.persist.entity.RegistreEntity;
+import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaRepository;
-import org.springframework.ui.Model;
+import es.caib.distribucio.persist.repository.RegistreRepository;
 
 @Component
 public class ExecucioMassivaHelper {
@@ -67,8 +81,6 @@ public class ExecucioMassivaHelper {
     private RegistreHelper registreHelper;
     @Autowired
     private EntitatRepository entitatRepository;
-    @Autowired
-    private ConversioTipusHelper conversioTipusHelper;
     @Autowired
     private ConfigHelper configHelper;
     @Autowired
@@ -304,7 +316,7 @@ public class ExecucioMassivaHelper {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void descarregarAnnexos(Long entitatId, Long elementId) {
         EntitatEntity entity = entitatRepository.findById(entitatId).get();
-        ConfigHelper.setEntitat(conversioTipusHelper.convertir(entity, EntitatDto.class));
+        ConfigHelper.setEntitatActualCodi(entity.getCodi());
         ExecucioMassivaEntity em = execucioMassivaRepository.findById(elementId).get();
         try {
             if (em.getParametres() != null && !em.getParametres().isEmpty()) {
