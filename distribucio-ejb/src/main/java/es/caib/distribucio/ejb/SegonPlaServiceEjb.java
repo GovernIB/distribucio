@@ -87,6 +87,11 @@ public class SegonPlaServiceEjb extends AbstractServiceEjb<SegonPlaService> impl
 	}
 
     @Override
+	public void esborrarZipAccionsMassives() {
+		delegateService.esborrarZipAccionsMassives();
+	}
+
+    @Override
 	public void canviEstatComunicatAPendent() {
 		delegateService.canviEstatComunicatAPendent();
 	}
