@@ -78,6 +78,8 @@ public class RegistreFiltreCommand {
 
 	/** Per mostrar anotacions sense assignar */
 	private boolean mostrarSenseAssignar;
+
+    private boolean advancedSearchActive;
 	
 	public static RegistreFiltreCommand asCommand(RegistreFiltreDto dto) {
 		RegistreFiltreCommand command = ConversioTipusHelper.convertir(
