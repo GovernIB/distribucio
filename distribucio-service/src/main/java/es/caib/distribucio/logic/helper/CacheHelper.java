@@ -105,6 +105,10 @@ public class CacheHelper {
 		return resposta;
 	}
 
+    @CacheEvict(value = "entitatsUsuari", allEntries = true)
+    public void evictAllEntitatsUsuariCache() {
+    }
+
 	@CacheEvict(value = "entitatsUsuari", key="#usuariCodi")
 	public void evictEntitatsAccessiblesUsuari(String usuariCodi) {
 	}
