@@ -55,7 +55,11 @@
     button#filtrar {
         width: 50%;
     }
-	
+
+span.select2-container {
+    width: 100% !important;
+}
+
 .fila-desactivada {
   position: relative;
 }
@@ -148,7 +152,7 @@ $(document).ready(function() {
 	$('#unitatId').on('change', function (e) {
 		$('#mostrarInactives').change();
 	});
-	$('#netejarFiltre').click(function(e) {
+	$('.netejarFiltre').click(function(e) {
 		$('#bustia').val('');
 		$('#procesEstatSimple').val('PENDENT').change();
 		$('#mostrarInactives').val(false).change();
@@ -427,7 +431,7 @@ function syncFields(fromSelector, toSelector) {
             <div class="col-md-10"></div>
             <div class="col-md-2 d-flex">
                 <button id="advancedSearchBtn" title="<spring:message code="contingut.admin.filtre.advancedSearchActive"/>" class="btn btn-default advancedSearchBtn" data-toggle="button"><span class="fa fa-search"></span></button>
-                <button id="netejarFiltre" type="submit" name="accio" value="netejar" class="ml-2 btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+                <button id="netejarFiltre" type="submit" name="accio" value="netejar" class="ml-2 btn btn-default netejarFiltre"><spring:message code="comu.boto.netejar"/></button>
                 <button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
             </div>
         </div>
@@ -585,7 +589,7 @@ function syncFields(fromSelector, toSelector) {
 			</div>
 			<div class="col-md-2 d-flex">
                 <button id="advancedSearchBtn" title="<spring:message code="contingut.admin.filtre.advancedSearchActive"/>" class="btn btn-default advancedSearchBtn" data-toggle="button"><span class="fa fa-search"></span></button>
-				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="ml-2 btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="ml-2 btn btn-default netejarFiltre"><spring:message code="comu.boto.netejar"/></button>
 				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
 			</div>
 		</div>
