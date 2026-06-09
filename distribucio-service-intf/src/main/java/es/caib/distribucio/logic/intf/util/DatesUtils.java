@@ -15,6 +15,24 @@ public class DatesUtils {
     }
 
     public static OffsetDateTime toOffsetDateTime(Date data) {
-        return data != null ? data.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime() : null;
+        if (data == null) {
+            return null;
+        }
+
+        if (data instanceof java.sql.Date) {
+            return ((java.sql.Date) data).toLocalDate()
+                    .atStartOfDay(ZoneId.systemDefault())
+                    .toOffsetDateTime();
+        }
+
+        if (data instanceof java.sql.Timestamp) {
+            return ((java.sql.Timestamp) data).toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toOffsetDateTime();
+        }
+
+        return data.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toOffsetDateTime();
     }
 }

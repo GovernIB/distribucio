@@ -302,9 +302,12 @@ public class ConversioTipusHelper {
 							break;
 						}
 						MissatgeSalut target = new MissatgeSalut(
-								DatesUtils.toOffsetDateTime(source.getDataInici()), 
-								avisNivell, 
-								source.getMissatge());
+								DatesUtils.toOffsetDateTime(source.getDataInici()),
+								avisNivell,
+                                (source.getEntitat() != null
+                                        ? source.getEntitat().getNom() + " - "
+                                        : ""
+                                ) + source.getMissatge());
 						return target;
 					}
 				});

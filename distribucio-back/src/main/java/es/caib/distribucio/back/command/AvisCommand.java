@@ -8,6 +8,8 @@ import java.util.Date;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.back.helper.ConversioTipusHelper;
@@ -19,7 +21,8 @@ import es.caib.distribucio.logic.intf.dto.AvisNivellEnumDto;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-
+@Getter
+@Setter
 public class AvisCommand {
 
 	private Long id;
@@ -34,50 +37,8 @@ public class AvisCommand {
 	private Boolean actiu;
 	@NotNull
 	private AvisNivellEnumDto avisNivell;
-	
+    private Long entitatId;
 
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getAssumpte() {
-		return assumpte;
-	}
-	public void setAssumpte(String assumpte) {
-		this.assumpte = assumpte;
-	}
-	public String getMissatge() {
-		return missatge;
-	}
-	public void setMissatge(String missatge) {
-		this.missatge = missatge;
-	}
-	public Date getDataInici() {
-		return dataInici;
-	}
-	public void setDataInici(Date dataInici) {
-		this.dataInici = dataInici;
-	}
-	public Date getDataFinal() {
-		return dataFinal;
-	}
-	public void setDataFinal(Date dataFinal) {
-		this.dataFinal = dataFinal;
-	}
-	public Boolean getActiu() {
-		return actiu;
-	}
-	public void setActiu(Boolean actiu) {
-		this.actiu = actiu;
-	}
-	public AvisNivellEnumDto getAvisNivell() {
-		return avisNivell;
-	}
-	public void setAvisNivell(AvisNivellEnumDto avisNivell) {
-		this.avisNivell = avisNivell;
-	}
 	public static AvisCommand asCommand(AvisDto dto) {
 		return ConversioTipusHelper.convertir(
 				dto,
