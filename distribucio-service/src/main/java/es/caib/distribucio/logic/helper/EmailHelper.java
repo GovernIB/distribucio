@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.logic.helper;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import es.caib.distribucio.persist.entity.*;
@@ -223,11 +224,9 @@ public class EmailHelper {
             missatge.setFrom(getRemitent());
             missatge.setSubject(this.getPrefixDistribucio() + " Fi de la tasca de descàrrega de " + em.getContinguts().size() + " anotacions");
 
-            String mssg = "L'informem de que la tasca programada amb data "
-                    + new Date() + " de " + em.getContinguts().size() + " anotacions ha finalitzat i té disponible durant "
-                    + maxDies + " dies el document per a la seva descàrrega \n" +
-                    "Enllaç al document: " + configHelper.getConfig("es.caib.distribucio.app.base.url") + "/massiva/descarregar/" + em.getId() + "/0 \n" +
-                    "Errors: " + errors.size();
+            String mssg = "L’informam que l’acció massiva de descàrrega de justificants i annexos, programada el " + new SimpleDateFormat("dd 'de' MMMM 'de' yyyy 'a les' HH:mm:ss", new Locale("ca_ES")).format(new Date()) + ", ha finalitzat correctament.\n" +
+                    "Té el document disponible per a la seva descàrrega durant " + maxDies + " dies.\n" +
+                    "Enllaç al document: \n" + configHelper.getConfig("es.caib.distribucio.app.base.url") + "/massiva/descarregar/" + em.getId() + "/0 \n";
 
             missatge.setText(mssg);
             mailSender.send(missatge);

@@ -16,14 +16,14 @@
 
         .btn-copiar-pre {
             position: absolute;
-            top: 8px;
-            right: 8px;
+            top: -35px;
+            right: 0px;
             background: #f8f9fa;
             border: 1px solid rgba(0,0,0,0.15);
             border-radius: 4px;
             padding: 4px 8px;
             cursor: pointer;
-            opacity: 0.6;
+            opacity: 0.9;
             transition: all 0.2s;
             z-index: 10;
         }
@@ -118,7 +118,7 @@
             <div class="pre-wrapper">
                 <pre  id="codigoEjemplo" style="height:300px">${fn:escapeXml(integracio.excepcioStacktrace)}</pre>
                 <button type="button" class="btn-copiar-pre" data-target="#codigoEjemplo" title="<spring:message code="integracio.detall.camp.excepcio.copyBtn.label"/>">
-                    <span class="fa fa-copy"></span>
+                    <spring:message code="integracio.detall.camp.excepcio.copyBtn.label"/><span class="ml-1 fa fa-copy"></span>
                 </button>
             </div>
 		</c:if>

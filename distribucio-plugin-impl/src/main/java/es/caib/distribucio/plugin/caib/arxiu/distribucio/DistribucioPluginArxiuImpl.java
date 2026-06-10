@@ -474,10 +474,11 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	
 	@Override
 	public DocumentContingut documentImprimible(
+            String nom,
 			String arxiuUuid) throws SistemaExternException {
 		DocumentContingut documentContingut;
 		if (!(this.getArxiuPlugin() instanceof ArxiuPluginFilesystem)) {
-			documentContingut = this.generarVersioImprimible(arxiuUuid);
+			documentContingut = this.generarVersioImprimible(nom, arxiuUuid);
 		} else {
 			// Plugin Filesystem
 			// El plugin ArxiuPluginFilesystem no té el mètode implementat de versió imp
@@ -532,7 +533,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		Document document = this.getDocumentDetalls(arxiuUuid, null, false);
 		if (!document.getEstat().equals(DocumentEstat.DEFINITIU)) {
 			// Modifica el document a definitiu
-			String accioDescripcio = "Modificar el document a definitiu";
+			String accioDescripcio = "Modificar el document \"" + document.getNom() + "\" a definitiu";
 			Map<String, String> accioParams = new HashMap<String, String>();
 			accioParams.put("identificador", arxiuUuid);
 			accioParams.put("documentDescripcio", document.getDescripcio());
@@ -1069,7 +1070,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				}
 				if (generarVersioImprimible) {
 					documentDetalls.setContingut(
-							generarVersioImprimible(documentDetalls.getIdentificador()));
+							generarVersioImprimible(documentDetalls.getNom(), documentDetalls.getIdentificador()));
 				} else {
 					documentDetalls = this.getDocumentDetalls(arxiuUuid, versio, true);
 				}
@@ -1134,9 +1135,10 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 	
 	/** Crida al plugin d'Arxiu per obtenir el contingut de la versió imprimible del document. */
 	private DocumentContingut generarVersioImprimible(
+            String nomDocument,
 			String identificadorArxiu) throws SistemaExternException {
 		DocumentContingut documentImprimible = null;
-		String accioDescripcio = "Obtenint la versió imprimible del document";
+		String accioDescripcio = "Obtenint la versió imprimible del document \"" + nomDocument + "\"";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("identificador", identificadorArxiu);
 		long t0 = System.currentTimeMillis();
@@ -1144,14 +1146,18 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			documentImprimible = getArxiuPlugin().documentImprimible(identificadorArxiu);
 			integracioAddAccioOk(
 					integracioArxiuCodi,
+                    this.obtenirNumeroRegistre(),
 					accioDescripcio,
+                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al generar la versió imprimible del document. ";
 			integracioAddAccioError(
 					integracioArxiuCodi,
+                    this.obtenirNumeroRegistre(),
 					accioDescripcio,
+                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - t0,
 					errorDescripcio,
@@ -1180,7 +1186,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					baos);
 			integracioAddAccioOk(
 					itegracioGesdocCodi,
+                    this.obtenirNumeroRegistre(),
 					accioDescripcio,
+                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - t0);
 			return baos.toByteArray();
@@ -1188,7 +1196,9 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			String errorDescripcio = "Error al obtenir arxiu de la gestió documental. ";
 			integracioAddAccioError(
 					itegracioGesdocCodi,
+                    this.obtenirNumeroRegistre(),
 					accioDescripcio,
+                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - t0,
 					errorDescripcio,

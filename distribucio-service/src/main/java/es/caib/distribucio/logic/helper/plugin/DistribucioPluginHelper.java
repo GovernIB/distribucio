@@ -253,7 +253,7 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 		FitxerDto fitxerDto = new FitxerDto();
 		
 		try {
-			DocumentContingut documentImprimible = getPlugin().documentImprimible(fitxerArxiuUuid);
+			DocumentContingut documentImprimible = getPlugin().documentImprimible(titol, fitxerArxiuUuid);
 			TemporalThreadStorage.clear();
 			if (documentImprimible != null) {
 				fitxerDto.setNom(titol);
