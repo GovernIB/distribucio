@@ -370,6 +370,7 @@ public class ExecucioMassivaHelper {
                             String errMsg = "[" + annex.getRegistre().getNumero() + "] - Error obtenint la versió original del l'annex " + annex.getId() + " \"" + annex.getTitol() + "\". Error: \\\""
                                     + e.getClass() + " " + e.getMessage() + "\"";
                             errors.add(errMsg);
+                            break;
                         }
                     }
 
