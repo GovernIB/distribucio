@@ -388,7 +388,7 @@ public class ExecucioMassivaHelper {
                     nomDoc = nomDoc.replaceAll("/", "_");
 
                     if (estructuraCarpetes) {
-                        nomDoc = annex.getRegistre().getNom().replaceAll("/", "_") + "/" + nomDoc;
+                        nomDoc = annex.getRegistre().getNumero().replaceAll("/", "_") + "/" + nomDoc;
                     }
 
                     String recursNom = this.getZipRecursNom(nomDoc, nomsArxius);
