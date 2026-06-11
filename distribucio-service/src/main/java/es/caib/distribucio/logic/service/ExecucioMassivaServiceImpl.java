@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-import es.caib.distribucio.logic.helper.*;
-import es.caib.distribucio.logic.intf.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +26,25 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
+import es.caib.distribucio.logic.helper.ConfigHelper;
+import es.caib.distribucio.logic.helper.ConversioTipusHelper;
+import es.caib.distribucio.logic.helper.EntityComprovarHelper;
+import es.caib.distribucio.logic.helper.ExecucioMassivaHelper;
+import es.caib.distribucio.logic.helper.MessageHelper;
+import es.caib.distribucio.logic.helper.PluginHelper;
+import es.caib.distribucio.logic.helper.UsuariHelper;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaAccioDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaEstatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaTipusDto;
+import es.caib.distribucio.logic.intf.dto.FitxerDto;
+import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
+import es.caib.distribucio.logic.intf.dto.RegistreDto;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import es.caib.distribucio.persist.entity.EntitatEntity;
@@ -38,7 +54,6 @@ import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaRepository;
 import es.caib.distribucio.persist.repository.UsuariRepository;
-import org.springframework.ui.Model;
 
 /**
  * Implementació del servei per gestionar les execucions massives.
@@ -180,14 +195,12 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 			EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(entitatId, false, false, false);
 			List<ExecucioMassivaEntity> ems = execucioMassivaRepository.findMassivesAmbPendentsByEntitatPerProcessar(new Date(), entitatId);
 			String missatge = null;
-
+			List<String> errors = new ArrayList<>();
+			
 			if (ems != null && ems.size() > 0) {
 				ExecucioMassivaEntity em = ems.get(0);
-                if (ExecucioMassivaTipusDto.DESCARREGAR.equals(em.getTipus())) {
-                    try {
-                        execucioMassivaHelper.descarregarAnnexos(entitatId, em.getId());
-                    } catch (Exception ignore) {}
-                } else if (em.getContinguts() != null) {
+                if (em.getContinguts() != null) {
+                	ConfigHelper.setEntitatActualCodi(em.getEntitat().getCodi());
 					execucioMassivaHelper.updateProcessantNewTransaction(em, new Date());
 
 					for (ExecucioMassivaContingutEntity emc: em.getContinguts()) {
@@ -266,7 +279,12 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 
 									emc.updateMissatge(missatge);
 									break;
-
+								case DESCARREGAR:
+			                        execucioMassivaHelper.descarregarAnnexos(
+			                        		entitat.getId(), 
+			                        		emc.getId(),
+			                        		errors);
+									break;
 								default:
 									break;
 								}
@@ -294,6 +312,16 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 								removeAuthentication();
 							}
                             execucioMassivaHelper.updateFinalitzatNewTransaction(emc, new Date());
+						}
+					}
+					
+					// En el cas de la generació del zip envia un correu
+					if (ExecucioMassivaTipusDto.DESCARREGAR.equals(em.getTipus())) {
+						try { 
+							execucioMassivaHelper.enviarEmailFi(em, errors);
+						} catch(Exception e) {
+							String errMsg = "Error enviant l'email de fi de tasca massiva amb id " + em.getId() + ": " + e.getMessage();
+							logger.error(errMsg, e);
 						}
 					}
 
@@ -423,20 +451,20 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
         if (m.startsWith("text/") || m.contains("json") || m.contains("xml") || m.contains("csv") || m.contains("sql")) {
             return 0.30; // ~70% reducción
         }
-        // 📑 PDF
+        // PDF
         if (m.equals("application/pdf")) return 0.70;
-        // 🖼️ Imágenes (ya están comprimidas)
+        // Imágenes (ya están comprimidas)
         if (m.startsWith("image/")) return 0.95;
         //  Office legacy (.doc, .xls, .ppt)
         if (m.contains("msword") || m.contains("ms-excel") || m.contains("ms-powerpoint")) return 0.40;
-        // 📦 Office moderno (.docx, .xlsx, .pptx) → ya son ZIP internamente
+        // Office moderno (.docx, .xlsx, .pptx) → ya son ZIP internamente
         if (m.contains("openxmlformats")) return 0.95;
-        // ️ Archivos comprimidos / Multimedia
+        // Archivos comprimidos / Multimedia
         if (m.contains("zip") || m.contains("rar") || m.contains("7z") ||
                 m.startsWith("video/") || m.startsWith("audio/")) {
             return 0.99; // Prácticamente 0% compresión
         }
-        // 🔹 Fallback genérico
+        // Fallback genérico
         return 0.80;
     }
 

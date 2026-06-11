@@ -2385,7 +2385,7 @@ public class RegistreServiceImpl implements RegistreService {
 			this.ambVersioImprimible = ambVersioImprimible;
 		}
 
-		@Transactional(readOnly = true)
+		@Transactional
 		@Override
 		public void run() {
 			ConfigHelper.setEntitatActualCodi(this.entitatActualCodi);

@@ -1,20 +1,17 @@
 package es.caib.distribucio.logic.helper;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.ZipInputStream;
 
 import javax.mail.MessagingException;
 
@@ -53,7 +50,6 @@ import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaRepository;
 import es.caib.distribucio.persist.repository.RegistreRepository;
-import org.springframework.transaction.support.TransactionTemplate;
 
 @Component
 public class ExecucioMassivaHelper {
@@ -86,8 +82,6 @@ public class ExecucioMassivaHelper {
     private ConfigHelper configHelper;
     @Autowired
     private EmailHelper emailHelper;
-    @Autowired
-    private TransactionTemplate transactionTemplate;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
 	public ClassificacioResultatDto classificarNewTransaction(Long entitatId, Long elementId, String parametres) {
@@ -316,134 +310,124 @@ public class ExecucioMassivaHelper {
 		}
 	}
 
+    
+    /** Descarrega tots els annexos d'una anotació i els afegeix en el zip temporal de l'execució massiva. */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void descarregarAnnexos(Long entitatId, Long elementId) {
+    public void descarregarAnnexos(Long entitatId, Long emcId, List<String> errors) {
         EntitatEntity entity = entitatRepository.findById(entitatId).get();
         ConfigHelper.setEntitatActualCodi(entity.getCodi());
-        ExecucioMassivaEntity em = execucioMassivaRepository.findById(elementId).get();
+        ExecucioMassivaContingutEntity emc = execucioMassivaContingutRepository.findById(emcId).get();
+        ExecucioMassivaEntity em = emc.getExecucioMassiva();
         try {
             if (em.getParametres() != null && !em.getParametres().isEmpty()) {
-                this.updateProcessantNewTransaction(em, new Date());
-                em.updateProcessant(new Date());
-
                 boolean estructuraCarpetes = getValorParametre(em.getParametres(), "estructuraCarpetes", Boolean.class);
                 boolean versioImprimible = getValorParametre(em.getParametres(), "versioImprimible", Boolean.class);
                 FileNameOption nomDocument = FileNameOption.valueOf(getValorParametre(em.getParametres(), "nomDocument", String.class));
                 String rolActual = getValorParametre(em.getParametres(), "rolActual", String.class);
 
-                List<RegistreEntity> registres = registreRepository.findAllById(
-                        em.getContinguts().stream()
-                                .map(ExecucioMassivaContingutEntity::getElementId)
-                                .collect(Collectors.toList())
-                );
-
-                List<RegistreAnnexEntity> annexos = registres.stream()
-                        .map(RegistreEntity::getAnnexos)
-                        .filter(Objects::nonNull)
-                        .flatMap(Collection::stream)
-                        .filter(a -> (!"tothom".equalsIgnoreCase(rolActual) || a.getSicresTipusDocument() == null || !RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor().equals(a.getSicresTipusDocument())))
+                RegistreEntity registre = registreRepository.findById(emc.getElementId()).get();
+                List<RegistreAnnexEntity> annexos = registre.getAnnexos().stream()
+                        .filter(a -> (!"tothom".equalsIgnoreCase(rolActual) || a.getSicresTipusDocument() == null || !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(a.getSicresTipusDocument())))
                         .collect(Collectors.toList());
 
-                for (ExecucioMassivaContingutEntity contingut : em.getContinguts()) {
-                    this.updateProcessantNewTransaction(contingut, new Date());
-                }
-
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ZipOutputStream out = new ZipOutputStream(baos);
-                ZipEntry ze;
+                // Comprova si el directori l'Arxiu ja existeix, si no el crea
+                String directoriDesti = configHelper.getConfig("es.caib.distribucio.fitxers");
+                String documentNom = "/exportZip/annexosRegistres_" + em.getId() + ".zip";
+                File fContent = new File(directoriDesti + documentNom);
+                fContent.getParentFile().mkdirs();
                 List<String> nomsArxius = new ArrayList<String>();
-                int numFiles = 0;
-                List<String> errors = new ArrayList<>();
-
-                for (RegistreAnnexEntity annex : annexos) {
-                    FitxerDto fitxer = null;
-                    if (versioImprimible && registreHelper.potGenerarVersioImprimible(annex)) {
-                        try {
-                            fitxer = registreHelper.getAnnexFitxerImprimible(annex.getId());
-                        } catch (Exception e) {
-                            String errMsg = "[" + annex.getRegistre().getNumero() + "] - Error obtenint la versió imprimible del l'annex " + annex.getId() + " \"" + annex.getTitol() + "\", es procedeix a consultar l'original. Error: \\\""
-                                    + e.getClass() + " " + e.getMessage() + "\"";
-                            errors.add(errMsg);
-                        }
-                    }
-                    if (fitxer == null) {
-                        try {
-                            fitxer = registreHelper.getAnnexFitxer(annex.getId(), false);
-                        } catch (Exception e) {
-                            String errMsg = "[" + annex.getRegistre().getNumero() + "] - Error obtenint la versió original del l'annex " + annex.getId() + " \"" + annex.getTitol() + "\". Error: \\\""
-                                    + e.getClass() + " " + e.getMessage() + "\"";
-                            errors.add(errMsg);
-                            continue;
-                        }
-                    }
-
-                    String nomDoc;
-                    switch (nomDocument) {
-                        case TITLE:
-                            nomDoc = annex.getTitol() + "." + fitxer.getExtensio();
-                            break;
-                        case TITLE_ORIGINAL:
-                            nomDoc = annex.getTitol() + " - " + fitxer.getNom();
-                            break;
-                        default:
-                            nomDoc = fitxer.getNom();
-                            break;
-                    }
-                    nomDoc = nomDoc.replaceAll("/", "_");
-
-                    if (estructuraCarpetes) {
-                        nomDoc = annex.getRegistre().getNumero().replaceAll("/", "_") + "/" + nomDoc;
-                    }
-
-                    String recursNom = this.getZipRecursNom(nomDoc, nomsArxius);
-                    ze = new ZipEntry(recursNom);
-                    out.putNextEntry(ze);
-                    if (fitxer.getContingut() != null) {
-                        out.write(fitxer.getContingut());
-                    }
-                    out.closeEntry();
-                    numFiles++;
-                }
-
-                if (!errors.isEmpty()) {
-                    StringBuilder avisosContent = new StringBuilder();
-                    for(String error : errors) {
-                        avisosContent.append(error).append("\n\n");
-                    }
-                    ZipEntry entry = new ZipEntry("errors.txt");
-                    byte[] contingut = avisosContent.toString().getBytes();
-                    entry.setSize(contingut.length);
-                    out.putNextEntry(entry);
-                    out.write(contingut);
-                    out.closeEntry();
-                }
-                out.close();
-
-                if (numFiles > 0) {
-                    String directoriDesti = configHelper.getConfig("es.caib.distribucio.fitxers");
-                    String documentNom = "/exportZip/annexosRegistres_" + em.getId() + ".zip";
-                    File fContent = new File(directoriDesti + documentNom);
-                    fContent.getParentFile().mkdirs();
-                    FileOutputStream outContent = new FileOutputStream(fContent);
-                    outContent.write(baos.toByteArray());
-                    outContent.close();
-                    em.setNomDocument(documentNom);
-                    for (ExecucioMassivaContingutEntity contingut : em.getContinguts()) {
-                        this.updateFinalitzatNewTransaction(contingut, new Date());
-                    }
-                    this.updateFinalitzatNewTransaction(em, new Date());
-
-                    emailHelper.sendEmailAccioMassiva(em, errors);
+                if (!fContent.exists()) {
+            		fContent.createNewFile();
                 } else {
-                    this.marcarExecucioAmbError(em, "Empty file");
+                	// Afegeix totes les entrades de fitxers com a noms existents
+                	ZipEntry entry;
+                	ZipInputStream zip = new ZipInputStream(new FileInputStream(fContent));
+                	while((entry = zip.getNextEntry()) != null) {
+                		if (!entry.isDirectory() ) {
+                			nomsArxius.add(entry.getName());
+                		}
+                	}
+                	zip.close();
                 }
-            } else {
-                this.marcarExecucioAmbError(em, "Empty params");
+                java.io.FileOutputStream fos = new java.io.FileOutputStream(fContent);
+        		java.util.zip.ZipOutputStream out = new java.util.zip.ZipOutputStream(fos);
+                ZipEntry ze;
+                try {
+                	for (RegistreAnnexEntity annex : annexos) {
+                        FitxerDto fitxer = null;
+                        if (versioImprimible && registreHelper.potGenerarVersioImprimible(annex)) {
+                            try {
+                                fitxer = registreHelper.getAnnexFitxerImprimible(annex);
+                            } catch (Exception e) {
+                                String errMsg = "[" + annex.getRegistre().getNumero() + "] - Error obtenint la versió imprimible del l'annex " + annex.getId() + " \"" + annex.getTitol() + "\", es procedeix a consultar l'original. Error: \\\""
+                                        + e.getClass() + " " + e.getMessage() + "\"";
+                                errors.add(errMsg);
+                            }
+                        }
+                        if (fitxer == null) {
+                            try {
+                                fitxer = registreHelper.getAnnexFitxer(annex.getId(), false);
+                            } catch (Exception e) {
+                                String errMsg = "[" + annex.getRegistre().getNumero() + "] - Error obtenint la versió original del l'annex " + annex.getId() + " \"" + annex.getTitol() + "\". Error: \\\""
+                                        + e.getClass() + " " + e.getMessage() + "\"";
+                                errors.add(errMsg);
+                                continue;
+                            }
+                        }
+
+                        String nomDoc;
+                        switch (nomDocument) {
+                            case TITLE:
+                                nomDoc = annex.getTitol() + "." + fitxer.getExtensio();
+                                break;
+                            case TITLE_ORIGINAL:
+                                nomDoc = annex.getTitol() + " - " + fitxer.getNom();
+                                break;
+                            default:
+                                nomDoc = fitxer.getNom();
+                                break;
+                        }
+                        nomDoc = nomDoc.replaceAll("/", "_");
+
+                        if (estructuraCarpetes) {
+                            nomDoc = annex.getRegistre().getNumero().replaceAll("/", "_") + "/" + nomDoc;
+                        }
+
+                        String recursNom = this.getZipRecursNom(nomDoc, nomsArxius);
+                        ze = new ZipEntry(recursNom);
+                        out.putNextEntry(ze);
+                        if (fitxer.getContingut() != null) {
+                            out.write(fitxer.getContingut());
+                            nomsArxius.add(recursNom);
+                        }
+                        out.closeEntry();
+                    }
+                    if (!errors.isEmpty()) {
+                        StringBuilder avisosContent = new StringBuilder();
+                        for(String error : errors) {
+                            avisosContent.append(error).append("\n\n");
+                        }
+                        ZipEntry entry = new ZipEntry("errors.txt");
+                        byte[] contingut = avisosContent.toString().getBytes();
+                        entry.setSize(contingut.length);
+                        out.putNextEntry(entry);
+                        out.write(contingut);
+                        out.closeEntry();
+                    }
+                } finally {
+            		out.close();
+                }            	
             }
-        } catch (Exception e) {
-            this.marcarExecucioAmbError(em, e.getMessage());
+        } catch(Exception e) {
+        	throw new RuntimeException("Error no controlat executant l'acció massvia: " + e.getMessage(), e);
         }
     }
+    
+    /** Mètode per informar per email del fi de l'execució massiva de la generació del zip a partir dels documnets de diferents annexos.*/
+	public void enviarEmailFi(ExecucioMassivaEntity em, List<String> errors) {
+	    emailHelper.sendEmailAccioMassiva(em, errors);
+	}
+
 
     private String getZipRecursNom(String nomEntrada, List<String> nomsArxius) {
         int contador = 0;
@@ -455,26 +439,17 @@ public class ExecucioMassivaHelper {
         }
         return temp;
     }
-
-    private void marcarExecucioAmbError(ExecucioMassivaEntity em, String reason) {
-        for (ExecucioMassivaContingutEntity contingut : em.getContinguts()) {
-            this.updateErrorNewTransaction(contingut, new Date(), reason);
-        }
-        this.updateFinalitzatNewTransaction(em, new Date());
-    }
-
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateFinalitzatNewTransaction(ExecucioMassivaEntity em, Date dataFi) {
-        transactionTemplate.execute(status -> {
-            em.updateFinalitzat(dataFi);
-            return execucioMassivaRepository.saveAndFlush(em);
-        });
+		em.updateFinalitzat(dataFi);
+		execucioMassivaRepository.saveAndFlush(em);
 	}
-
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateProcessantNewTransaction(ExecucioMassivaEntity em, Date dataInici) {
-        transactionTemplate.execute(status -> {
-            em.updateProcessant(dataInici);
-            return execucioMassivaRepository.saveAndFlush(em);
-        });
+		em.updateProcessant(dataInici);
+		execucioMassivaRepository.saveAndFlush(em);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -487,54 +462,47 @@ public class ExecucioMassivaHelper {
         }
         return false;
 	}
-
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateProcessantNewTransaction(ExecucioMassivaContingutEntity emc, Date dataInici) {
-        transactionTemplate.execute(status -> {
-            emc.updateProcessant(dataInici);
-            return execucioMassivaContingutRepository.saveAndFlush(emc);
-        });
+		emc.updateProcessant(dataInici);
+		execucioMassivaContingutRepository.saveAndFlush(emc);
 	}
-
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateFinalitzatNewTransaction(ExecucioMassivaContingutEntity emc, Date dataFi) {
-        transactionTemplate.execute(status -> {
-            emc.updateFinalitzat(dataFi);
-            return execucioMassivaContingutRepository.saveAndFlush(emc);
-        });
+		emc.updateFinalitzat(dataFi);
+		execucioMassivaContingutRepository.saveAndFlush(emc);
 	}
-
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateErrorNewTransaction(ExecucioMassivaContingutEntity emc, Date dataFi, String error) {
-        transactionTemplate.execute(status -> {
-            emc.updateError(error, dataFi);
-            return execucioMassivaContingutRepository.saveAndFlush(emc);
-        });
+		emc.updateError(error, dataFi);
+		execucioMassivaContingutRepository.saveAndFlush(emc);
 	}
-
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateMissatgeNewTransaction(ExecucioMassivaContingutEntity emc, String missatge) {
-        transactionTemplate.execute(status -> {
-            emc.updateMissatge(missatge);
-            return execucioMassivaContingutRepository.saveAndFlush(emc);
-        });
+		emc.updateMissatge(missatge);
+		execucioMassivaContingutRepository.saveAndFlush(emc);
 	}
 	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateCancelatNewTransaction(ExecucioMassivaEntity em) {
-        transactionTemplate.execute(status -> {
-            em.updateCancelat();
-            return execucioMassivaRepository.saveAndFlush(em);
-        });
+		em.updateCancelat();
+		execucioMassivaRepository.saveAndFlush(em);
 	}
 	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updatePausatNewTransaction(ExecucioMassivaEntity em) {
-        transactionTemplate.execute(status -> {
-            em.updatePausat();
-            return execucioMassivaRepository.saveAndFlush(em);
-        });
+		em.updatePausat();
+		execucioMassivaRepository.saveAndFlush(em);
 	}
 	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updatePendentNewTransaction(ExecucioMassivaEntity em) {
-        transactionTemplate.execute(status -> {
-            em.updatePendent();
-            return execucioMassivaRepository.saveAndFlush(em);
-        });
+		em.updatePendent();
+		execucioMassivaRepository.saveAndFlush(em);
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -660,6 +628,5 @@ public class ExecucioMassivaHelper {
 			RegistreProcesEstatEnum.BACK_ERROR,
 			RegistreProcesEstatEnum.BACK_PROCESSADA,
 			RegistreProcesEstatEnum.BACK_REBUTJADA,
-	};
-    
+	};    
 }

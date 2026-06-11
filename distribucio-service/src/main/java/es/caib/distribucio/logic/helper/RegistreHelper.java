@@ -2148,6 +2148,10 @@ public class RegistreHelper {
 	@Transactional
 	public FitxerDto getAnnexFitxerImprimible(Long annexId) throws Exception {
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(annexId);
+		return this.getAnnexFitxerImprimible(registreAnnexEntity);
+	}
+
+	public FitxerDto getAnnexFitxerImprimible(RegistreAnnexEntity registreAnnexEntity) throws Exception {
 	    RegistreEntity registre = registreAnnexEntity.getRegistre();
 	    FitxerDto fitxerDto = new FitxerDto();
 	    String titol = registreAnnexEntity.getFitxerNom().replace(".pdf", "_imprimible.pdf");
@@ -2179,8 +2183,7 @@ public class RegistreHelper {
 	    }
 	    return fitxerDto;
 	}
-
-	@Transactional
+	
 	public FitxerDto getAnnexFitxer(Long annexId, boolean ambVersioImprimible) {
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(annexId);
 	    RegistreEntity registre = registreAnnexEntity.getRegistre();
