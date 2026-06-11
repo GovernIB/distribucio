@@ -53,6 +53,7 @@ import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaRepository;
 import es.caib.distribucio.persist.repository.RegistreRepository;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Component
 public class ExecucioMassivaHelper {
@@ -85,6 +86,8 @@ public class ExecucioMassivaHelper {
     private ConfigHelper configHelper;
     @Autowired
     private EmailHelper emailHelper;
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
 	public ClassificacioResultatDto classificarNewTransaction(Long entitatId, Long elementId, String parametres) {
@@ -370,7 +373,7 @@ public class ExecucioMassivaHelper {
                             String errMsg = "[" + annex.getRegistre().getNumero() + "] - Error obtenint la versió original del l'annex " + annex.getId() + " \"" + annex.getTitol() + "\". Error: \\\""
                                     + e.getClass() + " " + e.getMessage() + "\"";
                             errors.add(errMsg);
-                            break;
+                            continue;
                         }
                     }
 
@@ -405,7 +408,7 @@ public class ExecucioMassivaHelper {
                 if (!errors.isEmpty()) {
                     StringBuilder avisosContent = new StringBuilder();
                     for(String error : errors) {
-                        avisosContent.append(error + "\n");
+                        avisosContent.append(error).append("\n\n");
                     }
                     ZipEntry entry = new ZipEntry("errors.txt");
                     byte[] contingut = avisosContent.toString().getBytes();
@@ -414,14 +417,7 @@ public class ExecucioMassivaHelper {
                     out.write(contingut);
                     out.closeEntry();
                 }
-
                 out.close();
-
-//                int maxSize = Integer.parseInt(configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.mida.max", "10"));
-//                if (baos.size() > maxSize * 1024 * 1024) {
-//                    this.marcarExecucioAmbError(em, "Superada mida máxima ("+maxSize+")");
-//                    return;
-//                }
 
                 if (numFiles > 0) {
                     String directoriDesti = configHelper.getConfig("es.caib.distribucio.fitxers");
@@ -451,18 +447,13 @@ public class ExecucioMassivaHelper {
 
     private String getZipRecursNom(String nomEntrada, List<String> nomsArxius) {
         int contador = 0;
-        for (String nom : nomsArxius) {
-            if (nom!=null && nom.equals(nomEntrada)) {
-                contador++;
-            }
-        }
-        if (contador > 0) {
-            nomEntrada = nomEntrada.substring(0, nomEntrada.lastIndexOf(".")) +
+        String temp = nomEntrada;
+        while (nomsArxius.contains(temp)) {
+            contador++;
+            temp = nomEntrada.substring(0, nomEntrada.lastIndexOf(".")) +
                     " (" + contador + ")" + nomEntrada.substring(nomEntrada.lastIndexOf("."));
-            return getZipRecursNom(nomEntrada, nomsArxius);
         }
-        nomsArxius.add(nomEntrada);
-        return nomEntrada;
+        return temp;
     }
 
     private void marcarExecucioAmbError(ExecucioMassivaEntity em, String reason) {
@@ -471,17 +462,19 @@ public class ExecucioMassivaHelper {
         }
         this.updateFinalitzatNewTransaction(em, new Date());
     }
-	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+
 	public void updateFinalitzatNewTransaction(ExecucioMassivaEntity em, Date dataFi) {
-		em.updateFinalitzat(dataFi);
-		execucioMassivaRepository.saveAndFlush(em);
+        transactionTemplate.execute(status -> {
+            em.updateFinalitzat(dataFi);
+            return execucioMassivaRepository.saveAndFlush(em);
+        });
 	}
-	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+
 	public void updateProcessantNewTransaction(ExecucioMassivaEntity em, Date dataInici) {
-		em.updateProcessant(dataInici);
-		execucioMassivaRepository.saveAndFlush(em);
+        transactionTemplate.execute(status -> {
+            em.updateProcessant(dataInici);
+            return execucioMassivaRepository.saveAndFlush(em);
+        });
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -494,47 +487,54 @@ public class ExecucioMassivaHelper {
         }
         return false;
 	}
-	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+
 	public void updateProcessantNewTransaction(ExecucioMassivaContingutEntity emc, Date dataInici) {
-		emc.updateProcessant(dataInici);
-		execucioMassivaContingutRepository.saveAndFlush(emc);
+        transactionTemplate.execute(status -> {
+            emc.updateProcessant(dataInici);
+            return execucioMassivaContingutRepository.saveAndFlush(emc);
+        });
 	}
-	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+
 	public void updateFinalitzatNewTransaction(ExecucioMassivaContingutEntity emc, Date dataFi) {
-		emc.updateFinalitzat(dataFi);
-		execucioMassivaContingutRepository.saveAndFlush(emc);
+        transactionTemplate.execute(status -> {
+            emc.updateFinalitzat(dataFi);
+            return execucioMassivaContingutRepository.saveAndFlush(emc);
+        });
 	}
-	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+
 	public void updateErrorNewTransaction(ExecucioMassivaContingutEntity emc, Date dataFi, String error) {
-		emc.updateError(error, dataFi);
-		execucioMassivaContingutRepository.saveAndFlush(emc);
+        transactionTemplate.execute(status -> {
+            emc.updateError(error, dataFi);
+            return execucioMassivaContingutRepository.saveAndFlush(emc);
+        });
 	}
-	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+
 	public void updateMissatgeNewTransaction(ExecucioMassivaContingutEntity emc, String missatge) {
-		emc.updateMissatge(missatge);
-		execucioMassivaContingutRepository.saveAndFlush(emc);
+        transactionTemplate.execute(status -> {
+            emc.updateMissatge(missatge);
+            return execucioMassivaContingutRepository.saveAndFlush(emc);
+        });
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateCancelatNewTransaction(ExecucioMassivaEntity em) {
-		em.updateCancelat();
-		execucioMassivaRepository.saveAndFlush(em);
+        transactionTemplate.execute(status -> {
+            em.updateCancelat();
+            return execucioMassivaRepository.saveAndFlush(em);
+        });
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updatePausatNewTransaction(ExecucioMassivaEntity em) {
-		em.updatePausat();
-		execucioMassivaRepository.saveAndFlush(em);
+        transactionTemplate.execute(status -> {
+            em.updatePausat();
+            return execucioMassivaRepository.saveAndFlush(em);
+        });
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updatePendentNewTransaction(ExecucioMassivaEntity em) {
-		em.updatePendent();
-		execucioMassivaRepository.saveAndFlush(em);
+        transactionTemplate.execute(status -> {
+            em.updatePendent();
+            return execucioMassivaRepository.saveAndFlush(em);
+        });
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
