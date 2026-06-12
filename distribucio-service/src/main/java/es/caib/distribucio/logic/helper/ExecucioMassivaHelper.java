@@ -1,10 +1,6 @@
 package es.caib.distribucio.logic.helper;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -14,7 +10,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.mail.MessagingException;
@@ -22,6 +17,9 @@ import javax.mail.MessagingException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -316,141 +314,153 @@ public class ExecucioMassivaHelper {
 
     
     /** Descarrega tots els annexos d'una anotació i els afegeix en el zip temporal de l'execució massiva. */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public String descarregarAnnexos(Long entitatId, Long emcId, List<String> errors) {
+//    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void descarregarAnnexos(Long entitatId, ExecucioMassivaEntity em) {
         EntitatEntity entity = entitatRepository.findById(entitatId).get();
         ConfigHelper.setEntitatActualCodi(entity.getCodi());
-        ExecucioMassivaContingutEntity emc = execucioMassivaContingutRepository.findById(emcId).get();
-        ExecucioMassivaEntity em = emc.getExecucioMassiva();
+        this.updateProcessantNewTransaction(em, new Date());
+
+        List<String> nomsArxius = new ArrayList<String>();
+        List<String> errors = new ArrayList<>();
+
         try {
             if (em.getParametres() != null && !em.getParametres().isEmpty()) {
                 boolean estructuraCarpetes = getValorParametre(em.getParametres(), "estructuraCarpetes", Boolean.class);
                 boolean versioImprimible = getValorParametre(em.getParametres(), "versioImprimible", Boolean.class);
-                FileNameOption nomDocument = FileNameOption.valueOf(getValorParametre(em.getParametres(), "nomDocument", String.class));
+                FileNameOption tipusNomDocument = FileNameOption.valueOf(getValorParametre(em.getParametres(), "nomDocument", String.class));
                 String rolActual = getValorParametre(em.getParametres(), "rolActual", String.class);
 
-                RegistreEntity registre = registreRepository.findById(emc.getElementId()).get();
-                List<RegistreAnnexEntity> annexos = registre.getAnnexos().stream()
-                        .filter(a -> (!"tothom".equalsIgnoreCase(rolActual) || a.getSicresTipusDocument() == null || !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(a.getSicresTipusDocument())))
-                        .collect(Collectors.toList());
-
-                // Comprova si el directori l'Arxiu ja existeix, si no el crea
                 String directoriDesti = configHelper.getConfig("es.caib.distribucio.fitxers");
                 String documentNom = "/exportZip/annexosRegistres_" + em.getId() + ".zip";
-                List<String> nomsArxius = new ArrayList<String>();
-        		ZipOutputStream out = this.getZipOrElseNew(directoriDesti + documentNom, nomsArxius);
-                ZipEntry ze;
-                try {
-                	for (RegistreAnnexEntity annex : annexos) {
-                        FitxerDto fitxer = null;
-                        if (versioImprimible && registreHelper.potGenerarVersioImprimible(annex)) {
-                            try {
-                                fitxer = registreHelper.getAnnexFitxerImprimible(annex);
-                            } catch (Exception e) {
-                                String errMsg = "[" + annex.getRegistre().getNumero() + "] - Error obtenint la versió imprimible del l'annex " + annex.getId() + " \"" + annex.getTitol() + "\", es procedeix a consultar l'original. Error: \\\""
-                                        + e.getClass() + " " + e.getMessage() + "\"";
-                                errors.add(errMsg);
+                FileOutputStream fos = new FileOutputStream(directoriDesti + documentNom);
+                ZipOutputStream zip = new ZipOutputStream(fos);
+
+                for (ExecucioMassivaContingutEntity emc: em.getContinguts()) {
+//                    if (this.isEmcDisponibleNewTransaction(emc)) {
+                        try {
+                            this.descarregarAnnexos(
+                                    emc.getId(),
+                                    zip,
+                                    estructuraCarpetes,
+                                    versioImprimible,
+                                    tipusNomDocument,
+                                    rolActual,
+                                    nomsArxius,
+                                    errors);
+                        } catch (Exception e) {
+                            StringBuilder errMsg = new StringBuilder("Hi ha hagut un error executant el contingut de l'acció massiva [id=" + emc.getId());
+                            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                            errMsg.append(", tipus=" + em.getTipus());
+                            errMsg.append(", auth=" + (auth != null ? auth.getPrincipal() : "-"));
+                            if (auth != null) {
+                                errMsg.append(", rols=[");
+                                for (GrantedAuthority ga : auth.getAuthorities()) {
+                                    errMsg.append(ga.getAuthority()).append(" ");
+                                }
+                                errMsg.append("]");
                             }
+                            errMsg.append("]");
+//                            logger.error(errMsg.toString(), e);
+                            this.updateErrorNewTransaction(
+                                    emc,
+                                    new Date(),
+                                    e.getMessage());
+                            continue;
                         }
-                        if (fitxer == null) {
-                            try {
-                                fitxer = registreHelper.getAnnexFitxer(annex.getId(), false);
-                            } catch (Exception e) {
-                                String errMsg = "[" + annex.getRegistre().getNumero() + "] - Error obtenint la versió original del l'annex " + annex.getId() + " \"" + annex.getTitol() + "\". Error: \\\""
-                                        + e.getClass() + " " + e.getMessage() + "\"";
-                                errors.add(errMsg);
-                                continue;
-                            }
-                        }
-
-                        String nomDoc;
-                        switch (nomDocument) {
-                            case TITLE:
-                                nomDoc = annex.getTitol() + "." + fitxer.getExtensio();
-                                break;
-                            case TITLE_ORIGINAL:
-                                nomDoc = annex.getTitol() + " - " + fitxer.getNom();
-                                break;
-                            default:
-                                nomDoc = fitxer.getNom();
-                                break;
-                        }
-                        nomDoc = nomDoc.replaceAll("/", "_");
-
-                        if (estructuraCarpetes) {
-                            nomDoc = annex.getRegistre().getNumero().replaceAll("/", "_") + "/" + nomDoc;
-                        }
-
-                        String recursNom = this.getZipRecursNom(nomDoc, nomsArxius);
-                        ze = new ZipEntry(recursNom);
-                        out.putNextEntry(ze);
-                        if (fitxer.getContingut() != null) {
-                            out.write(fitxer.getContingut());
-                            nomsArxius.add(recursNom);
-                        }
-                        out.closeEntry();
-                    }
-                    if (!errors.isEmpty()) {
-                        StringBuilder avisosContent = new StringBuilder();
-                        for(String error : errors) {
-                            avisosContent.append(error).append("\n\n");
-                        }
-                        ZipEntry entry = new ZipEntry("errors.txt");
-                        byte[] contingut = avisosContent.toString().getBytes();
-                        entry.setSize(contingut.length);
-                        out.putNextEntry(entry);
-                        out.write(contingut);
-                        out.closeEntry();
-                    }
-                } finally {
-            		out.close();
+                        this.updateFinalitzatNewTransaction(emc, new Date());
+//                    }
                 }
-                return documentNom;
+
+                if (!errors.isEmpty()) {
+                    StringBuilder avisosContent = new StringBuilder();
+                    for(String error : errors) {
+                        avisosContent.append(error).append("\n\n");
+                    }
+                    ZipEntry entry = new ZipEntry("errors.txt");
+                    byte[] contingut = avisosContent.toString().getBytes();
+                    entry.setSize(contingut.length);
+                    zip.putNextEntry(entry);
+                    zip.write(contingut);
+                    zip.closeEntry();
+                }
+                zip.close();
+
+//                if (this.isFinalitzableNewTransaction(em)) {
+                    em.setNomDocument(documentNom);
+                    this.updateFinalitzatNewTransaction(em, new Date());
+                    emailHelper.sendEmailAccioMassiva(em, errors);
+//                }
             } else {
                 throw new Exception("Empty params");
+            }
+        } catch(Exception e) {
+            throw new RuntimeException("Error no controlat executant l'acció massvia: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void descarregarAnnexos(Long emcId, ZipOutputStream zip, boolean estructuraCarpetes, boolean versioImprimible, FileNameOption tipusNomDocument, String rolActual, List<String> nomsArxius, List<String> errors) {
+        ExecucioMassivaContingutEntity emc = execucioMassivaContingutRepository.findById(emcId).get();
+        try {
+            RegistreEntity registre = registreRepository.findById(emc.getElementId()).get();
+            List<RegistreAnnexEntity> annexos = registre.getAnnexos().stream()
+                    .filter(a -> (!"tothom".equalsIgnoreCase(rolActual) || a.getSicresTipusDocument() == null || !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(a.getSicresTipusDocument())))
+                    .collect(Collectors.toList());
+
+            ZipEntry ze;
+            for (RegistreAnnexEntity annex : annexos) {
+                FitxerDto fitxer = null;
+                if (versioImprimible && registreHelper.potGenerarVersioImprimible(annex)) {
+                    try {
+                        fitxer = registreHelper.getAnnexFitxerImprimible(annex);
+                    } catch (Exception e) {
+                        String errMsg = "[" + annex.getRegistre().getNumero() + "] - Error obtenint la versió imprimible del l'annex " + annex.getId() + " \"" + annex.getTitol() + "\", es procedeix a consultar l'original. Error: \\\""
+                                + e.getClass() + " " + e.getMessage() + "\"";
+                        errors.add(errMsg);
+                    }
+                }
+                if (fitxer == null) {
+                    try {
+                        fitxer = registreHelper.getAnnexFitxer(annex.getId(), false);
+                    } catch (Exception e) {
+                        String errMsg = "[" + annex.getRegistre().getNumero() + "] - Error obtenint la versió original del l'annex " + annex.getId() + " \"" + annex.getTitol() + "\". Error: \\\""
+                                + e.getClass() + " " + e.getMessage() + "\"";
+                        errors.add(errMsg);
+                        continue;
+                    }
+                }
+
+                String nomDoc;
+                switch (tipusNomDocument) {
+                    case TITLE:
+                        nomDoc = annex.getTitol() + "." + fitxer.getExtensio();
+                        break;
+                    case TITLE_ORIGINAL:
+                        nomDoc = annex.getTitol() + " - " + fitxer.getNom();
+                        break;
+                    default:
+                        nomDoc = fitxer.getNom();
+                        break;
+                }
+                nomDoc = nomDoc.replaceAll("/", "_");
+
+                if (estructuraCarpetes) {
+                    nomDoc = annex.getRegistre().getNumero().replaceAll("/", "_") + "/" + nomDoc;
+                }
+
+                String recursNom = this.getZipRecursNom(nomDoc, nomsArxius);
+                ze = new ZipEntry(recursNom);
+                zip.putNextEntry(ze);
+                if (fitxer.getContingut() != null) {
+                    zip.write(fitxer.getContingut());
+                    nomsArxius.add(recursNom);
+                }
+                zip.closeEntry();
             }
         } catch(Exception e) {
         	throw new RuntimeException("Error no controlat executant l'acció massvia: " + e.getMessage(), e);
         }
     }
-
-    private ZipOutputStream getZipOrElseNew(String ruta, List<String> nameList) {
-        Path path = Paths.get(ruta);
-        byte[] datosOriginales = null;
-
-        try {
-            // Si no existe, no hace nada (datosOriginales sigue siendo null)
-            if (Files.exists(path) && Files.isRegularFile(path)) {
-                datosOriginales = Files.readAllBytes(path);
-            }
-
-            // Crea el archivo si no existe, o lo vacía si existe
-            FileOutputStream fos = new FileOutputStream(ruta);
-            ZipOutputStream zos = new ZipOutputStream(fos);
-
-            if (datosOriginales != null) {
-                try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(datosOriginales))) {
-                    ZipEntry entry;
-                    while ((entry = zis.getNextEntry()) != null) {
-                        zos.putNextEntry(new ZipEntry(entry.getName()));
-                        nameList.add(entry.getName());
-                        zis.transferTo(zos);
-                        zos.closeEntry();
-                    }
-                }
-            }
-            return zos;
-
-        } catch (Exception e) {
-            throw new RuntimeException("Error de E/S al preparar el ZIP en: " + ruta, e);
-        }
-    }
-    
-    /** Mètode per informar per email del fi de l'execució massiva de la generació del zip a partir dels documnets de diferents annexos.*/
-	public void enviarEmailFi(ExecucioMassivaEntity em, List<String> errors) {
-	    emailHelper.sendEmailAccioMassiva(em, errors);
-	}
-
 
     private String getZipRecursNom(String nomEntrada, List<String> nomsArxius) {
         int contador = 0;
@@ -460,6 +470,7 @@ public class ExecucioMassivaHelper {
             temp = nomEntrada.substring(0, nomEntrada.lastIndexOf(".")) +
                     " (" + contador + ")" + nomEntrada.substring(nomEntrada.lastIndexOf("."));
         }
+        nomsArxius.add(temp);
         return temp;
     }
 	

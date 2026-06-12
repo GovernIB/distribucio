@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+import java.util.zip.ZipOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,11 +196,12 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 			EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(entitatId, false, false, false);
 			List<ExecucioMassivaEntity> ems = execucioMassivaRepository.findMassivesAmbPendentsByEntitatPerProcessar(new Date(), entitatId);
 			String missatge = null;
-			List<String> errors = new ArrayList<>();
 			
 			if (ems != null && ems.size() > 0) {
 				ExecucioMassivaEntity em = ems.get(0);
-                if (em.getContinguts() != null) {
+                if (ExecucioMassivaTipusDto.DESCARREGAR.equals(em.getTipus())) {
+                    execucioMassivaHelper.descarregarAnnexos(entitatId, em);
+                } else if (em.getContinguts() != null) {
                 	ConfigHelper.setEntitatActualCodi(em.getEntitat().getCodi());
 					execucioMassivaHelper.updateProcessantNewTransaction(em, new Date());
 
@@ -279,13 +281,6 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 
 									emc.updateMissatge(missatge);
 									break;
-								case DESCARREGAR:
-                                    missatge = execucioMassivaHelper.descarregarAnnexos(
-			                        		entitat.getId(), 
-			                        		emc.getId(),
-			                        		errors);
-                                    em.setNomDocument(missatge);
-									break;
 								default:
 									break;
 								}
@@ -313,16 +308,6 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 								removeAuthentication();
 							}
                             execucioMassivaHelper.updateFinalitzatNewTransaction(emc, new Date());
-						}
-					}
-					
-					// En el cas de la generació del zip envia un correu
-					if (ExecucioMassivaTipusDto.DESCARREGAR.equals(em.getTipus())) {
-						try { 
-							execucioMassivaHelper.enviarEmailFi(em, errors);
-						} catch(Exception e) {
-							String errMsg = "Error enviant l'email de fi de tasca massiva amb id " + em.getId() + ": " + e.getMessage();
-							logger.error(errMsg, e);
 						}
 					}
 
