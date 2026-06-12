@@ -368,6 +368,7 @@ pageContext.setAttribute(
 										<span class="fa fa-times"></span>&nbsp;<spring:message code="accio.massiva.header.accion.cancelar"/>
 									</a>
 								</li>
+                                <c:if test="${exm.tipus != 'DESCARREGAR'}">
 								<c:choose>
 									<c:when test="${exm.estat == 'PAUSADA' && exm.emcPausat}">
 										<li>
@@ -384,6 +385,7 @@ pageContext.setAttribute(
 										</li>
 									</c:otherwise>
 								</c:choose>
+                                </c:if>
 							</ul>
 			          	</div>
 			        </div>

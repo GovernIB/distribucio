@@ -336,7 +336,8 @@ public class ExecucioMassivaHelper {
                 ZipOutputStream zip = new ZipOutputStream(fos);
 
                 for (ExecucioMassivaContingutEntity emc: em.getContinguts()) {
-//                    if (this.isEmcDisponibleNewTransaction(emc)) {
+                    if (this.isEmcDisponibleNewTransaction(emc)) {
+                        this.updateProcessantNewTransaction(emc, new Date());
                         try {
                             this.descarregarAnnexos(
                                     emc.getId(),
@@ -368,7 +369,7 @@ public class ExecucioMassivaHelper {
                             continue;
                         }
                         this.updateFinalitzatNewTransaction(emc, new Date());
-//                    }
+                    }
                 }
 
                 if (!errors.isEmpty()) {
@@ -383,13 +384,13 @@ public class ExecucioMassivaHelper {
                     zip.write(contingut);
                     zip.closeEntry();
                 }
-                zip.close();
 
-//                if (this.isFinalitzableNewTransaction(em)) {
+                if (this.isFinalitzableNewTransaction(em)) {
+                    zip.close();
                     em.setNomDocument(documentNom);
                     this.updateFinalitzatNewTransaction(em, new Date());
                     emailHelper.sendEmailAccioMassiva(em, errors);
-//                }
+                }
             } else {
                 throw new Exception("Empty params");
             }
