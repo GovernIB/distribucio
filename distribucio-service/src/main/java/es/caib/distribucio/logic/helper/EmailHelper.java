@@ -224,7 +224,7 @@ public class EmailHelper {
             missatge.setFrom(getRemitent());
             missatge.setSubject(this.getPrefixDistribucio() + " Fi de la tasca de descàrrega de " + em.getContinguts().size() + " anotacions");
 
-            String mssg = "L’informam que l’acció massiva de descàrrega de justificants i annexos, programada el " + new SimpleDateFormat("dd 'de' MMMM 'de' yyyy 'a les' HH:mm:ss", new Locale("ca_ES")).format(new Date()) + ", ha finalitzat correctament.\n" +
+            String mssg = "L’informam que l’acció massiva de descàrrega de justificants i annexos, programada el " + new SimpleDateFormat("dd 'de' MMMM 'de' yyyy 'a les' HH:mm:ss 'hores'", new Locale("ca_ES")).format(new Date()) + ", ha finalitzat correctament.\n" +
                     "Té el document disponible per a la seva descàrrega durant " + maxDies + " dies.\n" +
                     "Enllaç al document: \n" + configHelper.getConfig("es.caib.distribucio.app.base.url") + "/massiva/descarregar/" + em.getId() + "/0 \n";
 
