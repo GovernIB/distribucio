@@ -1,7 +1,10 @@
 package es.caib.distribucio.logic.helper;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -12,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import javax.mail.MessagingException;
 
@@ -313,7 +317,7 @@ public class ExecucioMassivaHelper {
     
     /** Descarrega tots els annexos d'una anotació i els afegeix en el zip temporal de l'execució massiva. */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void descarregarAnnexos(Long entitatId, Long emcId, List<String> errors) {
+    public String descarregarAnnexos(Long entitatId, Long emcId, List<String> errors) {
         EntitatEntity entity = entitatRepository.findById(entitatId).get();
         ConfigHelper.setEntitatActualCodi(entity.getCodi());
         ExecucioMassivaContingutEntity emc = execucioMassivaContingutRepository.findById(emcId).get();
@@ -333,24 +337,8 @@ public class ExecucioMassivaHelper {
                 // Comprova si el directori l'Arxiu ja existeix, si no el crea
                 String directoriDesti = configHelper.getConfig("es.caib.distribucio.fitxers");
                 String documentNom = "/exportZip/annexosRegistres_" + em.getId() + ".zip";
-                File fContent = new File(directoriDesti + documentNom);
-                fContent.getParentFile().mkdirs();
                 List<String> nomsArxius = new ArrayList<String>();
-                if (!fContent.exists()) {
-            		fContent.createNewFile();
-                } else {
-                	// Afegeix totes les entrades de fitxers com a noms existents
-                	ZipEntry entry;
-                	ZipInputStream zip = new ZipInputStream(new FileInputStream(fContent));
-                	while((entry = zip.getNextEntry()) != null) {
-                		if (!entry.isDirectory() ) {
-                			nomsArxius.add(entry.getName());
-                		}
-                	}
-                	zip.close();
-                }
-                java.io.FileOutputStream fos = new java.io.FileOutputStream(fContent);
-        		java.util.zip.ZipOutputStream out = new java.util.zip.ZipOutputStream(fos);
+        		ZipOutputStream out = this.getZipOrElseNew(directoriDesti + documentNom, nomsArxius);
                 ZipEntry ze;
                 try {
                 	for (RegistreAnnexEntity annex : annexos) {
@@ -416,10 +404,45 @@ public class ExecucioMassivaHelper {
                     }
                 } finally {
             		out.close();
-                }            	
+                }
+                return documentNom;
+            } else {
+                throw new Exception("Empty params");
             }
         } catch(Exception e) {
         	throw new RuntimeException("Error no controlat executant l'acció massvia: " + e.getMessage(), e);
+        }
+    }
+
+    private ZipOutputStream getZipOrElseNew(String ruta, List<String> nameList) {
+        Path path = Paths.get(ruta);
+        byte[] datosOriginales = null;
+
+        try {
+            // Si no existe, no hace nada (datosOriginales sigue siendo null)
+            if (Files.exists(path) && Files.isRegularFile(path)) {
+                datosOriginales = Files.readAllBytes(path);
+            }
+
+            // Crea el archivo si no existe, o lo vacía si existe
+            FileOutputStream fos = new FileOutputStream(ruta);
+            ZipOutputStream zos = new ZipOutputStream(fos);
+
+            if (datosOriginales != null) {
+                try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(datosOriginales))) {
+                    ZipEntry entry;
+                    while ((entry = zis.getNextEntry()) != null) {
+                        zos.putNextEntry(new ZipEntry(entry.getName()));
+                        nameList.add(entry.getName());
+                        zis.transferTo(zos);
+                        zos.closeEntry();
+                    }
+                }
+            }
+            return zos;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error de E/S al preparar el ZIP en: " + ruta, e);
         }
     }
     

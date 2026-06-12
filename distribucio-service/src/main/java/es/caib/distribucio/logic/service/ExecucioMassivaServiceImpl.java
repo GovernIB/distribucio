@@ -280,10 +280,11 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 									emc.updateMissatge(missatge);
 									break;
 								case DESCARREGAR:
-			                        execucioMassivaHelper.descarregarAnnexos(
+                                    missatge = execucioMassivaHelper.descarregarAnnexos(
 			                        		entitat.getId(), 
 			                        		emc.getId(),
 			                        		errors);
+                                    em.setNomDocument(missatge);
 									break;
 								default:
 									break;

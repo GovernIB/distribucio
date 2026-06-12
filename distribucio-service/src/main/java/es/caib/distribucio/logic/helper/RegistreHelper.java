@@ -2185,7 +2185,7 @@ public class RegistreHelper {
 	}
 	
 	public FitxerDto getAnnexFitxer(Long annexId, boolean ambVersioImprimible) {
-		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(annexId);
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findById(annexId).get();
 	    RegistreEntity registre = registreAnnexEntity.getRegistre();
 	    FitxerDto fitxerDto = new FitxerDto();
 	    // if annex is already created in arxiu take content from arxiu
