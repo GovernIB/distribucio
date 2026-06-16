@@ -21,4 +21,7 @@ public class AnotacioRegistreId {
 	private String identificador;
 	private String clauAcces;
 
+    public void setIndetificador(String indetificador) {
+        this.identificador = indetificador;
+    }
 }
