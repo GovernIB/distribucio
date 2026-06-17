@@ -74,7 +74,6 @@ import es.caib.pluginsib.arxiu.api.Firma;
 import es.caib.pluginsib.arxiu.api.FirmaPerfil;
 import es.caib.pluginsib.arxiu.api.FirmaTipus;
 import es.caib.pluginsib.arxiu.caib.ArxiuConversioHelper;
-//import es.caib.pluginsib.arxiu.filesystem.ArxiuPluginFilesystem;
 import es.caib.pluginsib.arxiu.filesystem.ArxiuPluginFilesystem;
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -675,9 +674,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 
 				integracioAddAccioOk(
 						integracioArxiuCodi,
-                        this.getUsuariIntegracio(),
 						accioDescripcio,
-                        this.getUsuariIntegracio(),
 						accioParams,
 						System.currentTimeMillis() - t0);
 			} else if (DocumentEstat.DEFINITIU.equals(estatDocument)) {
@@ -703,9 +700,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 				contingutFitxer = getArxiuPlugin().documentModificar(document);
 				integracioAddAccioOk(
 						integracioArxiuCodi,
-                        this.getUsuariIntegracio(),
 						accioDescripcio,
-                        this.getUsuariIntegracio(),
 						accioParams,
 						System.currentTimeMillis() - t0);
 			}
@@ -724,9 +719,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			}
 			integracioAddAccioError(
 					integracioArxiuCodi,
-                    this.getUsuariIntegracio(),
 					accioDescripcio,
-                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - t0,
 					errorDescripcio,
@@ -1027,7 +1020,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 												signatura.getContingut().length : "-"));
 			integracioAddAccioOk(
 					integracioSignaturaCodi,
-                    null,
+                    this.obtenirNumeroRegistre(),
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -1037,7 +1030,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			String errorDescripcio = "Error al firmar document en servidor. ";
 			integracioAddAccioError(
 					integracioSignaturaCodi,
-                    null,
+                    this.obtenirNumeroRegistre(),
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -1104,9 +1097,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			salutPluginComponent.incrementarOperacioOk(System.currentTimeMillis() - start);
 			integracioAddAccioOk(
 					integracioArxiuCodi,
-                    obtenirNumeroRegistre(),
 					accioDescripcio,
-                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - start);
 		} catch (Exception ex) {
@@ -1118,9 +1109,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			String errorDescripcio = "Error al obtenir detalls del document : " + excMsg;
 			integracioAddAccioError(
 					integracioArxiuCodi,
-                    obtenirNumeroRegistre(),
 					accioDescripcio,
-                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - start,
 					errorDescripcio,
@@ -1146,18 +1135,14 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			documentImprimible = getArxiuPlugin().documentImprimible(identificadorArxiu);
 			integracioAddAccioOk(
 					integracioArxiuCodi,
-                    this.obtenirNumeroRegistre(),
 					accioDescripcio,
-                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - t0);
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al generar la versió imprimible del document. ";
 			integracioAddAccioError(
 					integracioArxiuCodi,
-                    this.obtenirNumeroRegistre(),
 					accioDescripcio,
-                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - t0,
 					errorDescripcio,
@@ -1186,9 +1171,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					baos);
 			integracioAddAccioOk(
 					itegracioGesdocCodi,
-                    this.obtenirNumeroRegistre(),
 					accioDescripcio,
-                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - t0);
 			return baos.toByteArray();
@@ -1196,9 +1179,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			String errorDescripcio = "Error al obtenir arxiu de la gestió documental. ";
 			integracioAddAccioError(
 					itegracioGesdocCodi,
-                    this.obtenirNumeroRegistre(),
 					accioDescripcio,
-                    this.getUsuariIntegracio(),
 					accioParams,
 					System.currentTimeMillis() - t0,
 					errorDescripcio,
@@ -1586,7 +1567,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			long tempsResposta) {
 		this.integracioAddAccioOk(
 				integracioCodi,
-                null,
+                this.obtenirNumeroRegistre(),
 				descripcio,
 				this.getUsuariIntegracio(),
 				parametres,
@@ -1620,7 +1601,7 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 			Throwable throwable) {
 		this.integracioAddAccioError(
 				integracioCodi,
-                null,
+                this.obtenirNumeroRegistre(),
 				descripcio,
 				this.getUsuariIntegracio(),
 				parametres,
