@@ -942,12 +942,14 @@ public class ContingutHelper {
 					// Copia el contingut dins la gestió documental per no compartir contingut que s'esborrarà en guardar-se a l'Arxiu
 					ByteArrayOutputStream contingutOut = new ByteArrayOutputStream();
 					gestioDocumentalHelper.gestioDocumentalGet(
-							registreAnnex.getGesdocDocumentId(), 
+							registreAnnex.getGesdocDocumentId(),
+                            registreAnnex.getTitol(),
 							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
 							contingutOut,
 							registreOriginal.getNumero());
 					byte[] contingut = contingutOut.toByteArray();
 					gestioDocumentalId = gestioDocumentalHelper.gestioDocumentalCreate(
+                            registreAnnex.getFitxerNom(),
 							GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
 							contingut,
 							registreOriginal.getNumero());
@@ -983,12 +985,14 @@ public class ContingutHelper {
 						// Copia la firma dins la gestió documental per no compartir contingut que s'esborrarà en guardar-se a l'Arxiu
 						ByteArrayOutputStream contingutOut = new ByteArrayOutputStream();
 						gestioDocumentalHelper.gestioDocumentalGet(
-								firma.getGesdocFirmaId(), 
+								firma.getGesdocFirmaId(),
+                                firma.getFitxerNom(),
 								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
 								contingutOut,
 								registreOriginal.getNumero());
 						byte[] contingut = contingutOut.toByteArray();
 						gestioDocumentalFirmaId = gestioDocumentalHelper.gestioDocumentalCreate(
+                                firma.getFitxerNom(),
 								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
 								contingut,
 								registreOriginal.getNumero());
@@ -1277,8 +1281,7 @@ public class ContingutHelper {
 	}
 
 	public int getEnviarIdsAnotacionsMaxReintentsProperty(EntitatEntity entitat) {
-		EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
-		String maxReintents = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
+		String maxReintents = configHelper.getConfigForEntitat(entitat != null ? entitat.getCodi() : null, "es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
 		} else {

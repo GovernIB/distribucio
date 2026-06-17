@@ -80,7 +80,6 @@ import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto.Classificacio
 import es.caib.distribucio.logic.intf.dto.ContingutDto;
 import es.caib.distribucio.logic.intf.dto.DadaDto;
 import es.caib.distribucio.logic.intf.dto.DocumentEniRegistrableDto;
-import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
 import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.FitxerDto;
@@ -807,7 +806,7 @@ public class RegistreServiceImpl implements RegistreService {
             sqlWhere.append(" ) > 0");
 		}
 		if (!esNullInteressat) {
-			sqlWhere.append("and (select count(interessat) ");
+			sqlWhere.append(" and (select count(interessat) ");
 			sqlWhere.append("			from r.interessats as interessat ");
 			sqlWhere.append("			where ");
 			sqlWhere.append("				(lower(interessat.documentNum||' '||interessat.nom||' '||interessat.llinatge1||' '||interessat.llinatge2) like lower('%'||:interessat||'%') ");
@@ -824,11 +823,10 @@ public class RegistreServiceImpl implements RegistreService {
 			}
 		}
 		if (!esNullReintentsPendents) {
-            EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
             int maxBackoffice = registreHelper.getEnviarIdsAnotacionsMaxReintentsProperty(entitat);
             int maxAnnex = this.getGuardarAnnexosMaxReintentsProperty(entitat);
-            String maxRegla = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.aplicar.regles.max.reintents");
-            String maxError = configHelper.getConfig("es.caib.distribucio.backoffice.reintentar.processament.max.reintents");
+            String maxRegla = configHelper.getConfigForEntitat(entitat != null ? entitat.getCodi() : null, "es.caib.distribucio.tasca.aplicar.regles.max.reintents");
+            String maxError = configHelper.getConfigForEntitat(entitat != null ? entitat.getCodi() : null, "es.caib.distribucio.backoffice.reintentar.processament.max.reintents");
 
             if (Boolean.TRUE.equals(reintentsPendents)) {
                 sqlWhere.append("and (");
@@ -980,8 +978,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 
 	private int getGuardarAnnexosMaxReintentsProperty(EntitatEntity entitat) {
-		EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
-		String maxReintents = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.guardar.annexos.max.reintents");
+		String maxReintents = configHelper.getConfigForEntitat(entitat != null ? entitat.getCodi() : null, "es.caib.distribucio.tasca.guardar.annexos.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
 		} else {
@@ -1670,9 +1667,7 @@ public class RegistreServiceImpl implements RegistreService {
 			List<Long> registresId = this.findRegistresPerIdentificador(id);
 			RegistreEntity registreEntity = registreRepository.findById(registresId.get(0)).orElseThrow();
 
-			EntitatDto entitatDto = new EntitatDto();
-			entitatDto.setCodi(registreEntity.getEntitat().getCodi());
-			ConfigHelper.setEntitat(entitatDto);
+			ConfigHelper.setEntitatActualCodi(registreEntity.getEntitat().getCodi());
 
 			anotacioPerBackoffice.setIdentificador(registreEntity.getNumero());
 			anotacioPerBackoffice.setData(registreEntity.getData());
@@ -1732,9 +1727,7 @@ public class RegistreServiceImpl implements RegistreService {
 			List<RegistreEntity> registresEntity = this.getRegistresPerNumeroRegistre(identificador, dataRegistre);
 
 			for (RegistreEntity registreEntity : registresEntity) {
-				EntitatDto entitatDto = new EntitatDto();
-				entitatDto.setCodi(registreEntity.getEntitatCodi());
-				ConfigHelper.setEntitat(entitatDto);
+				ConfigHelper.setEntitatActualCodi(registreEntity.getEntitatCodi());
 	
 				AnotacioRegistreEntrada anotacioPerBackoffice = new AnotacioRegistreEntrada();
 				
@@ -1816,7 +1809,6 @@ public class RegistreServiceImpl implements RegistreService {
 		try {
 			// L'obté amb bloqueig per si s'està actualitzant
 			RegistreEntity registre = registreRepository.findOneAmbBloqueig(registreId);
-			EntitatDto entitatDto = new EntitatDto();
 			
 			// Si el backoffice comunica que està rebuda i l'anotació està pendent de regla o processada llavors no es canvia l'estat
 			if (estat.equals(Estat.REBUDA)) {
@@ -1836,8 +1828,7 @@ public class RegistreServiceImpl implements RegistreService {
                 }
             }
 
-			entitatDto.setCodi(registre.getEntitat().getCodi());
-			ConfigHelper.setEntitat(entitatDto);
+			ConfigHelper.setEntitatActualCodi(registre.getEntitat().getCodi());
 			switch (estat) {
 			case PENDENT:
 			case REBUDA:
@@ -2206,7 +2197,8 @@ public class RegistreServiceImpl implements RegistreService {
 			if (firmaEntity.getGesdocFirmaId() != null) {
 				ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
 				gestioDocumentalHelper.gestioDocumentalGet(
-						firmaEntity.getGesdocFirmaId(), 
+						firmaEntity.getGesdocFirmaId(),
+                        firmaEntity.getFitxerNom(),
 						GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
 						streamAnnexFirma,
 						registre.getNumero());
@@ -2232,9 +2224,9 @@ public class RegistreServiceImpl implements RegistreService {
 		FitxerDto zip = new FitxerDto();
 
 		RegistreEntity registre = registreRepository.getReferenceById(registreId);
-		EntitatDto entitatDto = null;
+		String entitatActualCodi = null;
 		if (rolActual == null) {
-			entitatDto = conversioTipusHelper.convertir(registre.getEntitat(), EntitatDto.class);
+			entitatActualCodi = registre.getEntitat().getCodi();
 		}
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(baos);		
@@ -2258,7 +2250,7 @@ public class RegistreServiceImpl implements RegistreService {
 
 						Runnable thread = 
 								new GetZipDocumentacioThread(
-								rolActual == null ? entitatDto : ConfigHelper.getEntitat(),
+								rolActual == null ? entitatActualCodi : ConfigHelper.getEntitatActualCodi(),
 								registreHelper,
 								registre.getJustificant() != null ? registre.getJustificant().getId() : null,
 								registre.getNumero(),
@@ -2270,8 +2262,8 @@ public class RegistreServiceImpl implements RegistreService {
 								zipItems,
 								executor,
 								errors,
-								ambVersioImprimible);
-						
+								ambVersioImprimible && registreHelper.potGenerarVersioImprimible(annex));
+
 						wrappedRunnable = new DelegatingSecurityContextRunnable(thread, context);
 						executor.execute(wrappedRunnable);					}
 				}
@@ -2350,14 +2342,13 @@ public class RegistreServiceImpl implements RegistreService {
 	 */
 	protected class GetZipDocumentacioThread implements Runnable {
 
-		private EntitatDto entitatActual;
+		private String entitatActualCodi;
 		private Long justificantId;
 		private String registreNumero;
 		private Long annexID;
 		private String annexTitol; 
 		private String annexFitxerNom;
 		private Set<String> nomsArxius;
-		private ZipOutputStream zip;
 		private List<FitxerDto> zipItems;
 		ExecutorService executor;
 		private List<String> errors;
@@ -2368,7 +2359,7 @@ public class RegistreServiceImpl implements RegistreService {
 		 * @param errors 
 		 * @param errors */
 		public GetZipDocumentacioThread(
-				EntitatDto entitatActual,
+				String entitatActualCodi,
 				RegistreHelper registreHelper, 
 				Long justificantId, 
 				String registreNumero, 
@@ -2381,24 +2372,23 @@ public class RegistreServiceImpl implements RegistreService {
 				ExecutorService executor, 
 				List<String> errors,
 				boolean ambVersioImprimible) {
-			this.entitatActual = entitatActual;
+			this.entitatActualCodi = entitatActualCodi;
 			this.justificantId = justificantId;
 			this.registreNumero = registreNumero;
 			this.annexID = annexID;
 			this.annexTitol = annexTitol;
 			this.annexFitxerNom = annexFitxerNom;
 			this.nomsArxius = nomsArxius;
-			this.zip = zip;
 			this.zipItems = zipItems;
 			this.executor = executor;
 			this.errors = errors;
 			this.ambVersioImprimible = ambVersioImprimible;
 		}
 
-		@Transactional(readOnly = true)
+		@Transactional
 		@Override
 		public void run() {
-			ConfigHelper.setEntitat(this.entitatActual);
+			ConfigHelper.setEntitatActualCodi(this.entitatActualCodi);
 			try {		
 				String nom;
 				FitxerDto fitxer = null;

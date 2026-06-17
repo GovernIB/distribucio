@@ -27,6 +27,7 @@ public class ExecucioMassivaDto extends AuditoriaDto implements Serializable {
 	private List<ExecucioMassivaContingutDto> continguts;
 	private List<Long> contingutIds = new ArrayList<Long>();
 	private String parametres;
+	private String nomDocument;
 	private double executades;
 	private int errors;
 	private int cancelats;

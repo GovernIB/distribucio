@@ -5,6 +5,10 @@ package es.caib.distribucio.logic.service;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -19,10 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import es.caib.distribucio.logic.helper.*;
-import es.caib.distribucio.logic.intf.dto.*;
-import es.caib.distribucio.persist.entity.*;
-import es.caib.distribucio.persist.repository.ContingutComentariRepository;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,22 +40,28 @@ import com.codahale.metrics.Timer;
 import es.caib.distribucio.logic.config.SegonPlaConfig;
 import es.caib.distribucio.logic.helper.BustiaHelper;
 import es.caib.distribucio.logic.helper.ConfigHelper;
-import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.EmailHelper;
+import es.caib.distribucio.logic.helper.EntitatHelper;
 import es.caib.distribucio.logic.helper.HistogramPendentsHelper;
 import es.caib.distribucio.logic.helper.HistoricHelper;
 import es.caib.distribucio.logic.helper.RegistreHelper;
+import es.caib.distribucio.logic.intf.dto.ReglaDto;
+import es.caib.distribucio.logic.intf.dto.SemaphoreDto;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.SegonPlaService;
 import es.caib.distribucio.logic.intf.service.ServeiService;
+import es.caib.distribucio.persist.entity.BustiaEntity;
 import es.caib.distribucio.persist.entity.ContingutMovimentEmailEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
+import es.caib.distribucio.persist.entity.ExecucioMassivaEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.repository.ContingutMovimentEmailRepository;
 import es.caib.distribucio.persist.repository.EntitatRepository;
+import es.caib.distribucio.persist.repository.ExecucioMassivaRepository;
 import es.caib.distribucio.persist.repository.UsuariRepository;
 
 /**
@@ -82,15 +89,11 @@ public class SegonPlaServiceImpl implements SegonPlaService {
     @Autowired
     private HistoricHelper historicHelper;
     @Autowired
+    private EntitatHelper entitatHelper;
+    @Autowired
     private MonitorIntegracioService monitorIntegracioService;
     @Autowired
     private EntitatRepository entitatRepository;
-    @Autowired
-    private ContingutComentariRepository contingutComentariRepository;
-    @Autowired
-    private ConversioTipusHelper conversioTipusHelper;
-    @Autowired
-    private ContingutLogHelper contingutLogHelper;
     @Autowired
     private ProcedimentService procedimentService;
     @Autowired
@@ -99,10 +102,10 @@ public class SegonPlaServiceImpl implements SegonPlaService {
     private ExecucioMassivaService execucioMassivaService;
     @Autowired
     private UsuariRepository usuariRepository;
-    @Autowired
-    private RegistreServiceImpl registreServiceImpl;
 	@Autowired
 	private SegonPlaConfig schedulingConfig;
+    @Autowired
+    private ExecucioMassivaRepository execucioMassivaRepository;
 
     private static Map<Long, String> errorsMassiva = new HashMap<Long, String>();
 
@@ -119,9 +122,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
         }
         if (bustiaHelper.isProcessamentAsincronProperty()) {
             for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
-                EntitatDto entitatDto = new EntitatDto();
-                entitatDto.setCodi(entitat.getCodi());
-                ConfigHelper.setEntitat(entitatDto);
+                ConfigHelper.setEntitatActualCodi(entitat.getCodi());
                 int maxReintents = getGuardarAnnexosMaxReintentsProperty(entitat);
                 int maxResultats = 200;
                 int maxThreadsParallel = registreHelper.getMaxThreadsParallelProperty();
@@ -136,7 +137,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
                     for (RegistreEntity pendent : pendents) {
                         Runnable thread =
                                 new GuardarAnotacioPendentThread(
-                                        ConfigHelper.getEntitat(),
+                                        ConfigHelper.getEntitatActualCodi(),
                                         pendent.getId(),
                                         registreHelper);
                         executor.execute(thread);
@@ -160,7 +161,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
      */
     public class GuardarAnotacioPendentThread implements Runnable {
 
-        private EntitatDto entitatActual;
+    	private String entitatActualCodi;
         private RegistreHelper registreHelper;
         private Long registreId;
 
@@ -169,17 +170,17 @@ public class SegonPlaServiceImpl implements SegonPlaService {
          * @param errors
          * @param errors */
         public GuardarAnotacioPendentThread(
-                EntitatDto entitatActual,
+                String entitatActualCodi,
                 Long registreId,
                 RegistreHelper registreHelper) {
-            this.entitatActual = entitatActual;
+            this.entitatActualCodi = entitatActualCodi;
             this.registreId = registreId;
             this.registreHelper = registreHelper;
         }
 
         @Override
         public void run() {
-            ConfigHelper.setEntitat(this.entitatActual);
+            ConfigHelper.setEntitatActualCodi(this.entitatActualCodi);
             registreHelper.processarAnotacioPendentArxiuInThreadExecutor(registreId);
         }
 
@@ -247,9 +248,13 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 
             final Timer timer = metricRegistry.timer(MetricRegistry.name(SegonPlaServiceImpl.class, "enviarIdsAnotacionsPendentsBackoffice"));
             Timer.Context context = timer.time();
-
+            // Fixa l'entitat en les propietats
+        	
+            String entitatCodi = entitatHelper.getCodiEntitat(regla.getEntitatId());
+            ConfigHelper.setEntitatActualCodi(entitatCodi);
+            // Comunica les anotacions
             List<Long> pendentsIdsGroupedByRegla = pendentsByRegla.get(regla);
-            logger.debug("Enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " + regla.getNom());
+            logger.debug("Enviant grup de " + pendentsIdsGroupedByRegla.size() + "anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " + regla.getNom() + " per l'entitat " + entitatCodi);
             Throwable t = registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendentsIdsGroupedByRegla);
             if (t != null) {
                 logger.warn("Error " + t.getClass() + " enviant grup de " + pendentsIdsGroupedByRegla.size() + " anotacions al backoffice " + regla.getBackofficeDestiNom() + " per la regla " +
@@ -302,6 +307,38 @@ public class SegonPlaServiceImpl implements SegonPlaService {
     }
 
     @Override
+    public void esborrarZipAccionsMassives() {
+        long startTime = new Date().getTime();
+        logger.debug("Execució de tasca programada (" + startTime + "): esborrar ZIPs d'accions massives");
+
+        try {
+            int maxDies = Integer.parseInt(configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.caducitat", "10"));
+            Date dataLimit = DateUtils.addDays(
+                    Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()), -maxDies);
+
+            List<ExecucioMassivaEntity> emList = execucioMassivaRepository.findZipByDataLimit(dataLimit);
+            for (ExecucioMassivaEntity em : emList) {
+                String directoriDesti = configHelper.getConfig("es.caib.distribucio.fitxers");
+
+                try {
+                    Path path = Paths.get(directoriDesti + em.getNomDocument());
+                    if (path.toFile().delete()) {
+                        em.setNomDocument(null);
+                        execucioMassivaRepository.saveAndFlush(em);
+                    }
+                } catch (Exception e) {
+                    logger.error("S'ha produit un error al intentar esborrar el document " + em.getNomDocument(), e);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("S'ha produit un error al intentar esborrar ZIPs d'accions massives", e);
+        }
+
+        long stopTime = new Date().getTime();
+        logger.debug("Fi de tasca programada (" + stopTime + "): esborrar ZIPs d'accions massives " + (stopTime - startTime) + "ms");
+    }
+
+    @Override
     public void canviEstatComunicatAPendent() {
         long startTime = new Date().getTime();
         logger.debug("Execució de tasca programada (" + startTime + "): canviar estat comunicat a pendent al backoffice");
@@ -330,9 +367,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 
         for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
 
-            EntitatDto entitatDto = new EntitatDto();
-            entitatDto.setCodi(entitat.getCodi());
-            ConfigHelper.setEntitat(entitatDto);
+            ConfigHelper.setEntitatActualCodi(entitat.getCodi());
 
             int maxReintents = getAplicarReglesMaxReintentsProperty(entitat);
             List<RegistreEntity> pendents = registreHelper.findAmbReglaPendentAplicar(entitat, maxReintents);
@@ -371,9 +406,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 
         for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
 
-            EntitatDto entitatDto = new EntitatDto();
-            entitatDto.setCodi(entitat.getCodi());
-            ConfigHelper.setEntitat(entitatDto);
+            ConfigHelper.setEntitatActualCodi(entitat.getCodi());
 
             List<RegistreEntity> pendents = registreHelper.findPendentsTancarArxiuByEntitat(new Date(), entitat);
             if (pendents != null && !pendents.isEmpty()) {
@@ -572,8 +605,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
     }
 
     private int getGuardarAnnexosMaxReintentsProperty(EntitatEntity entitat) {
-        EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
-        String maxReintents = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.guardar.annexos.max.reintents");
+        String maxReintents = configHelper.getConfigForEntitat(entitat != null ? entitat.getCodi() : null, "es.caib.distribucio.tasca.guardar.annexos.max.reintents");
         if (maxReintents != null) {
             return Integer.parseInt(maxReintents);
         } else {
@@ -583,12 +615,7 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 
     private int getAplicarReglesMaxReintentsProperty(EntitatEntity entitat) {
 		
-		/*String maxReintents = configHelper.getConfig("es.caib.distribucio." + entitat.getCodi() + ".tasca.aplicar.regles.max.reintents");
-		if (maxReintents == null) {
-			maxReintents = configHelper.getConfig("es.caib.distribucio.tasca.aplicar.regles.max.reintents");
-		}*/
-        EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
-        String maxReintents = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.aplicar.regles.max.reintents");
+        String maxReintents = configHelper.getConfigForEntitat(entitat != null ? entitat.getCodi() : null, "es.caib.distribucio.tasca.aplicar.regles.max.reintents");
         if (maxReintents != null) {
             return Integer.parseInt(maxReintents);
         } else {
@@ -623,7 +650,6 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 
 
     @Override
-    @Transactional
     public void reintentarProcessamentBackoffice() {
 
         long startTime = new Date().getTime();
@@ -634,8 +660,10 @@ public class SegonPlaServiceImpl implements SegonPlaService {
 
         for (int i = 0; i < registresBackError.size(); i++) {
             try {
-                List<Long> pendents = new ArrayList<Long>();
-                pendents.add(registresBackError.get(i));
+            	Long anotacioId = registresBackError.get(i);
+            	ConfigHelper.setEntitatActualCodi(entitatHelper.getCodiEntitatRegistre(anotacioId));
+            	List<Long> pendents = new ArrayList<Long>();
+                pendents.add(anotacioId);
                 registreHelper.enviarIdsAnotacionsBackUpdateDelayTime(pendents);
                 logger.info("S'ha reenviat al backoffice l'anotació amb id " + registresBackError.get(i));
             } catch (Exception e) {
@@ -652,7 +680,10 @@ public class SegonPlaServiceImpl implements SegonPlaService {
         List<String> entitatsError = new ArrayList<>();
         for (EntitatEntity entitat : llistaEntitats) {
             try {
-                String disabledEntitat = configHelper.getConfigForEntitat(entitat.getCodi(), "es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments.disable");
+            	// Fixa el codi actual per la configuració
+            	ConfigHelper.setEntitatActualCodi(entitat.getCodi());
+            	// Si està activa llavors actualitza.
+                String disabledEntitat = configHelper.getConfig("es.caib.distribucio.tasca.monitor.integracio.actualitzar.procediments.disable");
                 if (!"true".equals(disabledEntitat)) {
                     procedimentService.findAndUpdateProcediments(entitat.getId());
                 }
@@ -672,7 +703,10 @@ public class SegonPlaServiceImpl implements SegonPlaService {
         List<String> entitatsError = new ArrayList<>();
         for (EntitatEntity entitat : llistaEntitats) {
             try {
-                String disabledEntitat = configHelper.getConfigForEntitat(entitat.getCodi(), "es.caib.distribucio.tasca.monitor.integracio.actualitzar.serveis.disable");
+            	// Fixa el codi actual per la configuració
+            	ConfigHelper.setEntitatActualCodi(entitat.getCodi());
+            	// Si està activa llavors actualitza.
+                String disabledEntitat = configHelper.getConfig("es.caib.distribucio.tasca.monitor.integracio.actualitzar.serveis.disable");
                 if (!"true".equals(disabledEntitat)) {
                     serveiService.findAndUpdateServeis(entitat.getId());
                 }

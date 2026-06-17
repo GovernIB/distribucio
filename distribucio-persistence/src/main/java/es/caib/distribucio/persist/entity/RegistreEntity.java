@@ -556,6 +556,7 @@ public class RegistreEntity extends ContingutEntity {
 		this.procesData = null;
 		this.procesIntents = 0;
 		this.procesError = null;
+        this.backRetryEnviarData = null;
 		this.procesEstat = RegistreProcesEstatEnum.BACK_PENDENT;
 		this.pendent = RegistreProcesEstatEnum.isPendent(procesEstat);
 

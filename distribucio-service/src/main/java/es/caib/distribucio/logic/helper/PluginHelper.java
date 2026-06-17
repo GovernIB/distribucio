@@ -244,14 +244,16 @@ public class PluginHelper {
 			String motiu,
 			byte[] contingut, 
 			String mime,
-			String tipusDocumental) {
+			String tipusDocumental,
+            String numeroRegistre) {
 		return signaturaPluginHelper.signarDocument(
 				id, 
 				nom, 
 				motiu, 
 				contingut, 
 				mime, 
-				tipusDocumental);
+				tipusDocumental,
+                numeroRegistre);
 	}
 
 	public boolean isDadesExternesPluginActiu() {
@@ -286,6 +288,10 @@ public class PluginHelper {
 	public List<Procediment> procedimentFindByCodiDir3(String codiDir3) {
 		return procedimentPluginHelper.procedimentFindByCodiDir3(codiDir3);
 	}
+
+    public Procediment procedimentGetByCodi(String codi) {
+        return procedimentPluginHelper.procedimentGetByCodi(codi);
+    }
 	
 	public boolean isServeiPluginActiu() {
 		return serveiPluginHelper.isActiu();
@@ -293,6 +299,10 @@ public class PluginHelper {
 
 	public List<Servei> serveiFindByCodiDir3(String codiDir3) {
 		return serveiPluginHelper.serveiFindByCodiDir3(codiDir3);
+	}
+
+	public Servei serveiGetByCodi(String codi) {
+		return serveiPluginHelper.serveiGetByCodi(codi);
 	}
 	
 	/** Consulta de l'unitat organitzativa d'un servei.
@@ -314,28 +324,32 @@ public class PluginHelper {
 
 	public void gestioDocumentalGet(
 			String id,
+			String nom,
 			String agrupacio,
 			OutputStream contingutOut,
 			String registreNumero) {
 		gestioDocumentalPluginHelper.gestioDocumentalGet(
-				id, 
+				id,
+                nom,
 				agrupacio, 
 				contingutOut, 
 				registreNumero);
 	}
 
 	public String gestioDocumentalCreate(
+            String nom,
 			String agrupacio,
 			byte[] contingut,
 			String registreNumero) {
 		return gestioDocumentalPluginHelper.gestioDocumentalCreate(
+                nom,
 				agrupacio, 
 				contingut, 
 				registreNumero);
 	}
 
-	public void gestioDocumentalDelete(String id, String agrupacio) {
-		gestioDocumentalPluginHelper.gestioDocumentalDelete(id, agrupacio);
+	public void gestioDocumentalDelete(String id, String nom, String agrupacio, String registreNumero) {
+		gestioDocumentalPluginHelper.gestioDocumentalDelete(id, nom, agrupacio, registreNumero);
 	}
 
 	public void resetPlugins() {

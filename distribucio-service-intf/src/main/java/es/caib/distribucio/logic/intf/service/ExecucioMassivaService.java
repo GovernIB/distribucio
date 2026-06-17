@@ -7,14 +7,12 @@ import java.util.List;
 
 import javax.annotation.security.PermitAll;
 
+import es.caib.distribucio.logic.intf.dto.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaAccioDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import org.springframework.ui.Model;
 
 /**
  * Servei per gestionar les execucions massives.
@@ -103,5 +101,10 @@ public interface ExecucioMassivaService {
 	@PermitAll
 	public void executeNextMassiveScheduledTask(Long entitatId);
 
+    @PreAuthorize("isAuthenticated()")
+    public FitxerDto descarregarDocumentExecMassiva(Long entitatId, Long execucioId);
+
+    @PreAuthorize("isAuthenticated()")
+    public boolean chechFormDescargaMassiva(List<RegistreDto> registres, Model model);
 
 }

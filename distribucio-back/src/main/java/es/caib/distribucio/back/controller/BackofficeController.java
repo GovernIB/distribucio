@@ -3,14 +3,14 @@
  */
 package es.caib.distribucio.back.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import es.caib.distribucio.back.command.BackofficeFiltreCommand;
 import es.caib.distribucio.back.helper.ExceptionHelper;
+import es.caib.distribucio.back.helper.RequestSessionHelper;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,7 +32,6 @@ import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.service.BackofficeService;
 import es.caib.distribucio.logic.intf.service.ReglaService;
 
-
 @Controller
 @RequestMapping("/backoffice")
 public class BackofficeController extends BaseAdminController {
@@ -42,25 +41,56 @@ public class BackofficeController extends BaseAdminController {
 	@Autowired
 	private ReglaService reglaService;
 
+    private static final String SESSION_ATTRIBUTE_FILTRE = "BackofficeController.session.filtre";
+    private static final String SESSION_ATTRIBUTE_SELECCIO = "BackofficeController.session.seleccio";
+
 	@RequestMapping(method = RequestMethod.GET)
-	public String get(
+	public String backofficeGet(
 			HttpServletRequest request,
 			Model model) {
 		getEntitatActualComprovantPermisAdminLectura(request);
+        BackofficeFiltreCommand backofficeFiltreCommand = getFiltreCommand(request);
+        model.addAttribute("backofficeFiltreCommand", backofficeFiltreCommand);
 		return "backofficeList";
 	}
+
+    @RequestMapping(method = RequestMethod.POST)
+    public String backofficePost(
+            HttpServletRequest request,
+            @Valid BackofficeFiltreCommand backofficeFiltreCommand,
+            BindingResult bindingResult,
+            @RequestParam(value = "accio", required = false) String accio,
+            Model model) {
+        if ("netejar".equals(accio)) {
+            RequestSessionHelper.esborrarObjecteSessio(
+                    request,
+                    SESSION_ATTRIBUTE_FILTRE);
+        } else {
+            if (!bindingResult.hasErrors()) {
+                RequestSessionHelper.actualitzarObjecteSessio(
+                        request,
+                        SESSION_ATTRIBUTE_FILTRE,
+                        backofficeFiltreCommand);
+            }
+        }
+        return "redirect:backoffice";
+    }
+
 	@RequestMapping(value = "/datatable", method = RequestMethod.GET)
 	@ResponseBody
 	public DatatablesResponse datatable(
 			HttpServletRequest request,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
+        BackofficeFiltreCommand backofficeFiltreCommand = getFiltreCommand(request);
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
 				backofficeService.findByEntitatPaginat(
 						entitatActual.getId(),
+                        BackofficeFiltreCommand.asDto(backofficeFiltreCommand),
 						DatatablesHelper.getPaginacioDtoFromRequest(request)),
-				"id");
+                "id",
+                SESSION_ATTRIBUTE_SELECCIO);
 		return dtr;
 	}
 
@@ -247,7 +277,140 @@ public class BackofficeController extends BaseAdminController {
 					e.getMessage());
 		}
 	}
-	
 
+    @RequestMapping(value = "/accioMassiva", method = RequestMethod.GET)
+    @ResponseBody
+    public int select(HttpServletRequest request, @RequestParam(value="accio", required = false) String accio) {
+
+        try {
+            EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+
+            List<Long> seleccio = this.getRegistresSeleccionats(request, SESSION_ATTRIBUTE_SELECCIO);
+
+            if (seleccio!=null && !seleccio.isEmpty()) {
+                for (Long backofficeId: seleccio) {
+                    if ("provar".equalsIgnoreCase(accio)) {
+                        BackofficeDto backoffice = backofficeService.findById(entitatActual.getId(), backofficeId);
+                        Exception exception = backofficeService.provar(entitatActual.getId(), backofficeId);
+
+                        if (exception == null) {
+                            MissatgesHelper.success(
+                                    request,
+                                    getMessage(
+                                            request,
+                                            "backoffice.controller.provar.massiva.ok",
+                                            new Object[] {
+                                                    backoffice.getCodi()}));
+                        } else {
+                            if (ExceptionHelper.isExceptionOrCauseInstanceOf(exception, "SOAPFaultException")) {
+                                MissatgesHelper.warning(
+                                        request,
+                                        getMessage(
+                                                request,
+                                                "backoffice.controller.provar.massiva.error",
+                                                new Object[] {
+                                                        backoffice.getCodi(),
+                                                        exception.getMessage()}));
+                            } else {
+                                MissatgesHelper.error(
+                                        request,
+                                        getMessage(
+                                                request,
+                                                "backoffice.controller.provar.massiva.error",
+                                                new Object[] {
+                                                        backoffice.getCodi(),
+                                                        exception.getMessage()}));
+                            }
+                        }
+                    } else if ("eliminar".equalsIgnoreCase(accio)) {
+                        backofficeService.delete(entitatActual.getId(), backofficeId);
+                    }
+                }
+
+                RequestSessionHelper.actualitzarObjecteSessio(request, SESSION_ATTRIBUTE_SELECCIO, null);
+                MissatgesHelper.success(request, getMessage(request, "backoffice.list.accio.massiva.ok", new Object[]{seleccio.size()}));
+            } else {
+                MissatgesHelper.warning(request, getMessage(request, "backoffice.list.accio.massiva.ko"));
+            }
+
+            return 0;
+        } catch (Exception ex) {
+            MissatgesHelper.error(request, getMessage(request, "backoffice.list.accio.massiva.err"));
+            return -1;
+        }
+    }
+
+    @RequestMapping(value = "/select", method = RequestMethod.GET)
+    @ResponseBody
+    public int select(
+            HttpServletRequest request,
+            @RequestParam(value="ids[]", required = false) Long[] ids) {
+        @SuppressWarnings("unchecked")
+        Set<Long> seleccio = (Set<Long>) RequestSessionHelper.obtenirObjecteSessio(
+                request,
+                SESSION_ATTRIBUTE_SELECCIO);
+        EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
+        if (seleccio == null) {
+            seleccio = new HashSet<Long>();
+            RequestSessionHelper.actualitzarObjecteSessio(
+                    request,
+                    SESSION_ATTRIBUTE_SELECCIO,
+                    seleccio);
+        }
+        if (ids != null) {
+            for (Long id: ids) {
+                seleccio.add(id);
+            }
+        } else {
+            BackofficeFiltreCommand filtreCommand = getFiltreCommand(request);
+            seleccio.addAll(
+                    backofficeService.findBackofficeIds(
+                            entitatActual.getId(),
+                            BackofficeFiltreCommand.asDto(filtreCommand))
+            );
+        }
+        return seleccio.size();
+    }
+
+    @RequestMapping(value = "/deselect", method = RequestMethod.GET)
+    @ResponseBody
+    public int deselect(
+            HttpServletRequest request,
+            @RequestParam(value="ids[]", required = false) Long[] ids) {
+        @SuppressWarnings("unchecked")
+        Set<Long> seleccio = (Set<Long>)RequestSessionHelper.obtenirObjecteSessio(
+                request,
+                SESSION_ATTRIBUTE_SELECCIO);
+        if (seleccio == null) {
+            seleccio = new HashSet<Long>();
+            RequestSessionHelper.actualitzarObjecteSessio(
+                    request,
+                    SESSION_ATTRIBUTE_SELECCIO,
+                    seleccio);
+        }
+        if (ids != null) {
+            for (Long id: ids) {
+                seleccio.remove(id);
+            }
+        } else {
+            seleccio.clear();
+        }
+        return seleccio.size();
+    }
+
+    private BackofficeFiltreCommand getFiltreCommand(
+            HttpServletRequest request) {
+        BackofficeFiltreCommand reglaFiltreCommand = (BackofficeFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
+                request,
+                SESSION_ATTRIBUTE_FILTRE);
+        if (reglaFiltreCommand == null) {
+            reglaFiltreCommand = new BackofficeFiltreCommand();
+            RequestSessionHelper.actualitzarObjecteSessio(
+                    request,
+                    SESSION_ATTRIBUTE_FILTRE,
+                    reglaFiltreCommand);
+        }
+        return reglaFiltreCommand;
+    }
 
 }

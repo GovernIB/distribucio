@@ -130,7 +130,7 @@ public class ArxiuPluginHelper extends AbstractPluginHelper<ArxiuPlugin> {
 		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
 		accioParams.put("expedientNumero", registre.getExpedientNumero());
 		accioParams.put("registreNom", registre.getNom());
-		accioParams.put("registreNumero", registre.getNumero());
+//		accioParams.put("registreNumero", registre.getNumero());
 		accioParams.put("registreEntitat", registre.getEntitat().getCodi());
 		accioParams.put("registreUnitatAdmin", registre.getUnitatAdministrativa());
 		long t0 = System.currentTimeMillis();
@@ -172,7 +172,7 @@ public class ArxiuPluginHelper extends AbstractPluginHelper<ArxiuPlugin> {
 		accioParams.put("expedientArxiuUuid", registre.getExpedientArxiuUuid());
 		accioParams.put("expedientNumero", registre.getExpedientNumero());
 		accioParams.put("registreNom", registre.getNom());
-		accioParams.put("registreNumero", registre.getNumero());
+//		accioParams.put("registreNumero", registre.getNumero());
 		accioParams.put("registreEntitat", registre.getEntitat().getCodi());
 		accioParams.put("registreUnitatAdmin", registre.getUnitatAdministrativa());
 		long t0 = System.currentTimeMillis();

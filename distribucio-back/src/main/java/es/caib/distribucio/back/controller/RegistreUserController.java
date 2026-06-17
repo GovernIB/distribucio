@@ -139,6 +139,8 @@ public class RegistreUserController extends BaseUserController {
         model.addAttribute("backoffices", backoffices);
         model.addAttribute("estatsPendents", RegistreProcesEstatEnum.estatsPendents);
         model.addAttribute("estatsProcessats", RegistreProcesEstatEnum.estatsProcessats);
+        model.addAttribute("downloadAnnexosEnabled",
+                configService.getConfig("es.caib.distribucio.exportar.annex.zip.enabled"));
 		return "registreUserList";
 	}
 
@@ -1035,7 +1037,9 @@ public class RegistreUserController extends BaseUserController {
 			RegistreDto registreDto, BindingResult bindingResult) {
 
 		if (registreDto.getProcesEstat() != RegistreProcesEstatEnum.BUSTIA_PENDENT
-				&& !(registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT && registreDto.isReintentsEsgotat())) {
+				&& !(registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT && registreDto.isReintentsEsgotat())
+				&& !(registreDto.getProcesEstat() == RegistreProcesEstatEnum.BACK_ERROR && registreDto.isReintentsEsgotat())
+        ) {
 			bindingResult.reject(
 					"registre.user.controller.marcar.processat.validacio.estat", 
 					getMessage(request, 

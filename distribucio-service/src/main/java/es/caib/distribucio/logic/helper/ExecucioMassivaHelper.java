@@ -1,18 +1,25 @@
 package es.caib.distribucio.logic.helper;
 
+import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.mail.MessagingException;
 
-import es.caib.distribucio.logic.intf.dto.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,16 +28,30 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaEstatDto;
+import es.caib.distribucio.logic.intf.dto.FitxerDto;
+import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
+import es.caib.distribucio.logic.intf.dto.RegistreDto;
+import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
+import es.caib.distribucio.logic.intf.registre.FileNameOption;
+import es.caib.distribucio.logic.intf.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.service.ContingutService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
+import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.ExecucioMassivaContingutEntity;
 import es.caib.distribucio.persist.entity.ExecucioMassivaEntity;
+import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
+import es.caib.distribucio.persist.entity.RegistreEntity;
+import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaRepository;
+import es.caib.distribucio.persist.repository.RegistreRepository;
 
 @Component
 public class ExecucioMassivaHelper {
@@ -53,8 +74,18 @@ public class ExecucioMassivaHelper {
 	private ExecucioMassivaRepository execucioMassivaRepository;
 	@Autowired
 	private ExecucioMassivaContingutRepository execucioMassivaContingutRepository;
-	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Autowired
+    private RegistreRepository registreRepository;
+    @Autowired
+    private RegistreHelper registreHelper;
+    @Autowired
+    private EntitatRepository entitatRepository;
+    @Autowired
+    private ConfigHelper configHelper;
+    @Autowired
+    private EmailHelper emailHelper;
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
 	public ClassificacioResultatDto classificarNewTransaction(Long entitatId, Long elementId, String parametres) {
 		String titol = getValorParametre(parametres, "titol", String.class);
         String tipus = getValorParametre(parametres, "tipus", String.class);
@@ -280,6 +311,169 @@ public class ExecucioMassivaHelper {
 			throw new RuntimeException(missatge);
 		}
 	}
+
+    
+    /** Descarrega tots els annexos d'una anotació i els afegeix en el zip temporal de l'execució massiva. */
+//    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void descarregarAnnexos(Long entitatId, ExecucioMassivaEntity em) {
+        EntitatEntity entity = entitatRepository.findById(entitatId).get();
+        ConfigHelper.setEntitatActualCodi(entity.getCodi());
+        this.updateProcessantNewTransaction(em, new Date());
+
+        List<String> nomsArxius = new ArrayList<String>();
+        List<String> errors = new ArrayList<>();
+
+        try {
+            if (em.getParametres() != null && !em.getParametres().isEmpty()) {
+                boolean estructuraCarpetes = getValorParametre(em.getParametres(), "estructuraCarpetes", Boolean.class);
+                boolean versioImprimible = getValorParametre(em.getParametres(), "versioImprimible", Boolean.class);
+                FileNameOption tipusNomDocument = FileNameOption.valueOf(getValorParametre(em.getParametres(), "nomDocument", String.class));
+                String rolActual = getValorParametre(em.getParametres(), "rolActual", String.class);
+
+                String directoriDesti = configHelper.getConfig("es.caib.distribucio.fitxers");
+                String documentNom = "/exportZip/annexosRegistres_" + em.getId() + ".zip";
+                FileOutputStream fos = new FileOutputStream(directoriDesti + documentNom);
+                ZipOutputStream zip = new ZipOutputStream(fos);
+
+                for (ExecucioMassivaContingutEntity emc: em.getContinguts()) {
+                    if (this.isEmcDisponibleNewTransaction(emc)) {
+                        this.updateProcessantNewTransaction(emc, new Date());
+                        try {
+                            this.descarregarAnnexos(
+                                    emc.getId(),
+                                    zip,
+                                    estructuraCarpetes,
+                                    versioImprimible,
+                                    tipusNomDocument,
+                                    rolActual,
+                                    nomsArxius,
+                                    errors);
+                        } catch (Exception e) {
+                            StringBuilder errMsg = new StringBuilder("Hi ha hagut un error executant el contingut de l'acció massiva [id=" + emc.getId());
+                            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                            errMsg.append(", tipus=" + em.getTipus());
+                            errMsg.append(", auth=" + (auth != null ? auth.getPrincipal() : "-"));
+                            if (auth != null) {
+                                errMsg.append(", rols=[");
+                                for (GrantedAuthority ga : auth.getAuthorities()) {
+                                    errMsg.append(ga.getAuthority()).append(" ");
+                                }
+                                errMsg.append("]");
+                            }
+                            errMsg.append("]");
+//                            logger.error(errMsg.toString(), e);
+                            this.updateErrorNewTransaction(
+                                    emc,
+                                    new Date(),
+                                    e.getMessage());
+                            continue;
+                        }
+                        this.updateFinalitzatNewTransaction(emc, new Date());
+                    }
+                }
+
+                if (!errors.isEmpty()) {
+                    StringBuilder avisosContent = new StringBuilder();
+                    for(String error : errors) {
+                        avisosContent.append(error).append("\n\n");
+                    }
+                    ZipEntry entry = new ZipEntry("errors.txt");
+                    byte[] contingut = avisosContent.toString().getBytes();
+                    entry.setSize(contingut.length);
+                    zip.putNextEntry(entry);
+                    zip.write(contingut);
+                    zip.closeEntry();
+                }
+
+                if (this.isFinalitzableNewTransaction(em)) {
+                    zip.close();
+                    em.setNomDocument(documentNom);
+                    this.updateFinalitzatNewTransaction(em, new Date());
+                    emailHelper.sendEmailAccioMassiva(em, errors);
+                }
+            } else {
+                throw new Exception("Empty params");
+            }
+        } catch(Exception e) {
+            throw new RuntimeException("Error no controlat executant l'acció massvia: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void descarregarAnnexos(Long emcId, ZipOutputStream zip, boolean estructuraCarpetes, boolean versioImprimible, FileNameOption tipusNomDocument, String rolActual, List<String> nomsArxius, List<String> errors) {
+        ExecucioMassivaContingutEntity emc = execucioMassivaContingutRepository.findById(emcId).get();
+        try {
+            RegistreEntity registre = registreRepository.findById(emc.getElementId()).get();
+            List<RegistreAnnexEntity> annexos = registre.getAnnexos().stream()
+                    .filter(a -> (!"tothom".equalsIgnoreCase(rolActual) || a.getSicresTipusDocument() == null || !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(a.getSicresTipusDocument())))
+                    .collect(Collectors.toList());
+
+            ZipEntry ze;
+            for (RegistreAnnexEntity annex : annexos) {
+                FitxerDto fitxer = null;
+                if (versioImprimible && registreHelper.potGenerarVersioImprimible(annex)) {
+                    try {
+                        fitxer = registreHelper.getAnnexFitxerImprimible(annex);
+                    } catch (Exception e) {
+                        String errMsg = "[" + annex.getRegistre().getNumero() + "] - Error obtenint la versió imprimible del l'annex " + annex.getId() + " \"" + annex.getTitol() + "\", es procedeix a consultar l'original. Error: \\\""
+                                + e.getClass() + " " + e.getMessage() + "\"";
+                        errors.add(errMsg);
+                    }
+                }
+                if (fitxer == null) {
+                    try {
+                        fitxer = registreHelper.getAnnexFitxer(annex.getId(), false);
+                    } catch (Exception e) {
+                        String errMsg = "[" + annex.getRegistre().getNumero() + "] - Error obtenint la versió original del l'annex " + annex.getId() + " \"" + annex.getTitol() + "\". Error: \\\""
+                                + e.getClass() + " " + e.getMessage() + "\"";
+                        errors.add(errMsg);
+                        continue;
+                    }
+                }
+
+                String nomDoc;
+                switch (tipusNomDocument) {
+                    case TITLE:
+                        nomDoc = annex.getTitol() + "." + fitxer.getExtensio();
+                        break;
+                    case TITLE_ORIGINAL:
+                        nomDoc = annex.getTitol() + " - " + fitxer.getNom();
+                        break;
+                    default:
+                        nomDoc = fitxer.getNom();
+                        break;
+                }
+                nomDoc = nomDoc.replaceAll("/", "_");
+
+                if (estructuraCarpetes) {
+                    nomDoc = annex.getRegistre().getNumero().replaceAll("/", "_") + "/" + nomDoc;
+                }
+
+                String recursNom = this.getZipRecursNom(nomDoc, nomsArxius);
+                ze = new ZipEntry(recursNom);
+                zip.putNextEntry(ze);
+                if (fitxer.getContingut() != null) {
+                    zip.write(fitxer.getContingut());
+                    nomsArxius.add(recursNom);
+                }
+                zip.closeEntry();
+            }
+        } catch(Exception e) {
+        	throw new RuntimeException("Error no controlat executant l'acció massvia: " + e.getMessage(), e);
+        }
+    }
+
+    private String getZipRecursNom(String nomEntrada, List<String> nomsArxius) {
+        int contador = 0;
+        String temp = nomEntrada;
+        while (nomsArxius.contains(temp)) {
+            contador++;
+            temp = nomEntrada.substring(0, nomEntrada.lastIndexOf(".")) +
+                    " (" + contador + ")" + nomEntrada.substring(nomEntrada.lastIndexOf("."));
+        }
+        nomsArxius.add(temp);
+        return temp;
+    }
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateFinalitzatNewTransaction(ExecucioMassivaEntity em, Date dataFi) {
@@ -399,7 +593,9 @@ public class ExecucioMassivaHelper {
 	/** Valida que l'anotació estigui pendent de bústia o que estigui pendent d'Arxiu i hagi esgotat els reintents. */
 	private void revisarEstatPerMarcarProcessat(RegistreDto registreDto) {
 		if (registreDto.getProcesEstat() != RegistreProcesEstatEnum.BUSTIA_PENDENT
-				&& !(registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT && registreDto.isReintentsEsgotat())) {
+				&& !(registreDto.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT && registreDto.isReintentsEsgotat())
+				&& !(registreDto.getProcesEstat() == RegistreProcesEstatEnum.BACK_ERROR && registreDto.isReintentsEsgotat())
+        ) {
 			throw new ValidationException(
 					messageHelper.getMessage(
 							"execucio.massiva.helper.marcar.processat.validacio.estat",
@@ -467,6 +663,5 @@ public class ExecucioMassivaHelper {
 			RegistreProcesEstatEnum.BACK_ERROR,
 			RegistreProcesEstatEnum.BACK_PROCESSADA,
 			RegistreProcesEstatEnum.BACK_REBUTJADA,
-	};
-    
+	};    
 }

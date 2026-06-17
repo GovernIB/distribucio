@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
@@ -22,6 +24,8 @@ import es.caib.distribucio.logic.intf.dto.ServeiEstatEnumDto;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter
+@Setter
 @Entity
 @Table(name = BaseConfig.DB_PREFIX + "servei")
 @EntityListeners(AuditingEntityListener.class)
@@ -52,53 +56,8 @@ public class ServeiEntity extends DistribucioAuditable<Long>{
 			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "servei_entitat_fk"))
 	private EntitatEntity entitat;
 
-	public String getCodi() {
-		return codi;
-	}
-
-	public void setCodi(String codi) {
-		this.codi = codi;
-	}
-
-	public String getNom() {
-		return nom;
-	}
-
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	public String getCodiSia() {
-		return codiSia;
-	}
-
-	public void setCodiSia(String codiSia) {
-		this.codiSia = codiSia;
-	}
-
-	public ServeiEstatEnumDto getEstat() {
-		return estat;
-	}
-
-	public void setEstat(ServeiEstatEnumDto estat) {
-		this.estat = estat;
-	}
-
-	public UnitatOrganitzativaEntity getUnitatOrganitzativa() {
-		return unitatOrganitzativa;
-	}
-
-	public void setUnitatOrganitzativa(UnitatOrganitzativaEntity unitatOrganitzativa) {
-		this.unitatOrganitzativa = unitatOrganitzativa;
-	}
-
-	public EntitatEntity getEntitat() {
-		return entitat;
-	}
-
-	public void setEntitat(EntitatEntity entitat) {
-		this.entitat = entitat;
-	}
+    @Column(name = "comu")
+    private boolean comu;
 
 	public void update(
 			String codi, 
@@ -106,13 +65,15 @@ public class ServeiEntity extends DistribucioAuditable<Long>{
 			String codiSia, 
 			ServeiEstatEnumDto estat, 
 			UnitatOrganitzativaEntity unitatOrganitzativa, 
-			EntitatEntity entitat) {
+			EntitatEntity entitat,
+            boolean comu) {
 		this.codi = codi;
 		this.nom = nom;
 		this.codiSia = codiSia;
 		this.estat = estat;
 		this.unitatOrganitzativa = unitatOrganitzativa;
 		this.entitat = entitat;
+		this.comu = comu;
 	}
 
 	public static Builder getBuilder(
@@ -121,14 +82,16 @@ public class ServeiEntity extends DistribucioAuditable<Long>{
 			String codiSia, 
 			ServeiEstatEnumDto estat, 
 			UnitatOrganitzativaEntity unitatOrganitzativa, 
-			EntitatEntity entitat) {
+			EntitatEntity entitat,
+            boolean comu) {
 		return new Builder(
 				codi, 
 				nom, 
 				codiSia, 
 				estat, 
 				unitatOrganitzativa, 
-				entitat);
+				entitat,
+                comu);
 	}
 
 	public static class Builder {
@@ -139,7 +102,8 @@ public class ServeiEntity extends DistribucioAuditable<Long>{
 				String codiSia, 
 				ServeiEstatEnumDto estat, 
 				UnitatOrganitzativaEntity unitatOrganitzativa, 
-				EntitatEntity entitat) {
+				EntitatEntity entitat,
+                boolean comu) {
 			built = new ServeiEntity();
 			built.codi = codi;
 			built.nom = nom;
@@ -147,6 +111,7 @@ public class ServeiEntity extends DistribucioAuditable<Long>{
 			built.estat = estat;
 			built.unitatOrganitzativa = unitatOrganitzativa;
 			built.entitat = entitat;
+			built.comu = comu;
 		}
 		
 		public ServeiEntity built() {

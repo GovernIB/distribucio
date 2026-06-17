@@ -1,6 +1,9 @@
 package es.caib.distribucio.back.controller;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +24,7 @@ import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 
@@ -160,6 +165,34 @@ public class ProcedimentController extends BaseAdminController{
 				"procedimentUpdateForm",
 				"procediment.controller.actualitzar.ok");
 	}
+
+    @RequestMapping(value = "/{procedimentCodi}/actualitzar", method = RequestMethod.GET)
+    public String actualitzarProcedimentCodi(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @PathVariable String procedimentCodi) throws IOException {
+        try {
+            EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+            ProcedimentDto procediment = procedimentService.findAndUpdateProcediment(entitatActual.getId(), procedimentCodi);
+
+            MissatgesHelper.success(
+                    request,
+                    getMessage(
+                            request,
+                            "procediment.controller.actualitzar.procediment.ok",
+                            new Object[] {procediment.getCodiSia(), procediment.getNom()}));
+        } catch (Exception e) {
+            String errMsg = getMessage(
+                    request,
+                    "procediment.controller.actualitzar.error",
+                    new Object[] {e.getMessage()});
+            logger.error(errMsg);
+            MissatgesHelper.error(
+                    request,
+                    errMsg);
+        }
+        return "redirect:" + request.getHeader("referer");
+    }
 
 	@RequestMapping(value = "/actualitzar/progres", method = RequestMethod.GET)
 	@ResponseBody

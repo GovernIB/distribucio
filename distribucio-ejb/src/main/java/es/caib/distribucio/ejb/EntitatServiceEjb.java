@@ -152,12 +152,6 @@ public class EntitatServiceEjb extends AbstractServiceEjb<EntitatService> implem
 		delegateService.evictEntitatsAccessiblesUsuari();
 	}
 
-	@Override
-	@RolesAllowed("**")
-	public void setConfigEntitat(EntitatDto entitatDto) {
-		delegateService.setConfigEntitat(entitatDto);
-	}
-
 	protected void setDelegateService(EntitatService delegateService) {
 		this.delegateService = delegateService;
 	}

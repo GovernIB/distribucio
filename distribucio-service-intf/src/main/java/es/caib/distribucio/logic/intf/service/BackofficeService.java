@@ -2,6 +2,7 @@ package es.caib.distribucio.logic.intf.service;
 
 import java.util.List;
 
+import es.caib.distribucio.logic.intf.dto.BackofficeFiltreDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
@@ -111,7 +112,13 @@ public interface BackofficeService {
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public PaginaDto<BackofficeDto> findByEntitatPaginat(
 			Long entitatId,
+            BackofficeFiltreDto filtre,
 			PaginacioParamsDto paginacioParams) throws NotFoundException;
+
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
+	public List<Long> findBackofficeIds(
+			Long entitatId,
+            BackofficeFiltreDto filtre) throws NotFoundException;
 
 	@PreAuthorize("isAuthenticated()")
 	public List<BackofficeDto> findByEntitat(Long entitatId) throws NotFoundException;

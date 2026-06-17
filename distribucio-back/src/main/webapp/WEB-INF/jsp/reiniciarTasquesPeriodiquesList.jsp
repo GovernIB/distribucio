@@ -92,6 +92,10 @@
 						<spring:message code="monitor.tasques.tasca.codi.enviarEmailsAnotacionsErrorProcessament"/>
 					{{else codi == 'execucionsMassives'}}
 						<spring:message code="monitor.tasques.tasca.codi.execucionsMassives"/>
+					{{else codi == 'esborrarZipAccionsMassives'}}
+						<spring:message code="monitor.tasques.tasca.codi.esborrarZipAccionsMassives"/>
+					{{else}}
+                        {{:codi}}
 					{{/if}}
 					</script>
 				</th>

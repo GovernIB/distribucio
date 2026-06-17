@@ -63,7 +63,7 @@ public class ValidaSignaturaAgilPluginHelper extends AbstractPluginHelper<Valida
 
 		ValidaSignaturaResposta resposta = new ValidaSignaturaResposta();
 		
-		String accioDescripcio = "Obtenir informació de document firmat amb firma àgil";
+		String accioDescripcio = "Obtenir informació de document \"" + documentNom + "\" firmat amb firma àgil";
 		String usuariIntegracio = this.getPlugin().getUsuariIntegracio();
 		
 		Map<String, String> accioParams = new HashMap<String, String>();

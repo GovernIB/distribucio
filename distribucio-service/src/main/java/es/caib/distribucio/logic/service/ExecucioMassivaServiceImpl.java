@@ -1,5 +1,10 @@
 package es.caib.distribucio.logic.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -7,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+import java.util.zip.ZipOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +27,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
+import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.EntityComprovarHelper;
 import es.caib.distribucio.logic.helper.ExecucioMassivaHelper;
+import es.caib.distribucio.logic.helper.MessageHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
 import es.caib.distribucio.logic.helper.UsuariHelper;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaAccioDto;
@@ -32,6 +41,10 @@ import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutDto;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaDto;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaEstatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaTipusDto;
+import es.caib.distribucio.logic.intf.dto.FitxerDto;
+import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
+import es.caib.distribucio.logic.intf.dto.RegistreDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
@@ -70,8 +83,12 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 	private UsuariRepository usuariRepository;
 	@Autowired
 	private PluginHelper pluginHelper;
+    @Autowired
+    private ConfigHelper configHelper;
+    @Autowired
+    private MessageHelper messageHelper;
 
-	@Transactional
+    @Transactional
 	@Override
 	public void crearExecucioMassiva(Long entitatId, ExecucioMassivaDto dto)
 			throws NotFoundException {
@@ -179,10 +196,13 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 			EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(entitatId, false, false, false);
 			List<ExecucioMassivaEntity> ems = execucioMassivaRepository.findMassivesAmbPendentsByEntitatPerProcessar(new Date(), entitatId);
 			String missatge = null;
-
+			
 			if (ems != null && ems.size() > 0) {
 				ExecucioMassivaEntity em = ems.get(0);
-				if (em.getContinguts() != null) {
+                if (ExecucioMassivaTipusDto.DESCARREGAR.equals(em.getTipus())) {
+                    execucioMassivaHelper.descarregarAnnexos(entitatId, em);
+                } else if (em.getContinguts() != null) {
+                	ConfigHelper.setEntitatActualCodi(em.getEntitat().getCodi());
 					execucioMassivaHelper.updateProcessantNewTransaction(em, new Date());
 
 					for (ExecucioMassivaContingutEntity emc: em.getContinguts()) {
@@ -261,7 +281,6 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 
 									emc.updateMissatge(missatge);
 									break;
-
 								default:
 									break;
 								}
@@ -351,6 +370,95 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 
 		return elementsNom;
 	}
+
+    public FitxerDto descarregarDocumentExecMassiva(Long entitatId, Long execucioId) {
+        FitxerDto resultat = new FitxerDto();
+
+        try {
+            String directoriDesti = configHelper.getConfig("es.caib.distribucio.fitxers");
+            ExecucioMassivaEntity execucioMassiva = execucioMassivaRepository.findById(execucioId).get();
+            String nomDocument = execucioMassiva.getNomDocument();
+
+            byte[] bytes = Files.readAllBytes(Paths.get(directoriDesti + nomDocument));
+            resultat.setContingut(bytes);
+            if (nomDocument.contains("/")) {
+                resultat.setNom(
+                        nomDocument.substring(nomDocument.lastIndexOf("/") + 1));
+            } else {
+                resultat.setNom(nomDocument);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return resultat;
+    }
+
+    public boolean chechFormDescargaMassiva(List<RegistreDto> registres, Model model) {
+        List<String> errors = new ArrayList<>();
+        int maxExec = Integer.parseInt(configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.exec.max", "5"));
+        int maxSize = Integer.parseInt(configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.mida.max", "10"));
+
+        boolean enabled = "true".equals(configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.enabled"));
+        int exec = this.getNumeroExecucioMasiva();
+        double midaAproximada = this.getMidaAproximada(registres);
+
+        if (exec >= maxExec) {
+            errors.add(messageHelper.getMessage("registre.annex.descarregar.zip.exec.max", new Object[] {maxExec}));
+        }
+        if (midaAproximada > (maxSize * 1024 * 1024)) {
+            errors.add(messageHelper.getMessage("registre.annex.descarregar.zip.size.max", new Object[] {String.format("%.2f", midaAproximada / 1024 / 1024), maxSize}));
+        } else {
+            model.addAttribute("midaMaxima", maxSize);
+        }
+        if (!enabled) {
+            errors.add(messageHelper.getMessage("registre.annex.descarregar.zip.disabled", new Object[] {}));
+        }
+
+        model.addAttribute("errors", errors);
+        model.addAttribute("disabled", !errors.isEmpty());
+        return errors.isEmpty();
+    }
+
+    private double getMidaAproximada(List<RegistreDto> registresSeleccionats) {
+        double tamany = 0;
+        for (RegistreDto registre : registresSeleccionats) {
+            for (RegistreAnnexDto annexos : registre.getAnnexos()) {
+                tamany += annexos.getFitxerTamany() * obtenirRatioCompresio(annexos.getFitxerTipusMime());
+            }
+        }
+        return tamany;
+    }
+
+    private double obtenirRatioCompresio(String mime) {
+        if (mime == null) return 0.80; // Fallback seguro
+        String m = mime.toLowerCase();
+
+        //  Textos y datos (alta compresión)
+        if (m.startsWith("text/") || m.contains("json") || m.contains("xml") || m.contains("csv") || m.contains("sql")) {
+            return 0.30; // ~70% reducción
+        }
+        // PDF
+        if (m.equals("application/pdf")) return 0.70;
+        // Imágenes (ya están comprimidas)
+        if (m.startsWith("image/")) return 0.95;
+        //  Office legacy (.doc, .xls, .ppt)
+        if (m.contains("msword") || m.contains("ms-excel") || m.contains("ms-powerpoint")) return 0.40;
+        // Office moderno (.docx, .xlsx, .pptx) → ya son ZIP internamente
+        if (m.contains("openxmlformats")) return 0.95;
+        // Archivos comprimidos / Multimedia
+        if (m.contains("zip") || m.contains("rar") || m.contains("7z") ||
+                m.startsWith("video/") || m.startsWith("audio/")) {
+            return 0.99; // Prácticamente 0% compresión
+        }
+        // Fallback genérico
+        return 0.80;
+    }
+
+    private int getNumeroExecucioMasiva() {
+        String user = SecurityContextHolder.getContext().getAuthentication().getName();
+        Date date = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return execucioMassivaRepository.countNombreAccionsMassives(user, date);
+    }
 
 	private void setAuthentication(ExecucioMassivaContingutEntity emc) {
 		UsuariEntity usuariActual = usuariHelper.getUsuariAutenticat();

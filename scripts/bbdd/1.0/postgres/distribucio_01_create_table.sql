@@ -605,7 +605,8 @@ CREATE TABLE DIS_MON_INT
 	CODI_ENTITAT		character varying(64),
 	ERROR_DESCRIPCIO	character varying(1024),
 	EXCEPCIO_MSG		character varying(1024),
-	EXCEPCIO_STACKTRACE	character varying(2048)
+	EXCEPCIO_STACKTRACE	character varying(2048),
+	NUMERO_REGISTRE     character varying(300)
 );
 
 CREATE TABLE DIS_MON_INT_PARAM
@@ -628,7 +629,24 @@ CREATE TABLE DIS_PROCEDIMENT
   CREATEDBY_CODI       		character varying(64),
   CREATEDDATE          		timestamp without time zone,
   LASTMODIFIEDBY_CODI  		character varying(64),
-  LASTMODIFIEDDATE     		timestamp without time zone
+  LASTMODIFIEDDATE     		timestamp without time zone,
+  COMU                      boolean default false not null
+);
+
+CREATE TABLE DIS_SERVEI
+(
+  ID						BIGSERIAL	    	NOT NULL,
+  CODI          			character varying(64)		NOT NULL,
+  NOM						character varying(256),
+  CODISIA					character varying(64),
+  ID_UNITAT_ORGANITZATIVA	BIGSERIAL,
+  ENTITAT					BIGSERIAL,
+  ESTAT                     character varying(20) default 'VIGENT' NOT NULL,
+  CREATEDBY_CODI       		character varying(64),
+  CREATEDDATE          		timestamp without time zone,
+  LASTMODIFIEDBY_CODI  		character varying(64),
+  LASTMODIFIEDDATE     		timestamp without time zone,
+  COMU                      boolean default false not null
 );
 
 CREATE TABLE DIS_METADADA
@@ -695,7 +713,8 @@ CREATE TABLE DIS_EXECUCIO_MASSIVA (
 	CREATEDBY_CODI 		VARCHAR(64), 
 	CREATEDDATE 		TIMESTAMP (6), 
 	LASTMODIFIEDBY_CODI VARCHAR(64), 
-	LASTMODIFIEDDATE 	TIMESTAMP (6)
+	LASTMODIFIEDDATE 	TIMESTAMP (6),
+	NOM_DOCUMENT        VARCHAR(1024)
  );
 
 CREATE TABLE DIS_EXECUCIO_MASSIVA_CONT (	

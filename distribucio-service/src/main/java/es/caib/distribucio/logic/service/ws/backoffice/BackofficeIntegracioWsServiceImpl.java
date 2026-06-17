@@ -43,7 +43,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
     public AnotacioRegistreEntrada consulta(
             AnotacioRegistreId id) {
         AnotacioRegistreEntrada anotacioRegistreEntrada;
-        String accioDescripcio = "Consulta d'anotació pendent "+ id.getIdentificador();
+        String accioDescripcio = "Consulta d'anotació pendent";
         String usuariIntegracio = this.getUsuariIntegracio();
         Map<String, String> accioParams = new HashMap<String, String>();
         accioParams.put("Anotació identificador", id.getIdentificador());
@@ -61,6 +61,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			// RegistreNumero no cal!!!
             integracioHelper.addAccioOk (
                     IntegracioHelper.INTCODI_BACKOFFICE,
+                    id.getIdentificador(),
                     accioDescripcio,
                     usuariIntegracio,
                     accioParams,
@@ -78,6 +79,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
             String errorDescripcio = "Error  al processar nou registre d'entrada en el servei web de backoffice integració";
             integracioHelper.addAccioError(
                     IntegracioHelper.INTCODI_BACKOFFICE,
+                    id.getIdentificador(),
                     accioDescripcio,
                     usuariIntegracio,
                     accioParams,
@@ -96,7 +98,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 	public List<AnotacioRegistreEntrada> llistar(String identificador, Date dataRegistre) {
 		long start = System.currentTimeMillis();
 		List<AnotacioRegistreEntrada> anotacionsRegistreEntrada;
-		String accioDescripcio = "Consulta anotacions registre "+ identificador;
+		String accioDescripcio = "Consulta anotacions registre";
 		String usuariIntegracio = this.getUsuariIntegracio();
 		Map<String, String> accioParams = new HashMap<String, String>();
 		
@@ -119,6 +121,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 						
 			integracioHelper.addAccioOk (
 					IntegracioHelper.INTCODI_BACKOFFICE,
+                    identificador,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -138,6 +141,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			String errorDescripcio = "Error al consultar registres d'entrada en el servei web de backoffice integració";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_BACKOFFICE,
+                    identificador,
 					accioDescripcio,
 					usuariIntegracio,
 					accioParams,
@@ -177,7 +181,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
             Estat estat,
             String observacions) {
 		long start = System.currentTimeMillis();
-        String accioDescripcio = "Canvi d'estat de l'anotació " + (id != null ? id.getIdentificador() : "-") + " a " + estat;
+        String accioDescripcio = "Canvi d'estat a " + estat;
         String usuariIntegracio = this.getUsuariIntegracio();
         Map<String, String> accioParams = new HashMap<String, String>();
         accioParams.put("Anotació identificador", id.getIdentificador());
@@ -202,6 +206,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
 			// RegistreNumero no cal!!!
             integracioHelper.addAccioOk (
                     IntegracioHelper.INTCODI_BACKOFFICE,
+                    id.getIdentificador(),
                     accioDescripcio,
                     usuariIntegracio,
                     accioParams,
@@ -216,6 +221,7 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
             String errorDescripcio = "Error  al canviar estat de registre d'entrada en el servei web de backoffice integració";
             integracioHelper.addAccioError(
                     IntegracioHelper.INTCODI_BACKOFFICE,
+                    id.getIdentificador(),
                     accioDescripcio,
                     usuariIntegracio,
                     accioParams,

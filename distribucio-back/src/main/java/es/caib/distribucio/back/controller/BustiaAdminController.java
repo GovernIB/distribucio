@@ -21,10 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import es.caib.distribucio.back.command.BustiaCommand;
 import es.caib.distribucio.back.command.BustiaCommand.CreateUpdate;
@@ -92,8 +89,13 @@ public class BustiaAdminController extends BaseAdminController {
 			HttpServletRequest request,
 			@Valid BustiaFiltreCommand filtreCommand,
 			BindingResult bindingResult,
-			Model model) {
-		if (!bindingResult.hasErrors()) {
+            Model model,
+            @RequestParam(value = "accio", required = false) String accio) {
+        if ("netejar".equals(accio)) {
+            RequestSessionHelper.esborrarObjecteSessio(
+                    request,
+                    SESSION_ATTRIBUTE_FILTRE);
+        } else if (!bindingResult.hasErrors()) {
 			RequestSessionHelper.actualitzarObjecteSessio(
 					request,
 					SESSION_ATTRIBUTE_FILTRE,
@@ -497,23 +499,18 @@ public class BustiaAdminController extends BaseAdminController {
 			}
 			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 
-			bustiaService.updateActiva(
-					entitatActual.getId(),
-					bustiaId,
-					false);
-
 			if (bustiaPerDefecteCommand.getBustiaId() != null) {
 				bustiaService.marcarPerDefecte(
 						entitatActual.getId(),
 						bustiaPerDefecteCommand.getBustiaId());
-				
-				bustiaService.updateActiva(
-						entitatActual.getId(),
-						bustiaPerDefecteCommand.getBustiaId(),
-						true);
 			}
-			
-			return getModalControllerReturnValueSuccess (
+
+            bustiaService.updateActiva(
+                    entitatActual.getId(),
+                    bustiaId,
+                    false);
+
+            return getModalControllerReturnValueSuccess (
 					request,
 					"redirect:bustiaAdmin",
 					"bustia.controller.desactivat.ok");

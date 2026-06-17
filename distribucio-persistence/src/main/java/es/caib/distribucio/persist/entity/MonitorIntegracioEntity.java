@@ -18,6 +18,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -30,6 +32,8 @@ import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter
+@Setter
 @Entity
 @Table(name = BaseConfig.DB_PREFIX + "mon_int")
 @EntityListeners(AuditingEntityListener.class)
@@ -70,101 +74,15 @@ public class MonitorIntegracioEntity extends DistribucioPersistable<Long> {
 	
 	@Column(name = "excepcio_stacktrace", length = 2048)
 	private String excepcioStacktrace;
+
+    @Column(name = "numero_registre", length = 1024)
+    private String numeroRegistre;
 	
 	@OneToMany(
 			mappedBy = "monitorIntegracio",
 			orphanRemoval = true, 
 			cascade={CascadeType.ALL})
 	private List<MonitorIntegracioParamEntity> parametres = new ArrayList<MonitorIntegracioParamEntity>();
-
-
-	public String getCodi() {
-		return codi;
-	}
-
-	public void setCodi(String codi) {
-		this.codi = codi;
-	}
-
-	public Date getData() {
-		return data;
-	}
-
-	public void setData(Date data) {
-		this.data = data;
-	}
-
-	public String getDescripcio() {
-		return descripcio;
-	}
-
-	public void setDescripcio(String descripcio) {
-		this.descripcio = descripcio;
-	}
-
-	public IntegracioAccioTipusEnumDto getTipus() {
-		return tipus;
-	}
-
-	public void setTipus(IntegracioAccioTipusEnumDto tipus) {
-		this.tipus = tipus;
-	}
-
-	public Long getTempsResposta() {
-		return tempsResposta;
-	}
-
-	public void setTempsResposta(Long tempsResposta) {
-		this.tempsResposta = tempsResposta;
-	}
-
-	public IntegracioAccioEstatEnumDto getEstat() {
-		return estat;
-	}
-
-	public void setEstat(IntegracioAccioEstatEnumDto estat) {
-		this.estat = estat;
-	}
-	
-	public String getCodiUsuari() {
-		return codiUsuari;
-	}
-
-	public void setCodiUsuari(String codiUsuari) {
-		this.codiUsuari = codiUsuari;
-	}
-
-	public String getCodiEntitat() {
-		return codiEntitat;
-	}
-
-	public void setCodiEntitat(String codiEntitat) {
-		this.codiEntitat = codiEntitat;
-	}
-
-	public String getErrorDescripcio() {
-		return errorDescripcio;
-	}
-
-	public String getExcepcioMessage() {
-		return excepcioMessage;
-	}
-
-	public void setExcepcioMessage(String excepcioMessage) {
-		this.excepcioMessage = excepcioMessage;
-	}
-
-	public void setExcepcioStacktrace(String excepcioStacktrace) {
-		this.excepcioStacktrace = excepcioStacktrace;
-	}
-
-	public String getExcepcioStacktrace() {
-		return excepcioStacktrace;
-	}
-
-	public void setParametres(List<MonitorIntegracioParamEntity> parametres) {
-		this.parametres = parametres;
-	}
 
 	public void update(
 			String codi,
@@ -213,6 +131,7 @@ public class MonitorIntegracioEntity extends DistribucioPersistable<Long> {
 			IntegracioAccioEstatEnumDto estat,
 			String codiUsuari,
 			String codiEntitat,
+			String numeroRegistre,
 			String errorDescripcio,
 			String excepcioMessage,
 			String excepcioStacktrace) {
@@ -225,6 +144,7 @@ public class MonitorIntegracioEntity extends DistribucioPersistable<Long> {
 				estat,
 				codiUsuari,
 				codiEntitat,
+                numeroRegistre,
 				errorDescripcio,
 				excepcioMessage,
 				excepcioStacktrace);
@@ -246,6 +166,7 @@ public class MonitorIntegracioEntity extends DistribucioPersistable<Long> {
 				IntegracioAccioEstatEnumDto estat,
 				String codiUsuari,
 				String codiEntitat,
+				String numeroRegistre,
 				String errorDescripcio,
 				String excepcioMessage,
 				String excepcioStacktrace) {
@@ -258,6 +179,7 @@ public class MonitorIntegracioEntity extends DistribucioPersistable<Long> {
 			built.estat = estat;
 	        built.codiUsuari = StringUtils.abbreviate(codiUsuari, 64);
 	        built.codiEntitat = StringUtils.abbreviate(codiEntitat, 64);
+	        built.numeroRegistre = StringUtils.abbreviate(numeroRegistre, 1024);
 	        built.errorDescripcio = StringUtils.abbreviate(errorDescripcio, 1024);
 	        built.excepcioMessage = StringUtils.abbreviate(excepcioMessage, 1024);
 	        built.excepcioStacktrace = StringUtils.abbreviate(excepcioStacktrace, 2048);
@@ -265,10 +187,6 @@ public class MonitorIntegracioEntity extends DistribucioPersistable<Long> {
 		public MonitorIntegracioEntity build() {
 			return built;
 		}
-	}
-	
-	public List<MonitorIntegracioParamEntity> getParametres() {
-		return parametres;
 	}
 
 

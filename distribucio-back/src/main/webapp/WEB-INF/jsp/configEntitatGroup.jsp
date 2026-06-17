@@ -47,7 +47,7 @@
                             string += '<input id="' + keyReplaced + '" class="form-control entitat-input" type="password" maxlength="2048" value="' + entitat.value + '"' + disabled + ' ' + placeHolder + '>';
                         } else if(entitat.typeCode === "BOOL") {
                             let checked = entitat.value === "true" ? 'checked' : '';
-                            string += '<input id="' + keyReplaced + '" name="booleanValue" class="visualitzar entitat-input" type="checkbox" ' + disabled + ' ' + checked + '>';
+                            string += '<input id="' + keyReplaced + '" class="visualitzar entitat-input" type="checkbox" ' + disabled + ' ' + checked + '>';
                         } else if (entitat.validValues && entitat.validValues.length > 2) {
                             string += '<select id="' + keyReplaced + '" class="form-control ' + disabled + '>';
                             let selected = "";
@@ -156,7 +156,7 @@
 		var iconConfig = '#' + keyReplaced.id + '_button_config i';
 		$(iconConfig).addClass('fa-circle-o-notch');
 		$(iconConfig).addClass('fa-spin');
-		debugger;
+		// debugger;
     	var configKey = keyReplaced.id.replaceAll('_', '.').replaceAll('..','_');
     	var inputEvent = document.getElementById(keyReplaced.id);
     	var buttonTrash = document.getElementById(keyReplaced.id + '_button_trash');
@@ -209,6 +209,8 @@
 		    		$(iconConfig).removeClass('fa-circle-o-notch');
 		    		$(iconConfig).removeClass('fa-spin');
 		    		if (nameEvent == 'trash') {
+                        $('#' + keyReplaced.id).val(null);
+                        $('#' + keyReplaced.id).prop('checked', false);
 		        		$(iconConfig).removeClass('fa-save');
 		        		$(iconConfig).addClass('fa-pencil');
 		        		$(iconSave).removeClass('fa-save');

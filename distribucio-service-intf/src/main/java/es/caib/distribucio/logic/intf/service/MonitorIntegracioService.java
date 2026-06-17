@@ -75,7 +75,7 @@ public interface MonitorIntegracioService {
 
 	/** Consulta el número d'errors per integració. */
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
-	public Map<String, Integer> countErrors(int numeroHores);
+	public Map<String, Integer> countErrors(IntegracioFiltreDto integracioFiltreDto);
 
 //	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public Map<String, Integer> countCanvisEstatFromUser(String user);

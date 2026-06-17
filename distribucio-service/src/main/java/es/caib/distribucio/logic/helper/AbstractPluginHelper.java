@@ -173,6 +173,8 @@ public abstract class AbstractPluginHelper<T extends SalutPlugin> {
 	@AllArgsConstructor
 	@Getter @Setter
 	public static class CodiBool implements Serializable {
+		private static final long serialVersionUID = 1L;
+		
 		private String codi;
 		private boolean configuracioEspecifica;
 	}

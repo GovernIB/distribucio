@@ -52,28 +52,6 @@ public class DadesUsuarisPluginHelper extends AbstractPluginHelper<DadesUsuariPl
 	
 	public DadesUsuari dadesUsuariFindAmbCodi(String usuariCodi) {
 		
-//		var info = new IntegracioInfo(
-//				IntegracioCodi.USUARIS,
-//				null,
-//				"Consulta d'usuari amb codi", 
-//				getUsuariAutenticat(),
-//				IntegracioAccioTipusEnumDto.ENVIAMENT,
-//				new AccioParam("Codi d'usuari", usuariCodi));
-//
-//		try {
-//			var dadesUsuari = getPlugin().findAmbCodi(usuariCodi);
-//			integracioHelper.addAccioOk(
-//					info, 
-//					false);
-//			return dadesUsuari;
-//		} catch (Exception ex) {
-//			var errorDescripcio = "Error al accedir al plugin de dades d'usuari";
-//			integracioHelper.addAccioError(
-//					info, 
-//					errorDescripcio, 
-//					ex);
-//			throw new SistemaExternException(USUARIS.name(), errorDescripcio, ex);
-//		}
 		String accioDescripcio = "Consulta d'usuari amb codi";
 		
 		String usuariIntegracio = this.getUsuariAutenticat();
@@ -84,25 +62,25 @@ public class DadesUsuarisPluginHelper extends AbstractPluginHelper<DadesUsuariPl
 		try {
 			DadesUsuari dadesUsuari = getPlugin().findAmbCodi(
 					usuariCodi);
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_USUARIS,
-					accioDescripcio,
-					usuariIntegracio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
+//			integracioHelper.addAccioOk(
+//					IntegracioHelper.INTCODI_USUARIS,
+//					accioDescripcio,
+//					usuariIntegracio,
+//					accioParams,
+//					IntegracioAccioTipusEnumDto.ENVIAMENT,
+//					System.currentTimeMillis() - t0);
 			return dadesUsuari;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin de dades d'usuari";
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_USUARIS,
-					accioDescripcio,
-					usuariIntegracio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
+//			integracioHelper.addAccioError(
+//					IntegracioHelper.INTCODI_USUARIS,
+//					accioDescripcio,
+//					usuariIntegracio,
+//					accioParams,
+//					IntegracioAccioTipusEnumDto.ENVIAMENT,
+//					System.currentTimeMillis() - t0,
+//					errorDescripcio,
+//					ex);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_USUARIS,
 					errorDescripcio,
@@ -111,28 +89,7 @@ public class DadesUsuarisPluginHelper extends AbstractPluginHelper<DadesUsuariPl
 	}
 
 	public List<DadesUsuari> findAmbGrup(String grupCodi) {
-//		var info = new IntegracioInfo(
-//				IntegracioCodi.USUARIS,
-//				null,
-//				"Consulta d'usuaris d'un grup", 
-//				getUsuariAutenticat(),
-//				IntegracioAccioTipusEnumDto.ENVIAMENT,
-//				new AccioParam("Codi del grup", grupCodi));
-//
-//		try {
-//			var dadesUsuari = getPlugin().findAmbGrup(grupCodi);
-//			integracioHelper.addAccioOk(
-//					info, 
-//					false);
-//			return dadesUsuari;
-//		} catch (Exception ex) {
-//			var errorDescripcio = "Error al accedir al plugin de dades d'usuari";
-//			integracioHelper.addAccioError(
-//					info, 
-//					errorDescripcio, 
-//					ex);
-//			throw new SistemaExternException(USUARIS.name(), errorDescripcio, ex);
-//		}
+
 		String accioDescripcio = "Consulta d'usuaris d'un grup";
 
 		String usuariIntegracio = this.getUsuariAutenticat();
@@ -143,25 +100,25 @@ public class DadesUsuarisPluginHelper extends AbstractPluginHelper<DadesUsuariPl
 		try {
 			List<DadesUsuari> dadesUsuari = getPlugin().findAmbGrup(
 					grupCodi);
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_USUARIS,
-					accioDescripcio,
-					usuariIntegracio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
+//			integracioHelper.addAccioOk(
+//					IntegracioHelper.INTCODI_USUARIS,
+//					accioDescripcio,
+//					usuariIntegracio,
+//					accioParams,
+//					IntegracioAccioTipusEnumDto.ENVIAMENT,
+//					System.currentTimeMillis() - t0);
 			return dadesUsuari;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin de dades d'usuari";
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_USUARIS,
-					accioDescripcio,
-					usuariIntegracio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
+//			integracioHelper.addAccioError(
+//					IntegracioHelper.INTCODI_USUARIS,
+//					accioDescripcio,
+//					usuariIntegracio,
+//					accioParams,
+//					IntegracioAccioTipusEnumDto.ENVIAMENT,
+//					System.currentTimeMillis() - t0,
+//					errorDescripcio,
+//					ex);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_USUARIS,
 					errorDescripcio,
@@ -179,26 +136,25 @@ public class DadesUsuarisPluginHelper extends AbstractPluginHelper<DadesUsuariPl
 		long t0 = System.currentTimeMillis();
 		try {
 			List<String> rols = getPlugin().findRolsPerUsuari(usuariCodi);
-			// RegistreNumero no cal!!!
-			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_USUARIS,
-					accioDescripcio,
-					usuariIntegracio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0);
+//			integracioHelper.addAccioOk(
+//					IntegracioHelper.INTCODI_USUARIS,
+//					accioDescripcio,
+//					usuariIntegracio,
+//					accioParams,
+//					IntegracioAccioTipusEnumDto.ENVIAMENT,
+//					System.currentTimeMillis() - t0);
 			return rols;
 		} catch (Exception ex) {
 			String errorDescripcio = "Error al accedir al plugin de dades d'usuari";
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_USUARIS,
-					accioDescripcio,
-					usuariIntegracio,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
+//			integracioHelper.addAccioError(
+//					IntegracioHelper.INTCODI_USUARIS,
+//					accioDescripcio,
+//					usuariIntegracio,
+//					accioParams,
+//					IntegracioAccioTipusEnumDto.ENVIAMENT,
+//					System.currentTimeMillis() - t0,
+//					errorDescripcio,
+//					ex);
 			throw new SistemaExternException(
 					IntegracioHelper.INTCODI_USUARIS,
 					errorDescripcio,

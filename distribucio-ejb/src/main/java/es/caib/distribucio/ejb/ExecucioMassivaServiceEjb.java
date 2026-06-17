@@ -8,13 +8,11 @@ import javax.ejb.Stateless;
 
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaAccioDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
+import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import lombok.experimental.Delegate;
+import org.springframework.ui.Model;
 
 /**
  * Implementació de ExecucioMassivaService com a EJB que empra una clase
@@ -70,6 +68,18 @@ public class ExecucioMassivaServiceEjb extends AbstractServiceEjb<ExecucioMassiv
 	@RolesAllowed("**")
 	public List<ExecucioMassivaContingutDto> findExecucioPerContingut(List<Long> continguts) throws NotFoundException {
 		return delegateService.findExecucioPerContingut(continguts);
+	}
+
+	@Override
+	@RolesAllowed("**")
+	public FitxerDto descarregarDocumentExecMassiva(Long entitatId, Long execucioId) {
+		return delegateService.descarregarDocumentExecMassiva(entitatId, execucioId);
+	}
+
+	@Override
+	@RolesAllowed("**")
+	public boolean chechFormDescargaMassiva(List<RegistreDto> registres, Model model) {
+		return delegateService.chechFormDescargaMassiva(registres, model);
 	}
 
 	@Override

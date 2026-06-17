@@ -43,6 +43,7 @@ Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.plugin.arxiu.document.versionable',null,'Document versionable','ARXIU','6','0','BOOL',null,null);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.plugin.unitats.organitzatives.class',null,'Classe de plugin d''unitats organitzatives','UNITATS','0','0','TEXT',null,null);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.url',null,'Servei URL','UNITATS','1','1','TEXT',null,null);
+INSERT INTO DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE,CONFIGURABLE) VALUES (1,'GENERAL','es.caib.distribucio.fitxers', null,'Ruta de fitxers de Distribucio al servidor',0,'TEXT',0);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.default.user.language',null,'Llenguatge per defecte de l''aplicació','GENERAL','0','0','TEXT',null,null);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.username',null,'Usuari','UNITATS','2','1','TEXT',null,null);
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values ('es.caib.distribucio.plugin.unitats.organitzatives.dir3.service.password',null,'Contrasenya','UNITATS','3','1','CREDENTIALS',null,null);
@@ -224,6 +225,19 @@ INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY
 INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.plugins.validarsignatura.agil.api.evidenciesib.password',null,'Contrasenya usuario integració API EvidenciesIB','VALID_SIGN_AGIL','4','1','CREDENTIALS',null,null);
 
 INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.email.backoffice.responsable.temps','1440','Temps entre correus al responsable del backoffice (minuts)','EMAIL','3','0','INT',null,null);
+
+INSERT INTO DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) VALUES 
+	('GENERAL_EXPORT_ZIP', 'GENERAL', 27, 'Configuració d''exportació masiva d''annexos a zip');
+INSERT INTO DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE,CONFIGURABLE) VALUES
+    (0,'GENERAL_EXPORT_ZIP','es.caib.distribucio.exportar.annex.zip.mida.max', 10,'Mida màxima del fitxer ZIP generat (MB)',0,'INT',0);
+INSERT INTO DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE,CONFIGURABLE) VALUES
+    (0,'GENERAL_EXPORT_ZIP','es.caib.distribucio.exportar.annex.zip.exec.max', 5,'Nombre d''execucions màximes permeses per usuari',1,'INT',0);
+INSERT INTO DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE,CONFIGURABLE) VALUES
+    (0,'GENERAL_EXPORT_ZIP','es.caib.distribucio.exportar.annex.zip.enabled', 'false','Habilitar l''exportació massiva d''annexos de registres',2,'BOOL',0);
+INSERT INTO DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE,CONFIGURABLE) VALUES
+    (0,'GENERAL_EXPORT_ZIP','es.caib.distribucio.exportar.annex.zip.caducitat', 10,'Nombre de dies que es guardarà el fitxer ZIP abans de que s''esborri automàticament',3,'INT',0);
+INSERT INTO DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE,CONFIGURABLE) VALUES
+    (0,'GENERAL_EXPORT_ZIP','es.caib.distribucio.exportar.annex.zip.caducitat.cron', '0 0 0 * * *','Tasca periòdica per esborrar documents .ZIP temporals de descàrrega massiva de documents',4,'CRON',0);
 
 -- Actualització de les propietats que poden ser configurables a nivell d'entitat
 

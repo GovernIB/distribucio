@@ -229,15 +229,4 @@ public interface EntitatService {
 
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
 	public void evictEntitatsAccessiblesUsuari();
-
-	/**
-	 * Afegeix l'entitat que està activada a l'aplicació per poder accedir a les 
-	 * seves propietats
-	 * 
-	 * @param entitatDto
-	 *            Atribut entitatDto
-	 */
-	@PreAuthorize("isAuthenticated()")
-	public void setConfigEntitat(EntitatDto entitatDto);
-
 }

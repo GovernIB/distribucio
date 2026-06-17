@@ -368,6 +368,7 @@ pageContext.setAttribute(
 										<span class="fa fa-times"></span>&nbsp;<spring:message code="accio.massiva.header.accion.cancelar"/>
 									</a>
 								</li>
+                                <c:if test="${exm.tipus != 'DESCARREGAR'}">
 								<c:choose>
 									<c:when test="${exm.estat == 'PAUSADA' && exm.emcPausat}">
 										<li>
@@ -384,9 +385,26 @@ pageContext.setAttribute(
 										</li>
 									</c:otherwise>
 								</c:choose>
+                                </c:if>
 							</ul>
 			          	</div>
 			        </div>
+	          	</c:if>
+	          	<c:if test="${exm.estat == 'FINALITZADA' && exm.tipus == 'DESCARREGAR' && exm.errors <= 0}">
+                    <c:choose>
+                        <c:when test="${exm.nomDocument != null}">
+                            <div class="col-xs-1">
+                                <a id="detall-button" href='<c:url value="../descarregar/${exm.id}/${pagina}"/>' onclick="event.stopPropagation();">
+                                    <span class="fa fa-download fa-2x" title="<spring:message code="accio.massiva.header.accion.dowload"/>"></span>
+                                </a>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="col-xs-1">
+                                <span class="fa fa-warning alert-warning fa-2x" title="Documento no disponible"></span>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
 	          	</c:if>
           	</div>
         </div>

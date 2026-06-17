@@ -115,6 +115,44 @@ public class ServeiPluginHelper extends AbstractPluginHelper<ServeiPlugin> {
 					ex);
 		}
 	}
+
+	public Servei serveiGetByCodi(String serveiCodi) {
+		String accioDescripcio = "Consulta dels serveis pel codi " + serveiCodi;
+
+		ServeiPlugin serveiPlugin = this.getPlugin();
+		String usuariIntegracio = serveiPlugin.getUsuariIntegracio();
+
+		Map<String, String> accioParams = new HashMap<String, String>();
+		long t0 = System.currentTimeMillis();
+		try {
+			//codiDir3 = "A04003003";
+			Servei serveis = getPlugin().findAmbCodi(serveiCodi);
+			// RegistreNumero no cal!!!
+			integracioHelper.addAccioOk(
+					IntegracioHelper.INTCODI_SERVEI,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0);
+			return serveis;
+		} catch (Exception ex) {
+			String errorDescripcio = "Error al accedir al plugin de serveis: " + ex.getMessage();
+			integracioHelper.addAccioError(
+					IntegracioHelper.INTCODI_SERVEI,
+					accioDescripcio,
+					usuariIntegracio,
+					accioParams,
+					IntegracioAccioTipusEnumDto.ENVIAMENT,
+					System.currentTimeMillis() - t0,
+					errorDescripcio,
+					ex);
+			throw new SistemaExternException(
+					IntegracioHelper.INTCODI_SERVEI,
+					errorDescripcio,
+					ex);
+		}
+	}
 	
 	public boolean isActiu() {
 		return getPlugin() != null;

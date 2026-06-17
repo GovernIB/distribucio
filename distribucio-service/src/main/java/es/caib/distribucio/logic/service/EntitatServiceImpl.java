@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
@@ -62,10 +63,11 @@ public class EntitatServiceImpl implements EntitatService {
 	private EntityComprovarHelper entityComprovarHelper;
 	@Resource
 	private EntitatHelper entitatHelper;
+    @Autowired
+    private ConfigHelper configHelper;
 
 
-
-	@Transactional
+    @Transactional
 	@Override
 	@CacheEvict(value = "entitatsUsuari", allEntries = true)
 	public EntitatDto create(EntitatDto entitat) {
@@ -159,6 +161,7 @@ public class EntitatServiceImpl implements EntitatService {
 				false,
 				false);
 		entitatRepository.delete(entitat);
+        configHelper.deleteConfigEntitat(entitat.getCodi());
 		permisosHelper.deleteAcl(
 				entitat.getId(),
 				EntitatEntity.class);
@@ -426,14 +429,6 @@ public class EntitatServiceImpl implements EntitatService {
 				id,
 				EntitatEntity.class,
 				permisId);
-	}
-	
-	
-	
-
-	@Override
-	public void setConfigEntitat(EntitatDto entitatDto) {
-		ConfigHelper.setEntitat(entitatDto);		
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(EntitatServiceImpl.class);

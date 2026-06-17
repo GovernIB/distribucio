@@ -42,11 +42,11 @@ import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
 import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
-import ma.glasnost.orika.metadata.ClassMapBuilder;
 import ma.glasnost.orika.metadata.Type;
 /**
  * Helper per a convertir entre diferents formats de documents.
@@ -61,7 +61,6 @@ public class ConversioTipusHelper {
 	/**
 	 * 
 	 */
-	@SuppressWarnings("deprecation")
 	public ConversioTipusHelper() {
 		// mapperFactory = new DefaultMapperFactory.Builder().build();
 		MappingContext.Factory mappingContextFactory = new MappingContext.Factory();
@@ -90,16 +89,33 @@ public class ConversioTipusHelper {
 						return target;
 					}
 				});
-		mapperFactory.registerClassMap(
-				ClassMapBuilder.map(ReglaEntity.class, ReglaDto.class)
-				.field("backofficeDesti.nom", "backofficeDestiNom")
-				.field("backofficeDesti.id", "backofficeDestiId")
-				.field("bustiaDesti.nom", "bustiaDestiNom")
-				.field("unitatDesti.codiAndNom", "unitatDestiNom")
-				.field("bustiaFiltre.nom", "bustiaFiltreNom")
-				.field("entitat.id", "entitatId")
-				.field("entitat.nom", "entitatNom")
-				.byDefault().toClassMap());
+        mapperFactory.classMap(ReglaEntity.class, ReglaDto.class)
+                .customize(new CustomMapper<ReglaEntity, ReglaDto>() {
+                    @Override
+                    public void mapAtoB(ReglaEntity source, ReglaDto target, MappingContext context) {
+                        super.mapAtoB(source, target, context);
+
+                        target.setCreatedBy(convertir(source.getCreatedBy().orElse(null), UsuariDto.class));
+                        if (source.getCreatedDate().isPresent()) {
+                            target.setCreatedDate(
+                                    java.sql.Timestamp.valueOf(source.getCreatedDate().get()));
+                        }
+                        target.setLastModifiedBy(convertir(source.getLastModifiedBy().orElse(null), UsuariDto.class));
+                        if (source.getLastModifiedDate().isPresent()) {
+                            target.setLastModifiedDate(
+                                    java.sql.Timestamp.valueOf(source.getLastModifiedDate().get()));
+                        }
+                    }
+                })
+                .byDefault()
+                .field("backofficeDesti.nom", "backofficeDestiNom")
+                .field("backofficeDesti.id", "backofficeDestiId")
+                .field("bustiaDesti.nom", "bustiaDestiNom")
+                .field("unitatDesti.codiAndNom", "unitatDestiNom")
+                .field("bustiaFiltre.nom", "bustiaFiltreNom")
+                .field("entitat.id", "entitatId")
+                .field("entitat.nom", "entitatNom")
+                .register();
 		mapperFactory.getConverterFactory().registerConverter(
 				new CustomConverter<ContingutComentariEntity, ContingutComentariDto>() {
 					public ContingutComentariDto convert(
@@ -246,6 +262,7 @@ public class ConversioTipusHelper {
 									.anyMatch(emc -> ExecucioMassivaContingutEstatDto.PAUSADA.equals(emc.getEstat()));
 						target.setEmcPausat(emcPausat);
 						target.setParametres(source.getParametres());
+                        target.setNomDocument(source.getNomDocument());
 						return target;
 					}
 				});

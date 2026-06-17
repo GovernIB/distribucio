@@ -85,6 +85,7 @@ public interface DistribucioPlugin extends IntegracioPlugin, SalutPlugin {
 	 *            Si hi ha hagut algun problema per dur a terme l'acció.
 	 */
 	public DocumentContingut documentImprimible (
+            String nom,
 			String arxiuUuid) throws SistemaExternException;
 
 	/**
@@ -123,12 +124,14 @@ public interface DistribucioPlugin extends IntegracioPlugin, SalutPlugin {
 	public static interface IntegracioManager {
 		public void addAccioOk(
 				String integracioCodi,
+				String registreNumero,
 				String descripcio,
 				String usuariIntegracio,
 				Map<String, String> parametres,
 				long tempsResposta);
 		public void addAccioError(
 				String integracioCodi,
+				String registreNumero,
 				String descripcio,
 				String usuariIntegracio,
 				Map<String, String> parametres,

@@ -70,4 +70,14 @@ public interface EntitatRepository extends JpaRepository<EntitatEntity, Long> {
 	@Query("select distinct e.codi from EntitatEntity e order by e.codi")
 	List<String> findDistinctCodiOrderByCodiAsc();
 
+	@Query("select r.entitat.codi " +
+			"from RegistreEntity r " + 
+			"where r.id = :anotacioId")
+	public String getCodiEntitatPerAnotacioId(@Param("anotacioId") Long anotacioId);
+
+	@Query("select e.codi " +
+			"from EntitatEntity e " + 
+			"where e.id = :entitatId")
+	public String getCodiEntitatPerId(@Param("entitatId") Long entitatId);
+
 }

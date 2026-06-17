@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
@@ -20,6 +21,8 @@ import java.util.Random;
 
 import javax.annotation.Resource;
 
+import es.caib.distribucio.logic.intf.dto.*;
+import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,15 +38,6 @@ import es.caib.distribucio.logic.helper.GestioDocumentalHelper;
 import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
-import es.caib.distribucio.logic.intf.dto.IntegracioAccioEstatEnumDto;
-import es.caib.distribucio.logic.intf.dto.IntegracioDiagnosticDto;
-import es.caib.distribucio.logic.intf.dto.IntegracioDto;
-import es.caib.distribucio.logic.intf.dto.IntegracioFiltreDto;
-import es.caib.distribucio.logic.intf.dto.MonitorIntegracioDto;
-import es.caib.distribucio.logic.intf.dto.MonitorIntegracioParamDto;
-import es.caib.distribucio.logic.intf.dto.PaginaDto;
-import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.service.MonitorIntegracioService;
 import es.caib.distribucio.persist.entity.MonitorIntegracioEntity;
 import es.caib.distribucio.persist.entity.MonitorIntegracioParamEntity;
@@ -107,6 +101,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 						monitorIntegracio.getEstat(),
 						monitorIntegracio.getCodiUsuari(),
 						monitorIntegracio.getCodiEntitat(),
+						monitorIntegracio.getNumeroRegistre(),
 						monitorIntegracio.getErrorDescripcio(),
 						monitorIntegracio.getExcepcioMessage(),
 						monitorIntegracio.getExcepcioStacktrace()).build());
@@ -141,36 +136,36 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 	public PaginaDto<MonitorIntegracioDto> findPaginat(PaginacioParamsDto paginacioParams, IntegracioFiltreDto integracioFiltreDto/*String codiMonitor*/) {
 		logger.debug("Consulta de totes les monitorIntegracios paginades (" +
 				"paginacioParams=" + paginacioParams + ")");
-		boolean isDataNula = integracioFiltreDto.getData() == null;
-		Calendar c = new GregorianCalendar();
-		Date data = integracioFiltreDto.getData();
-		Date dataFi = new Date();
-		if (data != null) {
-			c.setTime(data);
-			data = c.getTime();
-			c.add(Calendar.DAY_OF_YEAR, 1);
-			dataFi = c.getTime();
-		}
+		Date data = integracioFiltreDto.getDataInici();
+		Date dataFi = integracioFiltreDto.getDataFi()!=null ?DateUtils.addDays(integracioFiltreDto.getDataFi(), 1) :null;
+
 		String codiMonitor = integracioFiltreDto.getCodi();
 		String descripcio = integracioFiltreDto.getDescripcio();
 		String usuari = integracioFiltreDto.getUsuari();
 		IntegracioAccioEstatEnumDto estat = integracioFiltreDto.getEstat();
+		IntegracioAccioTipusEnumDto tipus = integracioFiltreDto.getTipus();
         String entitat = integracioFiltreDto.getEntitat();
+        String numeroRegistre = integracioFiltreDto.getNumeroRegistre();
 		PaginaDto<MonitorIntegracioDto> resposta;
 		resposta = paginacioHelper.toPaginaDto(
 				monitorIntegracioRepository.findByFiltrePaginat(
 						codiMonitor,
-						isDataNula,
-						data, 
-						dataFi, 
+                        data == null,
+						data,
+						dataFi == null,
+						dataFi,
 						descripcio == null || descripcio.isEmpty(),
-						descripcio != null && !descripcio.isEmpty() ? descripcio : "", 
+						descripcio != null && !descripcio.isEmpty() ? descripcio : "",
 						usuari == null || usuari.isEmpty(), 
 						usuari != null && !usuari.isEmpty() ? usuari : "",
-						estat == null, 
+						estat == null,
 						estat != null ? estat : IntegracioAccioEstatEnumDto.OK,
+						tipus == null,
+                        tipus,
                         entitat == null || entitat.isEmpty(),
                         entitat != null && !entitat.isEmpty() ? entitat : "",
+                        numeroRegistre == null || numeroRegistre.isEmpty(),
+                        numeroRegistre,
 						paginacioHelper.toSpringDataPageable(paginacioParams)),
 				MonitorIntegracioDto.class);	
 		return resposta;
@@ -180,13 +175,32 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public Map<String, Integer> countErrors(int numeroHores) {
-		DateTime date = new DateTime();
-		long dataInici = date.getMillis() - (numeroHores * 60*60*1000);
-		DateTime dataIniciDate = new DateTime(dataInici);
+	public Map<String, Integer> countErrors(IntegracioFiltreDto integracioFiltreDto) {
+        Date data = integracioFiltreDto.getDataInici();
+        Date dataFi = integracioFiltreDto.getDataFi()!=null ?DateUtils.addDays(integracioFiltreDto.getDataFi(), 1) :null;
+
+        String descripcio = integracioFiltreDto.getDescripcio();
+        String usuari = integracioFiltreDto.getUsuari();
+        IntegracioAccioTipusEnumDto tipus = integracioFiltreDto.getTipus();
+        String entitat = integracioFiltreDto.getEntitat();
+        String numeroRegistre = integracioFiltreDto.getNumeroRegistre();
 		
 		Map<String, Integer> errors = new HashMap<String, Integer>();
-		List<Object[]> resultats = monitorIntegracioRepository.countErrorsGroupByCodi(dataIniciDate.toDate());
+		List<Object[]> resultats = monitorIntegracioRepository.countErrorsGroupByCodi(
+                data == null,
+                data,
+                dataFi == null,
+                dataFi,
+                descripcio == null || descripcio.isEmpty(),
+                descripcio != null && !descripcio.isEmpty() ? descripcio : "",
+                usuari == null || usuari.isEmpty(),
+                usuari != null && !usuari.isEmpty() ? usuari : "",
+                tipus == null,
+                tipus,
+                entitat == null || entitat.isEmpty(),
+                entitat != null && !entitat.isEmpty() ? entitat : "",
+                numeroRegistre == null || numeroRegistre.isEmpty(),
+                numeroRegistre);
 		for (Object[] resultat : resultats) {
 			errors.put(
 					(String) resultat[0], 
@@ -291,7 +305,8 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 						"Prova firma en servidor diagnòstic Distribucio", 
 						imputAByte(this.getClass().getResourceAsStream("/diagnostic/test_firma.pdf")), 
 						"application/pdf", 
-						"TD99");
+						"TD99",
+                        null);
 				accioDescripcio = "Comunicació amb el plugin de firma en servidor correcta";
 				diagnostic.setProva(accioDescripcio);
 				diagnostic.setCorrecte(true); 
@@ -351,8 +366,8 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 
 	private void provaGestioDocumental() {
 		// PENDENT DE REVISAR COM OBTENIR EL NUMERO DE REGISTRE
-		String indenti = pluginHelper.gestioDocumentalCreate(GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, new byte[0], "");
-		pluginHelper.gestioDocumentalDelete(indenti, GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP);
+		String indenti = pluginHelper.gestioDocumentalCreate("diagnostic_gestor_documental", GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, new byte[0], null);
+		pluginHelper.gestioDocumentalDelete(indenti, "diagnostic_gestor_documental", GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, null);
 	}
 	
 	public static byte[] imputAByte(InputStream input) throws IOException

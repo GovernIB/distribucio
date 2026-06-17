@@ -75,6 +75,12 @@
 		}
 	
 	</style>
+
+    <style type="text/css">
+        table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.dataTable tbody td.selected a  {
+            color: #333;
+        }
+    </style>
 	
 	<script type="text/javascript">
 	var bustiesInactives = [];
@@ -393,13 +399,13 @@
 		data-toggle="datatable" 
 		data-url="<c:url value="/regla/datatable"/>" 
 		data-filter="#reglaFiltreCommand" 
-		data-drag-enabled="${isRolActualAdministrador}"  
+		data-drag-enabled="${isRolActualAdministrador}"
 		data-default-order="0" 
 		data-default-dir="asc" 
 		class="table table-striped table-bordered" 
 		style="width:100%"
 		data-botons-template="#botonsTemplate"
-		data-selection-enabled="true"		
+		data-selection-enabled="${isRolActualAdministrador}"
 		data-refresh-tancar="true"	
 		>
 

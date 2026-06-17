@@ -14,6 +14,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import es.caib.distribucio.logic.intf.service.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,16 +60,6 @@ import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
-import es.caib.distribucio.logic.intf.service.AplicacioService;
-import es.caib.distribucio.logic.intf.service.BackofficeService;
-import es.caib.distribucio.logic.intf.service.BustiaService;
-import es.caib.distribucio.logic.intf.service.ContingutService;
-import es.caib.distribucio.logic.intf.service.MetaDadaService;
-import es.caib.distribucio.logic.intf.service.ProcedimentService;
-import es.caib.distribucio.logic.intf.service.RegistreService;
-import es.caib.distribucio.logic.intf.service.ServeiService;
-import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -103,8 +94,10 @@ public class RegistreAdminController extends BaseAdminController {
 	private ProcedimentService procedimentService;
 	@Autowired
 	private ServeiService serveiService;
-	
-	@RequestMapping(method = RequestMethod.GET)
+    @Autowired
+    private ConfigService configService;
+
+    @RequestMapping(method = RequestMethod.GET)
 	public String registreAdminGet(
 			HttpServletRequest request,
 			Model model) {
@@ -125,6 +118,8 @@ public class RegistreAdminController extends BaseAdminController {
 		model.addAttribute("backoffices", backoffices);
         model.addAttribute("estatsPendents", RegistreProcesEstatEnum.estatsPendents);
         model.addAttribute("estatsProcessats", RegistreProcesEstatEnum.estatsProcessats);
+        model.addAttribute("downloadAnnexosEnabled",
+                configService.getConfig("es.caib.distribucio.exportar.annex.zip.enabled"));
 
         return "registreAdminList";
 	}
@@ -344,7 +339,7 @@ public class RegistreAdminController extends BaseAdminController {
 				seleccio.add(id);
 			}
 		} else {
-			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+			EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 			RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 			seleccio.addAll(
 					registreService.findRegistreIds(

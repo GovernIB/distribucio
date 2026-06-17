@@ -17,7 +17,15 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -78,7 +86,6 @@ import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.BackofficeTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.logic.intf.dto.DocumentNtiTipoFirmaEnumDto;
-import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.FitxerDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
@@ -107,7 +114,6 @@ import es.caib.distribucio.logic.intf.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
 import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
-import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
@@ -216,8 +222,6 @@ public class RegistreHelper {
     private EmailHelper emailHelper;
     @Autowired
     private BackofficeRepository backofficeRepository;
-    @Autowired
-    private RegistreService registreService;
 
     @PostConstruct
 	public void postContruct() {
@@ -604,7 +608,7 @@ public class RegistreHelper {
 				byte[] firmaContingut = null;
 				
 				if (annexFirma.getGesdocFirmaId() != null) {
-					firmaContingut = this.getFirmaContingut(annexFirma.getGesdocFirmaId(),registre.getNumero());
+					firmaContingut = this.getFirmaContingut(annexFirma.getGesdocFirmaId(),annexFirma.getFitxerNom(),registre.getNumero());
 				} else if(firmaDistribucioContingut != null) {
 					firmaContingut = firmaDistribucioContingut;
 				}
@@ -1002,11 +1006,11 @@ public class RegistreHelper {
 					// Si encara no està a l'Arxiu o està en estat esborrany recupera el fitxer de firma de la gesió documental.
 					if (annex.getFitxerArxiuUuid() == null || AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat())) {
 						if (documentContingut != null && "TF04".equals(firma.getTipus())) { // <> TF04 CAdDES dettached (unica firma realment dettached)
-							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId(),registre.getNumero());
+							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId(),firma.getFitxerNom(),registre.getNumero());
 						}
 						
 						if (documentContingut == null) {
-							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId(),registre.getNumero());
+							firmaContingut = this.getFirmaContingut(firma.getGesdocFirmaId(),firma.getFitxerNom(),registre.getNumero());
 						}
 					} else {
 						// Altrament obté la 1a firma de l'Arxiu
@@ -1196,6 +1200,7 @@ public class RegistreHelper {
 						ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
 						gestioDocumentalHelper.gestioDocumentalGet(
 								registreAnnexEntity.getGesdocDocumentId(),
+                                registreAnnexEntity.getFitxerNom(),
 								GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
 								streamAnnex,
 								registre.getNumero());
@@ -1203,7 +1208,7 @@ public class RegistreHelper {
 					}
 					byte[] firmaContingut = null;
 					if (registreAnnexFirmaEntity.getGesdocFirmaId() != null && !registreAnnexFirmaEntity.getGesdocFirmaId().isEmpty()) {
-						firmaContingut = this.getFirmaContingut(registreAnnexFirmaEntity.getGesdocFirmaId(),registre.getNumero());
+						firmaContingut = this.getFirmaContingut(registreAnnexFirmaEntity.getGesdocFirmaId(),registreAnnexFirmaEntity.getFitxerNom(),registre.getNumero());
 					}
 					ValidaSignaturaResposta validacioFirma = pluginHelper.validaSignaturaObtenirDetalls(
 							registreAnnexEntity.getFitxerNom(),
@@ -1497,9 +1502,9 @@ public class RegistreHelper {
 		long t0 = System.currentTimeMillis();
 		String accioDescripcio = "Comunicar ";
 		if (ids.size() == 1) {
-			accioDescripcio += " l'anotació " + ids.get(0).getIdentificador();
+			accioDescripcio += "l'anotació";
 		} else {
-			accioDescripcio +=  ids.size() + " anotacions";
+			accioDescripcio += ids.size() + " anotacions";
 		}
 		accioDescripcio += " al backoffice " + backofficeDesti.getCodi();
 		String usuari = null;
@@ -1585,15 +1590,30 @@ public class RegistreHelper {
                     errorDescripcio = "No s'ha pogut probar la connexió amb el backoffice " + backofficeDesti.getCodi();
                 }
 			}
-			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_BACKOFFICE,
-					accioDescripcio,
-					usuari,
-					accioParams,
-					IntegracioAccioTipusEnumDto.ENVIAMENT,
-					System.currentTimeMillis() - t0,
-					errorDescripcio,
-					ex);
+
+            if (ids.size()==1) {
+                String identificador = ids.get(0).getIdentificador();
+                integracioHelper.addAccioError(
+                        IntegracioHelper.INTCODI_BACKOFFICE,
+                        identificador,
+                        accioDescripcio,
+                        usuari,
+                        accioParams,
+                        IntegracioAccioTipusEnumDto.ENVIAMENT,
+                        System.currentTimeMillis() - t0,
+                        errorDescripcio,
+                        ex);
+            } else {
+                integracioHelper.addAccioError(
+                        IntegracioHelper.INTCODI_BACKOFFICE,
+                        accioDescripcio,
+                        usuari,
+                        accioParams,
+                        IntegracioAccioTipusEnumDto.ENVIAMENT,
+                        System.currentTimeMillis() - t0,
+                        errorDescripcio,
+                        ex);
+            }
 			return new SistemaExternException(
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					errorDescripcio,
@@ -1974,6 +1994,7 @@ public class RegistreHelper {
 		String gestioDocumentalId = null;
 		if (registreAnnex.getFitxerContingut() != null && isRegistreArxiuPendent) {
 			gestioDocumentalId = gestioDocumentalHelper.gestioDocumentalCreate(
+                    registreAnnex.getFitxerNom(),
 					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP,
 					registreAnnex.getFitxerContingut(),
 					registre.getNumero());
@@ -2035,6 +2056,7 @@ public class RegistreHelper {
 		RegistreEntity registre = annex.getRegistre();
 		if (firma.getContingut() != null) {
 			gestioDocumentalId = gestioDocumentalHelper.gestioDocumentalCreate(
+                    annex.getFitxerNom(),
 					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP,
 					firma.getContingut(),
 					registre.getNumero());
@@ -2126,15 +2148,31 @@ public class RegistreHelper {
 	@Transactional
 	public FitxerDto getAnnexFitxerImprimible(Long annexId) throws Exception {
 		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(annexId);
+		return this.getAnnexFitxerImprimible(registreAnnexEntity);
+	}
+
+	public FitxerDto getAnnexFitxerImprimible(RegistreAnnexEntity registreAnnexEntity) throws Exception {
 	    RegistreEntity registre = registreAnnexEntity.getRegistre();
 	    FitxerDto fitxerDto = new FitxerDto();
 	    String titol = registreAnnexEntity.getFitxerNom().replace(".pdf", "_imprimible.pdf");
-	    if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
+
+        String imprimibleUrl = configHelper.getConfig("es.caib.distribucio.pluginsib.arxiu.caib.conversio.imprimible.url");
+        boolean endsWithUuid = imprimibleUrl.endsWith("/uuid") || imprimibleUrl.endsWith("/uuid/");
+        if (registreAnnexEntity.getFitxerArxiuUuid() != null && !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()) {
 	    	if (this.potGenerarVersioImprimible(registreAnnexEntity)) {
 	    		try {
 	    			TemporalThreadStorage.set("numeroRegistre", registre.getNumero());
-	    			fitxerDto = pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFitxerArxiuUuid(), titol);
+	    			fitxerDto = pluginHelper.arxiuDocumentImprimible(
+                            (endsWithUuid ?"":"/uuid/") +
+                            registreAnnexEntity.getFitxerArxiuUuid(), titol);
 	    		} catch (Exception ex) {
+                    if (!endsWithUuid) {
+                        try {
+                            return pluginHelper.arxiuDocumentImprimible(registreAnnexEntity.getFirmaCsv(), titol);
+                        } catch (Exception e) {
+                            throw new Exception("Error no controlat consultant la versió imprimible: " + e.getMessage());
+                        }
+                    }
 	    			throw new Exception("Error no controlat consultant la versió imprimible: " + ex.getMessage());
 	    		}
 	    	} else {
@@ -2145,10 +2183,9 @@ public class RegistreHelper {
 	    }
 	    return fitxerDto;
 	}
-
-	@Transactional
+	
 	public FitxerDto getAnnexFitxer(Long annexId, boolean ambVersioImprimible) {
-		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(annexId);
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.findById(annexId).get();
 	    RegistreEntity registre = registreAnnexEntity.getRegistre();
 	    FitxerDto fitxerDto = new FitxerDto();
 	    // if annex is already created in arxiu take content from arxiu
@@ -2195,7 +2232,7 @@ public class RegistreHelper {
 	          !registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF02") && !registreAnnexEntity.getFirmes().get(0).getTipus().equals("TF04")) {
 	    		RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(0);
 	    		if (firmaEntity.getGesdocFirmaId() != null) {
-	    			byte[] firmaContingut = this.getFirmaContingut(firmaEntity.getGesdocFirmaId(),registre.getNumero());
+	    			byte[] firmaContingut = this.getFirmaContingut(firmaEntity.getGesdocFirmaId(),firmaEntity.getFitxerNom(),registre.getNumero());
 	    			fitxerDto.setNom(firmaEntity.getFitxerNom());
 	    			fitxerDto.setContentType(firmaEntity.getTipusMime());
 	    			fitxerDto.setContingut(firmaContingut);
@@ -2204,7 +2241,8 @@ public class RegistreHelper {
 	    		if (registreAnnexEntity.getGesdocDocumentId() != null) {
 	    			ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
 	    			gestioDocumentalHelper.gestioDocumentalGet(
-	    					registreAnnexEntity.getGesdocDocumentId(), 
+	    					registreAnnexEntity.getGesdocDocumentId(),
+                            registreAnnexEntity.getFitxerNom(),
 	    					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
 	    					streamAnnex,
 	    					registre.getNumero());
@@ -2219,7 +2257,8 @@ public class RegistreHelper {
 	    		if (registreAnnexEntity.getGesdocDocumentId() != null) {
 	    			ByteArrayOutputStream streamAnnex = new ByteArrayOutputStream();
 	    			gestioDocumentalHelper.gestioDocumentalGet(
-	    					registreAnnexEntity.getGesdocDocumentId(), 
+	    					registreAnnexEntity.getGesdocDocumentId(),
+                            registreAnnexEntity.getFitxerNom(),
 	    					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_DOC_TMP, 
 	    					streamAnnex,
 	    					registre.getNumero());
@@ -2264,12 +2303,13 @@ public class RegistreHelper {
 	}
 
 	/** Consulta el contingut de la firma en la gestió documental. */
-	private byte[] getFirmaContingut(String gesdocFirmaId, String registreNumero) {
+	private byte[] getFirmaContingut(String gesdocFirmaId, String nom, String registreNumero) {
 		byte[] firmaContingut = null;
 		if (gesdocFirmaId != null) {
 			ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
 			gestioDocumentalHelper.gestioDocumentalGet(
-					gesdocFirmaId, 
+					gesdocFirmaId,
+                    nom,
 					GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
 					streamAnnexFirma,
 					registreNumero);
@@ -2289,7 +2329,7 @@ public class RegistreHelper {
 	 * @param annex
 	 * @return
 	 */
-	private boolean potGenerarVersioImprimible(RegistreAnnexEntity annex) {
+	public boolean potGenerarVersioImprimible(RegistreAnnexEntity annex) {
 		// Si no està firmat no cal la versió imprimible
 		if (AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat()) && (annex.getFirmes() == null || annex.getFirmes().isEmpty())) {
 			return false;
@@ -2621,8 +2661,7 @@ public class RegistreHelper {
 	}
 
 	public int getEnviarIdsAnotacionsMaxReintentsProperty(EntitatEntity entitat) {
-		EntitatDto entitatDto = conversioTipusHelper.convertir(entitat, EntitatDto.class);
-		String maxReintents = configHelper.getConfig(entitatDto, "es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
+		String maxReintents = configHelper.getConfigForEntitat(entitat != null ? entitat.getCodi() : null, "es.caib.distribucio.tasca.enviar.anotacions.max.reintents");
 		if (maxReintents != null) {
 			return Integer.parseInt(maxReintents);
 		} else {
@@ -2669,9 +2708,7 @@ public class RegistreHelper {
 		// Per cada entitat
 		for (EntitatEntity entitat : entitatRepository.findByActiva(true)) {
 			
-			EntitatDto entitatDto = new EntitatDto();
-			entitatDto.setCodi(entitat.getCodi());
-			ConfigHelper.setEntitat(entitatDto);
+			ConfigHelper.setEntitatActualCodi(entitat.getCodi());
 
 			int maxReintents = this.getEnviarIdsAnotacionsMaxReintentsProperty(entitat);
 		
@@ -2764,7 +2801,5 @@ public class RegistreHelper {
 		return resultat;
 	}
 	
-	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
-
 }

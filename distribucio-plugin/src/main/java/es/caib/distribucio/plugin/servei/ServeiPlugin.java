@@ -18,8 +18,19 @@ import es.caib.distribucio.plugin.SistemaExternException;
 public interface ServeiPlugin extends IntegracioPlugin, SalutPlugin {
 
 	/**
-	 * Retorna els servei associats a una unitat organitzativa.
+	 * Retorna un servei.
 	 * 
+	 * @param codi
+	 *            Codi de l'unitat.
+	 * @return un servei.
+	 * @throws SistemaExternException
+	 *            Si es produeix un error al consultar el servei.
+	 */
+	public Servei findAmbCodi(String codi) throws SistemaExternException;
+
+	/**
+	 * Retorna els servei associats a una unitat organitzativa.
+	 *
 	 * @param codiDir3
 	 *            Codi DIR3 de l'unitat organitzativa.
 	 * @return la llista de serveis.

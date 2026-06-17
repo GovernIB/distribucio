@@ -86,13 +86,52 @@ public class ServeiServiceImpl implements ServeiService{
 						filtre.getCodiSia() == null || filtre.getCodiSia().isEmpty(), 
 						filtre.getCodiSia() != null ? filtre.getCodiSia() : "", 
 						filtre.getEstat() == null, 
-						filtre.getEstat(),						
+						filtre.getEstat(),
+                        filtre.isNomesComu(),
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)), 
 				ServeiDto.class);
 
 		
 		return llistaServeis;
 	}
+
+    @Override
+    @Transactional
+    public ServeiDto findAndUpdateServei(Long entitatId, String serveiCodi) throws Exception {
+        EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
+
+        Servei servei = null;
+        int reintents = 1;
+        boolean errorConsultaServeis = false;
+        Exception exConsultaServeis = null;
+        String errMsg = "-";
+        do {
+            try {
+                servei = pluginHelper.serveiGetByCodi(serveiCodi);
+            } catch (Exception e) {
+                exConsultaServeis = e;
+                errMsg = "Error consultant el servei per codi: " + serveiCodi;
+            }
+            errorConsultaServeis = reintents++ >= 3;
+        }
+        while (servei == null && !errorConsultaServeis);
+
+        // Comprova si hi ha hagut errors consultant els serveis
+        if (errorConsultaServeis && exConsultaServeis != null) {
+            String errorMessage = exConsultaServeis.getMessage() != null ? exConsultaServeis.getMessage() : errMsg;
+            throw new Exception(errorMessage, exConsultaServeis);
+        }
+
+        if (servei == null) {
+            throw new Exception(
+                    "No s'ha obtingut cap resultat per la consulta de servei: (" + serveiCodi + ")"
+            );
+        }
+
+        ServeiDto serveiDto = serveiHelper.actualitzaServei(servei, new HashMap<String, UnitatOrganitzativaEntity>(), entitat);
+        
+        return serveiDto;
+    }
 
 	/** Mètode per trobar i actualitzar els serveis. Es pot fer manualment o des de la tasca
 	 * programada.
@@ -201,7 +240,8 @@ public class ServeiServiceImpl implements ServeiService{
 							servei.getCodigoSIA(),
 							ServeiEstatEnumDto.VIGENT,
 							unitatOrganitzativa, 
-							entitat).built();
+							entitat,
+                            servei.isComun()).built();
 					serveiRepository.save(serveiEntity);
 				} else {
 					serveiEntity.update(
@@ -210,7 +250,8 @@ public class ServeiServiceImpl implements ServeiService{
 							servei.getCodigoSIA(),
 							ServeiEstatEnumDto.VIGENT,
 							unitatOrganitzativa, 
-							entitat);
+							entitat,
+                            servei.isComun());
 					serveiRepository.save(serveiEntity);
 				}
 			}

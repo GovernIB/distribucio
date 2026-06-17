@@ -78,12 +78,6 @@ public class ConfigServiceEjb extends AbstractServiceEjb<ConfigService> implemen
 	public void setEntitatPerPropietat(EntitatDto entitatDto) {
 		delegateService.setEntitatPerPropietat(entitatDto);
 	}
-
-	@Override
-	@RolesAllowed("**")
-	public String getTempsErrorsMonitorIntegracio() {
-		return delegateService.getTempsErrorsMonitorIntegracio();
-	}
 	
 	@Override
 	@RolesAllowed("**")

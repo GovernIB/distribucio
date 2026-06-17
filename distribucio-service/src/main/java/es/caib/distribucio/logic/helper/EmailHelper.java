@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.logic.helper;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import es.caib.distribucio.persist.entity.*;
@@ -210,6 +211,27 @@ public class EmailHelper {
             mailSender.send(missatge);
         } catch (Exception e) {
             logger.error("S'ha produit un error al intentar enviar correu de les anotacions amb error de processament a l'usuari " + user.getNom(), e.getMessage());
+        }
+    }
+
+    public void sendEmailAccioMassiva(ExecucioMassivaEntity em, List<String> errors) {
+        int maxDies = Integer.parseInt(configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.caducitat", "10"));
+        UsuariEntity user = em.getUsuari();
+
+        try {
+            SimpleMailMessage missatge = new SimpleMailMessage();
+            missatge.setTo(user.getEmailAlternatiu() != null ? user.getEmailAlternatiu() : user.getEmail());
+            missatge.setFrom(getRemitent());
+            missatge.setSubject(this.getPrefixDistribucio() + " Fi de la tasca de descàrrega de " + em.getContinguts().size() + " anotacions");
+
+            String mssg = "L’informam que l’acció massiva de descàrrega de justificants i annexos, programada el " + new SimpleDateFormat("dd 'de' MMMM 'de' yyyy 'a les' HH:mm:ss 'hores'", new Locale("ca_ES")).format(new Date()) + ", ha finalitzat correctament.\n" +
+                    "Té el document disponible per a la seva descàrrega durant " + maxDies + " dies.\n" +
+                    "Enllaç al document: \n" + configHelper.getConfig("es.caib.distribucio.app.base.url") + "/massiva/descarregar/" + em.getId() + "/0 \n";
+
+            missatge.setText(mssg);
+            mailSender.send(missatge);
+        } catch (Exception e) {
+            logger.error("S'ha produit un error al intentar enviar correu a l'usuari " + user.getNom(), e.getMessage());
         }
     }
 

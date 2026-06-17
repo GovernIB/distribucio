@@ -43,7 +43,7 @@ public class BustiaAdminPermisController extends BaseAdminController {
 			HttpServletRequest request,
 			@PathVariable Long bustiaId,
 			Model model) {
-		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
 		model.addAttribute(
 				"bustia",
 				bustiaService.findById(entitatActual.getId(), bustiaId));

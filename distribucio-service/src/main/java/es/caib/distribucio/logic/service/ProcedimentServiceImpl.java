@@ -33,7 +33,7 @@ import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.plugin.procediment.Procediment;
 
 /**
- * Implementació del servei de gestió de procediments.
+ * Implementació del procediment de gestió de procediments.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
@@ -87,13 +87,54 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 						filtre.getCodiSia() == null || filtre.getCodiSia().isEmpty(), 
 						filtre.getCodiSia() != null ? filtre.getCodiSia() : "", 
 						filtre.getEstat() == null, 
-						filtre.getEstat(),						
+						filtre.getEstat(),
+                        filtre.isNomesComu(),
 						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)), 
 				ProcedimentDto.class);
 
 		
 		return llistaProcediments;
 	}
+
+    @Override
+    @Transactional
+    public ProcedimentDto findAndUpdateProcediment(Long entitatId, String procedimentCodi) throws Exception {
+        EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
+
+        Procediment procediment = null;
+        int reintents = 1;
+        boolean errorConsultaServeis = false;
+        Exception exConsultaServeis = null;
+        String errMsg = "-";
+        do {
+            try {
+                procediment = pluginHelper.procedimentGetByCodi(procedimentCodi);
+            } catch (Exception e) {
+                exConsultaServeis = e;
+                errMsg = "Error consultant el procediment per codi: " + procedimentCodi;
+            }
+            errorConsultaServeis = reintents++ >= 3;
+        }
+        while (procediment == null && !errorConsultaServeis);
+
+        // Comprova si hi ha hagut errors consultant els procediments
+        if (errorConsultaServeis && exConsultaServeis != null) {
+            String errorMessage = exConsultaServeis.getMessage() != null ? exConsultaServeis.getMessage() : errMsg;
+            throw new Exception(errorMessage, exConsultaServeis);
+        }
+
+        if (procediment == null) {
+            throw new Exception(
+                    "No s'ha obtingut cap resultat per la consulta de procediment: (" + procedimentCodi + ")"
+            );
+        }
+
+        // Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
+        Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
+        ProcedimentDto procedimentDto = procedimentHelper.actualitzaProcediment(procediment, unitatsOrganitzatives, entitat);
+        
+        return procedimentDto;
+    }
 
 	/** Mètode per trobar i actualitzar els procediments. Es pot fer manualment o des de la tasca
 	 * programada.
@@ -202,7 +243,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 							procediment.getCodigoSIA(),
 							ProcedimentEstatEnumDto.VIGENT,
 							unitatOrganitzativa, 
-							entitat).built();
+							entitat,
+                            procediment.isComun()).built();
 					procedimentRepository.save(procedimentEntity);
 				} else {
 					procedimentEntity.update(
@@ -211,7 +253,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 							procediment.getCodigoSIA(),
 							ProcedimentEstatEnumDto.VIGENT,
 							unitatOrganitzativa, 
-							entitat);
+							entitat,
+                            procediment.isComun());
 					procedimentRepository.save(procedimentEntity);
 				}
 			}
