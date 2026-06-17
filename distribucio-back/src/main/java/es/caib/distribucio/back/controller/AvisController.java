@@ -6,13 +6,17 @@ package es.caib.distribucio.back.controller;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import es.caib.distribucio.back.helper.EntitatHelper;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.service.EntitatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -39,8 +43,10 @@ public class AvisController extends BaseAdminController {
     private static final String SESSION_ATTRIBUTE_SELECCIO = "AvisController.session.seleccio";
 	@Autowired
 	private AvisService avisService;
+    @Autowired
+    private EntitatService entitatService;
 
-	
+
 	@RequestMapping(method = RequestMethod.GET)
 	public String get() {
 		return "avisList";
@@ -59,8 +65,8 @@ public class AvisController extends BaseAdminController {
 	}
 
 	@RequestMapping(value = "/new", method = RequestMethod.GET)
-	public String getNew(Model model) {
-		return get(null, model);
+	public String getNew(HttpServletRequest request, Model model) {
+		return get(request, null, model);
 	}
 
     @RequestMapping(value = "/toggleSelection", method = RequestMethod.GET)
@@ -151,6 +157,7 @@ public class AvisController extends BaseAdminController {
 	
 	@RequestMapping(value = "/{avisId}", method = RequestMethod.GET)
 	public String get(
+            HttpServletRequest request,
 			@PathVariable Long avisId,
 			Model model) {
 		AvisDto avis = null;
@@ -163,14 +170,19 @@ public class AvisController extends BaseAdminController {
 			avisCommand.setDataInici(new Date());
 			model.addAttribute(avisCommand);
 		}
+        List<EntitatDto> entitatsAccessibles = EntitatHelper.findEntitatsAccessibles(request, entitatService);
+        model.addAttribute("entitats", entitatsAccessibles);
 		return "avisForm";
 	}
 	@RequestMapping(method = RequestMethod.POST)
 	public String save(
 			HttpServletRequest request,
 			@Valid AvisCommand command,
-			BindingResult bindingResult) {
+			BindingResult bindingResult,
+            Model model) {
 		if (bindingResult.hasErrors()) {
+            List<EntitatDto> entitatsAccessibles = EntitatHelper.findEntitatsAccessibles(request, entitatService);
+            model.addAttribute("entitats", entitatsAccessibles);
 			return "avisForm";
 		}
 		if (command.getId() != null) {

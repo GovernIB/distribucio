@@ -73,28 +73,29 @@ public class EntitatHelper {
 	public static EntitatDto getEntitatActual(
 			HttpServletRequest request,
 			EntitatService entitatService) {
-		EntitatDto entitatActual = (EntitatDto)request.getSession().getAttribute(
-				SESSION_ATTRIBUTE_ENTITAT_ACTUAL);
-		if (entitatActual == null) {
-			List<EntitatDto> entitats = findEntitatsAccessibles(request, entitatService);
-            if (entitats != null && entitats.size() > 0) {
-                UsuariDto usuariActual = (UsuariDto)request.getSession().getAttribute(SessioHelper.SESSION_ATTRIBUTE_USUARI_ACTUAL);
-                if (usuariActual != null && usuariActual.getEntitatPerDefecteId() != null && entitatService != null) {
+        EntitatDto entitatActual = (EntitatDto)request.getSession().getAttribute(
+                SESSION_ATTRIBUTE_ENTITAT_ACTUAL);
+
+        List<EntitatDto> entitats = findEntitatsAccessibles(request, entitatService);
+        if ( entitats != null && !entitats.isEmpty() && (entitatActual == null || !entitats.contains(entitatActual)) ) {
+            UsuariDto usuariActual = (UsuariDto)request.getSession().getAttribute(SessioHelper.SESSION_ATTRIBUTE_USUARI_ACTUAL);
+            if (usuariActual != null && usuariActual.getEntitatPerDefecteId() != null) {
+                if (entitatService != null) {
                     entitatActual = entitatService.findById(usuariActual.getEntitatPerDefecteId());
                     // en cas que s'hagin eliminat els permisos sobre la entitat per defecte, l'esborram
                     EntitatDto finalEntitatActual = entitatActual;
-                    if (entitats.stream().noneMatch(e -> Objects.equals(e.getId(), finalEntitatActual.getId()) )) {
+                    if (entitats.stream().noneMatch(e -> Objects.equals(e.getId(), finalEntitatActual.getId()))) {
                         usuariActual.setEntitatPerDefecteId(null);
 //                        entitatService.removeEntitatPerDefecteUsuari(usuariActual.getCodi());
                         entitatActual = entitats.get(0);
                     }
-                } else {
-                    entitatActual = entitats.get(0);
                 }
-                canviEntitatActual(request, entitatActual);
+            } else {
+                entitatActual = entitats.get(0);
             }
-		}
-		return entitatActual;
+            canviEntitatActual(request, entitatActual);
+        }
+        return entitatActual;
 	}
 
 	public static String getRequestParameterCanviEntitat() {

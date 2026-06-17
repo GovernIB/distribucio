@@ -69,12 +69,7 @@
         <th data-col-name="assumpte" width="50%"><spring:message code="avis.list.columna.assumpte"/></th>
         <th data-col-name="dataInici" data-converter="date"><spring:message code="avis.list.columna.dataInici"/></th>
         <th data-col-name="dataFinal" data-converter="date"><spring:message code="avis.list.columna.dataFinal"/></th>
-        <th data-col-name="actiu" data-template="#cellActivaTemplate">
-            <spring:message code="avis.list.columna.activa"/>
-            <script id="cellActivaTemplate" type="text/x-jsrender">
-                {{if actiu}}<span class="fa fa-check"></span>{{/if}}
-            </script>
-        </th>
+        <th data-col-name="entitat.codi"><spring:message code="avis.list.columna.entitat"/></th>
         <th data-col-name="avisNivell" data-orderable="false" width="10%" data-template="#cellAvisNivellTemplate">
             <spring:message code="avis.list.columna.avisNivell"/>
             <script id="cellAvisNivellTemplate" type="text/x-jsrender">
@@ -85,6 +80,12 @@
                 {{else avisNivell == 'ERROR'}}
                 <spring:message code="avis.nivell.enum.ERROR"/>
                 {{/if}}
+            </script>
+        </th>
+        <th data-col-name="actiu" data-template="#cellActivaTemplate">
+            <spring:message code="avis.list.columna.activa"/>
+            <script id="cellActivaTemplate" type="text/x-jsrender">
+                {{if actiu}}<span class="fa fa-check"></span>{{/if}}
             </script>
         </th>
 

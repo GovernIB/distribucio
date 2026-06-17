@@ -288,7 +288,7 @@ $(document).ready(function() {
 	        enctype: 'multipart/form-data',
 	        data: formData,
 	        success: function(json) {
-	            var $formElement = $('span:contains("' + key + '")').parent().parent();
+	            var $formElement = $('span[data-value="' + key + '"]').parent().parent();
 	            if (json.error == true) {
 		              $formElement.find('.info-block').append('<div class="alert alert-danger"><button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button>' + json.errorMsg + '</div>');
 		              $formElement.addClass('has-error');
@@ -299,12 +299,12 @@ $(document).ready(function() {
 	        },
 	        error: function(xhr, ajaxOptions, thrownError) {
 	        	console.error("Error no controlat: " + xhr );
-	            var $formElement = $('span:contains("' + key + '")').parent().parent();
+	            var $formElement = $('span[data-value="' + key + '"]').parent().parent();
 	            $formElement.find('.info-block').append('<div class="alert alert-danger"><button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button>Error: ' + xhr.status + ' ' + xhr.responseText + '</div>');
 	            $formElement.addClass('has-error');
 	        },
 	        complete: function() {
-	            var $formElement = $('span:contains("' + key + '")').parent().parent();
+	            var $formElement = $('span[data-value="' + key + '"]').parent().parent();
 	            $formElement.find('button').find('i').removeClass();
 	            $formElement.find('button').find('i').addClass('fa fa-edit');
 	            $formElement.find('button').blur();

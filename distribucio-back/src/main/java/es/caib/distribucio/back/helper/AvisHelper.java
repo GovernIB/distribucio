@@ -4,10 +4,12 @@
 package es.caib.distribucio.back.helper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import es.caib.distribucio.logic.intf.dto.AvisDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.service.AvisService;
 
 /**
@@ -27,7 +29,13 @@ public class AvisHelper {
 		
 		List<AvisDto> avisos = (List<AvisDto>) request.getAttribute(REQUEST_PARAMETER_AVISOS);
 		if (avisos == null && !RequestHelper.isError(request) && avisService != null) {
-			avisos = avisService.findActive();
+            avisos = avisService.findActive();
+            if (!RolHelper.isRolActualSuperusuari(request)) {
+                EntitatDto entitat = EntitatHelper.getEntitatActual(request);
+                avisos = avisos.stream()
+                        .filter((avis)->avis.getEntitatId() == null || avis.getEntitatId().equals(entitat.getId()))
+                        .collect(Collectors.toList());
+            }
 			request.setAttribute(REQUEST_PARAMETER_AVISOS, avisos);
 		}
 	}

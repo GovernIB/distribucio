@@ -48,6 +48,9 @@
 	pageContext.setAttribute(
 			"isMetadadesActives",
 			es.caib.distribucio.back.helper.MetadadaHelper.isMetadadesActives(request));
+	pageContext.setAttribute(
+			"opcionsPaginacio",
+            es.caib.distribucio.logic.intf.dto.OpcionsPaginacio.toJsonArray());
 	
 %>
 <c:set var="hiHaEntitats" value="${fn:length(sessionEntitats) > 0}"/>
@@ -77,6 +80,7 @@
 	<script src="<c:url value="/js/bootstrap-colorpicker.min.js"/>"></script>
     <script>
         $(document).ready(function() {
+            $('table').data("length-menu", ${opcionsPaginacio});
             $('table').data("page-length", ${dadesUsuariActual.numElementsPagina});
         });
     </script>

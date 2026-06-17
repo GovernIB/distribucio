@@ -37,10 +37,8 @@ public class AvisServiceImpl implements AvisService {
 	private ConversioTipusHelper conversioTipusHelper;
 	@Autowired
 	private PaginacioHelper paginacioHelper;
-	
-	
 
-	@Transactional
+    @Transactional
 	@Override
 	public AvisDto create(AvisDto avis) {
 		logger.debug("Creant una nova avis (" +
@@ -50,7 +48,8 @@ public class AvisServiceImpl implements AvisService {
 				avis.getMissatge(),
 				avis.getDataInici(),
 				avis.getDataFinal(),
-				avis.getAvisNivell()).build();
+				avis.getAvisNivell(),
+                avis.getEntitatId()).build();
 		return conversioTipusHelper.convertir(
 				avisRepository.save(entity),
 				AvisDto.class);
@@ -69,7 +68,8 @@ public class AvisServiceImpl implements AvisService {
 				avis.getMissatge(),
 				avis.getDataInici(),
 				avis.getDataFinal(),
-				avis.getAvisNivell());
+				avis.getAvisNivell(),
+                avis.getEntitatId());
 		return conversioTipusHelper.convertir(
 				avisEntity,
 				AvisDto.class);

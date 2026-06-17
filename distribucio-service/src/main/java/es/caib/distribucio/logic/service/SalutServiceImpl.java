@@ -10,6 +10,7 @@ import es.caib.comanda.model.server.monitoring.*;
 import es.caib.comanda.ms.salut.helper.MonitorHelper;
 import es.caib.distribucio.logic.helper.BackofficeSalutHelper;
 import es.caib.distribucio.logic.helper.BackofficeSalutHelper.Metrics;
+import es.caib.distribucio.persist.entity.AvisEntity;
 import es.caib.distribucio.persist.entity.BackofficeEntity;
 import es.caib.distribucio.persist.repository.BackofficeRepository;
 import org.apache.commons.lang3.time.DateUtils;
@@ -396,14 +397,13 @@ public class SalutServiceImpl implements SalutService {
 //    }
 
     public List<MissatgeSalut> checkMissatges() {
-        List<MissatgeSalut> missatges = new ArrayList<>();
         try {
-            var avisos = avisRepository.findActive(DateUtils.truncate(new Date(), Calendar.DATE));
-            if (avisos != null && !avisos.isEmpty()) {
-            	missatges = conversioTipusHelper.convertirList(avisos, MissatgeSalut.class);
+            List<AvisEntity> avisos = avisRepository.findActive(DateUtils.truncate(new Date(), Calendar.DATE));
+            if (avisos == null || avisos.isEmpty()) {
+                return Collections.emptyList();
             }
 
-            return missatges;
+            return conversioTipusHelper.convertirList(avisos, MissatgeSalut.class);
         } catch (Exception e) {
             return null;
         }

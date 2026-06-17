@@ -55,7 +55,11 @@
     button#filtrar {
         width: 50%;
     }
-	
+
+span.select2-container {
+    width: 100% !important;
+}
+
 .fila-desactivada {
   position: relative;
 }
@@ -148,7 +152,7 @@ $(document).ready(function() {
 	$('#unitatId').on('change', function (e) {
 		$('#mostrarInactives').change();
 	});
-	$('#netejarFiltre').click(function(e) {
+	$('.netejarFiltre').click(function(e) {
 		$('#bustia').val('');
 		$('#procesEstatSimple').val('PENDENT').change();
 		$('#mostrarInactives').val(false).change();
@@ -165,18 +169,36 @@ $(document).ready(function() {
 		$('#sobreescriure').val(null).trigger('change');
 		$('#reintents').val(null).trigger('change');
 	});
-	$('#nomesAmbErrorsBtn').click(function() {
-		nomesAmbErrors = !$(this).hasClass('active');
-		// Modifica el formulari
-		$('#nomesAmbErrors').val(nomesAmbErrors);
-	})
-	$('#nomesAmbEsborranysBtn').click(function() {
-		nomesAmbEsborranys = !$(this).hasClass('active');
-		// Modifica el formulari
-		$('#nomesAmbEsborranys').val(nomesAmbEsborranys);
-	})
-	$('#ambAnnexosInternsBtn').click(function() {
-		ambAnnexosInterns = !$(this).hasClass('active');
+    $('.advancedSearchBtn').click(function() {
+        advancedSearchActive = $('#advancedSearchActive').val() != 'true';
+        var $A = $('#bloqueReducido');
+        var $B = $('#bloqueAvanzado');
+
+        if (advancedSearchActive) {
+            $A.hide(); toggleDisabled($A, true);
+            $B.show(); toggleDisabled($B, false);
+            syncFields($A, $B);
+        } else {
+            $A.show(); toggleDisabled($A, false);
+            $B.hide(); toggleDisabled($B, true);
+            syncFields($B, $A);
+        }
+
+        $('#advancedSearchActive').val(advancedSearchActive);
+        $(this).toggleClass('active', advancedSearchActive);
+    })
+    $('#nomesAmbErrorsBtn').click(function () {
+        nomesAmbErrors = !$(this).hasClass('active');
+        // Modifica el formulari
+        $('#nomesAmbErrors').val(nomesAmbErrors);
+    })
+    $('#nomesAmbEsborranysBtn').click(function () {
+        nomesAmbEsborranys = !$(this).hasClass('active');
+        // Modifica el formulari
+        $('#nomesAmbEsborranys').val(nomesAmbEsborranys);
+    })
+    $('#ambAnnexosInternsBtn').click(function () {
+        ambAnnexosInterns = !$(this).hasClass('active');
 		// Modifica el formulari
 		$('#ambAnnexosInterns').val(ambAnnexosInterns);
 	})
@@ -345,6 +367,7 @@ $(document).ready(function() {
 			sessionStorage.removeItem('selectedElements');
 		}
 	});
+    $('.advancedSearchBtn').click()
 });
 
 function refreshRegistres($modalExecucioMassiva) {
@@ -354,11 +377,67 @@ function refreshRegistres($modalExecucioMassiva) {
 		});
 	}
 }
+
+function toggleDisabled($block, disable) {
+    $block.find('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), select, textarea')
+        .prop('disabled', disable);
+}
+function syncFields(fromSelector, toSelector) {
+    $(fromSelector).find('input, select, textarea').each(function() {
+        var $src = $(this);
+        var name = $src.attr('name');
+        if (!name) return;
+
+        var $dest = $(toSelector).find('[name="' + name + '"]');
+        if ($dest.length) {
+            if ($src.is('input[type="checkbox"], input[type="radio"]')) {
+                $dest.prop('checked', $src.prop('checked'));
+            } else {
+                $dest.val($src.val());
+            }
+            $dest.trigger('change');
+        }
+    });
+}
 </script>
 </head>
 <body>
 	<form:form action="" method="post" cssClass="well" modelAttribute="registreFiltreCommand">
 		<button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
+        <dis:inputHidden name="advancedSearchActive"/>
+
+    <div id="bloqueReducido" class="toggle-bloque">
+        <div class="row">
+            <div class="col-md-2">
+                <dis:inputText name="numero" inline="true" placeholderKey="bustia.list.filtre.numero"/>
+            </div>
+            <div class="col-md-2">
+                <dis:inputText name="titol" inline="true" placeholderKey="bustia.list.filtre.titol"/>
+            </div>
+            <div class="col-md-2">
+                <dis:inputText name="interessat" inline="true" placeholderKey="bustia.list.filtre.interessat"/>
+            </div>
+            <div class="col-md-2">
+                <dis:inputDate name="dataRecepcioInici" inline="true" placeholderKey="bustia.list.filtre.data.rec.inical"/>
+            </div>
+            <div class="col-md-2">
+                <dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="bustia.list.filtre.data.rec.final"/>
+            </div>
+            <div class="col-md-2">
+                <dis:inputSelect name="procesEstatSimple"  netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10"></div>
+            <div class="col-md-2 d-flex">
+                <button id="advancedSearchBtn" title="<spring:message code="contingut.admin.filtre.advancedSearchActive"/>" class="btn btn-default advancedSearchBtn" data-toggle="button"><span class="fa fa-search"></span></button>
+                <button id="netejarFiltre" type="submit" name="accio" value="netejar" class="ml-2 btn btn-default netejarFiltre"><spring:message code="comu.boto.netejar"/></button>
+                <button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bloqueAvanzado" class="toggle-bloque">
 		<div class="row">
 			<div class="col-md-2">
 				<dis:inputText name="numero" inline="true" placeholderKey="bustia.list.filtre.numero"/>
@@ -509,10 +588,12 @@ function refreshRegistres($modalExecucioMassiva) {
 				<dis:inputSelect id="reintents" name="reintents" netejar="true" optionEnum="RegistreFiltreReintentsEnumDto" placeholderKey="registre.admin.list.filtre.reintents" emptyOption="true" inline="true"/>		
 			</div>
 			<div class="col-md-2 d-flex">
-				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
+                <button id="advancedSearchBtn" title="<spring:message code="contingut.admin.filtre.advancedSearchActive"/>" class="btn btn-default advancedSearchBtn" data-toggle="button"><span class="fa fa-search"></span></button>
+				<button id="netejarFiltre" type="submit" name="accio" value="netejar" class="ml-2 btn btn-default netejarFiltre"><spring:message code="comu.boto.netejar"/></button>
 				<button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
-			</div>	
+			</div>
 		</div>
+    </div>
 	</form:form>
 	<c:set var="rol" value="admin"/>
 	<script id="botonsTemplate" type="text/x-jsrender">

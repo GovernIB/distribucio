@@ -85,7 +85,7 @@ public class ConfigEntity {
 		this.description = entitat.getDescription();
 		this.jbossProperty = entitat.isJbossProperty();
 		this.groupCode = entitat.getGroupCode();
-		this.type = entitat.getType();
+		this.typeCode = entitat.getTypeCode();
 		this.configurable = entitat.isConfigurable();
 	}
 

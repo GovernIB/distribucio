@@ -88,6 +88,7 @@ public class EntitatServiceImpl implements EntitatService {
 				entitat.getCodiDir3(),
 				entitat.getColorFons(),
 				entitat.getColorLletra()).build();
+        configHelper.crearConfigsEntitat(entitat.getCodi());
 		return conversioTipusHelper.convertir(
 				entitatRepository.save(entity),
 				EntitatDto.class);
@@ -282,8 +283,8 @@ public class EntitatServiceImpl implements EntitatService {
 	@Transactional(readOnly = true)
 	@Override
 	public void evictEntitatsAccessiblesUsuari() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		cacheHelper.evictEntitatsAccessiblesUsuari(auth.getName());
+//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		cacheHelper.evictAllEntitatsUsuariCache();
 	}
 
 	@Transactional

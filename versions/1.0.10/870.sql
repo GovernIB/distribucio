@@ -1,0 +1,6 @@
+ALTER TABLE DIS_USUARI DROP CONSTRAINT ripea_entitat_usuari_fk;
+ALTER TABLE DIS_USUARI
+    ADD CONSTRAINT ripea_entitat_usuari_fk
+        FOREIGN KEY (ENTITAT_DEFECTE_ID)
+            REFERENCES DIS_ENTITAT(ID)
+            ON DELETE SET NULL;

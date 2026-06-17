@@ -78,13 +78,7 @@ public class UsuariController  extends BaseAdminController {
         List<EntitatDto> entitatsAccessibles = EntitatHelper.findEntitatsAccessibles(request, entitatService);
         model.addAttribute("entitats", entitatsAccessibles);
 
-        List<IdNomDto> numElementsPagina = new ArrayList<>();
-        numElementsPagina.add(new IdNomDto(10L, "10"));
-        numElementsPagina.add(new IdNomDto(20L, "20"));
-        numElementsPagina.add(new IdNomDto(50L, "50"));
-        numElementsPagina.add(new IdNomDto(100L, "100"));
-
-        model.addAttribute("numElementsPagina", numElementsPagina);
+        model.addAttribute("numElementsPagina", OpcionsPaginacio.toDtoList());
 
 		model.addAttribute(UsuariCommand.asCommand(usuari));
 		model.addAttribute("rolsPerMostrar", this.getFiltraRolsPerMostrar(usuari.getRols()));

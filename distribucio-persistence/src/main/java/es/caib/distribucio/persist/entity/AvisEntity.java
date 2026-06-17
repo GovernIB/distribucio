@@ -5,15 +5,9 @@ package es.caib.distribucio.persist.entity;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
+import lombok.Getter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
@@ -24,6 +18,7 @@ import es.caib.distribucio.logic.intf.dto.AvisNivellEnumDto;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter
 @Entity
 @Table(name = BaseConfig.DB_PREFIX + "avis")
 @EntityListeners(AuditingEntityListener.class)
@@ -44,19 +39,29 @@ public class AvisEntity extends DistribucioAuditable<Long> {
 	@Column(name = "avis_nivell", length = 2048, nullable = false)
 	@Enumerated(EnumType.STRING)
 	private AvisNivellEnumDto avisNivell;
-	
-	
+
+    @ManyToOne()
+    @JoinColumn(
+            name = "entitat",
+            foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "servei_entitat_fk"),
+            insertable = false, updatable = false)
+	private EntitatEntity entitat;
+    @Column(name = "entitat", length = 2048)
+	private Long entitatId;
+
 	public void update(
 			String assumpte,
 			String missatge,
 			Date dataInici,
 			Date dataFinal,
-			AvisNivellEnumDto avisNivell) {
+			AvisNivellEnumDto avisNivell,
+            Long entitatId) {
 		this.assumpte = assumpte;
 		this.missatge = missatge;
 		this.dataInici = dataInici;
 		this.dataFinal = dataFinal;
 		this.avisNivell = avisNivell;
+		this.entitatId = entitatId;
 	}
 	
 	public void updateActiva(
@@ -70,13 +75,15 @@ public class AvisEntity extends DistribucioAuditable<Long> {
 			String missatge,
 			Date dataInici,
 			Date dataFinal,
-			AvisNivellEnumDto avisNivell) {
+			AvisNivellEnumDto avisNivell,
+            Long entitatId) {
 		return new Builder(
 				assumpte,
 				missatge,
 				dataInici,
 				dataFinal,
-				avisNivell);
+				avisNivell,
+                entitatId);
 	}
 
 
@@ -87,7 +94,8 @@ public class AvisEntity extends DistribucioAuditable<Long> {
 				String missatge,
 				Date dataInici,
 				Date dataFinal,
-				AvisNivellEnumDto avisNivell) {
+				AvisNivellEnumDto avisNivell,
+                Long entitatId) {
 			built = new AvisEntity();
 			built.assumpte = assumpte;
 			built.missatge = missatge;
@@ -95,35 +103,11 @@ public class AvisEntity extends DistribucioAuditable<Long> {
 			built.dataFinal = dataFinal;
 			built.actiu = true;
 			built.avisNivell = avisNivell;
+			built.entitatId = entitatId;
 		}
 		public AvisEntity build() {
 			return built;
 		}
-	}
-	
-
-	public String getAssumpte() {
-		return assumpte;
-	}
-
-	public String getMissatge() {
-		return missatge;
-	}
-
-	public Date getDataInici() {
-		return dataInici;
-	}
-
-	public Date getDataFinal() {
-		return dataFinal;
-	}
-
-	public Boolean getActiu() {
-		return actiu;
-	}
-
-	public AvisNivellEnumDto getAvisNivell() {
-		return avisNivell;
 	}
 
 }

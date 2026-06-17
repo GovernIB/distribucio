@@ -5,6 +5,8 @@ package es.caib.distribucio.logic.intf.dto;
 
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -12,6 +14,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter
+@Setter
 public class AvisDto {
 
 	private Long id;
@@ -21,53 +25,11 @@ public class AvisDto {
 	private Date dataFinal;
 	private Boolean actiu;
 	private AvisNivellEnumDto avisNivell;
-
-	
-	public String getAssumpte() {
-		return assumpte;
-	}
-	public void setAssumpte(String assumpte) {
-		this.assumpte = assumpte;
-	}
-	public String getMissatge() {
-		return missatge;
-	}
-	public void setMissatge(String missatge) {
-		this.missatge = missatge;
-	}
-	public Date getDataInici() {
-		return dataInici;
-	}
-	public void setDataInici(Date dataInici) {
-		this.dataInici = dataInici;
-	}
-	public Date getDataFinal() {
-		return dataFinal;
-	}
-	public void setDataFinal(Date dataFinal) {
-		this.dataFinal = dataFinal;
-	}
-	public Boolean getActiu() {
-		return actiu;
-	}
-	public void setActiu(Boolean actiu) {
-		this.actiu = actiu;
-	}
-	public AvisNivellEnumDto getAvisNivell() {
-		return avisNivell;
-	}
-	public void setAvisNivell(AvisNivellEnumDto avisNivell) {
-		this.avisNivell = avisNivell;
-	}
+    private EntitatDto entitat;
+    private Long entitatId;
 
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
-	}
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
 	}
 }

@@ -41,7 +41,17 @@
 		<dis:inputDate name="dataInici" textKey="avis.form.camp.dataInici" required="true"/>
 		<dis:inputDate name="dataFinal" textKey="avis.form.camp.dataFinal"/>
 		<dis:inputSelect name="avisNivell" textKey="avis.form.camp.avisNivell" optionEnum="AvisNivellEnumDto" required="true"/>
-		
+
+        <dis:inputSelect
+                name="entitatId"
+                netejar="true"
+                optionItems="${entitats}"
+                optionValueAttribute="id"
+                optionTextAttribute="nom"
+                textKey="avis.form.camp.entitat"
+                emptyOption="true"
+                optionTemplateFunction="formatSelectEntitat"/>
+
 		<div id="modal-botons">
 			<button type="submit" class="btn btn-success"><span class="fa fa-save"></span> <spring:message code="comu.boto.guardar"/></button>
 			<a href="<c:url value="/avis"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
