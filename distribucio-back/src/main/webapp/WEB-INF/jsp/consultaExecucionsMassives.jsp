@@ -38,6 +38,9 @@ pageContext.setAttribute(
     <link href="<c:url value="/webjars/datatables.net-select-bs/1.1.2/css/select.bootstrap.min.css"/>" rel="stylesheet"></link>
 	<dis:modalHead/>
 <style>
+    span.select2-container {
+        width: 100% !important;
+    }
 	.linea-exm {
 		margin-bottom:8px;
 	}
@@ -63,6 +66,10 @@ pageContext.setAttribute(
 	.linea-exm div span.caret {
 		margin: 8px 0 0 2px; 
 	}
+    button#netejarFiltre,
+    button#filtrar {
+        width: 50%;
+    }
 </style>
 <script type="text/javascript">
 
@@ -272,30 +279,33 @@ pageContext.setAttribute(
 <div style="padding: 0px 0px 15px 2px;">
 	<input type='checkbox' name='refrescarDeu' <c:if test="${isRefrescant}">checked='checked'</c:if> >&nbsp;<b>Refrescar cada 10s.</b>
 
-    <c:if test="${isRolActualAdministrador}">
-    <form:form action="" method="post" cssClass="well" modelAttribute="remitentFiltreCommand">
+    <form:form action="" method="post" cssClass="well" modelAttribute="execucioMassivaFiltreCommand">
         <button id="filtrar" type="submit" name="accio" value="filtrar" class="btn btn-primary" style="display:none"></button>
         <div class="row">
             <div class="col-md-3">
                 <c:url value="/userajax/remitent/item" var="urlConsultaInicial"/>
                 <c:url value="/userajax/remitent" var="urlConsultaLlistat"/>
                 <dis:inputSuggest
-                    name="remitent"
-                    urlConsultaInicial="${urlConsultaInicial}"
-                    urlConsultaLlistat="${urlConsultaLlistat}"
-                    placeholderKey="principal.tipus.enum.USUARI"
-                    suggestValue="codi"
-                    suggestText="codiAndNom"
-                    inline="true"/>
+                        name="usuariCodi"
+                        urlConsultaInicial="${urlConsultaInicial}"
+                        urlConsultaLlistat="${urlConsultaLlistat}"
+                        placeholderKey="principal.tipus.enum.USUARI"
+                        suggestValue="codi"
+                        suggestText="codiAndNom"
+                        disabled="${!isRolActualAdministrador}"
+                        inline="true"/>
             </div>
-            <div class="col-md-7"></div>
+
+            <div class="col-md-3">
+                <dis:inputSelect name="tipus" netejar="false" optionEnum="ExecucioMassivaTipusDto" placeholderKey="accio.massiva.header.nom" emptyOption="true" inline="true"/>
+            </div>
+            <div class="col-md-4"></div>
             <div class="col-md-2 d-flex">
                 <button id="netejarFiltre" type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
                 <button id="filtrar" type="submit" name="accio" value="filtrar" class="ml-2 btn btn-primary"><span class="fa fa-filter"></span> <spring:message code="comu.boto.filtrar"/></button>
             </div>
         </div>
     </form:form>
-    </c:if>
 </div>
 
 <div class="panel panel-default">
@@ -331,7 +341,7 @@ pageContext.setAttribute(
         <div data-toggle="collapse" data-target="#collapse_${exm.id}" style="cursor: pointer;">
         	<div class="row">
 	        	<div class="col-xs-2">
-		          	<spring:message code="accio.massiva.tipus.${exm.tipus}"/>
+		          	<spring:message code="execucio.massiva.tipus.${exm.tipus}"/>
 	          	</div>
 	          	<div class="col-xs-2 one-line" id="barra_${exm.id}">
 		          	<div><span class="mass-badge badge in-line-badge">${fn:length(exm.contingutIds)}</span></div> 

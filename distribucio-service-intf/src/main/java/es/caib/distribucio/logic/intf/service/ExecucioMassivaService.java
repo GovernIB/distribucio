@@ -56,7 +56,7 @@ public interface ExecucioMassivaService {
 	 * @throws NotFoundException
 	 */
 	@PreAuthorize("isAuthenticated()")
-	public List<ExecucioMassivaDto> findExecucionsMassivesPerUsuari(Long entitatId, UsuariDto usuari, int pagina) throws NotFoundException;
+	public List<ExecucioMassivaDto> findExecucionsMassivesPerFiltre(Long entitatId, ExecucioMassivaFiltreDto filtre, int pagina) throws NotFoundException;
 
 	/**
 	 * Recupera el llistat de continguts d'una execució massiva

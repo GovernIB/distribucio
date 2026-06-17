@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.zip.ZipOutputStream;
 
+import es.caib.distribucio.logic.intf.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,16 +37,6 @@ import es.caib.distribucio.logic.helper.ExecucioMassivaHelper;
 import es.caib.distribucio.logic.helper.MessageHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
 import es.caib.distribucio.logic.helper.UsuariHelper;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaAccioDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaEstatDto;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaTipusDto;
-import es.caib.distribucio.logic.intf.dto.FitxerDto;
-import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
-import es.caib.distribucio.logic.intf.dto.RegistreDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import es.caib.distribucio.persist.entity.EntitatEntity;
@@ -149,28 +140,23 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 	}
 
 	@Override
-	public List<ExecucioMassivaDto> findExecucionsMassivesPerUsuari(Long entitatId, UsuariDto usuari, int pagina) throws NotFoundException {
+	public List<ExecucioMassivaDto> findExecucionsMassivesPerFiltre(Long entitatId, ExecucioMassivaFiltreDto filtre, int pagina) throws NotFoundException {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
 
-		Pageable paginacio = PageRequest.of(pagina, 8, Direction.DESC, "dataInici");
+		Pageable paginacio = PageRequest.of(pagina, 8, Direction.DESC, "createdDate");
 
 		List<ExecucioMassivaEntity> exmEntities = new ArrayList<ExecucioMassivaEntity>();
-		if (usuari == null) {
-			exmEntities = execucioMassivaRepository.findByEntitatIdOrderByCreatedDateDesc(
-					entitat.getId(),
-					paginacio);
-		} else {
-			UsuariEntity usuariEntity = usuariRepository.findByCodi(usuari.getCodi());
-			exmEntities = execucioMassivaRepository.findByUsuariAndEntitatIdOrderByCreatedDateDesc(
-					usuariEntity,
-					entitat.getId(),
-					paginacio);
-		}
-
+        exmEntities = execucioMassivaRepository.findExecucionsFiltrades(
+                entitat.getId(),
+                filtre.getUsuariCodi() == null,
+                filtre.getUsuariCodi(),
+                filtre.getTipus() == null,
+                filtre.getTipus(),
+                paginacio).getContent();
 		return recompteErrors(exmEntities);
 	}
 

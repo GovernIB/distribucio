@@ -44,11 +44,11 @@ public class ExecucioMassivaServiceEjb extends AbstractServiceEjb<ExecucioMassiv
 
 	@Override
 	@RolesAllowed("**")
-	public List<ExecucioMassivaDto> findExecucionsMassivesPerUsuari(Long entitatId, UsuariDto usuari, int pagina)
+	public List<ExecucioMassivaDto> findExecucionsMassivesPerFiltre(Long entitatId, ExecucioMassivaFiltreDto filtre, int pagina)
 			throws NotFoundException {
-		return delegateService.findExecucionsMassivesPerUsuari(
-				entitatId, 
-				usuari, 
+		return delegateService.findExecucionsMassivesPerFiltre(
+				entitatId,
+                filtre,
 				pagina);
 	}
 

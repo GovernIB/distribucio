@@ -68,13 +68,13 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	@Autowired
 	private BustiaService bustiaService;
 
-    private RegistreFiltreCommand getFiltreCommand(
+    private ExecucioMassivaFiltreCommand getFiltreCommand(
             HttpServletRequest request) {
-        RegistreFiltreCommand filtreCommand = (RegistreFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
+        ExecucioMassivaFiltreCommand filtreCommand = (ExecucioMassivaFiltreCommand)RequestSessionHelper.obtenirObjecteSessio(
                 request,
                 SESSION_ATTRIBUTE_FILTRE);
         if (filtreCommand == null) {
-            filtreCommand = new RegistreFiltreCommand();
+            filtreCommand = new ExecucioMassivaFiltreCommand();
             RequestSessionHelper.actualitzarObjecteSessio(
                     request,
                     SESSION_ATTRIBUTE_FILTRE,
@@ -93,22 +93,25 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisos(request);
 		pagina = (pagina < 0 ? 0 : pagina);
-        RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
-        model.addAttribute("remitentFiltreCommand", filtreCommand);
-		UsuariDto usuariActual = null;
+
+        ExecucioMassivaFiltreCommand filtreCommand = getFiltreCommand(request);
 		if (RolHelper.isRolActualAdministrador(request)) {
-            if (filtreCommand.getRemitent() != null)
-                usuariActual = aplicacioService.findUsuariAmbCodi(filtreCommand.getRemitent());
 			model.addAttribute(
 					"titolConsulta",
 					getMessage(request, "accio.massiva.consulta.titol.gobal"));
 		} else {
-			usuariActual = aplicacioService.getUsuariActual();
+            UsuariDto usuariActual = aplicacioService.getUsuariActual();
+            filtreCommand.setUsuariCodi(usuariActual.getCodi());
 			model.addAttribute(
 					"titolConsulta",
 					getMessage(request, "accio.massiva.consulta.titol.usuari", new String[]{usuariActual.getNom()}));
 		}
-        List<ExecucioMassivaDto> execucionsMassives = execucioMassivaService.findExecucionsMassivesPerUsuari(entitatActual.getId(), usuariActual, pagina);
+        model.addAttribute("execucioMassivaFiltreCommand", filtreCommand);
+
+        List<ExecucioMassivaDto> execucionsMassives = execucioMassivaService.findExecucionsMassivesPerFiltre(
+                entitatActual.getId(),
+                ExecucioMassivaFiltreCommand.asDto(filtreCommand),
+                pagina);
 		if (execucionsMassives.size() < 8) {
 			model.addAttribute("sumador", 0);
 		} else {
@@ -128,7 +131,7 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
     public String consultaExecucionsPost(
             HttpServletRequest request,
             @PathVariable int pagina,
-            @Valid RegistreFiltreCommand registreFiltreCommand,
+            @Valid ExecucioMassivaFiltreCommand registreFiltreCommand,
             BindingResult bindingResult,
             @RequestParam(value = "accio", required = false) String accio,
             Model model) {
