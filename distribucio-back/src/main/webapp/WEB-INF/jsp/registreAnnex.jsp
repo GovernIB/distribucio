@@ -22,7 +22,7 @@
 	<script type="text/javascript">
 	
 	$(document).ready(function() {
-		var vistaMovimentsCookie = getCookie("vistaMoviments");
+        var vistaMovimentsCookie = ${cookie['vistaMoviments'] != null ? cookie['vistaMoviments'].value : false};
 	    var isVistaMoviments = (vistaMovimentsCookie == "" || !JSON.parse(vistaMovimentsCookie))? false : true;
 	    $("#collapse-registre-firmes-<c:out value='${annex.id}'/>").on('show.bs.collapse', function(data){  	
 		    if (!$(this).data("loaded")) {
