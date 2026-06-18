@@ -246,10 +246,10 @@
 					<c:when test="${annex.validacioFirmaEstat == 'ERROR_VALIDANT'}"><span class="fa fa-exclamation-circle text-danger"></span></c:when>
 				</c:choose>
 				<spring:message code="validacio.firma.enum.${annex.validacioFirmaEstat}"></spring:message>
-			</c:if>
-			
-			<c:if test="${annex.validacioFirmaEstat == 'FIRMA_INVALIDA' || annex.validacioFirmaEstat == 'ERROR_VALIDANT'}">
-				: ${annex.validacioFirmaError}
+
+                <c:if test="${annex.validacioFirmaEstat == 'FIRMA_INVALIDA' || annex.validacioFirmaEstat == 'ERROR_VALIDANT'}">
+                    : ${annex.validacioFirmaError}
+                </c:if>
 			</c:if>
 			
 			<c:if test="${isRolActualAdministrador}">

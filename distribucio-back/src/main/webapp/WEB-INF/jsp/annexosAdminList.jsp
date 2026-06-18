@@ -301,11 +301,14 @@ pageContext.setAttribute(
            		</th>
 				<th data-col-name="titol" width="20%"><spring:message code="annexos.admin.columna.titol"/></th>
 				<th data-col-name="dataAnotacio" width="10%" data-converter="datetime"><spring:message code="annexos.admin.columna.data"/></th>
-				<th data-col-name="fitxerNom" width="25%"><spring:message code="annexos.admin.columna.fitxerNom"/></th>	
+				<th data-col-name="fitxerNom" width="25%"><spring:message code="annexos.admin.columna.fitxerNom"/></th>
 				<th data-col-name="arxiuEstat" data-template="#cellArxiuEstatTemplate" width="10%"><spring:message code="annexos.admin.columna.arxiuEstat"/>
 					<script id="cellArxiuEstatTemplate" type="text/x-jsrender">
                 		{{if arxiuEstat == 'ESBORRANY'}}
                     		<spring:message code="annex.estat.ESBORRANY"/>
+                            {{if validacioFirmaEstat == 'FIRMA_INVALIDA' || validacioFirmaEstat == 'ERROR_VALIDANT' }}
+                                <span class="fa fa-exclamation-circle text-danger" title="{{:validacioFirmaError}}"></span>
+                            {{/if}}
                 		{{else arxiuEstat == 'DEFINITIU'}}
                     		<spring:message code="annex.estat.DEFINITIU"/>	
                		 	{{else}}
@@ -315,10 +318,12 @@ pageContext.setAttribute(
 				</th>
 				<th data-col-name="fitxerTipusMime" width="10%"><spring:message code="annexos.admin.columna.fitxerTipusMime"/></th>
 				<th data-col-name="signaturaInfo" data-orderable="false" width="10%"><spring:message code="annexos.admin.columna.signaturaInfo"/></th>
-				<th data-col-name="tipusFirma" data-visible="false"></th>	
+				<th data-col-name="tipusFirma" data-visible="false"></th>
 				<th data-col-name="fitxerExtension" data-visible="false"></th>
-				<th data-col-name="firmaCsv" data-visible="false"></th>												
-				
+				<th data-col-name="firmaCsv" data-visible="false"></th>
+                <th data-col-name="validacioFirmaEstat" data-visible="false"></th>
+                <th data-col-name="validacioFirmaError" data-visible="false"></th>
+
 				<c:if test="${isRolActualAdministrador}">
 				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
