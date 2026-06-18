@@ -148,7 +148,7 @@ $(document).ready(function() {
 
 	$("#reintents .select2").css("width", "29.5rem");
 	$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
-	
+
 	$('#unitatId').on('change', function (e) {
 		$('#mostrarInactives').change();
 	});
@@ -241,7 +241,7 @@ $(document).ready(function() {
 				if (sort.length > 0) {
 					params.set("ordreColumn", $($('#taulaDades').dataTable().api().column(sort[0][0]).header()).data('colName'))
 					params.set("ordreDir", sort[0][1]);
-				}			
+				}
 				var $a = $($(this).find("#detall-button"));
 				$a.attr('href', $a.attr('href') + '?' + params.toString());
 				// Afegeix els paràmetres a l'enllaç de la fila
@@ -357,13 +357,13 @@ $(document).ready(function() {
 		);
 		return false;
 	});
-	$(document).on('hidden.bs.modal', function (event) {		
+	$(document).on('hidden.bs.modal', function (event) {
 		var data = sessionStorage.getItem('selectedElements');
 		if (data != null) {
 			// Deseleccionar elements si s'ha realitzat una acció múltiple i les anotacions s'han mogut
 			$(".seleccioCount").html(data);
 			$('#taulaDades').webutilDatatable('refresh');
-			
+
 			sessionStorage.removeItem('selectedElements');
 		}
 	});
@@ -373,7 +373,7 @@ $(document).ready(function() {
 function refreshRegistres($modalExecucioMassiva) {
 	if ($modalExecucioMassiva) {
 		$(document).on("hidden.bs.modal", $modalExecucioMassiva, function () {
-		    $('#filtrar').submit();
+            $('#taulaDades').webutilDatatable('refresh');
 		});
 	}
 }
@@ -655,7 +655,6 @@ function syncFields(fromSelector, toSelector) {
 	<script id="rowhrefTemplate" type="text/x-jsrender">./registreAdmin/{{:id}}/detall</script>
 	<table
 		id="taulaDades"
-		data-refresh-tancar="true"
 		data-toggle="datatable"
 		data-url="<c:url value="/registreAdmin/datatable"/>"
 		data-filter="#registreFiltreCommand"
