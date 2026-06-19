@@ -254,7 +254,8 @@ $(document).ready(function() {
 
     $('.netejarFiltre').click(function(e) {
         $('#bustia').val('');
-        $('#procesEstatSimple').val('PENDENT').change();
+        $('#procesEstatSimple1').val('PENDENT').change();
+        $('#procesEstatSimple2').val('PENDENT').change();
         $('#mostrarInactives').val(false).change();
         $('#mostrarInactivesBtn').removeClass('active');
         $('#tipusDocFisica').val('').change();
@@ -590,7 +591,7 @@ function alliberar(anotacioId, agafat, agafatPerCodi) {
 function refreshRegistres($modalExecucioMassiva) {
 	if ($modalExecucioMassiva) {
 		$(document).on("hidden.bs.modal", $modalExecucioMassiva, function () {
-		    $('#filtrar').submit();
+            $('#taulaDades').webutilDatatable('refresh');
 		});
 	}
 }
@@ -641,7 +642,7 @@ function syncFields(fromSelector, toSelector) {
                     <dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="bustia.list.filtre.data.rec.final"/>
                 </div>
                 <div class="col-md-2">
-                    <dis:inputSelect name="procesEstatSimple"  netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
+                    <dis:inputSelect name="procesEstatSimple" id="procesEstatSimple1" netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
                 </div>
             </div>
             <div class="row">
@@ -757,7 +758,7 @@ function syncFields(fromSelector, toSelector) {
                 <dis:inputSelect name="backCodi" placeholderKey="bustia.list.filtre.back.codi" optionItems="${backoffices}" emptyOption="true" optionValueAttribute="codi" optionTextAttribute="nom" inline="true" optionMinimumResultsForSearch="0"/>
             </div>
             <div class="col-md-3">
-                <dis:inputSelect name="procesEstatSimple"  netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
+                <dis:inputSelect name="procesEstatSimple" id="procesEstatSimple2" netejar="false" optionEnum="RegistreProcesEstatSimpleEnumDto" placeholderKey="bustia.list.filtre.estat" emptyOption="true" inline="true"/>
             </div>
             <div class="col-md-3">
                 <div class="row">
@@ -864,7 +865,8 @@ function syncFields(fromSelector, toSelector) {
 		data-rowhref-template="#rowhrefTemplate" 
 		data-rowhref-toggle="modal"
 		data-rowhref-maximized="true"
-		data-refresh-tancar="true">
+<%--		data-refresh-tancar="true"--%>
+    >
 		<thead>
 			<tr>
 				<th data-col-name="id" data-visible="false"></th>

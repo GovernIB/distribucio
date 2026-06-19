@@ -154,7 +154,8 @@ $(document).ready(function() {
 	});
 	$('.netejarFiltre').click(function(e) {
 		$('#bustia').val('');
-		$('#procesEstatSimple').val('PENDENT').change();
+		$('#procesEstatSimple1').val('PENDENT').change();
+		$('#procesEstatSimple2').val('PENDENT').change();
 		$('#mostrarInactives').val(false).change();
 		$('#mostrarInactivesBtn').removeClass('active');
 		$('#tipusDocFisica').val('').change();
