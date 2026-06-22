@@ -2468,7 +2468,10 @@ public class RegistreServiceImpl implements RegistreService {
 		if (document != null) {
 			DocumentContingut documentContingut = document.getContingut();
 			if (documentContingut != null) {
-				arxiu.setNom(registreHelper.obtenirJustificantNom(document));
+                String nom = registreHelper.obtenirJustificantNom(document);
+                arxiu.setNom("versio_imprimible.pdf".equals(nom)
+                        ? document.getNom() + "_imprimible.pdf"
+                        : nom);
 				arxiu.setContentType(documentContingut.getTipusMime());
 				arxiu.setContingut(documentContingut.getContingut());
 				arxiu.setTamany(documentContingut.getContingut().length);

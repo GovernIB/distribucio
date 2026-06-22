@@ -1062,8 +1062,12 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 					}
 				}
 				if (generarVersioImprimible) {
-					documentDetalls.setContingut(
-							generarVersioImprimible(documentDetalls.getNom(), documentDetalls.getIdentificador()));
+                    try {
+                        documentDetalls.setContingut(
+                                generarVersioImprimible(documentDetalls.getNom(), "uuid/"+documentDetalls.getIdentificador()));
+                    } catch (Exception ignore) {
+                        documentDetalls = this.getDocumentDetalls(arxiuUuid, versio, true);
+                    }
 				} else {
 					documentDetalls = this.getDocumentDetalls(arxiuUuid, versio, true);
 				}
