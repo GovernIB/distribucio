@@ -220,7 +220,7 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
             accioDescripcio += " \"" + documentDetalls.getNom() + "\"";
 			TemporalThreadStorage.clear();
 			integracioHelper.addAccioOk(
-					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					IntegracioHelper.INTCODI_ARXIU,
 					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
@@ -232,7 +232,7 @@ public class DistribucioPluginHelper extends AbstractPluginHelper<DistribucioPlu
 			TemporalThreadStorage.clear();
 			String errorDescripcio = "Error al accedir al plugin d'arxiu digital: " + ex.getMessage();
 			integracioHelper.addAccioError(
-					IntegracioHelper.INTCODI_DISTRIBUCIO,
+					IntegracioHelper.INTCODI_ARXIU,
 					registreNumero,
 					accioDescripcio,
 					usuariIntegracio,
