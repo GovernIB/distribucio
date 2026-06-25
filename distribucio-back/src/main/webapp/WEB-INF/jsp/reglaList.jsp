@@ -259,6 +259,9 @@
 		</div>
 		<div class="row">
             <div class="col-md-3">
+                <dis:inputText name="codiTramit" inline="true" placeholderKey="regla.list.columna.tramit.single.codi"/>
+            </div>
+            <div class="col-md-3">
                 <c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
                 <c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
                 <dis:inputSuggest
@@ -301,13 +304,12 @@
 				</button>
 				<dis:inputHidden name="activa"/> --%> 
 			</div>
-
-            <div class="col-md-3">
-                <dis:inputSelect name="presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial" inline="true"/>
-            </div>
 		</div>
 
 		<div class="row">
+            <div class="col-md-3">
+                <dis:inputSelect name="presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial" inline="true"/>
+            </div>
             <div class="col-md-3">
                 <dis:inputSelect id="tipusSelect" name="tipus" optionEnum="ReglaTipusEnumDto" emptyOption="true" placeholderKey="regla.list.columna.tipus" inline="true"/>
             </div>
@@ -354,7 +356,7 @@
                 </div>
             </div>
 
-			<div class="col-md-6"></div>
+			<div class="col-md-3"></div>
 			<div class="col-md-3 d-flex pull-right justify-content-end">
 				<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
 				<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>
@@ -406,7 +408,7 @@
 		style="width:100%"
 		data-botons-template="#botonsTemplate"
 		data-selection-enabled="${isRolActualAdministrador}"
-		data-refresh-tancar="true"	
+		data-refresh-tancar="true"
 		>
 
 		<thead>
@@ -426,6 +428,7 @@
 				<th data-col-name="assumpteCodiFiltre" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>
 				<th data-col-name="procedimentCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.procediment.codi"/></th>
 				<th data-col-name="serveiCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.servei.codi"/></th>
+				<th data-col-name="tramitCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.tramit.codi"/></th>
 				<!-- <th data-col-name="codiAndNomUnitatOrganitzativa" data-orderable="false"><spring:message code="regla.list.columna.unitat.organitzativa"/></th> -->
 				
 				<th data-col-name="estatUnitatOrganitzativa" data-visible="false"></th>

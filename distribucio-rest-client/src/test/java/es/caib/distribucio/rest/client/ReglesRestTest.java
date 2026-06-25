@@ -40,10 +40,12 @@ public class ReglesRestTest {
 		
 		// Dades del test
 		String entitat = "A04003003";
-		String sia = String.valueOf(new Date().getTime());
-		String tipus = "PROCEDIMENT"; // PROCEDIMENT || SERVEI
+//		String sia = String.valueOf(new Date().getTime());
+		String sia = "885662";
+		String tramit = "A2";
+		String tipus = "SERVEI"; // PROCEDIMENT || SERVEI
 		String backoffice = "HELIUM";
-		Boolean activa = false;
+		Boolean activa = true;
 		Boolean presencial = null;
 
 		// Creació del client
@@ -52,7 +54,7 @@ public class ReglesRestTest {
 				USERNAME,
 				PASSWORD,
 				true);
-		ReglesRestTest.altaCanviEstatConsultaUpdate(client, entitat, sia, tipus, backoffice, activa, presencial);
+		ReglesRestTest.altaCanviEstatConsultaUpdate(client, entitat, sia, tramit, tipus, backoffice, activa, presencial);
 		//ReglesRestTest.alta(client, entitat, sia, backoffice, activa, presencial);
 		//ReglesRestTest.consulta(client, "20220429");
 	}
@@ -70,6 +72,7 @@ public class ReglesRestTest {
 			ReglesRestClient client, 
 			String entitat, 
 			String sia,
+			String tramit,
 			String tipus,
 			String backoffice,
 			Boolean activa, 
@@ -78,6 +81,7 @@ public class ReglesRestTest {
 		System.out.println("Inici test alta de regles per API REST de regles ( " + 
 				"entitat= " + entitat +
 				", sia= " + sia +
+				", tramit= " + tramit +
 				", tipus= " + tipus +
 				", backoffice= " + backoffice +
 				", activa = " + activa +
@@ -86,7 +90,7 @@ public class ReglesRestTest {
 		ReglaResponse ret;
 		// Creació de la regla
 		try {
-			ret = client.add(entitat, sia, tipus, backoffice, presencial);
+			ret = client.add(entitat, sia, tramit, tipus, backoffice, presencial);
 			System.out.println("Creació finalitzada correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
 									ret.getStatus() + " " + ret.getMsg());
 		} catch (Exception e) {
@@ -109,6 +113,7 @@ public class ReglesRestTest {
 			ReglesRestClient client, 
 			String entitat, 
 			String sia,
+			String tramit,
             String tipus,
 			String backoffice, 
 			Boolean activa, 
@@ -117,6 +122,7 @@ public class ReglesRestTest {
 		System.out.println("Inici test API REST de regles ( " + 
 				"entitat= " + entitat +
 				", sia= " + sia +
+				", tramit= " + tramit +
 				", tipus= " + tipus +
 				", backoffice= " + backoffice +
 				", activa = " + activa +
@@ -125,10 +131,10 @@ public class ReglesRestTest {
 		ReglaResponse ret;
 		// Creació de la regla
 		try {
-			ret = client.add(entitat, sia, tipus, backoffice, presencial);
+			ret = client.add(entitat, sia, tramit, tipus, backoffice, presencial);
 			System.out.println("Creació finalitzada correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
 									ret.getStatus() + " " + ret.getMsg());
-			ret = client.add(entitat, sia, tipus, backoffice, presencial);
+			ret = client.add(entitat, sia, tramit, tipus, backoffice, presencial);
 			System.out.println("Segona crida creació finalitzada correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
 									ret.getStatus() + " " + ret.getMsg());
 		} catch (Exception e) {
@@ -139,7 +145,7 @@ public class ReglesRestTest {
 		
 		// Canvi d'estat de l'activació de la regla
 		try {
-			ret = client.canviEstat(sia, null);
+			ret = client.canviEstat(sia, tramit, null);
 			System.out.println("Canvi d'estat finalitzat correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
 								ret.getStatus() + " " + ret.getMsg());
 		} catch (Exception e) {
@@ -149,7 +155,7 @@ public class ReglesRestTest {
 		
 		// Consulta de la regla
 		try {
-			Regla regla = client.consultarRegla(sia);
+			Regla regla = client.consultarRegla(sia, tramit);
 			System.out.println("Consulta de la regla realitzada correctament " + regla);
 		} catch (Exception e) {
 			System.err.println("Error consultant la regla: " + e.getMessage());
@@ -158,7 +164,7 @@ public class ReglesRestTest {
 		
 		// Actualització de la regla
 		try {
-			ret = client.update(sia, activa, presencial);
+			ret = client.update(sia, tramit, activa, presencial);
 			System.out.println("Update finalitzado correctament amb resultat " + (ret.isCorrecte() ? "correcte" : "incorrecte") + " " +
 					ret.getStatus() + " " + ret.getMsg());
 		} catch (Exception e) {
@@ -174,9 +180,9 @@ public class ReglesRestTest {
 	 * @param sia
 	 * @throws Exception 
 	 */
-	private static void consulta(ReglesRestClient client, String sia) throws Exception {
+	private static void consulta(ReglesRestClient client, String sia, String tramit) throws Exception {
 		
-		Regla r  = client.consultarRegla(sia);
+		Regla r  = client.consultarRegla(sia, tramit);
 		
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		

@@ -76,12 +76,13 @@ $(document).ready(function() {
 			$('#bustiaFiltreId').val('');
 			$('#assumpteCodiFiltre').parent().closest('.form-group').css('display', 'none');
 			$('#assumpteCodiFiltre').val('');
-			$('#procedimentCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk">*</span>');
-			$('#serveiCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk">*</span>');
+			$('#procedimentCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk1">*</span>');
+			$('#serveiCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk2">*</span>');
 		} else {
 			$('#bustiaFiltreId').parent().closest('.form-group').css('display', '');
 			$('#assumpteCodiFiltre').parent().closest('.form-group').css('display', '');
-			$('#asterisk').remove();
+			$('#asterisk1').remove();
+			$('#asterisk2').remove();
 		}
 		if (!isWindowReload) {
 			$('#unitatFiltreId').parent().closest('.form-group').removeClass('has-error');
@@ -196,6 +197,7 @@ $(document).ready(function() {
 				optionMinimumResultsForSearch="0"/>
 			<dis:inputTextarea name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info"/>
 			<dis:inputTextarea name="serveiCodiFiltre" textKey="regla.form.camp.servei.codi" comment="regla.form.camp.servei.codi.info"/>
+			<dis:inputTextarea name="tramitCodiFiltre" textKey="regla.form.camp.tramit.codi" />
 			<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>
 			
 			<dis:inputSelect name="presencial" textKey="regla.form.camp.presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial"/>

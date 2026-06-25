@@ -2003,7 +2003,8 @@ public class RegistreServiceImpl implements RegistreService {
 							bustia.getId(),
 							anotacio.getProcedimentCodi(),
 							anotacio.getServeiCodi(),
-							anotacio.getAssumpteCodi(), 
+							anotacio.getTramitCodi(),
+							anotacio.getAssumpteCodi(),
 							presencial);
 					anotacio.updateRegla(reglaAplicable);
 				}
@@ -2729,7 +2730,8 @@ public class RegistreServiceImpl implements RegistreService {
 				registre.getPare() != null? registre.getPare().getId() : null,
 				registre.getProcedimentCodi(),
 				registre.getServeiCodi(),
-				registre.getAssumpteCodi(), 
+				registre.getTramitCodi(),
+				registre.getAssumpteCodi(),
 				registre.getPresencial());
 		ClassificacioResultatDto classificacioResultat = new ClassificacioResultatDto();
 		if (reglaAplicable != null) {

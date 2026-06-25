@@ -59,6 +59,9 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	
 	@Column(name = "servei_codi", length = 1024, nullable = false)
 	private String serveiCodiFiltre;
+
+	@Column(name = "tramit_codi", length = 1024, nullable = false)
+	private String tramitCodiFiltre;
 	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(
@@ -142,7 +145,10 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	public String getServeiCodiFiltre() {
 		return serveiCodiFiltre;
 	}
-	public BustiaEntity getBustiaDesti() {
+    public String getTramitCodiFiltre() {
+        return tramitCodiFiltre;
+    }
+    public BustiaEntity getBustiaDesti() {
 		return bustiaDesti;
 	}
 	public int getOrdre() {
@@ -160,7 +166,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	public BackofficeEntity getBackofficeDesti() {
 		return backofficeDesti;
 	}
-	
+
 	public UnitatOrganitzativaEntity getUnitatDesti() {
 		return unitatDesti;
 	}
@@ -184,6 +190,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			String assumpteCodiFiltre,
 			String procedimentCodiFiltre,
 			String serveiCodiFiltre,
+			String tramitCodiFiltre,
 			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
 			BustiaEntity bustiaFiltre, 
 			boolean aturarAvaluacio) {
@@ -195,6 +202,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		this.assumpteCodiFiltre = assumpteCodiFiltre;
 		this.procedimentCodiFiltre = procedimentCodiFiltre;
 		this.serveiCodiFiltre = serveiCodiFiltre;
+		this.tramitCodiFiltre = tramitCodiFiltre;
 		this.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
 		this.bustiaFiltre = bustiaFiltre;
 		this.aturarAvaluacio = aturarAvaluacio;
@@ -233,6 +241,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			String assumpteCodiFiltre,
 			String procedimentCodiFiltre,
 			String serveiCodiFiltre,
+			String tramitCodiFiltre,
 			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
 			BustiaEntity bustiaFiltre,
 			int ordre) {
@@ -244,6 +253,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				assumpteCodiFiltre,
 				procedimentCodiFiltre,
 				serveiCodiFiltre,
+                tramitCodiFiltre,
 				unitatOrganitzativaFiltre,
 				bustiaFiltre,
 				ordre);
@@ -258,6 +268,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				String assumpteCodiFiltre,
 				String procedimentCodiFiltre,
 				String serveiCodiFiltre,
+				String tramitCodiFiltre,
 				UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
 				BustiaEntity bustiaFiltre,
 				int ordre) {
@@ -269,6 +280,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			built.assumpteCodiFiltre = assumpteCodiFiltre;
 			built.procedimentCodiFiltre = procedimentCodiFiltre;
 			built.serveiCodiFiltre = serveiCodiFiltre;
+			built.tramitCodiFiltre = tramitCodiFiltre;
 			built.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
 			built.bustiaFiltre = bustiaFiltre;
 			built.ordre = ordre;
@@ -320,6 +332,11 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			if (other.serveiCodiFiltre != null)
 				return false;
 		} else if (!serveiCodiFiltre.equals(other.serveiCodiFiltre))
+			return false;
+		if (tramitCodiFiltre == null) {
+			if (other.tramitCodiFiltre != null)
+				return false;
+		} else if (!tramitCodiFiltre.equals(other.tramitCodiFiltre))
 			return false;
 		if (entitat == null) {
 			if (other.entitat != null)

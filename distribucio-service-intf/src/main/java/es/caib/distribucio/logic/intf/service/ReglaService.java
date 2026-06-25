@@ -277,7 +277,7 @@ public interface ReglaService {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
-	public List<ReglaDto> findReglaBackofficeByCodiSia (String siaCodi);
+	public List<ReglaDto> findReglaBackofficeByCodiSiaAndTramit(String siaCodi, String tramit);
 
 	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de update
 	 * de regles.

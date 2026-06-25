@@ -69,6 +69,8 @@ public class ReglaRestController {
 			@RequestParam(required = true) String sia,
 			@Parameter(name = "tipusSia", description = "Codi per indicar si la regla aplica al codi SIA del procediment o del servei. Els possibles valors són 'PROCEDIMENT' i 'SERVEI'.")
 			@RequestParam(required = false, defaultValue = "PROCEDIMENT") String tipusSia,
+            @Parameter(name = "tramit", description = "Codi del tramit de la regla pel filtre per tramit.")
+            @RequestParam(required = false) String tramit,
 			@Parameter(name = "backoffice", description = "Codi Backoffice per la regla al qual s'enviaran les anotacions.")
 			@RequestParam(required = true) String backoffice,
 			@Parameter(name = "presencial", description = "Booleà per informar el filtre presencial de la regla. Paràmetre opcional.") 
@@ -112,6 +114,7 @@ public class ReglaRestController {
         } else if (RegistreClassificarTipusEnum.SERVEI.name().equals(tipusSia)) {
             novaReglaDto.setServeiCodiFiltre(sia);
         }
+        novaReglaDto.setTramitCodiFiltre(tramit);
 		if (presencial != null) {
 			novaReglaDto.setPresencial(presencial.booleanValue() ? ReglaPresencialEnumDto.SI : ReglaPresencialEnumDto.NO );
 		}
@@ -185,15 +188,17 @@ public class ReglaRestController {
 			HttpServletRequest request, 
 			@Parameter(name = "sia", description = "Codi SIA de la regla")
 			@RequestParam(required = true) String sia,
+            @Parameter(name = "tramit", description = "Codi del tramit de la regla")
+            @RequestParam(required = false) String tramit,
 			@Parameter(name = "activa", description = "Paràmetre opcional per activar o desactivar la regla. Si on s'especifica es canvia segons el valor que tingui actualment.")
 			@RequestParam(required = false) Boolean activa){
-		List<ReglaDto> regles = reglaService.findReglaBackofficeByCodiSia(sia);
+		List<ReglaDto> regles = reglaService.findReglaBackofficeByCodiSiaAndTramit(sia, tramit);
 		ReglaDto regla;
 		String response = "";
 		if (regles == null || regles.isEmpty()) {
-			return new ResponseEntity<String>("La regla amb el codi " + sia + " no existeix", HttpStatus.CONFLICT);
+			return new ResponseEntity<String>("La regla amb el codi " + sia + (tramit != null ?" i tramit " + tramit :"") + " no existeix", HttpStatus.CONFLICT);
 		} else if (regles.size() > 1) {
-			logger.warn("S'han trobat " + regles.size() + " regles pel codi SIA " + sia + ", es consultarà només la primera regla.");
+			logger.warn("S'han trobat " + regles.size() + " regles pel codi SIA " + sia + (tramit != null ?" i tramit " + tramit :"") + ", es consultarà només la primera regla.");
 		}
 		regla = regles.get(0);
 		try {
@@ -206,12 +211,12 @@ public class ReglaRestController {
 					sia,
 					activa);
 			if (activa) {
-				response = "La regla amb codi " + sia + " s'ha activat correctament.";	
+				response = "La regla amb codi " + sia + (tramit != null ?" i tramit " + tramit :"") + " s'ha activat correctament.";
 			}else {
-				response = "La regla amb codi " + sia + " s'ha desactivat correctament.";
+				response = "La regla amb codi " + sia + (tramit != null ?" i tramit " + tramit :"") + " s'ha desactivat correctament.";
 			}
 		} catch(Exception e) {
-			String errMsg = "error fent l'update de la regla " + regla.getNom() + " pel codi SIa " + sia + ":" + e.getMessage();
+			String errMsg = "error fent l'update de la regla " + regla.getNom() + " pel codi SIa " + sia + (tramit != null ?" i tramit " + tramit :"") + ":" + e.getMessage();
 			logger.error(errMsg, e);
 			return new ResponseEntity<String>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -226,17 +231,20 @@ public class ReglaRestController {
 	public ResponseEntity<Object> consultarRegla(
 			HttpServletRequest request, 
 			@Parameter(name = "sia", description = "Codi SIA de la regla que identifica la regla de tipus backoffice.")
-			@RequestParam(required = true) String sia) {
-		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByCodiSia(sia);
+			@RequestParam(required = true) String sia,
+            @Parameter(name = "tramit", description = "Codi del tramit de la regla pel filtre per tramit.")
+            @RequestParam(required = false) String tramit) {
+		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByCodiSiaAndTramit(sia, tramit);
 		if (reglesDto.size() > 1) {
-			logger.warn("S'han trobat " + reglesDto.size() + " regles pel codi SIA " + sia + ".");
+			logger.warn("S'han trobat " + reglesDto.size() + " regles pel codi SIA " + sia + (tramit != null ?" i tramit " + tramit :"") + ".");
 		}
 		List<Map<String, Object>> regles = new ArrayList<>();
 		if (reglesDto == null || reglesDto.isEmpty()) {
-			return new ResponseEntity<Object>("No s'ha trobat cap regla amb el codi SIA: " + sia, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<Object>("No s'ha trobat cap regla amb el codi SIA " + sia
+                    + (tramit != null ?" i el tramit " + tramit :""), HttpStatus.NOT_FOUND);
 		}
 		for (ReglaDto regla : reglesDto) {
-			regles.add(this.reglaToMap(regla));
+            regles.add(this.reglaToMap(regla));
 		}
 		return new ResponseEntity<Object>(regles, HttpStatus.OK);
 	}
@@ -249,17 +257,20 @@ public class ReglaRestController {
 	public ResponseEntity<Object> update(HttpServletRequest request,
 			@Parameter(name = "sia", description = "Codi SIA de la regla")
 			@RequestParam(required = true) String sia,
+            @Parameter(name = "tramit", description = "Codi del tramit de la regla")
+            @RequestParam(required = false) String tramit,
 			@Parameter(name = "activa", description = "Paràmetre opcional per activar o desactivar la regla. Si no s'especifica es canvia segons el valor que tingui actualment.") 
 			@RequestParam(required = false) Boolean activa,
 			@Parameter(name = "presencial", description = "Paràmetre per fixar el valor del filtre segons si l'anotació és prensencial, no presencial o no té valor.")
 			@RequestParam(required = false) Boolean presencial){
-		List<ReglaDto> regles = reglaService.findReglaBackofficeByCodiSia(sia);
+		List<ReglaDto> regles = reglaService.findReglaBackofficeByCodiSiaAndTramit(sia, tramit);
 		ReglaDto regla;
 		ReglaPresencialEnumDto presencialEnum;
 		if (regles == null || regles.isEmpty()) {
-			return new ResponseEntity<Object>("La regla amb el codi " + sia + " no existeix", HttpStatus.CONFLICT);
+			return new ResponseEntity<Object>("La regla amb el codi " + sia + (tramit != null ?" i el tramit " + tramit :"") + " no existeix", HttpStatus.CONFLICT);
 		} else if (regles.size() > 1) {
 			logger.warn("S'han trobat " + regles.size() + " regles pel codi SIA " + sia
+                    + (tramit != null ?" i tramit " + tramit  :"")
 					+ ", es consultarà només la primera regla.");
 		}
 		regla = regles.get(0);
@@ -282,7 +293,7 @@ public class ReglaRestController {
 					sia);
 			response = "Regla amb id " + regla.getId() + " actualitzada correctament.";
 		} catch (Exception e) {
-			String errMsg = "Error actualitzant la regla " + regla.getNom() + " amb id " + regla.getId() + " pel codi SIA " + sia + ": " + e.getMessage();
+			String errMsg = "Error actualitzant la regla " + regla.getNom() + " amb id " + regla.getId() + " pel codi SIA " + sia + (tramit != null ?" i tramit " + tramit :"") + ": " + e.getMessage();
 			logger.error(errMsg, e);
 			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

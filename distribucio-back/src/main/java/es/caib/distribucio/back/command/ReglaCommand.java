@@ -41,6 +41,7 @@ public class ReglaCommand {
 	@Size(max = 1024, groups = {CreateUpdate.class})
 	private String procedimentCodiFiltre;
 	private String serveiCodiFiltre;
+	private String tramitCodiFiltre;
 	private Long unitatFiltreId;
 	private Long bustiaFiltreId;
 	private ReglaPresencialEnumDto presencial;

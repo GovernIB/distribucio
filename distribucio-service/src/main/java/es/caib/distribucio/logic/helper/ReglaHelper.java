@@ -87,6 +87,7 @@ public class ReglaHelper {
 			Long bustiaId,
 			String procedimentCodi,
 			String serveiCodi,
+			String tramitCodi,
 			String assumpteCodi,
 			Boolean presencial) {
 		if (reglaActual != null && reglaActual.isAturarAvaluacio()) {
@@ -102,7 +103,8 @@ public class ReglaHelper {
 				bustiaId,
 				procedimentCodi != null ? procedimentCodi : "",
 				serveiCodi != null ? serveiCodi : "",
-				assumpteCodi != null ? assumpteCodi : "", 
+				tramitCodi != null ? tramitCodi : "",
+				assumpteCodi != null ? assumpteCodi : "",
 				esPresencial == null,
 				esPresencial);
 		if (regles == null || regles.isEmpty()) {
@@ -135,6 +137,7 @@ public class ReglaHelper {
 			Long bustiaId,
 			String procedimentCodi,
 			String serveiCodi,
+			String tramitCodi,
 			String assumpteCodi,
 			Boolean presencial) {
 		ReglaEntity reglaAplicable = null;
@@ -149,7 +152,8 @@ public class ReglaHelper {
 					bustiaId,
 					procedimentCodi != null ? procedimentCodi : "",
 					serveiCodi != null ? serveiCodi : "",
-					assumpteCodi != null ? assumpteCodi : "", 
+					tramitCodi != null ? tramitCodi : "",
+					assumpteCodi != null ? assumpteCodi : "",
 					esPresencial == null,
 					esPresencial);
 		if (regles.size() > 0) {
@@ -304,7 +308,8 @@ public class ReglaHelper {
 						registreSimulatDto.getBustiaId(),
 						registreSimulatDto.getProcedimentCodi(),
 						registreSimulatDto.getServeiCodi(),
-						registreSimulatDto.getAssumpteCodi(), 
+						registreSimulatDto.getTramitCodi(),
+						registreSimulatDto.getAssumpteCodi(),
 						presencial);
 			} else {
 				// Consulta la següent regla
@@ -314,6 +319,7 @@ public class ReglaHelper {
 						registreSimulatDto.getBustiaId(),
 						registreSimulatDto.getProcedimentCodi(),
 						registreSimulatDto.getServeiCodi(),
+                        registreSimulatDto.getTramitCodi(),
 						registreSimulatDto.getAssumpteCodi(), 
 						presencial);
 			}
@@ -495,7 +501,8 @@ public class ReglaHelper {
 							bustia.getId(),
 							registre.getProcedimentCodi(),
 							registre.getServeiCodi(),
-							registre.getAssumpteCodi(), 
+							registre.getTramitCodi(),
+							registre.getAssumpteCodi(),
 							presencial);
 				} else {
 					// Consulta la següent regla
@@ -505,7 +512,8 @@ public class ReglaHelper {
 							bustia.getId(),
 							registre.getProcedimentCodi(),
 							registre.getServeiCodi(),
-							registre.getAssumpteCodi(), 
+							registre.getTramitCodi(),
+							registre.getAssumpteCodi(),
 							presencial);
 				}
 				if (nextReglaToApply != null) {

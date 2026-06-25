@@ -63,13 +63,14 @@ public class ReglesRestClient extends RestClientBase{
 	public ReglaResponse add (
 			String entitat, 
 			String sia,
+			String tramit,
 			String tipus,
 			String backoffice,
 			Boolean presencial) throws RuntimeException {
 		
 		ReglaResponse ret = null;
 		try {
-			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/add?entitat=" + entitat + "&sia=" + sia + "&tipusSia=" + tipus + "&backoffice=" + backoffice + "&presencial=" + (presencial != null ? presencial.toString() : "");
+			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/add?entitat=" + entitat + "&sia=" + sia + "&tramit=" + tramit + "&tipusSia=" + tipus + "&backoffice=" + backoffice + "&presencial=" + (presencial != null ? presencial.toString() : "");
 			Client jerseyClient = generarClient(urlAmbMetode);
 			ClientResponse response = jerseyClient
 					.resource(urlAmbMetode)
@@ -88,10 +89,11 @@ public class ReglesRestClient extends RestClientBase{
 	 */
 	public ReglaResponse canviEstat(
 			String sia,
+			String tramit,
 			Boolean activa)  throws RuntimeException {
 		ReglaResponse ret = null;
 		try {
-			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/canviEstat?sia=" + sia + "&activa=" + (activa != null? activa.booleanValue() : "");
+			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/canviEstat?sia=" + sia + "&tramit=" + tramit + "&activa=" + (activa != null? activa.booleanValue() : "");
 			Client jerseyClient = generarClient(urlAmbMetode);
 			ClientResponse response = jerseyClient
 					.resource(urlAmbMetode)
@@ -111,12 +113,13 @@ public class ReglesRestClient extends RestClientBase{
 	 */
 	public ReglaResponse update(
 			String sia,
+			String tramit,
 			Boolean activa,
 			Boolean presencial) throws RuntimeException {
 		ReglaResponse ret = null;
 			
 		try {
-			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/update" + "?sia=" + sia + 
+			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/update" + "?sia=" + sia + "&tramit=" + tramit +
 											"&activa=" + (activa != null ? activa.toString() : "") + 
 											"&presencial=" + (presencial != null ? presencial.toString() : "");
 			Client jerseyClient = generarClient(urlAmbMetode);
@@ -138,10 +141,11 @@ public class ReglesRestClient extends RestClientBase{
 	 * @throws Exception Error en cas de no poder generar el client, de mal format de dades o error en la comunicació.
 	 */
 	public Regla consultarRegla (
-			String sia) throws RuntimeException {
+			String sia,
+            String tramit) throws RuntimeException {
 		Regla regla = null;
 		try {
-			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/consultarRegla?sia=" + sia;
+			String urlAmbMetode = baseUrl + CARPETA_SERVICE_PATH + "/consultarRegla?sia=" + sia + "&tramit=" + tramit;
 
 			Client jerseyClient = generarClient(urlAmbMetode);
 			String json = jerseyClient.

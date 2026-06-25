@@ -6,6 +6,8 @@ package es.caib.distribucio.back.command;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.back.helper.ConversioTipusHelper;
@@ -18,9 +20,9 @@ import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
-
+@Getter
+@Setter
 public class RegistreSimulatCommand {
-
 
 	@NotNull
 	private Long unitatId;
@@ -29,46 +31,10 @@ public class RegistreSimulatCommand {
 	@Size(max = 64)
 	private String procedimentCodi;
 	private String serveiCodi;
+	private String tramitCodi;
 	private Long bustiaId;
 	private ReglaPresencialEnumDto presencial;
 
-
-	public Long getUnitatId() {
-		return unitatId;
-	}
-	public void setUnitatId(Long unitatId) {
-		this.unitatId = unitatId;
-	}
-	public String getAssumpteCodi() {
-		return assumpteCodi;
-	}
-	public void setAssumpteCodi(String assumpteCodi) {
-		this.assumpteCodi = assumpteCodi;
-	}
-	public String getProcedimentCodi() {
-		return procedimentCodi;
-	}
-	public void setProcedimentCodi(String procedimentCodi) {
-		this.procedimentCodi = procedimentCodi;
-	}	
-	public String getServeiCodi() {
-		return serveiCodi;
-	}
-	public void setServeiCodi(String serveiCodi) {
-		this.serveiCodi = serveiCodi;
-	}
-	public Long getBustiaId() {
-		return bustiaId;
-	}
-	public void setBustiaId(Long bustiaId) {
-		this.bustiaId = bustiaId;
-	}	
-	public ReglaPresencialEnumDto getPresencial() {
-		return presencial;
-	}
-	public void setPresencial(ReglaPresencialEnumDto presencial) {
-		this.presencial = presencial;
-	}
 	public static RegistreSimulatCommand asCommand(RegistreSimulatDto dto) {
 		RegistreSimulatCommand command = ConversioTipusHelper.convertir(
 				dto,
@@ -81,8 +47,6 @@ public class RegistreSimulatCommand {
 				RegistreSimulatDto.class);
 		return dto;
 	}
-	
-	
 
 	@Override
 	public String toString() {

@@ -26,6 +26,7 @@ public class ReglaFiltreDto implements Serializable {
 	private Long backofficeId;
 	private String codiSIA;
 	private String codiServei;
+    private String codiTramit;
 	private String codiAssumpte;
 	private Long bustiaId;
 //	private boolean activa = true;

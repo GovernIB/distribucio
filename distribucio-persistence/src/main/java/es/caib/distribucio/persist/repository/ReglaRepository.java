@@ -62,6 +62,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"and (:esNullCodiAssumpte = true or lower(r.assumpteCodiFiltre) like lower('%'||:codiAssumpte||'%')) " +
 			"and (:esNullFiltreCodiSIA = true or lower(r.procedimentCodiFiltre) like lower('%'||:filtreCodiSIA||'%')) " + 
 			"and (:esNullFiltreCodiServei = true or lower(r.serveiCodiFiltre) like lower('%'||:filtreCodiServei||'%')) " + 
+			"and (:esNullFiltreCodiTramit = true or lower(r.tramitCodiFiltre) like lower('%'||:filtreCodiTramit||'%')) " +
 			"and (:esNullFiltreTipus = true or r.tipus = :filtreTipus) " +
 			"and (:esNullPresencial = true or r.presencial = :isPresencial) " +
 			"and (:esNullBustia = true or r.bustiaFiltre = :bustia) " + 
@@ -82,6 +83,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("filtreCodiSIA") String filtreCodiSIA,
 			@Param("esNullFiltreCodiServei") boolean esNullFiltreCodiServei,
 			@Param("filtreCodiServei") String filtreCodiServei,
+			@Param("esNullFiltreCodiTramit") boolean esNullFiltreCodiTramit,
+			@Param("filtreCodiTramit") String filtreCodiTramit,
 			@Param("esNullFiltreTipus") boolean esNullFiltreTipus,
 			@Param("filtreTipus") ReglaTipusEnumDto filtreTipus,
 			@Param("esNullPresencial") boolean esNullPresencial, 
@@ -108,6 +111,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"and (:esNullCodiAssumpte = true or lower(r.assumpteCodiFiltre) like lower('%'||:codiAssumpte||'%')) " +
 			"and (:esNullFiltreCodiSIA = true or lower(r.procedimentCodiFiltre) like lower('%'||:filtreCodiSIA||'%')) " +
 			"and (:esNullFiltreCodiServei = true or lower(r.serveiCodiFiltre) like lower('%'||:filtreCodiServei||'%')) " + 
+			"and (:esNullFiltreCodiTramit = true or lower(r.tramitCodiFiltre) like lower('%'||:filtreCodiTramit||'%')) " +
 			"and (:esNullFiltreTipus = true or r.tipus = :filtreTipus) " +
 			"and (:esNullPresencial = true or r.presencial = :isPresencial) " +
 			"and (:esNullBustia = true or r.bustiaFiltre = :bustia) " + 
@@ -125,6 +129,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("filtreCodiSIA") String filtreCodiSIA,
 			@Param("esNullFiltreCodiServei") boolean esNullFiltreCodiServei,
 			@Param("filtreCodiServei") String filtreCodiServei,
+			@Param("esNullFiltreCodiTramit") boolean esNullFiltreCodiTramit,
+			@Param("filtreCodiTramit") String filtreCodiTramit,
 			@Param("esNullFiltreTipus") boolean esNullFiltreTipus,
 			@Param("filtreTipus") ReglaTipusEnumDto filtreTipus,
 			@Param("esNullPresencial") boolean esNullPresencial, 
@@ -160,6 +166,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"and (r.bustiaFiltre is null or r.bustiaFiltre.id = :bustiaId) " + 
 			"and (r.procedimentCodiFiltre is null or (r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre = :procedimentCodiFiltre or r.procedimentCodiFiltre like (:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre))) " +
 			"and (r.serveiCodiFiltre is null or (r.serveiCodiFiltre like ('% '||:serveiCodiFiltre||' %') or r.serveiCodiFiltre = :serveiCodiFiltre or r.serveiCodiFiltre like (:serveiCodiFiltre||' %') or r.serveiCodiFiltre like ('% '||:serveiCodiFiltre))) " +
+			"and (r.tramitCodiFiltre is null or (r.tramitCodiFiltre like ('% '||:tramitCodiFiltre||' %') or r.tramitCodiFiltre = :tramitCodiFiltre or r.tramitCodiFiltre like (:tramitCodiFiltre||' %') or r.tramitCodiFiltre like ('% '||:tramitCodiFiltre))) " +
 			"and (r.assumpteCodiFiltre is null or r.assumpteCodiFiltre = :assumpteCodiFiltre) " +
 			"and ((r.presencial is null) or (:isPresencialNull is true or r.presencial = :presencial)) " +
 			"order by r.ordre asc")
@@ -169,7 +176,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("bustiaId") Long bustiaId,
 			@Param("procedimentCodiFiltre") String procedimentCodiFiltre,
 			@Param("serveiCodiFiltre") String serveiCodiFiltre, 
-			@Param("assumpteCodiFiltre") String assumpteCodiFiltre, 
+			@Param("tramitCodiFiltre") String tramitCodiFiltre,
+			@Param("assumpteCodiFiltre") String assumpteCodiFiltre,
 			@Param("isPresencialNull") boolean isPresencialNull, 
 			@Param("presencial") ReglaPresencialEnumDto presencial);
 
@@ -234,10 +242,13 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			" and (" +
             "       (r.procedimentCodiFiltre like ('% '||:siaCodiFiltre||' %') or r.procedimentCodiFiltre = :siaCodiFiltre or r.procedimentCodiFiltre like (:siaCodiFiltre||' %') or r.procedimentCodiFiltre like ('% '||:siaCodiFiltre))" +
             "       or (r.serveiCodiFiltre like ('% '||:siaCodiFiltre||' %') or r.serveiCodiFiltre = :siaCodiFiltre or r.serveiCodiFiltre like (:siaCodiFiltre||' %') or r.serveiCodiFiltre like ('% '||:siaCodiFiltre))" +
-            "   )")
-	List<ReglaEntity> findReglaBackofficeByCodiSia(
-			@Param("siaCodiFiltre") String siaCodiFiltre);
-	
+            "   )" +
+            " and (:tramitCodiIsNull = true or r.tramitCodiFiltre like ('% '||:tramitCodiFiltre||' %') or r.tramitCodiFiltre = :tramitCodiFiltre or r.tramitCodiFiltre like (:tramitCodiFiltre||' %') or r.tramitCodiFiltre like ('% '||:tramitCodiFiltre))")
+	List<ReglaEntity> findReglaBackofficeByCodiSiaAndTramit(
+			@Param("siaCodiFiltre") String siaCodiFiltre,
+			@Param("tramitCodiIsNull") boolean tramitCodiIsNull,
+			@Param("tramitCodiFiltre") String tramitCodiFiltre);
+
 	/** Consulta les regles donat un codi de procediment. */
 	@Query(	"from " +
 			"    ReglaEntity r " +

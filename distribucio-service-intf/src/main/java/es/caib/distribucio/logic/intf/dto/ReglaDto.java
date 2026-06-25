@@ -3,8 +3,6 @@
  */
 package es.caib.distribucio.logic.intf.dto;
 
-import java.util.Date;
-
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -31,6 +29,7 @@ public class ReglaDto extends AuditoriaDto {
 	private String assumpteCodiFiltre;
 	private String procedimentCodiFiltre;
 	private String serveiCodiFiltre;
+	private String tramitCodiFiltre;
 	private UnitatOrganitzativaDto unitatOrganitzativaFiltre;
 	private String codiAndNomUnitatOrganitzativa;
 	private String estatUnitatOrganitzativa;

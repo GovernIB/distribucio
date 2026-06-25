@@ -29,6 +29,7 @@ public class ReglaFiltreCommand {
 	private ReglaTipusEnumDto tipus;
 	private String codiSIA;
 	private String codiServei;
+	private String codiTramit;
 	private Long backofficeId;
 	private String codiAssumpte;
 	private Long bustiaId;

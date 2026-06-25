@@ -105,6 +105,7 @@ public class ReglaServiceImpl implements ReglaService {
 				reglaDto.getAssumpteCodiFiltre(),
 				reglaDto.getProcedimentCodiFiltre(),
 				reglaDto.getServeiCodiFiltre(),
+				reglaDto.getTramitCodiFiltre(),
 				reglaDto.getUnitatOrganitzativaFiltre() != null ? unitatOrganitzativaRepository.findById(reglaDto.getUnitatOrganitzativaFiltre().getId()).orElse(null) : null,
 				reglaDto.getBustiaFiltreId() != null ? bustiaRepository.findById(reglaDto.getBustiaFiltreId()).orElse(null) : null,
 				ordre).
@@ -170,6 +171,7 @@ public class ReglaServiceImpl implements ReglaService {
 				reglaDto.getAssumpteCodiFiltre(),
 				reglaDto.getProcedimentCodiFiltre(),
 				reglaDto.getServeiCodiFiltre(),
+				reglaDto.getTramitCodiFiltre(),
 				reglaDto.getUnitatOrganitzativaFiltre() != null ? unitatOrganitzativaRepository.findById(reglaDto.getUnitatOrganitzativaFiltre().getId()).orElse(null) : null,
 				reglaDto.getBustiaFiltreId() != null ? bustiaRepository.findById(reglaDto.getBustiaFiltreId()).orElse(null) : null,
 				reglaDto.isAturarAvaluacio());
@@ -600,6 +602,8 @@ public class ReglaServiceImpl implements ReglaService {
 						filtre.getCodiSIA() != null ? filtre.getCodiSIA() : "",
 						filtre.getCodiServei() == null || filtre.getCodiServei().isEmpty(), 
 						filtre.getCodiServei() != null ? filtre.getCodiServei() : "",
+						filtre.getCodiTramit() == null || filtre.getCodiTramit().isEmpty(),
+						filtre.getCodiTramit() != null ? filtre.getCodiTramit() : "",
 						filtre.getTipus() == null , 
 						filtre.getTipus(),
 						filtre.getPresencial() == null,
@@ -662,6 +666,8 @@ public class ReglaServiceImpl implements ReglaService {
 						filtre.getCodiSIA() != null ? filtre.getCodiSIA() : "",
 						filtre.getCodiServei() == null || filtre.getCodiServei().isEmpty(), 
 						filtre.getCodiServei() != null ? filtre.getCodiServei() : "",
+						filtre.getCodiTramit() == null || filtre.getCodiTramit().isEmpty(),
+						filtre.getCodiTramit() != null ? filtre.getCodiTramit() : "",
 						filtre.getTipus() == null , 
 						filtre.getTipus(),
 						filtre.getPresencial() == null,
@@ -787,6 +793,7 @@ public class ReglaServiceImpl implements ReglaService {
 				+ "bustiaId=" + registreSimulatDto.getBustiaId() + ", "
 				+ "codiProcedmient=" + registreSimulatDto.getProcedimentCodi() + ", "
 				+ "codiServei=" + registreSimulatDto.getServeiCodi() + ", "
+				+ "codiTramit=" + registreSimulatDto.getTramitCodi() + ", "
 				+ "presencial=" + registreSimulatDto.getPresencial() + ", "
 				+ "codiAssumpte=" + registreSimulatDto.getAssumpteCodi() + ")");
 		
@@ -912,8 +919,11 @@ public class ReglaServiceImpl implements ReglaService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ReglaDto> findReglaBackofficeByCodiSia (String siaCodi) {
-		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiSia(siaCodi);
+	public List<ReglaDto> findReglaBackofficeByCodiSiaAndTramit(String siaCodi, String tramit) {
+		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiSiaAndTramit(
+                siaCodi,
+                tramit == null,
+                tramit);
 		this.monitoritzarRegla(
 				ReglaGestioTipusEnumDto.Consulta,
 				null,

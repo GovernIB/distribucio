@@ -227,8 +227,8 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 
 	@Override
 	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
-	public List<ReglaDto> findReglaBackofficeByCodiSia(String siaCodi) {
-		return delegateService.findReglaBackofficeByCodiSia(siaCodi);
+	public List<ReglaDto> findReglaBackofficeByCodiSiaAndTramit(String siaCodi, String tramit) {
+		return delegateService.findReglaBackofficeByCodiSiaAndTramit(siaCodi, tramit);
 	}
 
 	@Override
