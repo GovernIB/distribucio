@@ -2460,18 +2460,23 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional(readOnly = true)
 	@Override
 	public FitxerDto getJustificant(
-			Long registreId) {
+			Long registreId) throws Exception {
 		RegistreEntity registre = registreRepository.getReferenceById(registreId);
 		FitxerDto arxiu = new FitxerDto();
-		Document document = null;
-		document = pluginHelper.arxiuDocumentConsultar(registre.getJustificantArxiuUuid(), null, true, true, registre.getNumero());
-		if (document != null) {
-			DocumentContingut documentContingut = document.getContingut();
-			if (documentContingut != null) {
-				arxiu.setNom(registreHelper.obtenirJustificantNom(document));
-				arxiu.setContentType(documentContingut.getTipusMime());
-				arxiu.setContingut(documentContingut.getContingut());
-				arxiu.setTamany(documentContingut.getContingut().length);
+		// #884 es descarrega el justificant com un annex si té el CSV a la BD, si no es concatena uuid/ en cas de ser necessari
+		if (registre.isJustificantDescarregat() && registre.getJustificant() != null) {
+			arxiu = registreHelper.getAnnexFitxerImprimible(registre.getJustificant());
+		} else {
+			Document document = null;
+			document = pluginHelper.arxiuDocumentConsultar(registre.getJustificantArxiuUuid(), null, true, false, registre.getNumero());
+			if (document != null) {
+				DocumentContingut documentContingut = document.getContingut();
+				if (documentContingut != null) {
+					arxiu.setNom(registreHelper.obtenirJustificantNom(document));
+					arxiu.setContentType(documentContingut.getTipusMime());
+					arxiu.setContingut(documentContingut.getContingut());
+					arxiu.setTamany(documentContingut.getContingut().length);
+				}
 			}
 		}
 		return arxiu;

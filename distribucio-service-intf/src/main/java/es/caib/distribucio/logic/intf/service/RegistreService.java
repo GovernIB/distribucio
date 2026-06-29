@@ -170,7 +170,7 @@ public interface RegistreService {
 
 	@PreAuthorize("isAuthenticated()")
 	public FitxerDto getJustificant(
-			Long registreId) throws NotFoundException;
+			Long registreId) throws Exception;
 
 	@PreAuthorize("isAuthenticated()")
 	public String getNumeroById(

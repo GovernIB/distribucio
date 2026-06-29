@@ -153,7 +153,7 @@ public class RegistreServiceEjb extends AbstractServiceEjb<RegistreService> impl
 
 	@Override
 	@RolesAllowed("**")
-	public FitxerDto getJustificant(Long registreId) throws NotFoundException {
+	public FitxerDto getJustificant(Long registreId) throws Exception {
 		return delegateService.getJustificant(registreId);
 	}
 
