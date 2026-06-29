@@ -2330,6 +2330,11 @@ public class RegistreHelper {
 	 * @return
 	 */
 	public boolean potGenerarVersioImprimible(RegistreAnnexEntity annex) {
+        if (annex.getFitxerArxiuUuid() != null
+                && annex.getRegistre() != null
+                && annex.getFitxerArxiuUuid().equals(annex.getRegistre().getJustificantArxiuUuid())) {
+            return true;
+        }
 		// Si no està firmat no cal la versió imprimible
 		if (AnnexEstat.ESBORRANY.equals(annex.getArxiuEstat()) && (annex.getFirmes() == null || annex.getFirmes().isEmpty())) {
 			return false;

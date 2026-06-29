@@ -2462,11 +2462,19 @@ public class RegistreServiceImpl implements RegistreService {
 	public FitxerDto getJustificant(
 			Long registreId) throws Exception {
 		RegistreEntity registre = registreRepository.getReferenceById(registreId);
-		FitxerDto arxiu = new FitxerDto();
+		FitxerDto arxiu = null;
 		// #884 es descarrega el justificant com un annex si té el CSV a la BD, si no es concatena uuid/ en cas de ser necessari
 		if (registre.isJustificantDescarregat() && registre.getJustificant() != null) {
-			arxiu = registreHelper.getAnnexFitxerImprimible(registre.getJustificant());
-		} else {
+			try {
+				arxiu = registreHelper.getAnnexFitxerImprimible(registre.getJustificant());
+			} catch(Exception e) {
+				logger.error("Error obtenint la versió imprimible del justificant amb UUID " + registre.getJustificantArxiuUuid() + " i CSV " + registre.getJustificant().getFirmaCsv() + " per l'anotació amb id " +
+								registre.getId() + " i número " + registre.getNumero() + ": " + e.getMessage());
+			}
+		}
+		if (arxiu == null) {
+			arxiu = new FitxerDto();
+			// Si no està a la BD o ha produÏt error llavors descarrega l'original.
 			Document document = null;
 			document = pluginHelper.arxiuDocumentConsultar(registre.getJustificantArxiuUuid(), null, true, false, registre.getNumero());
 			if (document != null) {
