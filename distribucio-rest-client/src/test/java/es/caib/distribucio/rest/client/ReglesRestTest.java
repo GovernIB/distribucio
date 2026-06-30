@@ -5,7 +5,6 @@ package es.caib.distribucio.rest.client;
 
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.Date;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;

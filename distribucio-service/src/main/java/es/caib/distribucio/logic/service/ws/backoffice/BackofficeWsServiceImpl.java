@@ -27,7 +27,6 @@ import es.caib.distribucio.backoffice.utils.sistra.pago.Pago;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.helper.RegistreHelper;
-import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
 import es.caib.distribucio.plugin.SistemaExternException;
@@ -97,7 +96,7 @@ public class BackofficeWsServiceImpl implements BackofficeWsService, ArxiuPlugin
 								Arrays.asList("A04019281"),
 								new Date(),
 								CLASSIFICACIO,
-								ExpedientEstatEnumDto.OBERT,
+								es.caib.distribucio.backoffice.utils.arxiu.ExpedientEstatEnumDto.OBERT,
 								SERIE_DOCUMENTAL,
 								anotacio);
 						expedientUuid = arxiuResultat.getIdentificadorExpedient();

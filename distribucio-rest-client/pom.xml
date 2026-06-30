@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>es.caib.distribucio</groupId>
     <artifactId>distribucio-rest-client</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.10</version>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jackson.version>2.6.3</jackson.version>
         <slf4j.version>1.6.6</slf4j.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
         <dependency>
@@ -131,7 +131,38 @@
                     <target>11</target>
                 </configuration>
             </plugin>
-        </plugins>
+			<!-- Source -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<version>3.2.1</version>
+			</plugin>
+			<!-- Javadoc -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+			        <doclint>none</doclint>
+    			</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<version>3.2.0</version>
+			</plugin>
+		</plugins>
         <finalName>distribucio-rest-client</finalName>
     </build>
     <repositories>

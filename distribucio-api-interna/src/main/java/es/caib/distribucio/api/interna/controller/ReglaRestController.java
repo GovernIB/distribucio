@@ -69,7 +69,7 @@ public class ReglaRestController {
 			@RequestParam(required = true) String sia,
 			@Parameter(name = "tipusSia", description = "Codi per indicar si la regla aplica al codi SIA del procediment o del servei. Els possibles valors són 'PROCEDIMENT' i 'SERVEI'.")
 			@RequestParam(required = false, defaultValue = "PROCEDIMENT") String tipusSia,
-            @Parameter(name = "tramit", description = "Codi del tramit de la regla pel filtre per tramit.")
+            @Parameter(name = "tramit", description = "Codi del tramit associat al procediment o servei. Si s'informa només aplicarà la regla a les anotacions amb el mateix codi de tràmit. Paràmetre opcional.")
             @RequestParam(required = false) String tramit,
 			@Parameter(name = "backoffice", description = "Codi Backoffice per la regla al qual s'enviaran les anotacions.")
 			@RequestParam(required = true) String backoffice,
@@ -188,7 +188,7 @@ public class ReglaRestController {
 			HttpServletRequest request, 
 			@Parameter(name = "sia", description = "Codi SIA de la regla")
 			@RequestParam(required = true) String sia,
-            @Parameter(name = "tramit", description = "Codi del tramit de la regla")
+            @Parameter(name = "tramit", description = "Codi del tramit de la regla. Paràmetre opcional.")
             @RequestParam(required = false) String tramit,
 			@Parameter(name = "activa", description = "Paràmetre opcional per activar o desactivar la regla. Si on s'especifica es canvia segons el valor que tingui actualment.")
 			@RequestParam(required = false) Boolean activa){
@@ -332,6 +332,10 @@ public class ReglaRestController {
 			if (backofficeDto != null) {
 				r.put("backofficeDesti", backofficeDto.getNom());
 			}
+			r.put("sia", regla.getProcedimentCodiFiltre() != null
+                    ? regla.getProcedimentCodiFiltre()
+                    : regla.getServeiCodiFiltre());
+			r.put("tramit", regla.getTramitCodiFiltre());
 		}
 		return r;
 	}
