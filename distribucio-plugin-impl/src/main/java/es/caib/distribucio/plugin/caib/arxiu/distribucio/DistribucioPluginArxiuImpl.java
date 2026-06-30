@@ -1134,11 +1134,6 @@ public class DistribucioPluginArxiuImpl extends DistribucioAbstractPluginPropert
 		String accioDescripcio = "Obtenint la versió imprimible del document \"" + nomDocument + "\"";
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("identificador", identificadorArxiu);
-		// Si la URL del ConCSV no acaba amb UUID l'hi afegeix per poder fer la consulta per UUID
-        String imprimibleUrl = getProperty("es.caib.distribucio.pluginsib.arxiu.caib.conversio.imprimible.url");
-        if (imprimibleUrl != null && !(imprimibleUrl.endsWith("/uuid") || imprimibleUrl.endsWith("/uuid/"))) {
-        	identificadorArxiu = (!imprimibleUrl.endsWith("/") ? "/" : "") + "uuid/" + identificadorArxiu;
-        }
 		long t0 = System.currentTimeMillis();
 		try {
 			documentImprimible = getArxiuPlugin().documentImprimible(identificadorArxiu);
