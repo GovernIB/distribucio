@@ -4,13 +4,16 @@
 package es.caib.distribucio.back.validation;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import es.caib.distribucio.logic.intf.dto.ReglaDto;
+import es.caib.distribucio.logic.intf.dto.ReglaMatchDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.support.RequestContext;
 
@@ -18,7 +21,6 @@ import es.caib.distribucio.back.command.ReglaCommand;
 import es.caib.distribucio.back.helper.EntitatHelper;
 import es.caib.distribucio.back.helper.MessageHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.logic.intf.service.ReglaService;
 
@@ -121,36 +123,39 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 			boolean mateixCodiSiaMateixFiltreUnitat = false;
 			Long unitatOrganitzativaId = command.getUnitatFiltreId();
 			String unitatOrganitzativaComparada;
-			Map<String, List<ReglaDto>> reglesExistents;
 			if (command.getProcedimentCodiFiltre() != null) {
 				unitatOrganitzativaComparada = MessageHelper.getInstance().getMessage(codiMissatge + ".unitat.buida", null, new RequestContext(request).getLocale());
 				String procedimentCodiFiltre = command.getProcedimentCodiFiltre().trim();
 				List<String> procediments = Arrays.asList(procedimentCodiFiltre.split("\\s+"));
-				reglesExistents = reglaService.findReglesByCodisSia(procediments);
-				for(String codiProcediment : reglesExistents.keySet()) {				
+                List<String> tramits = Collections.emptyList();
+                if (command.getTramitCodiFiltre()!=null) {
+                    String tramitCodiFiltre = command.getTramitCodiFiltre().trim();
+                    tramits = Arrays.asList(tramitCodiFiltre.split("\\s+"));
+                }
+                List<ReglaMatchDto> matches = reglaService.findReglesByCodisSiaAndTramits(procediments, tramits);
+				for(ReglaMatchDto match : matches) {
+                    ReglaDto regla = match.getRegla();
 					StringBuilder reglesNoms = new StringBuilder("");
-					for(ReglaDto regla : reglesExistents.get(codiProcediment)) {
-						if (!regla.getId().equals(command.getId()) && ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
-							if (
-									(unitatOrganitzativaId==null) ||
-									(regla.getUnitatOrganitzativaFiltre()==null) ||
-									(unitatOrganitzativaId.equals(regla.getUnitatOrganitzativaFiltre().getId())) 
-							) {			
-								if (regla.getUnitatOrganitzativaFiltre()!=null) {
-									unitatOrganitzativaComparada = regla.getUnitatOrganitzativaFiltre().getDenominacio();
-								}
-								mateixCodiSiaMateixFiltreUnitat = true;
-								reglesNoms.append(regla.getNom());
-								if (!regla.getEntitatId().equals(entitatActual.getId())) {
-									reglesNoms.append(" (").append(regla.getEntitatNom()).append(")");
-								}
-								reglesNoms.append(", ");
-							}
-						}
-					}
+                    if (!regla.getId().equals(command.getId()) && ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
+                        if (
+                                Objects.equals(unitatOrganitzativaId, (regla.getUnitatOrganitzativaFiltre()!=null
+                                        ?regla.getUnitatOrganitzativaFiltre().getId()
+                                        :null))
+                        ) {
+                            if (regla.getUnitatOrganitzativaFiltre()!=null) {
+                                unitatOrganitzativaComparada = regla.getUnitatOrganitzativaFiltre().getDenominacio();
+                            }
+                            mateixCodiSiaMateixFiltreUnitat = true;
+                            reglesNoms.append(regla.getNom());
+                            if (!entitatActual.getId().equals(regla.getEntitatId())) {
+                                reglesNoms.append(" (").append(regla.getEntitatNom()).append(")");
+                            }
+                            reglesNoms.append(", ");
+                        }
+                    }
 					if (mateixCodiSiaMateixFiltreUnitat) {
-						if (reglesNoms != null && !reglesNoms.toString().isEmpty()) {
-							String[] args = {reglesNoms.substring(0, reglesNoms.length()-2).toString(), codiProcediment, unitatOrganitzativaComparada};
+						if (!reglesNoms.toString().isEmpty()) {
+							String[] args = {reglesNoms.substring(0, reglesNoms.length()-2), match.getSia() + (match.getTramit()!=null ? " - " + match.getTramit() :""), unitatOrganitzativaComparada};
 							context.buildConstraintViolationWithTemplate(
 									MessageHelper.getInstance().getMessage(codiMissatge + ".backoffice.codisia.igualUnitat.existent", args, new RequestContext(request).getLocale()))
 							.addNode("procedimentCodiFiltre")
@@ -166,31 +171,35 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 				unitatOrganitzativaComparada = MessageHelper.getInstance().getMessage(codiMissatge + ".unitat.buida", null, new RequestContext(request).getLocale());
 				String serveiCodiFiltre = command.getServeiCodiFiltre().trim();
 				List<String> serveis = Arrays.asList(serveiCodiFiltre.split("\\s+"));
-				reglesExistents = reglaService.findReglesByCodisSia(serveis);
-				for(String codiServei : reglesExistents.keySet()) {						
+                List<String> tramits = Collections.emptyList();
+                if (command.getTramitCodiFiltre()!=null) {
+                    String tramitCodiFiltre = command.getTramitCodiFiltre().trim();
+                    tramits = Arrays.asList(tramitCodiFiltre.split("\\s+"));
+                }
+                List<ReglaMatchDto> matches = reglaService.findReglesByCodisSiaAndTramits(serveis, tramits);
+				for(ReglaMatchDto match : matches) {
+                    ReglaDto regla = match.getRegla();
 					StringBuilder reglesNoms = new StringBuilder("");
-					for(ReglaDto regla : reglesExistents.get(codiServei)) {
-						if (!regla.getId().equals(command.getId()) && ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
-							if (
-									(unitatOrganitzativaId==null) ||
-									(regla.getUnitatOrganitzativaFiltre()==null) ||
-									(unitatOrganitzativaId.equals(regla.getUnitatOrganitzativaFiltre().getId())) 
-							) {			
-								if (regla.getUnitatOrganitzativaFiltre()!=null) {
-									unitatOrganitzativaComparada = regla.getUnitatOrganitzativaFiltre().getDenominacio();
-								}
-								mateixCodiSiaMateixFiltreUnitat = true;
-								reglesNoms.append(regla.getNom());
-								if (!regla.getEntitatId().equals(entitatActual.getId())) {
-									reglesNoms.append(" (").append(regla.getEntitatNom()).append(")");
-								}
-								reglesNoms.append(", ");
-							}
-						}
-					}
+                    if (!regla.getId().equals(command.getId()) && ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
+                        if (
+                                Objects.equals(unitatOrganitzativaId, (regla.getUnitatOrganitzativaFiltre()!=null
+                                        ?regla.getUnitatOrganitzativaFiltre().getId()
+                                        :null))
+                        ) {
+                            if (regla.getUnitatOrganitzativaFiltre()!=null) {
+                                unitatOrganitzativaComparada = regla.getUnitatOrganitzativaFiltre().getDenominacio();
+                            }
+                            mateixCodiSiaMateixFiltreUnitat = true;
+                            reglesNoms.append(regla.getNom());
+                            if (!entitatActual.getId().equals(regla.getEntitatId())) {
+                                reglesNoms.append(" (").append(regla.getEntitatNom()).append(")");
+                            }
+                            reglesNoms.append(", ");
+                        }
+                    }
 					if (mateixCodiSiaMateixFiltreUnitat) {
-						if (reglesNoms != null && !reglesNoms.toString().isEmpty()) {
-							String[] args = {reglesNoms.substring(0, reglesNoms.length()-2).toString(), codiServei, unitatOrganitzativaComparada};
+						if (!reglesNoms.toString().isEmpty()) {
+							String[] args = {reglesNoms.substring(0, reglesNoms.length()-2), match.getSia() + (match.getTramit()!=null ? " - " + match.getTramit() :""), unitatOrganitzativaComparada};
 							context.buildConstraintViolationWithTemplate(
 									MessageHelper.getInstance().getMessage(codiMissatge + ".backoffice.codisia.igualUnitat.existent", args, new RequestContext(request).getLocale()))
 							.addNode("serveiCodiFiltre")

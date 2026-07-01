@@ -4,14 +4,11 @@
 package es.caib.distribucio.logic.service;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import es.caib.distribucio.logic.intf.dto.*;
 import org.slf4j.Logger;
@@ -81,6 +78,9 @@ public class ReglaServiceImpl implements ReglaService {
 	private BustiaRepository bustiaRepository;
     @Autowired
     private IntegracioHelper integracioHelper;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
 	@Override
 	@Transactional
@@ -727,6 +727,70 @@ public class ReglaServiceImpl implements ReglaService {
 		return result;
 		
 	}
+
+    @Transactional(readOnly = true)
+    public List<ReglaMatchDto> findReglesByCodisSiaAndTramits(List<String> sias, List<String> tramits) {
+        if (sias == null || sias.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<ReglaEntity> resultats = new ArrayList<>();
+        for (String sia: sias) {
+            if (tramits != null && !tramits.isEmpty()) {
+                for (String tramit : tramits) {
+                    resultats.addAll(reglaRepository.findReglaBackofficeByCodiSiaAndTramit(sia, false, tramit));
+                }
+            } else {
+                resultats.addAll(reglaRepository.findReglaBackofficeByCodiSiaAndTramit(sia, true, null));
+            }
+        }
+
+        List<ReglaMatchDto> result = new ArrayList<>();
+        Set<String> alreadyAdded = new HashSet<>();
+
+        for (ReglaEntity regla : resultats) {
+            ReglaDto reglaDto = conversioTipusHelper.convertir(regla, ReglaDto.class);
+
+            List<String> procesimentsRegla = regla.getProcedimentCodiFiltre() != null
+                    ? Arrays.asList(regla.getProcedimentCodiFiltre().split("\\s+"))
+                    : Collections.emptyList();
+
+            List<String> serveisRegla = regla.getServeiCodiFiltre() != null
+                    ? Arrays.asList(regla.getServeiCodiFiltre().split("\\s+"))
+                    : Collections.emptyList();
+
+            List<String> siasRegla = new ArrayList<>();
+            siasRegla.addAll(procesimentsRegla);
+            siasRegla.addAll(serveisRegla);
+
+            List<String> tramitsRegla = regla.getTramitCodiFiltre() != null
+                    ? Arrays.asList(regla.getTramitCodiFiltre().split("\\s+"))
+                    : Collections.emptyList();
+
+            for (String sia : sias) {
+                if (!siasRegla.contains(sia)) {
+                    continue;
+                }
+
+                if (regla.getTramitCodiFiltre() == null) {
+                    String key = regla.getId() + "|" + sia + "|null";
+                    if (alreadyAdded.add(key)) {
+                        result.add(new ReglaMatchDto(reglaDto, sia, null));
+                    }
+                } else {
+                    for (String tramit : tramits) {
+                        if (tramitsRegla.contains(tramit)) {
+                            String key = regla.getId() + "|" + sia + "|" + tramit;
+                            if (alreadyAdded.add(key)) {
+                                result.add(new ReglaMatchDto(reglaDto, sia, tramit));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
 	
 	@Override
 	@Transactional(readOnly = true)

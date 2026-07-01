@@ -252,6 +252,17 @@ public interface ReglaService {
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
 	public Map<String, List<ReglaDto>> findReglesByCodisSia(List<String> procediments);
 
+	/**
+	 * Consulta les regles per codis de sia i codis de tramit.
+	 * @param sias
+     * 			List de codis sia
+	 * @param tramits
+     * 			List de codis tramit
+	 * @return List<ReglaMatchDto>
+	 */
+	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
+    public List<ReglaMatchDto> findReglesByCodisSiaAndTramits(List<String> sias, List<String> tramits);
+
 	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de creació
 	 * de regles.
 	 * 
