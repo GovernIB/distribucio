@@ -738,10 +738,10 @@ public class ReglaServiceImpl implements ReglaService {
         for (String sia: sias) {
             if (tramits != null && !tramits.isEmpty()) {
                 for (String tramit : tramits) {
-                    resultats.addAll(reglaRepository.findReglaBackofficeByCodiSiaAndTramit(sia, false, tramit));
+                    resultats.addAll(reglaRepository.findReglaByCodiSiaAndTramit(sia, false, tramit));
                 }
             } else {
-                resultats.addAll(reglaRepository.findReglaBackofficeByCodiSiaAndTramit(sia, true, null));
+                resultats.addAll(reglaRepository.findReglaByCodiSiaAndTramit(sia, true, null));
             }
         }
 
