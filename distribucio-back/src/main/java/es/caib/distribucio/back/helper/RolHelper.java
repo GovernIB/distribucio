@@ -105,10 +105,10 @@ public class RolHelper {
 		}
 		EntitatDto entitatActual = EntitatHelper.getEntitatActual(request);
 		if (entitatActual != null) {
-			if (entitatActual.isUsuariActualAdministration() && request.isUserInRole(BaseConfig.ROLE_ADMIN)) {
+			if (entitatActual.isUsuariActualAdministration()) {
 				rols.add(BaseConfig.ROLE_ADMIN);
 			}
-			if (entitatActual.isUsuariActualAdminLectura () && request.isUserInRole(BaseConfig.ROLE_ADMIN_LECTURA)) {
+			if (entitatActual.isUsuariActualAdminLectura()) {
 				rols.add(BaseConfig.ROLE_ADMIN_LECTURA);
 			}
 			if (entitatActual.isUsuariActualRead()) {

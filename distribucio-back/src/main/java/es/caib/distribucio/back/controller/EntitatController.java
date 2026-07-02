@@ -152,25 +152,22 @@ public class EntitatController extends BaseController {
 			HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
 		EntitatDto entitatActual = EntitatHelper.getEntitatActual(request);
-		
-		if (entitatActual != null) {
-			if (!RolHelper.isRolActualSuperusuari(request) && entitatActual.getLogoCapBytes() != null) {
-				writeFileToResponse(
-						"Logo_cap.png",
-						entitatActual.getLogoCapBytes(),
-						response);
-			} else {
-				try {
-					File path = new File(servletContext.getRealPath("/") + "/img/govern-logo.png");
-					writeFileToResponse(
-							"Logo_cap.png", 
-							Files.readAllBytes(path.toPath()), 
-							response);
-				} catch (Exception ex) {
-					logger.debug("Error al obtenir el logo de la capçalera", ex);
-				}
-			}
-		}
+        if (!RolHelper.isRolActualSuperusuari(request) && entitatActual != null && entitatActual.getLogoCapBytes() != null) {
+            writeFileToResponse(
+                    "Logo_cap.png",
+                    entitatActual.getLogoCapBytes(),
+                    response);
+        } else {
+            try {
+                File path = new File(servletContext.getRealPath("/") + "/img/govern-logo.png");
+                writeFileToResponse(
+                        "Logo_cap.png",
+                        Files.readAllBytes(path.toPath()),
+                        response);
+            } catch (Exception ex) {
+                logger.debug("Error al obtenir el logo de la capçalera", ex);
+            }
+        }
 		return null;
 	}
 	

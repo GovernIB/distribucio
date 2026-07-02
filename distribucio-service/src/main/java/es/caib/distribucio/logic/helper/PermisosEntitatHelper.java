@@ -40,22 +40,26 @@ public class PermisosEntitatHelper {
 				return entitat.getId();
 			}
 		};
-		List<EntitatDto> entitatsRead = new ArrayList<EntitatDto>();
-		entitatsRead.addAll(entitats);
+        List<EntitatDto> entitatsRead = new ArrayList<EntitatDto>(entitats);
 		permisosHelper.filterGrantedAll(
 				entitatsRead,
 				oie,
 				EntitatEntity.class,
 				new Permission[] {ExtendedPermission.READ},
 				auth);
-		List<EntitatDto> entitatsAdministracio = new ArrayList<EntitatDto>();
-		entitatsAdministracio.addAll(entitats);
-		//permisosHelper.filterGrantedAll(
-		permisosHelper.filterGrantedAny(
+        List<EntitatDto> entitatsAdministracio = new ArrayList<EntitatDto>(entitats);
+		permisosHelper.filterGrantedAll(
 				entitatsAdministracio,
 				oie,
 				EntitatEntity.class,
-				new Permission[] {ExtendedPermission.ADMINISTRATION, ExtendedPermission.ADMIN_LECTURA},
+				new Permission[] {ExtendedPermission.ADMINISTRATION},
+				auth);
+        List<EntitatDto> entitatsAdminLectura = new ArrayList<EntitatDto>(entitats);
+		permisosHelper.filterGrantedAll(
+                entitatsAdminLectura,
+				oie,
+				EntitatEntity.class,
+				new Permission[] {ExtendedPermission.ADMIN_LECTURA},
 				auth);
 		for (EntitatDto entitat: entitats) {
 			entitat.setUsuariActualRead(
@@ -63,7 +67,7 @@ public class PermisosEntitatHelper {
 			entitat.setUsuariActualAdministration(
 					entitatsAdministracio.contains(entitat));
 			entitat.setUsuariActualAdminLectura(
-					entitatsAdministracio.contains(entitat));
+                    entitatsAdminLectura.contains(entitat));
 		}
 		// Obté els permisos per a totes les entitats només amb una consulta
 		if (ambLlistaPermisos) {
@@ -92,7 +96,6 @@ public class PermisosEntitatHelper {
 						EntitatEntity.class,
 						new Permission[] {ExtendedPermission.ADMINISTRATION},
 						auth));
-
 		entitat.setUsuariActualAdminLectura(
 				permisosHelper.isGrantedAll(
 						entitat.getId(),
