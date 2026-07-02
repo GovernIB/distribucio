@@ -881,7 +881,7 @@ function syncFields(fromSelector, toSelector) {
 								<span class="caret"></span>
 							</button>
 							<ul class="dropdown-menu dropdown-left-high menu-items-not-selected">
-								<li><a data-refresh-tancar="true" id="detall-button" href="registreAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
+								<li><a data-refresh-tancar="false" id="detall-button" href="registreAdmin/{{:id}}/detall" data-toggle="modal" data-maximized="true"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="contingut.admin.boto.detalls"/></a></li>
 								<li><a data-refresh-tancar="true" href="./contingut/{{:id}}/log" data-toggle="modal" data-maximized="true"><span class="fa fa-list"></span>&nbsp;<spring:message code="comu.boto.historial"/></a></li>
 								{{if alerta}}
 									<li><a data-refresh-tancar="true" href="./registreUser/pendent/{{:id}}/alertes" data-toggle="modal"><span class="fa fa-sticky-note-o"></span>&nbsp;<spring:message code="bustia.pendent.accio.llistat.alertes"/></a></li>

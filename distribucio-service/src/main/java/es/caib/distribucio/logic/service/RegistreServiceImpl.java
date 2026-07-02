@@ -818,7 +818,7 @@ public class RegistreServiceImpl implements RegistreService {
 			if (senseBackoffice) {
 				sqlWhere.append("and r.backCodi is null ");
 			} else {
-				sqlWhere.append("and lower(r.backCodi) like lower('%'||:backCodi||'%') ");
+				sqlWhere.append("and lower(r.backCodi) = lower(:backCodi) ");
 				parametres.put("backCodi", backCodi);
 			}
 		}

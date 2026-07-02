@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,11 +149,19 @@ public class ApiExternaController {
 			summary = "Petició de dades de logs", 
 			description = "Retorna informació dels logs")
 	public List<LogsDadesObertesDto> logs (
-			HttpServletRequest request, 
-			@Parameter(name = "dataInici", description = "Data filtre inici. Si no s'especifica serà un mes abans de la data fi o de la data de la consulta.<br>(dd-mm-yyyy)")
-			@RequestParam(value = "dataInici", required = false) 
-			@DateTimeFormat(pattern = "dd-MM-yyyy") Date dataInici, 
-			@Parameter(name = "dataFi", description = "Data filtre fi. Si no s'especifica serà un mes posterior a la data d'inici o el mateix dia de la consulta en cas de no especificar la data d'inici La data de fi està inclosa en el rang de consulta.<br>(dd-mm-yyyy)")
+			HttpServletRequest request,
+			@Parameter(
+                    name = "dataInici",
+                    description = "Data filtre inici. Si no s'especifica serà un mes abans de la data fi o de la data de la consulta.<br>(dd-mm-yyyy)",
+                    schema = @Schema(type = "string", format = "dd-MM-yyyy")
+            )
+			@RequestParam(value = "dataInici", required = false)
+			@DateTimeFormat(pattern = "dd-MM-yyyy") Date dataInici,
+			@Parameter(
+                    name = "dataFi",
+                    description = "Data filtre fi. Si no s'especifica serà un mes posterior a la data d'inici o el mateix dia de la consulta en cas de no especificar la data d'inici La data de fi està inclosa en el rang de consulta.<br>(dd-mm-yyyy)",
+                    schema = @Schema(type = "string", format = "dd-MM-yyyy")
+            )
 			@RequestParam(required = false) 
 			@DateTimeFormat(pattern = "dd-MM-yyyy") Date dataFi, 
 			@Parameter(name = "tipus", description = "Codi del tipus d'esdeveniment")
