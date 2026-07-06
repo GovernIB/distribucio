@@ -4,7 +4,6 @@
 package es.caib.distribucio.logic.intf.service;
 
 import java.util.List;
-import java.util.Map;
 
 import es.caib.distribucio.logic.intf.dto.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -244,15 +243,6 @@ public interface ReglaService {
 			RegistreSimulatDto registreSimulatDto);
 
 	/**
-	 * Consulta les regles per codi de procediment.
-	 * @param procediments
-	 * 			List de codis procediment
-	 * @return Map<codiProcediment, List<ReglasExistents>>
-	 */
-	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_ADMIN_LECTURA + "')")
-	public Map<String, List<ReglaDto>> findReglesByCodisSia(List<String> procediments);
-
-	/**
 	 * Consulta les regles per codis de sia i codis de tramit.
 	 * @param sias
      * 			List de codis sia
@@ -265,38 +255,22 @@ public interface ReglaService {
 
 	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de creació
 	 * de regles.
-	 * 
-	 * @param procedimentCodi
-	 * @return
-	 */
-	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
-	public List<ReglaDto> findReglaBackofficeByProcediment (String procedimentCodi);
-
-	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de creació
-	 * de regles.
-	 *
-	 * @param serveiCodi
-	 * @return
-	 */
-	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
-	public List<ReglaDto> findReglaBackofficeByServei (String serveiCodi);
-
-	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de creació
-	 * de regles.
 	 *
 	 * @param siaCodi
 	 * @return
 	 */
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
-	public List<ReglaDto> findReglaBackofficeByCodiSiaAndTramit(String siaCodi, String tramit);
+	public List<ReglaDto> findReglaBackofficeByCodiSiaAndAnyTramit(String siaCodi, String tramit);
 
-	/** Mètode per trobar les regles a partir d'un codi SIA en la validació del mètode REST de update
-	 * de regles.
-	 * 
-	 * @param procedimentCodi
-	 * @return
-	 */
-	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
-	public List<ReglaDto> findReglaByProcediment (String procedimentCodi);
+    /**
+     * Consulta les regles per codis de sia i codis de tramit.
+     * @param sia
+     * 			Codi sia
+     * @param tramit
+     * 			Codi tramit
+     * @return List<ReglaMatchDto>
+     */
+    @PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
+    public List<ReglaDto> findReglaBackofficeByCodiSiaAndTramit(String sia, String tramit);
 
 }

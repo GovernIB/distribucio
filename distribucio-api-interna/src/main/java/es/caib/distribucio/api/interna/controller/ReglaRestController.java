@@ -80,7 +80,7 @@ public class ReglaRestController {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		String dataAra = sdf.format(new Date());
 		// Definim els valors que no hi son als paràmetres
-		String nom = backoffice + " " + sia;
+		String nom = backoffice + " " + sia + (tramit!=null ?("-" + tramit) :"");
 		String descripcio = "Creació de regla en data de " + dataAra + " pel backoffice amb codi " + backoffice;
         if (RegistreClassificarTipusEnum.PROCEDIMENT.name().equals(tipusSia)) {
             descripcio += " i codi de procediment " + sia;
@@ -119,12 +119,7 @@ public class ReglaRestController {
 			novaReglaDto.setPresencial(presencial.booleanValue() ? ReglaPresencialEnumDto.SI : ReglaPresencialEnumDto.NO );
 		}
 		// Validar que no hi ha cap altra regla pel SIA per un backoffice diferent
-		List<ReglaDto> reglesPerSia = new ArrayList<>();
-        if (RegistreClassificarTipusEnum.PROCEDIMENT.name().equals(tipusSia)) {
-            reglesPerSia.addAll( reglaService.findReglaBackofficeByProcediment(sia) );
-        } else if (RegistreClassificarTipusEnum.SERVEI.name().equals(tipusSia)) {
-            reglesPerSia.addAll( reglaService.findReglaBackofficeByServei(sia) );
-        }
+        List<ReglaDto> reglesPerSia = new ArrayList<>(reglaService.findReglaBackofficeByCodiSiaAndTramit(sia, tramit));
 		for (ReglaDto regla : reglesPerSia) {
 			if (backofficeDto.getId().compareTo(regla.getBackofficeDestiId()) != 0) {
 				// KO Existeix una regla amb mateix codi SIA per un altre backoffice
@@ -234,7 +229,7 @@ public class ReglaRestController {
 			@RequestParam(required = true) String sia,
             @Parameter(name = "tramit", description = "Codi del tramit de la regla pel filtre per tramit.")
             @RequestParam(required = false) String tramit) {
-		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByCodiSiaAndTramit(sia, tramit);
+		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByCodiSiaAndAnyTramit(sia, tramit);
 		if (reglesDto.size() > 1) {
 			logger.warn("S'han trobat " + reglesDto.size() + " regles pel codi SIA " + sia + (tramit != null ?" i tramit " + tramit :"") + ".");
 		}

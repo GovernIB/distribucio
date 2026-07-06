@@ -206,30 +206,12 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 		return delegateService.simularReglaAplicacio(
 				registreSimulatDto);
 	}
-	
-	@Override
-	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA })
-	public Map<String, List<ReglaDto>> findReglesByCodisSia(List<String> procediments) {
-		return delegateService.findReglesByCodisSia(procediments);
-	}
-
-	@Override
-	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
-	public List<ReglaDto> findReglaBackofficeByProcediment(String procedimentCodi) {
-		return delegateService.findReglaBackofficeByProcediment(procedimentCodi);
-	}
 
     @Override
     @RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
     public List<ReglaMatchDto> findReglesByCodisSiaAndTramits(List<String> sias, List<String> tramits) {
         return delegateService.findReglesByCodisSiaAndTramits(sias, tramits);
     }
-
-    @Override
-	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
-	public List<ReglaDto> findReglaBackofficeByServei(String serveiCodi) {
-		return delegateService.findReglaBackofficeByServei(serveiCodi);
-	}
 
 	@Override
 	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
@@ -239,8 +221,8 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 
 	@Override
 	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
-	public List<ReglaDto> findReglaByProcediment (String procedimentCodi) {
-		return delegateService.findReglaByProcediment(procedimentCodi);
+	public List<ReglaDto> findReglaBackofficeByCodiSiaAndAnyTramit(String siaCodi, String tramit) {
+		return delegateService.findReglaBackofficeByCodiSiaAndAnyTramit(siaCodi, tramit);
 	}
 
 	protected void setDelegateService(ReglaService delegateService) {

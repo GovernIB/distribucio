@@ -142,7 +142,7 @@ public class ReglesController extends BaseUserController {
 		
 		String msg;
 		// Validar que no hi ha cap altra regla pel SIA per un backoffice diferent
-		List<ReglaDto> reglesPerSia = reglaService.findReglaBackofficeByProcediment(sia);
+		List<ReglaDto> reglesPerSia = reglaService.findReglaBackofficeByCodiSiaAndAnyTramit(sia, null);
 		for (ReglaDto regla : reglesPerSia) {
 			if (backofficeDto.getId().compareTo(regla.getBackofficeDestiId()) != 0) {
 				// KO Existeix una regla amb mateix codi SIA per un altre backoffice
@@ -230,7 +230,7 @@ public class ReglesController extends BaseUserController {
 			return new ResponseEntity<String>("És necessari estar autenticat i tenir el rol DIS_REGLA per canviar l'estat d'una regla.", HttpStatus.UNAUTHORIZED);
 		}
 
-		List<ReglaDto> regles = reglaService.findReglaBackofficeByProcediment(sia);
+		List<ReglaDto> regles = reglaService.findReglaBackofficeByCodiSiaAndAnyTramit(sia, null);
 		ReglaDto regla;
 		String response = "";
 		if (regles == null || regles.isEmpty()) {
@@ -278,7 +278,7 @@ public class ReglesController extends BaseUserController {
 		if ( auth == null || !this.comprovarRol(auth, "DIS_REGLA") ) {
 			return new ResponseEntity<Object>("És necessari estar autenticat i tenir el rol DIS_REGLA per consultar regles", HttpStatus.UNAUTHORIZED);
 		}
-		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByProcediment(sia);
+		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByCodiSiaAndAnyTramit(sia, null);
 		if (reglesDto.size() > 1) {
 			logger.warn("S'han trobat " + reglesDto.size() + " regles pel codi de procediment " + sia + ".");
 		}
@@ -305,7 +305,7 @@ public class ReglesController extends BaseUserController {
 //			@Parameter(name = "presencial", description = "Paràmetre per fixar el valor del filtre segons si l'anotació és prensencial, no presencial o no té valor.")
 			@RequestParam(required = false) Boolean presencial) {
 				
-		List<ReglaDto> regles = reglaService.findReglaByProcediment(sia);
+		List<ReglaDto> regles = reglaService.findReglaBackofficeByCodiSiaAndAnyTramit(sia, null);
 		ReglaDto regla;
 		ReglaPresencialEnumDto presencialEnum;
 		if (regles == null || regles.isEmpty()) {

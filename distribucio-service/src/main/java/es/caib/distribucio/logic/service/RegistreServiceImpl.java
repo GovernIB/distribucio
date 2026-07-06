@@ -2247,7 +2247,9 @@ public class RegistreServiceImpl implements RegistreService {
 
 					// S'exclouen els documents tècnics de la descàrrega
 					if (annex.getSicresTipusDocument() == null
-							|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())) {
+							|| !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument())
+                            || ("DIS_ADMIN_LECTURA".equals(rolActual) && usuariHelper.isAdminLectura())
+                            || ("DIS_ADMIN".equals(rolActual) && usuariHelper.isAdmin())) {
 
 						Runnable thread = 
 								new GetZipDocumentacioThread(

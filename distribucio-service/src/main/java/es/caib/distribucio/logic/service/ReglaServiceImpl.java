@@ -5,6 +5,7 @@ package es.caib.distribucio.logic.service;
 
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
@@ -681,52 +682,34 @@ public class ReglaServiceImpl implements ReglaService {
 		
 		return ids;
 	}
-	
-	/**
-	 * Consulta les regles per codi de procediment.
-	 * @return Map<codiProcediment, List<ReglasExistents>>
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public Map<String, List<ReglaDto>> findReglesByCodisSia(List<String> codisSia) {
-		
-		Map<String, List<ReglaDto>> result = new HashMap<String, List<ReglaDto>>();
-		List<ReglaEntity> reglesExistents;
-		for (String sia : codisSia) {
-			// Regles existents amb SIA per procediment
-			reglesExistents = reglaRepository.findReglaBackofficeByCodiProcediment(sia);
-			for (ReglaEntity regla : reglesExistents) {
-				if (regla.getProcedimentCodiFiltre() != null) {
-					List<String> procedimentsExistents = Arrays.asList(regla.getProcedimentCodiFiltre().split(" "));
-					if (procedimentsExistents.contains(sia)) {
-						if (!result.containsKey(sia)) {
-							result.put(sia, new ArrayList<ReglaDto>());
-						}
-						result.get(sia).add(conversioTipusHelper.convertir(
-								regla,
-								ReglaDto.class));	
-					}
-				}
-			}
-			// Regles existents amb SIA per servei
-			reglesExistents = reglaRepository.findReglaBackofficeByCodiServei(sia);
-			for (ReglaEntity regla : reglesExistents) {
-				if (regla.getServeiCodiFiltre() != null) {
-					List<String> serveisExistents = Arrays.asList(regla.getServeiCodiFiltre().split(" "));
-					if (serveisExistents.contains(sia)) {
-						if (!result.containsKey(sia)) {
-							result.put(sia, new ArrayList<ReglaDto>());
-						}
-						result.get(sia).add(conversioTipusHelper.convertir(
-								regla,
-								ReglaDto.class));	
-					}
-				}
-			}
-		}
-		return result;
-		
-	}
+
+    @Transactional(readOnly = true)
+    public List<ReglaDto> findReglaBackofficeByCodiSiaAndAnyTramit(String siaCodi, String tramit) {
+        List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiSiaAndAnyTramit(
+                siaCodi,
+                tramit == null,
+                tramit);
+        this.monitoritzarRegla(
+                ReglaGestioTipusEnumDto.Consulta,
+                null,
+                siaCodi,
+                null);
+        return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReglaDto> findReglaBackofficeByCodiSiaAndTramit(String sia, String tramit) {
+        List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiSiaAndTramit(
+                sia,
+                tramit==null,
+                tramit);
+        this.monitoritzarRegla(
+                ReglaGestioTipusEnumDto.Consulta,
+                null,
+                sia,
+                null);
+        return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
+    }
 
     @Transactional(readOnly = true)
     public List<ReglaMatchDto> findReglesByCodisSiaAndTramits(List<String> sias, List<String> tramits) {
@@ -957,51 +940,6 @@ public class ReglaServiceImpl implements ReglaService {
 					dto.setLastModifiedDate(Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant())));
 		
 		return dto;
-	}
-	
-	
-	@Transactional(readOnly = true)
-	public List<ReglaDto> findReglaBackofficeByProcediment (String procedimentCodi) {
-		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiProcediment(procedimentCodi);
-		this.monitoritzarRegla(
-				ReglaGestioTipusEnumDto.Consulta,
-				null,
-				procedimentCodi,
-				null);				
-		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
-	}
-
-	@Transactional(readOnly = true)
-	public List<ReglaDto> findReglaBackofficeByServei (String serveiCodi) {
-		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiServei(serveiCodi);
-		this.monitoritzarRegla(
-				ReglaGestioTipusEnumDto.Consulta,
-				null,
-				serveiCodi,
-				null);
-		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
-	}
-
-	@Transactional(readOnly = true)
-	public List<ReglaDto> findReglaBackofficeByCodiSiaAndTramit(String siaCodi, String tramit) {
-		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaBackofficeByCodiSiaAndTramit(
-                siaCodi,
-                tramit == null,
-                tramit);
-		this.monitoritzarRegla(
-				ReglaGestioTipusEnumDto.Consulta,
-				null,
-				siaCodi,
-				null);
-		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
-	}
-	
-	
-	@Transactional(readOnly = true)
-	@Override
-	public List<ReglaDto> findReglaByProcediment (String procedimentCodi) {
-		List<ReglaEntity> reglesPerSia = reglaRepository.findReglaByCodiProcediment(procedimentCodi);
-		return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
 	}
 	
 //  @Override
