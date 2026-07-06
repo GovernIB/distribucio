@@ -77,6 +77,19 @@ pageContext.setAttribute(
 		        $form.find('input, textarea').val('');
 		        $form.find('select').val('').trigger('change');
 		        $('#arxiuEstat').val('ESBORRANY').trigger('change');
+
+
+                var hoy = new Date();
+                hoy.setMonth(hoy.getMonth() - 3);
+
+                var yyyy = hoy.getFullYear();
+                var mm = hoy.getMonth() + 1;
+                var dd = hoy.getDate();
+
+                if (mm < 10) { mm = '0' + mm; }
+                if (dd < 10) { dd = '0' + dd; }
+                $('#dataRecepcioInici').val( dd + '/' + mm + '/' + yyyy).trigger('change');
+
 		        $form[0].submit();
 		    });
 		    
