@@ -282,4 +282,13 @@ public interface BustiaRepository extends JpaRepository<BustiaEntity, Long> {
 	@Query("select distinct b.nom from BustiaEntity b where b.activa = true order by b.nom")
 	List<String> findDistinctNomOrderByNomAsc();
 
+	@Query("select b.id " 
+			+"from BustiaEntity b "
+			+ "where " 
+			+ " b.entitat.id = :entitatId " 
+			+ " and b.activa = false "
+			)
+	List<Long> findBustiesInactivesIdsPerEntitatId(
+			@Param("entitatId") long entitatid);
+
 }

@@ -16,7 +16,6 @@ import es.caib.distribucio.logic.intf.dto.ArbreDto;
 import es.caib.distribucio.logic.intf.dto.BustiaContingutDto;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.BustiaFiltreDto;
-import es.caib.distribucio.logic.intf.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
@@ -393,6 +392,13 @@ public class BustiaServiceEjb extends AbstractServiceEjb<BustiaService> implemen
 		return delegateService.findBustiesUsuarisPerDadesObertes(usuari, id, uoDir3Entitat, uo, uoSuperior, rol, permis);
 	}
 
+	@Override
+	@RolesAllowed("**")
+	public List<Long> getIdsBustiesInactives(Long entitatId) {
+		return delegateService.getIdsBustiesInactives(entitatId);
+	}
+
+	
 	protected void setDelegateService(BustiaService delegateService) {
 		this.delegateService = delegateService;
 	}

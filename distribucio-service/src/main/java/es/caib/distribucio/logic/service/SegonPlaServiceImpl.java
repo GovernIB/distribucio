@@ -115,9 +115,9 @@ public class SegonPlaServiceImpl implements SegonPlaService {
      */
     @Override
     public void guardarAnotacionsPendentsEnArxiu() {
-        // Comprova si la data actual es troba dins del període d'innactivitat
+        // Comprova si la data actual es troba dins del període d'inactivitat
         if (this.isGuardarAnotacionsPendentsEnArxiuInactive()) {
-            logger.trace("Tasca guardar anotacions pendents arxiu dins del període d'innactivitat, no s'executarà");
+            logger.trace("Tasca guardar anotacions pendents arxiu dins del període d'inactivitat, no s'executarà");
             return;
         }
         if (bustiaHelper.isProcessamentAsincronProperty()) {

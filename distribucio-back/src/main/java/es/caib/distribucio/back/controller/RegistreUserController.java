@@ -16,8 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import es.caib.distribucio.logic.intf.dto.*;
-import es.caib.distribucio.logic.intf.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,12 +56,44 @@ import es.caib.distribucio.back.helper.ExceptionHelper;
 import es.caib.distribucio.back.helper.MissatgesHelper;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.back.helper.RolHelper;
+import es.caib.distribucio.logic.intf.dto.AlertaDto;
+import es.caib.distribucio.logic.intf.dto.BackofficeDto;
+import es.caib.distribucio.logic.intf.dto.BustiaDto;
+import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
+import es.caib.distribucio.logic.intf.dto.ContingutDto;
+import es.caib.distribucio.logic.intf.dto.DominiDto;
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.ErrorDto;
+import es.caib.distribucio.logic.intf.dto.HistogramPendentsEntryDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto.OrdreDireccioDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
+import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
+import es.caib.distribucio.logic.intf.dto.RegistreDto;
+import es.caib.distribucio.logic.intf.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.logic.intf.dto.RegistreTipusDocFisicaEnumDto;
+import es.caib.distribucio.logic.intf.dto.ResultatConsultaDto;
+import es.caib.distribucio.logic.intf.dto.ResultatDominiDto;
+import es.caib.distribucio.logic.intf.dto.ServeiDto;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
+import es.caib.distribucio.logic.intf.dto.UsuariPermisDto;
 import es.caib.distribucio.logic.intf.exception.DominiException;
 import es.caib.distribucio.logic.intf.exception.EmptyMailException;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.exception.PermissionDeniedException;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.logic.intf.service.AlertaService;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
+import es.caib.distribucio.logic.intf.service.BackofficeService;
+import es.caib.distribucio.logic.intf.service.BustiaService;
+import es.caib.distribucio.logic.intf.service.ConfigService;
+import es.caib.distribucio.logic.intf.service.ContingutService;
+import es.caib.distribucio.logic.intf.service.DominiService;
+import es.caib.distribucio.logic.intf.service.MetaDadaService;
+import es.caib.distribucio.logic.intf.service.ProcedimentService;
+import es.caib.distribucio.logic.intf.service.RegistreService;
+import es.caib.distribucio.logic.intf.service.ServeiService;
 
 /**
  * Controlador per al manteniment de registres.
@@ -203,6 +233,21 @@ public class RegistreUserController extends BaseUserController {
 		RegistreFiltreCommand filtreCommand = getFiltreCommand(request);
 		model.addAttribute("bustiaPerDefecte", null);
 		model.addAttribute(filtreCommand);
+		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
+		List<BustiaDto> bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), true);
+		// Bústies origen
+		model.addAttribute("bustiesOrigen", bustiaService.consultaBustiesOrigen(
+				entitatActual.getId(), 
+				bustiesPermesesPerUsuari, 
+				filtreCommand.isMostrarInactivesOrigen()));
+		// Bústies destí
+		model.addAttribute("busties", bustiaService.findBustiesPerUsuari(
+				entitatActual.getId(), 
+				filtreCommand.isMostrarInactives()));
+		// Bústies inactives
+		List<Long> bustiesInactivesIds = bustiaService.getIdsBustiesInactives(entitatActual.getId());
+		model.addAttribute("bustiesInactivesIds", bustiesInactivesIds);
+		
 		return "registreUserMovimentsList";
 	}
 	
@@ -327,7 +372,7 @@ public class RegistreUserController extends BaseUserController {
 	
 	
 	
-	/** Retorna el llistat de bústies permeses per a l'usuari. Pot incloure o no les innactives */
+	/** Retorna el llistat de bústies permeses per a l'usuari. Pot incloure o no les inactives */
 	@RequestMapping(value = "/bustiesOrigen", method = RequestMethod.GET)
 	@ResponseBody
 	public List<BustiaDto> bustiesOrigen(
@@ -1726,7 +1771,7 @@ public class RegistreUserController extends BaseUserController {
 		return ret;
 	}
 
-	/** Retorna el llistat de bústies permeses per a l'usuari. Pot incloure o no les innactives */
+	/** Retorna el llistat de bústies permeses per a l'usuari. Pot incloure o no les inactives */
 	@RequestMapping(value = "/bustiesPermeses", method = RequestMethod.GET)
 	@ResponseBody
 	public List<BustiaDto> bustiesPermeses(
@@ -1737,7 +1782,7 @@ public class RegistreUserController extends BaseUserController {
 		return bustiaService.findBustiesPermesesPerUsuari(entitatActual.getId(), mostrarInactives);
 	}
 	
-	/** Retorna el llistat de totes les bústies per filtrar el destí dels moviments. Pot incloure o no les innactives */
+	/** Retorna el llistat de totes les bústies per filtrar el destí dels moviments. Pot incloure o no les inactives */
 	@RequestMapping(value = "/busties", method = RequestMethod.GET)
 	@ResponseBody
 	public List<BustiaDto> busties(

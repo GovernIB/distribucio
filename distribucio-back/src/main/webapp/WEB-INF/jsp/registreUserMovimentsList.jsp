@@ -137,9 +137,14 @@ button#filtrar {
 */
 
 </style>
-<script>
+<script type="text/javascript">
+// <![CDATA[
 var mostrarInactives = '${registreFiltreCommand.mostrarInactives}' === 'true';
-var bustiesInactives = [];
+var bustiesInactives = [
+    <c:forEach var="bustiaInactivaId" items="${bustiesInactivesIds}">
+        "${bustiaInactivaId}",
+	</c:forEach>
+	];
 //Funció per donar format als items de la select de bústies segons si estan actives o no
 function formatSelectBustia(item) {
 	if (bustiesInactives.includes(item.id))
@@ -243,7 +248,7 @@ $(document).ready(function() {
 	});
 	$('#mostrarInactives').change(function() {
 		//>>> Valor actual bústia destí
-        var actual = "${registreFiltreCommand.bustia}";
+        var actual = $('#bustia').val();
 		var bustiaPerDefecte = '${bustiaPerDefecte}'
 		//>>> Bústia destí
 		$('#bustia').select2('val', '', true);
@@ -260,7 +265,6 @@ $(document).ready(function() {
 					}
 				}
 				$('#bustia').val(actual).change();
-				$('#filtrar').submit();
 			})
 			.fail(function() {
 				alert("<spring:message code="error.jquery.ajax"/>");
@@ -274,7 +278,7 @@ $(document).ready(function() {
 	});
 	$('#mostrarInactivesOrigen').change(function() {
 		//>>> Valor actual bústia origen
-        var actualOrigen = "${registreFiltreCommand.bustiaOrigen}";
+        var actualOrigen = $('#bustiaOrigen').val();
 		//>>> Bústia origen
 		$('#bustiaOrigen').select2('val', '', true);
 		$('#bustiaOrigen option[value!=""]').remove();
@@ -290,14 +294,11 @@ $(document).ready(function() {
 					}
 				}
 				$('#bustiaOrigen').val(actualOrigen).change();
-                $('#filtrar').submit();
 			})
 			.fail(function() {
 				alert("<spring:message code="error.jquery.ajax"/>");
 			});
 	});
-	$('#mostrarInactives').change();
-	$('#mostrarInactivesOrigen').change();
 	
 	$('#showModalProcesEstatButton').click(function(e) {
 		$('#modalProcesEstat').modal();
@@ -317,6 +318,7 @@ $(document).ready(function() {
 	});
 	
 });
+// ]]>
 </script>
 </head>
 <body>
@@ -362,7 +364,7 @@ $(document).ready(function() {
 					<div class="col-md-10">
 						<dis:inputSelect 
 									name="bustiaOrigen" 
-									optionItems="${bustiesUsuari}" 
+									optionItems="${bustiesOrigen}" 
 									optionValueAttribute="id" 
 									optionTextAttribute="nom" 
 									emptyOption="true" 
@@ -372,7 +374,7 @@ $(document).ready(function() {
 									optionTemplateFunction="formatSelectBustia" />
 					</div>
 					<div class="col-md-2" style="padding-left: 0;">
-						<button id="mostrarInactivesOrigenBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactives}"> active</c:if>" data-toggle="button">
+						<button id="mostrarInactivesOrigenBtn" title="<spring:message code="bustia.list.filtre.mostrarInactives"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarInactivesOrigen}"> active</c:if>" data-toggle="button">
 							<span class="fa-stack" aria-hidden="true">
 								<i class="fa fa-inbox fa-stack-1x"></i>
 					   	  			<i class="fa fa-ban fa-stack-2x"></i>
@@ -387,7 +389,7 @@ $(document).ready(function() {
 					<div class="col-md-10">
 						<dis:inputSelect 
 									name="bustia" 
-									optionItems="${bustiesUsuari}" 
+									optionItems="${busties}" 
 									optionValueAttribute="id" 
 									optionTextAttribute="nom" 
 									emptyOption="true" 

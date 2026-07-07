@@ -1027,6 +1027,7 @@ public class BustiaServiceImpl implements BustiaService {
 		for (Long bustiaId : bustiesOrigenIds) {
 			if (bustiaId != null) {
 				BustiaEntity bustia = entityComprovarHelper.comprovarBustia(entitat, bustiaId, false);
+				if (bustia.isActiva() || mostrarInactivesOrigen)
 					bustiesOrigenUnique.add(bustia);
 			}
 		}
@@ -3455,6 +3456,12 @@ private String getPlainText(RegistreDto registre, Object registreData, Object re
 		return nomUnitatSuperior;
 	}	
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<Long> getIdsBustiesInactives(Long entitatId) {
+		return bustiaRepository.findBustiesInactivesIdsPerEntitatId(entitatId);
+	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(BustiaServiceImpl.class);
+
 }

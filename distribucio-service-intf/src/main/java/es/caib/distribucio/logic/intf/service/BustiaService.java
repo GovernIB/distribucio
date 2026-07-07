@@ -15,7 +15,6 @@ import es.caib.distribucio.logic.intf.dto.ArbreDto;
 import es.caib.distribucio.logic.intf.dto.BustiaContingutDto;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.BustiaFiltreDto;
-import es.caib.distribucio.logic.intf.dto.BustiaFiltreOrganigramaDto;
 import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
@@ -516,5 +515,13 @@ public interface BustiaService {
 			String uoSuperior,
 			Boolean rol, 
 			Boolean permis);
+
+	/** Consulta els identificadors de les bústies inactives per una entitat.
+	 * 
+	 * @param entitatId
+	 * @return
+	 */
+	@PreAuthorize("isAuthenticated()")
+	public List<Long> getIdsBustiesInactives(Long entitatId);
 
 }

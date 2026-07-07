@@ -31,7 +31,7 @@ import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 public class RegistreFiltreCommand {
 
 	private String bustia;
-	/** Per mostrar el contingut de les bústies innactives */
+	/** Per mostrar el contingut de les bústies inactives */
 	private boolean mostrarInactives;
 	private String numero;
 	private String titol;
@@ -64,7 +64,7 @@ public class RegistreFiltreCommand {
 	
 	private String bustiaOrigen;
 	
-	/** Per mostrar el contingut de les bústies origen innactives */
+	/** Per mostrar el contingut de les bústies origen inactives */
 	public boolean mostrarInactivesOrigen;
 
 	/** Per filtrar només les que tinguin annexos en estat esborrany. */

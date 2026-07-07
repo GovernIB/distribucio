@@ -103,7 +103,7 @@ public class RegistreUserAssignarController extends BaseUserController {
 				new Object[] {command.getUsuariCodi()});
 	}
 	
-	/** Retorna el llistat de bústies permeses per a l'usuari. Pot incloure o no les innactives */
+	/** Retorna el llistat de bústies permeses per a l'usuari. Pot incloure o no les inactives */
 	@RequestMapping(value = "/assignar/usuaris", method = RequestMethod.GET)
 	@ResponseBody
 	public List<UsuariPermisDto> usuarisAssignats(

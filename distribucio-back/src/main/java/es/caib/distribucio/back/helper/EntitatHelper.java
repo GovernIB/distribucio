@@ -42,7 +42,7 @@ public class EntitatHelper {
 			entitats = entitatService.findAccessiblesUsuariActual();
 			request.setAttribute(REQUEST_ATTRIBUTE_ENTITATS, entitats);
 		}
-		if (entitats == null) {
+		if (entitats == null && entitatService != null) {
 			LOGGER.warn("L'usuari " + request.getUserPrincipal().getName() + " no te accés a cap entitat");
 		}
 		return entitats;
