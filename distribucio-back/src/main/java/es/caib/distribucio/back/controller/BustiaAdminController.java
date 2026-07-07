@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -466,7 +467,9 @@ public class BustiaAdminController extends BaseAdminController {
 					entitatActual.getId(),
 					bustiaId);
 			
-			List<BustiaDto> bustiesUnitat = bustiaService.findAmbUnitatCodiAdmin(entitatActual.getId(), bustia.getUnitatCodi());
+			List<BustiaDto> bustiesUnitat = bustiaService.findAmbUnitatCodiAdmin(entitatActual.getId(), bustia.getUnitatCodi()).stream()
+                    .filter(b->!bustiaId.equals(b.getId()))
+                    .collect(Collectors.toList());
 			
 			if (! bustiesUnitat.isEmpty()) {
 				BustiaPerDefecteCommand bustiaPerDefecteCommand = new BustiaPerDefecteCommand();
@@ -494,7 +497,7 @@ public class BustiaAdminController extends BaseAdminController {
 			BindingResult bindingResult,
 			@PathVariable Long bustiaId) {
 		try {
-			if (bindingResult.hasErrors()) {
+			if (bindingResult.hasErrors() || bustiaId.equals(bustiaPerDefecteCommand.getBustiaId())) {
 				return "bustiaPerDefecteSeleccio";
 			}
 			EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);

@@ -221,72 +221,13 @@
 	}
 
 	function activar() {
-		$('#panellInfo').css('visibility', '');
-		$('#panellInfo').css('display', 'none');
-		$(".datatable-dades-carregant").css("display", "block");
-
 		var enableUrl = "bustiaAdminOrganigrama/" + $('#id').val() + "/enable";
-
-		$.ajax({
-					type : 'GET',
-					url : enableUrl,
-					success : function() {
-
-						var bustiaId = $('#id', $('#panellInfo')).val();
-
-			var fullaSel = $('#arbreUnitatsOrganitzatives li#' + bustiaId + ' a');
-
-						$(fullaSel).removeClass("fullesAtributCssClass");
-
-						// showing desactivate and hiding activate button 
-						$('#activarBtn').hide();
-						$('#desactivarBtn').show();
-
-						$('#contingut-missatges *').remove();
-			$('#contingut-missatges').append(' <div class="alert alert-success"> <button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button> <spring:message code="bustia.controller.activat.ok"/> </div>');
-
-					},
-					complete : function() {
-						$('#panellInfo').css('display', 'block');
-						$(".datatable-dades-carregant").css("display", "none");
-					}
-		});
-
+        window.location.href = enableUrl;
 	}
 
 	function desactivar() {
-
-		$('#panellInfo').css('visibility', '');
-		$('#panellInfo').css('display', 'none');
-		$(".datatable-dades-carregant").css("display", "block");
-
 		var disableUrl = "bustiaAdminOrganigrama/" + $('#id').val() + "/disable";
-
-		$.ajax({
-					type : 'GET',
-					url : disableUrl,
-					success : function() {
-
-						var bustiaId = $('#id', $('#panellInfo')).val();
-
-						var fullaSel = $('#arbreUnitatsOrganitzatives li#' + bustiaId + ' a');
-
-						$(fullaSel).addClass("fullesAtributCssClass");
-
-						// showing activate and hiding disactivate button 
-						$('#desactivarBtn').hide();
-						$('#activarBtn').show();
-
-						$('#contingut-missatges *').remove();
-						$('#contingut-missatges').append(' <div class="alert alert-success"> <button type="button" class="close-alertes" data-dismiss="alert" aria-hidden="true"><span class="fa fa-times"></span></button> <spring:message code="bustia.controller.desactivat.ok"/> </div>');
-
-					},
-					complete : function() {
-						$('#panellInfo').css('display', 'block');
-						$(".datatable-dades-carregant").css("display", "none");
-					}
-				});
-
+        window.location.href = disableUrl;
 	}
 
 	function desactivarDefault() {
