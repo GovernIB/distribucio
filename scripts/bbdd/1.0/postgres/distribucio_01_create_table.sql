@@ -348,6 +348,8 @@ CREATE TABLE DIS_REGLA
   METAEXPEDIENT_ID     bigint,
   UNITAT_ID 		   BIGINT,
   PROCEDIMENT_CODI     CHARACTER VARYING(1024),
+  SERVEI_CODI          character varying(1024)
+  TRAMIT_CODI          character varying(1024)
   BACKOFFICE_CODI      CHARACTER VARYING(64),
   BUSTIA_FILTRE_ID BIGINT,
   PRESENCIAL           smallint,
@@ -449,6 +451,7 @@ CREATE TABLE DIS_UO_SINC_REL (
 CREATE TABLE DIS_AVIS
 (
   ID                   BIGSERIAL               			 NOT NULL,
+  ENTITAT              BIGINT,
   ASSUMPTE             character varying(256)            NOT NULL,
   MISSATGE             character varying(2048)           NOT NULL,
   DATA_INICI           timestamp without time zone       NOT NULL,
