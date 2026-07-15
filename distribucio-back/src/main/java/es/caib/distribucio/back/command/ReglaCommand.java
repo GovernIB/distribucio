@@ -30,7 +30,7 @@ public class ReglaCommand {
 
 	private Long id;
 	
-	@NotEmpty(groups = {CreateUpdate.class})
+	@NotNull @NotEmpty(groups = {CreateUpdate.class})
 	@Size(max = 256, groups = {CreateUpdate.class})
 	private String nom;
 	@Size(max = 1024, groups = {CreateUpdate.class})

@@ -44,15 +44,7 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 	@Override
 	public boolean isValid(final ReglaCommand command, final ConstraintValidatorContext context) {
 		boolean valid = true;
-		
-		if (command.getNom() == null || command.getNom().trim().isEmpty()) {
-			context.buildConstraintViolationWithTemplate(
-					MessageHelper.getInstance().getMessage(codiMissatge + ".tipus.desti.buit", null, new RequestContext(request).getLocale()))
-					.addNode("nom")
-					.addConstraintViolation();	
-			valid = false;
-		}
-		
+
 		EntitatDto entitatActual = EntitatHelper.getEntitatActual(request);
 		// Comprova que almenys un camp del firtre esta informat
 		if (command.getTipus() != ReglaTipusEnumDto.BACKOFFICE && // Si es Tipo UNITAT o BUSTIA
@@ -224,18 +216,20 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 			valid = false;
 		}
 
-        ReglaFiltreDto filtre = new ReglaFiltreDto();
-        filtre.setNom(command.getNom());
-        filtre.setTipus(command.getTipus());
-        filtre.setCodiAssumpte(command.getAssumpteCodiFiltre());
-        if (!reglaService.findReglaIds(entitatActual.getId(), filtre).isEmpty()) { // DIS_REGLA_MULT_UK
-            context.buildConstraintViolationWithTemplate(
-                    MessageHelper.getInstance().getMessage(codiMissatge + ".nom.mult.uk", null, new RequestContext(request).getLocale()))
-                    .addNode("nom")
-                    .addConstraintViolation();
-            valid = false;
+        if (command.getNom() != null) {
+            ReglaFiltreDto filtre = new ReglaFiltreDto();
+            filtre.setNom(command.getNom());
+            filtre.setTipus(command.getTipus());
+            filtre.setCodiAssumpte(command.getAssumpteCodiFiltre());
+            if (!reglaService.findReglaIds(entitatActual.getId(), filtre).isEmpty()) { // DIS_REGLA_MULT_UK
+                context.buildConstraintViolationWithTemplate(
+                        MessageHelper.getInstance().getMessage(codiMissatge + ".nom.mult.uk", null, new RequestContext(request).getLocale()))
+                        .addNode("nom")
+                        .addConstraintViolation();
+                valid = false;
+            }
         }
-		
+
 		if (!valid)
 			context.disableDefaultConstraintViolation();
 		return valid;
