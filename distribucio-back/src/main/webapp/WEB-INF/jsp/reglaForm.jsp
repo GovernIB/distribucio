@@ -98,10 +98,30 @@ $(document).ready(function() {
 		} else {
 			isWindowReload = false;
 		}
-		
+
 	});
-	$('#tipus').trigger('change');	
-	
+	$('#tipus').trigger('change');
+
+    $('[name="tipusSia"]').on('change', function() {
+        const val = $(this).val();
+        console.log("AAAAAAAAAAAA", val)
+        if (val == "PROCEDIMENT") {
+            $('#procedimentCodiFiltre').closest('.form-group').show()
+            $('#serveiCodiFiltre').closest('.form-group').hide()
+
+            $('#serveiCodiFiltre').val(null)
+        }
+        if (val == "SERVEI") {
+            $('#procedimentCodiFiltre').closest('.form-group').hide()
+            $('#serveiCodiFiltre').closest('.form-group').show()
+
+            $('#procedimentCodiFiltre').val(null)
+        }
+    });
+
+    var $radio = $('[name="tipusSia"][value="${reglaCommand.tipusSia}"]');
+    $radio.prop('checked', true);
+    $radio.trigger('change');
 });
 </script>
 </head>
@@ -195,9 +215,17 @@ $(document).ready(function() {
 				emptyOption="true"
 				netejar="true"
 				optionMinimumResultsForSearch="0"/>
+
+            <dis:inputRadio
+                    name="tipusSia"
+                    text=" "
+                    optionItems="${tipusSia}"
+                    optionValueAttribute="value"
+                    optionTextKeyAttribute="text"/>
+
 			<dis:inputTextarea name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info"/>
 			<dis:inputTextarea name="serveiCodiFiltre" textKey="regla.form.camp.servei.codi" comment="regla.form.camp.servei.codi.info"/>
-			<dis:inputTextarea name="tramitCodiFiltre" textKey="regla.form.camp.tramit.codi" />
+			<dis:inputText name="tramitCodiFiltre" textKey="regla.form.camp.tramit.codi" />
 			<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>
 			
 			<dis:inputSelect name="presencial" textKey="regla.form.camp.presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial"/>

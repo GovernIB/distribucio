@@ -532,7 +532,12 @@ public class ReglaController  extends BaseAdminController {
 				"backoffices",
 				backofficeService.findByEntitat(
 						entitatActual.getId()));
-		
+
+        model.addAttribute(
+                "tipusSia",
+                EnumHelper.getOptionsForEnum(
+                        RegistreClassificarTipusEnum.class,
+                        "tipus.regla.enum."));
 	}
 	
 	@RequestMapping(value = "/select", method = RequestMethod.GET)

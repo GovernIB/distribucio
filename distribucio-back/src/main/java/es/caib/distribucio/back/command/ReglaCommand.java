@@ -4,6 +4,7 @@
 package es.caib.distribucio.back.command;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import es.caib.distribucio.logic.intf.dto.*;
@@ -40,6 +41,8 @@ public class ReglaCommand {
 	private String assumpteCodiFiltre;
 	@Size(max = 1024, groups = {CreateUpdate.class})
 	private String procedimentCodiFiltre;
+    @NotNull
+	private RegistreClassificarTipusEnum tipusSia = RegistreClassificarTipusEnum.PROCEDIMENT;
 	private String serveiCodiFiltre;
 	private String tramitCodiFiltre;
 	private Long unitatFiltreId;
