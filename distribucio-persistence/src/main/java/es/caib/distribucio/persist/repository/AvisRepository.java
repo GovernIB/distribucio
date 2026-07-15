@@ -36,4 +36,6 @@ public interface AvisRepository extends JpaRepository<AvisEntity, Long> {
 	int updateUsuariAuditoria(
 			@Param("codiAntic") String codiAntic, 
 			@Param("codiNou") String codiNou);
+
+    void deleteAllByEntitatId(Long entitatId);
 }

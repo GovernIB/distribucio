@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import es.caib.distribucio.persist.repository.AvisRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,8 @@ public class EntitatServiceImpl implements EntitatService {
 	private EntitatHelper entitatHelper;
     @Autowired
     private ConfigHelper configHelper;
+    @Autowired
+    private AvisRepository avisRepository;
 
 
     @Transactional
@@ -161,6 +164,7 @@ public class EntitatServiceImpl implements EntitatService {
 				false,
 				false,
 				false);
+        avisRepository.deleteAllByEntitatId(entitat.getId());
 		entitatRepository.delete(entitat);
         configHelper.deleteConfigEntitat(entitat.getCodi());
 		permisosHelper.deleteAcl(

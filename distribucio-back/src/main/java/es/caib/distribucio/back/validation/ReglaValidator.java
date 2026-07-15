@@ -12,16 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import es.caib.distribucio.logic.intf.dto.ReglaDto;
-import es.caib.distribucio.logic.intf.dto.ReglaMatchDto;
+import es.caib.distribucio.logic.intf.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.support.RequestContext;
 
 import es.caib.distribucio.back.command.ReglaCommand;
 import es.caib.distribucio.back.helper.EntitatHelper;
 import es.caib.distribucio.back.helper.MessageHelper;
-import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.logic.intf.service.ReglaService;
 
 /**
@@ -226,6 +223,18 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 					.addConstraintViolation();	
 			valid = false;
 		}
+
+        ReglaFiltreDto filtre = new ReglaFiltreDto();
+        filtre.setNom(command.getNom());
+        filtre.setTipus(command.getTipus());
+        filtre.setCodiAssumpte(command.getAssumpteCodiFiltre());
+        if (!reglaService.findReglaIds(entitatActual.getId(), filtre).isEmpty()) { // DIS_REGLA_MULT_UK
+            context.buildConstraintViolationWithTemplate(
+                    MessageHelper.getInstance().getMessage(codiMissatge + ".nom.mult.uk", null, new RequestContext(request).getLocale()))
+                    .addNode("nom")
+                    .addConstraintViolation();
+            valid = false;
+        }
 		
 		if (!valid)
 			context.disableDefaultConstraintViolation();
