@@ -74,9 +74,9 @@ public class IntegracioHelper {
 		integracions.add(
 				novaIntegracio(
 						INTCODI_PROCEDIMENT));
-		integracions.add(
-				novaIntegracio(
-						INTCODI_DISTRIBUCIO));
+//		integracions.add(
+//				novaIntegracio(
+//						INTCODI_DISTRIBUCIO));
 		integracions.add(
 				novaIntegracio(
 						INTCODI_SERVEI));
