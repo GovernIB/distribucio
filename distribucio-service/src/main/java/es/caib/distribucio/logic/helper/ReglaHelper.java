@@ -342,22 +342,20 @@ public class ReglaHelper {
 						reglaBackoffice = true;
 						break;
 					case BUSTIA:
+                        simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA, reglaToApply.getBustiaDesti().getNom(), reglaToApply.getNom()));
+                        registreSimulatDto.setBustiaId(reglaToApply.getBustiaDesti().getId());
+                        registreSimulatDto.setUnitatId(reglaToApply.getBustiaDesti().getUnitatOrganitzativa().getId());
+                        break;
 					case UNITAT: // ############################### BUSTIA / UNITAT ###############################
-						if (reglaToApply.getTipus() == ReglaTipusEnumDto.UNITAT) {
-							BustiaEntity bustiaDesti = bustiaHelper.findBustiaDesti(
-									reglaToApply.getEntitat(),
-									reglaToApply.getUnitatDesti().getCodi());
-							simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.UNITAT, bustiaDesti.getUnitatOrganitzativa().getCodi() + " - "+ bustiaDesti.getUnitatOrganitzativa().getDenominacio(), reglaToApply.getNom()));
-							registreSimulatDto.setUnitatId(bustiaDesti.getUnitatOrganitzativa().getId());
+                        BustiaEntity bustiaDesti = bustiaHelper.findBustiaDesti(
+                                reglaToApply.getEntitat(),
+                                reglaToApply.getUnitatDesti().getCodi());
+                        simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.UNITAT, bustiaDesti.getUnitatOrganitzativa().getCodi() + " - "+ bustiaDesti.getUnitatOrganitzativa().getDenominacio(), reglaToApply.getNom()));
+                        registreSimulatDto.setUnitatId(bustiaDesti.getUnitatOrganitzativa().getId());
 
-							simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE, bustiaDesti.getNom(), null));
-							registreSimulatDto.setBustiaId(bustiaDesti.getId());
-						} else if (reglaToApply.getTipus() == ReglaTipusEnumDto.BUSTIA) {
-							simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA, reglaToApply.getBustiaDesti().getNom(), reglaToApply.getNom()));
-							registreSimulatDto.setBustiaId(reglaToApply.getBustiaDesti().getId());
-							registreSimulatDto.setUnitatId(reglaToApply.getBustiaDesti().getUnitatOrganitzativa().getId());
-						}
-						break;
+                        simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE, bustiaDesti.getNom(), null));
+                        registreSimulatDto.setBustiaId(bustiaDesti.getId());
+                        break;
 					}
 				}
 				reglaAplicada = true;
