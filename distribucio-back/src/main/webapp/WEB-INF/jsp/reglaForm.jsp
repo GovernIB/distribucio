@@ -223,9 +223,9 @@ $(document).ready(function() {
                     optionValueAttribute="value"
                     optionTextKeyAttribute="text"/>
 
-			<dis:inputTextarea name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info"/>
-			<dis:inputTextarea name="serveiCodiFiltre" textKey="regla.form.camp.servei.codi" comment="regla.form.camp.servei.codi.info"/>
-			<dis:inputText name="tramitCodiFiltre" textKey="regla.form.camp.tramit.codi" />
+			<dis:inputTextarea name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info" rows="2"/>
+			<dis:inputTextarea name="serveiCodiFiltre" textKey="regla.form.camp.servei.codi" comment="regla.form.camp.servei.codi.info" rows="2"/>
+			<dis:inputTextarea name="tramitCodiFiltre" textKey="regla.form.camp.tramit.codi" rows="2" />
 			<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>
 			
 			<dis:inputSelect name="presencial" textKey="regla.form.camp.presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial"/>

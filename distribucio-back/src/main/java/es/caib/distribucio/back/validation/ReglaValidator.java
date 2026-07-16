@@ -221,7 +221,8 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
             filtre.setNom(command.getNom());
             filtre.setTipus(command.getTipus());
             filtre.setCodiAssumpte(command.getAssumpteCodiFiltre());
-            if (!reglaService.findReglaIds(entitatActual.getId(), filtre).isEmpty()) { // DIS_REGLA_MULT_UK
+            List<Long> ids = reglaService.findReglaIds(entitatActual.getId(), filtre);
+            if (!ids.isEmpty() && (command.getId() == null || !ids.contains(command.getId()))) { // DIS_REGLA_MULT_UK
                 context.buildConstraintViolationWithTemplate(
                         MessageHelper.getInstance().getMessage(codiMissatge + ".nom.mult.uk", null, new RequestContext(request).getLocale()))
                         .addNode("nom")
