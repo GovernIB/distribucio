@@ -467,8 +467,7 @@ public class RegistreAdminController extends BaseAdminController {
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdmin(request);
 		RegistreDto registreDto = registreService.findOne(entitatActual.getId(), registreId, false);
-		Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
-				registreId);
+		Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), registreId);
 		if (throwable == null) {
 			MissatgesHelper.success(request,
 					getMessage(request,

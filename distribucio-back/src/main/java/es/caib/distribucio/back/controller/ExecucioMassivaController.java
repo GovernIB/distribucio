@@ -892,12 +892,13 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
         return "redirect:reintentarProcessament";
 	}
 	
-	@RequestMapping(value = "/reintentarEnviamentBackoffice", method = RequestMethod.GET)
+	@RequestMapping(value = "/reintentarEnviamentBackoffice/{rol}", method = RequestMethod.GET)
 	public String registreReintentarEnviamentBackofficeGet(
 			HttpServletRequest request,
-			Model model) {
-		List<Long> registresSeleccionats = obtenirIdsSeleccioRegistres(request, "admin", false);
-		List<RegistreDto> registres = obtenirSeleccioRegistres(request, "admin", false);
+			Model model,
+            @PathVariable String rol) {
+		List<Long> registresSeleccionats = obtenirIdsSeleccioRegistres(request, rol, false);
+		List<RegistreDto> registres = obtenirSeleccioRegistres(request, rol, false);
 		
 		String redireccio = comprovarExistenciaExecucioMassivaPendent(
 				request, 
@@ -914,10 +915,11 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		return "reintentarEnviamentBackofficeMultiple";
 	}
 	
-	@RequestMapping(value = "/reintentarEnviamentBackoffice", method = RequestMethod.POST)
+	@RequestMapping(value = "/reintentarEnviamentBackoffice/{rol}", method = RequestMethod.POST)
 	public String registreReintentarEnviamentBackofficePost(
-			HttpServletRequest request, 
-			@Valid Object command, 
+			HttpServletRequest request,
+            @PathVariable String rol,
+			@Valid Object command,
 			BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			MissatgesHelper.error(
@@ -929,11 +931,11 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 		}
 		
 		try {
-			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, "admin", false);
+			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
 			
 			return executarAccioMassivaRegistres(
-					request, 
-					"admin", 
+					request,
+                    rol,
 					registresSeleccionats, 
 					ExecucioMassivaTipusDto.BACKOFFICE, 
 					null, 

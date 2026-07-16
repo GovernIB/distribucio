@@ -445,7 +445,7 @@ $(document).ready(function() {
 	$('#mostrarInactives').change();
 
     (function(){
-        const $procSelect = $('select[name="procesEstatSimple"]');
+        const $procSelect = $('select[id="procesEstatSimple2"]');
         const $estatSelect = $('select[name="estat"]');
 
         const $opcionsOriginals = $estatSelect.find('option').clone();
@@ -816,6 +816,11 @@ function syncFields(fromSelector, toSelector) {
 				
 					<button class="btn btn-default" data-toggle="dropdown"><span class="badge seleccioCount">${fn:length(seleccio)}</span>&nbsp;<spring:message code="comu.boto.accions"/>&nbsp;<span class="caret"></span></button>
 					<ul class="dropdown-menu dropdown-left-medium">
+
+					<li><a href="massiva/reintentarEnviamentBackoffice/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
+						<span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentarEnviamentBackoffice"/></span>
+					</a></li>
+
 						<li><a href="massiva/classificar/${rol}" aria-haspopup="true" aria-expanded="false" data-toggle="modal" data-maximized="true">
 							<span class="fa fa-inbox"></span> <spring:message code="bustia.pendent.accio.classificar"/>
 						</a></li>

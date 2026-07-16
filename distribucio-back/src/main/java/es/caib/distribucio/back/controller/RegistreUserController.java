@@ -1530,22 +1530,20 @@ public class RegistreUserController extends BaseUserController {
 			@PathVariable Long registreId,
 			Model model) {
 		EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
-		RegistreDto registreReenviat = registreService.findOne(entitatActual.getId(), registreId, false);	
-		Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(),
-					registreId);
-			if (throwable == null) {
-				MissatgesHelper.success(request,
-						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.ok", 
-								new Object[] {registreReenviat.getBackCodi()}));
-			} else {
-				MissatgesHelper.error(request,
-						getMessage(request,
-								"contingut.admin.controller.registre.reintentat.error",
-								null));
-			}
-
-		return "redirect:/modal/registreAdmin/" + registreId + "/detall";
+		RegistreDto registreReenviat = registreService.findOne(entitatActual.getId(), registreId, false);
+		Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), registreId);
+        if (throwable == null) {
+            MissatgesHelper.success(request,
+                    getMessage(request,
+                            "contingut.admin.controller.registre.reintentat.ok",
+                            new Object[] {registreReenviat.getBackCodi()}));
+        } else {
+            MissatgesHelper.error(request,
+                    getMessage(request,
+                            "contingut.admin.controller.registre.reintentat.error",
+                            null));
+        }
+        return "redirect:" + request.getHeader("referer");
 	}
 	
 	@RequestMapping(value = "/{registreId}/marcarPendent", method = RequestMethod.GET)
