@@ -44,7 +44,6 @@ class ReglaHelperTest {
                 eq(dto.getBustiaId()),
                 eq(dto.getProcedimentCodi() != null ? dto.getProcedimentCodi() : ""),
                 eq(dto.getServeiCodi() != null ? dto.getServeiCodi() : ""),
-                eq(dto.getTramitCodi() == null),
                 eq(dto.getTramitCodi() != null ? dto.getTramitCodi() : ""),
                 eq(dto.getAssumpteCodi() != null ? dto.getAssumpteCodi() : ""),
                 eq(dto.getPresencial() == null),
