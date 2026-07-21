@@ -157,30 +157,28 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 	 * @param string 
 	 * @return
 	 */
-	@Query(	"from " +
-			"    ReglaEntity r " +
-			"where " +
-			"    r.entitat = :entitat " +
-			"and r.activa = true " + 
-			"and (r.unitatOrganitzativaFiltre is null or r.unitatOrganitzativaFiltre.id = :unitatOrganitzativaFiltreId) " + 
-			"and (r.bustiaFiltre is null or r.bustiaFiltre.id = :bustiaId) " + 
-			"and (r.procedimentCodiFiltre is null or (r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre = :procedimentCodiFiltre or r.procedimentCodiFiltre like (:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre))) " +
-			"and (r.serveiCodiFiltre is null or (r.serveiCodiFiltre like ('% '||:serveiCodiFiltre||' %') or r.serveiCodiFiltre = :serveiCodiFiltre or r.serveiCodiFiltre like (:serveiCodiFiltre||' %') or r.serveiCodiFiltre like ('% '||:serveiCodiFiltre))) " +
-            "and ((:isTramitNull = true and r.tramitCodiFiltre is null)" +
-            "  or (r.tramitCodiFiltre = :tramitCodiFiltre or r.tramitCodiFiltre like ('% '||:tramitCodiFiltre||' %') or r.tramitCodiFiltre like (:tramitCodiFiltre||' %') or r.tramitCodiFiltre like ('% '||:tramitCodiFiltre))) " +
+    @Query(	"from " +
+            "    ReglaEntity r " +
+            "where " +
+            "    r.entitat = :entitat " +
+            "and r.activa = true " +
+            "and (r.unitatOrganitzativaFiltre is null or r.unitatOrganitzativaFiltre.id = :unitatOrganitzativaFiltreId) " +
+            "and (r.bustiaFiltre is null or r.bustiaFiltre.id = :bustiaId) " +
+            "and (r.procedimentCodiFiltre is null or (r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre = :procedimentCodiFiltre or r.procedimentCodiFiltre like (:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre))) " +
+            "and (r.serveiCodiFiltre is null or (r.serveiCodiFiltre like ('% '||:serveiCodiFiltre||' %') or r.serveiCodiFiltre = :serveiCodiFiltre or r.serveiCodiFiltre like (:serveiCodiFiltre||' %') or r.serveiCodiFiltre like ('% '||:serveiCodiFiltre))) " +
+            "and (r.tramitCodiFiltre is null or (r.tramitCodiFiltre like ('% '||:tramitCodiFiltre||' %') or r.tramitCodiFiltre = :tramitCodiFiltre or r.tramitCodiFiltre like (:tramitCodiFiltre||' %') or r.tramitCodiFiltre like ('% '||:tramitCodiFiltre))) " +
             "and (r.assumpteCodiFiltre is null or r.assumpteCodiFiltre = :assumpteCodiFiltre) " +
 			"and ((r.presencial is null) or (:isPresencialNull is true or r.presencial = :presencial)) " +
 			"order by r.ordre asc")
 	List<ReglaEntity> findAplicables(
-			@Param("entitat") EntitatEntity entitat, 
-			@Param("unitatOrganitzativaFiltreId") Long unitatOrganitzativaFiltreId, 
+			@Param("entitat") EntitatEntity entitat,
+			@Param("unitatOrganitzativaFiltreId") Long unitatOrganitzativaFiltreId,
 			@Param("bustiaId") Long bustiaId,
 			@Param("procedimentCodiFiltre") String procedimentCodiFiltre,
-			@Param("serveiCodiFiltre") String serveiCodiFiltre, 
-			@Param("isTramitNull") boolean isTramitNull,
+			@Param("serveiCodiFiltre") String serveiCodiFiltre,
 			@Param("tramitCodiFiltre") String tramitCodiFiltre,
 			@Param("assumpteCodiFiltre") String assumpteCodiFiltre,
-			@Param("isPresencialNull") boolean isPresencialNull, 
+			@Param("isPresencialNull") boolean isPresencialNull,
 			@Param("presencial") ReglaPresencialEnumDto presencial);
 
 	/** Mètode per trobar els registres als quals se'ls pot aplicar la regla manualment
