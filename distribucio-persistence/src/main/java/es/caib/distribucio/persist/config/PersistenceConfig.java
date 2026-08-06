@@ -26,6 +26,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.config.PropertyConfig;
+import es.caib.distribucio.persist.base.repository.BaseRepositoryImpl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -38,9 +39,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 @EnableJpaRepositories(
-		basePackages = { BaseConfig.BASE_PACKAGE + ".persist.repository" },
+		basePackages = {
+				BaseConfig.BASE_PACKAGE + ".persist.repository",
+				BaseConfig.BASE_PACKAGE + ".persist.resourcerepository"
+		},
 		entityManagerFactoryRef = "mainEntityManager",
-		transactionManagerRef = "mainTransactionManager"
+		transactionManagerRef = "mainTransactionManager",
+		repositoryBaseClass = BaseRepositoryImpl.class
 )
 public class PersistenceConfig {
 
@@ -118,7 +123,7 @@ public class PersistenceConfig {
 		LocalContainerEntityManagerFactoryBean entityManager = builder.
 				dataSource(mainDataSource()).
 				persistenceUnit(getPersistenceUnitName()).
-				packages(getEntityPackages()).
+				packages(getEntityPackages(), getResourceEntityPackages()).
 				properties(properties).
 				jta(isJboss()).
 				build();
@@ -158,6 +163,10 @@ public class PersistenceConfig {
 
 	protected String getEntityPackages() {
 		return BaseConfig.BASE_PACKAGE + ".persist.entity";
+	}
+
+	protected String getResourceEntityPackages() {
+		return BaseConfig.BASE_PACKAGE + ".persist.resourceentity";
 	}
 
 	@Getter

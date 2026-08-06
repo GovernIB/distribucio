@@ -6,4 +6,7 @@ target/
 .classpath
 .project
 /docker-compose.yml
+/.env
 /.idea/
+/application.properties
+/CLAUDE.md

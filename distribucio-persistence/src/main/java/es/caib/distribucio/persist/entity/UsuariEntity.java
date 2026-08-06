@@ -12,6 +12,8 @@ import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.model.MenuEstilEnum;
+import es.caib.distribucio.logic.intf.model.TemaAplicacioEnum;
 
 /**
  * Classe de model de dades que conté la informació d'un usuari.
@@ -54,7 +56,17 @@ public class UsuariEntity implements Serializable {
     private Long numElementsPagina;
     @Column(name="email_error_anotacio")
     private boolean emailErrorAnotacio;
-	
+
+    /** Tema visual de la interfície REACT (veure UsuariResource). */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tema_aplicacio", length = 16)
+    private TemaAplicacioEnum temaAplicacio;
+
+    /** Estil del menú lateral de la interfície REACT (veure UsuariResource). */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estil_menu", length = 16, nullable = false)
+    private MenuEstilEnum estilMenu = MenuEstilEnum.TEMA;
+
 	@Version
 	private long version = 0;
 	

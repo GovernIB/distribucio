@@ -5,16 +5,25 @@
 	<parent>
 		<groupId>es.caib.distribucio</groupId>
 		<artifactId>distribucio</artifactId>
-		<version>1.0.10</version>
+		<version>1.1.1</version>
 	</parent>
 	<artifactId>distribucio-back</artifactId>
 	<packaging>war</packaging>
+	<properties>
+		<node.version>v22.13.1</node.version>
+		<frontend.app.path>src/main/reactapp/distribucio-back</frontend.app.path>
+		<frontend.skip>false</frontend.skip>
+	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<optional>true</optional>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-commons</artifactId>
 		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-devtools</artifactId>-->
+<!--			<optional>true</optional>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -26,10 +35,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-oauth2-client</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -335,11 +340,66 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>distribucio-backend</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 	</dependencies>
 	<profiles>
+		<profile>
+			<id>front</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.github.eirslett</groupId>
+						<artifactId>frontend-maven-plugin</artifactId>
+						<version>1.15.4</version>
+						<configuration>
+							<nodeVersion>${node.version}</nodeVersion>
+							<installDirectory>target</installDirectory>
+							<workingDirectory>${frontend.app.path}</workingDirectory>
+							<skip>${frontend.skip}</skip>
+							<environmentVariables>
+								<VITE_APP_VERSION>${project.version}</VITE_APP_VERSION>
+							</environmentVariables>
+						</configuration>
+						<executions>
+							<execution>
+								<id>install-npm</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>install-node-and-npm</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>npm-install</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>npm-build</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+								<configuration>
+									<arguments>run build-jboss</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<profile>
 			<id>eclipse</id>
 			<activation>
@@ -421,6 +481,29 @@
 						</manifestEntries>
 					</archive>
 					<attachClasses>true</attachClasses>
+					<webResources>
+						<resource>
+							<directory>${frontend.app.path}/dist</directory>
+							<targetPath>reactapp</targetPath>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.4.0</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${frontend.app.path}</directory>
+							<includes>
+								<include>**/dist/**</include>
+								<include>**/node_modules/**</include>
+							</includes>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+					</filesets>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -3,6 +3,7 @@
  */
 package es.caib.distribucio.back.config;
 
+import es.caib.distribucio.back.base.config.BaseWebMvcConfig;
 import es.caib.distribucio.back.interceptor.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -13,19 +14,27 @@ import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.opensymphony.module.sitemesh.filter.PageFilter;
 
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+
 /**
  * Configuració de Spring MVC.
- * 
+ *
  * @author Limit Tecnologies
  */
 @Configuration
 @DependsOn("ejbClientConfig")
 @SuppressWarnings("deprecation")
-public class WebMvcConfig implements WebMvcConfigurer {
+public class WebMvcConfig extends BaseWebMvcConfig {
 
 	@Autowired
 	private AplicacioInterceptor aplicacioInterceptor;
@@ -55,17 +64,58 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	private AccesSuperInterceptor accesSuperInterceptor;
 
 	@Bean
-	public FilterRegistrationBean<PageFilter> sitemeshFilter() {
-		FilterRegistrationBean<PageFilter> registrationBean = new FilterRegistrationBean<>();
-		registrationBean.setFilter(new PageFilter());
+	public FilterRegistrationBean<Filter> sitemeshFilter() {
+		FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>();
+		registrationBean.setFilter(new SkippingSiteMeshFilter());
 		registrationBean.addUrlPatterns("/*");
 		registrationBean.setOrder(2);
 		return registrationBean;
 	}
 
+	/**
+	 * SiteMesh (decoració de pàgines JSP) no té sentit -- i no s'ha d'invocar -- per respostes
+	 * JSON del motor genèric HAL-FORMS (/api/**) ni pels recursos estàtics del SPA React
+	 * (/reactapp/**). A més d'innecessari, inicialitzar el {@link PageFilter} per aquestes rutes
+	 * pot fallar carregant "/WEB-INF/decorators.xml" segons com s'exposi src/main/webapp al
+	 * ServletContext en mode standalone (Spring Boot embedded, sense WAR real desplegat).
+	 */
+	private static class SkippingSiteMeshFilter implements Filter {
+		private final PageFilter delegate = new PageFilter();
+
+		@Override
+		public void init(FilterConfig filterConfig) throws ServletException {
+			delegate.init(filterConfig);
+		}
+
+		@Override
+		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+				throws IOException, ServletException {
+			String path = ((HttpServletRequest) request).getRequestURI()
+					.replaceFirst(((HttpServletRequest) request).getContextPath(), "");
+			if (path.startsWith("/api/") || path.equals("/api")
+					|| path.startsWith("/reactapp/") || path.equals("/reactapp")) {
+				chain.doFilter(request, response);
+			} else {
+				delegate.doFilter(request, response, chain);
+			}
+		}
+
+		@Override
+		public void destroy() {
+			delegate.destroy();
+		}
+	}
+
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**").allowedOrigins("*").allowedMethods("*");
+		// Origens explícits (no "*") + allowCredentials perquè el SPA React, quan es corre amb
+		// `npm run dev` a :5173, pugui cridar l'API real a :8080 (fetch amb credentials:'include'
+		// -- el navegador rebutja Access-Control-Allow-Origin:"*" combinat amb credencials).
+		registry.addMapping("/**").
+				allowedOrigins("http://localhost:5173", "http://localhost:8080").
+				allowCredentials(true).
+				allowedHeaders("*").
+				allowedMethods("*");
 	}
 
 	@Override
@@ -86,7 +136,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 				"/api/rest/**",
 				"/api-docs/**",
 				"/**/api-docs/",
-				"/public/**"
+				"/public/**",
+				"/reactapp/**",
+				"/api/**"
 		};
 		registry.addInterceptor(aplicacioInterceptor).excludePathPatterns(excludedPathPatterns);
 		registry.addInterceptor(sessioInterceptor).excludePathPatterns(excludedPathPatterns);
@@ -149,7 +201,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	
 	/** Configura el firewall per permetre caràcters codificats com el % ja que aquests s'usen en la codificació
 	 * dels identificadors en els enllaços públics de descàrrega de documents.
-	 * 
+	 *
 	 * @return
 	 */
 	@Bean
@@ -162,4 +214,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
         firewall.setAllowUrlEncodedPeriod(true);
         return firewall;
     }
+
+	/**
+	 * El SPA React es serveix mitjançant {@code ReactAppStaticController}/{@code DevProxyController}
+	 * (amb reenviament al servidor de desenvolupament de Vite), no mitjançant el mecanisme genèric
+	 * de fallback a "index.html" via ResourceHandler que ofereix {@link BaseWebMvcConfig}.
+	 */
+	@Override
+	protected boolean isJsAppResourceHandlerEnabled() {
+		return false;
+	}
+
 }

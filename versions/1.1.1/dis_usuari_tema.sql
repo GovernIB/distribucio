@@ -1,0 +1,3 @@
+-- Preferencies de tema visual i estil de menu de la interficie REACT (perfil de l'usuari)
+ALTER TABLE DIS_USUARI ADD TEMA_APLICACIO VARCHAR(16 CHAR);
+ALTER TABLE DIS_USUARI ADD ESTIL_MENU VARCHAR(16 CHAR) DEFAULT 'TEMA' NOT NULL;

@@ -3,23 +3,22 @@
  */
 package es.caib.distribucio.back.config;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
+import es.caib.distribucio.back.base.config.BaseMessageSourceConfig;
+
 /**
  * Configuració multiidioma de l'aplicació.
- * 
+ *
  * @author Límit Tecnologies
  */
 @Configuration
-public class I18nConfig {
+public class I18nConfig extends BaseMessageSourceConfig {
 
 	@Bean
 	public LocaleResolver localeResolver() {
@@ -27,14 +26,16 @@ public class I18nConfig {
 		return localeResolver;
 	}
 
-	@Bean
-	public MessageSource messageSource() {
-		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-		messageSource.setBasename("classpath:messages");
-		messageSource.setDefaultLocale(Locale.forLanguageTag("ca"));
-		messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
-		messageSource.setFallbackToSystemLocale(false);
-		return messageSource;
+	@Override
+	protected String[] getBasenames() {
+		return new String[] {
+				"messages"
+		};
+	}
+
+	@Override
+	protected Locale getDefaultLocale() {
+		return Locale.forLanguageTag("ca");
 	}
 
 }

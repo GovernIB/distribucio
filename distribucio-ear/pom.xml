@@ -5,14 +5,16 @@
 	<parent>
 		<groupId>es.caib.distribucio</groupId>
 		<artifactId>distribucio</artifactId>
-		<version>1.0.10</version>
+		<version>1.1.1</version>
 	</parent>
 	<artifactId>distribucio-ear</artifactId>
 	<packaging>ear</packaging>
 	<properties>
-		<docker.base.image>${project.parent.artifactId}</docker.base.image>
-		<docker.jboss.userhome>/home/jboss</docker.jboss.userhome>
-		<docker.jboss.dir>jboss-eap-7.2</docker.jboss.dir>
+		<docker.image.name>goib/${project.parent.artifactId}</docker.image.name>
+		<docker.image.from>docker.io/goib/jboss-eap72-openshift-base:latest</docker.image.from>
+		<docker.image.platform>linux/amd64</docker.image.platform>
+		<docker.image.context>${project.basedir}/target/docker-ctx</docker.image.context>
+		<docker.image.dockerfile>${project.basedir}/target/docker-ctx/Dockerfile.maven</docker.image.dockerfile>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -86,6 +88,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>distribucio-backend</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>distribucio-plugin-impl</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -101,65 +108,81 @@
 			<plugin>
 				<groupId>io.fabric8</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.42.1</version>
+				<version>0.45.0</version>
 				<configuration>
 					<verbose>true</verbose>
+					<!-- Si utilitzes Podman enlloc de docker has de descomentar la següent línia-->
+					<!-- <dockerHost>unix:///run/user/1000/podman/podman.sock</dockerHost> -->
 					<images>
 						<image>
-							<name>${docker.base.image}</name>
-							<alias>${project.parent.artifactId}</alias>
+							<name>${docker.image.name}</name>
+							<alias>${docker.image.name}</alias>
 							<build>
-								<from>280421/jboss-eap-caib-7.2</from>
-								<maintainer>limit@limit.es</maintainer>
-								<ports>
-									<port>8080</port>
-								</ports>
-								<assemblies>
-									<assembly>
-										<name>copy_jboss_config</name>
-										<inline>
-											<fileSets>
-												<fileSet>
-													<directory>${basedir}/docker/jboss</directory>
-													<outputDirectory>config</outputDirectory>
-												</fileSet>
-											</fileSets>
-										</inline>
-										<targetDir>$JBOSS_USERHOME</targetDir>
-										<user>jboss:nogroup</user>
-									</assembly>
-									<assembly>
-										<name>copy_properties</name>
-										<inline>
-											<fileSets>
-												<fileSet>
-													<directory>${basedir}/docker/properties</directory>
-													<outputDirectory>${project.parent.artifactId}</outputDirectory>
-												</fileSet>
-											</fileSets>
-										</inline>
-										<targetDir>$JBOSS_USERHOME/apps</targetDir>
-										<user>jboss:nogroup</user>
-									</assembly>
-									<assembly>
-										<descriptorRef>artifact</descriptorRef>
-										<targetDir>$JBOSS_HOME/standalone/deployments</targetDir>
-										<user>jboss:nogroup</user>
-									</assembly>
-								</assemblies>
-								<runCmds>
-									<run>chmod a+x $JBOSS_USERHOME/config/jboss_config.sh</run>
-									<run>dos2unix $JBOSS_USERHOME/config/jboss_config.sh</run>
-									<run>sed -i 's~#!/bin/sh~#!/bin/sh\n$JBOSS_USERHOME/config/jboss_config.sh~' $JBOSS_HOME/bin/standalone.sh</run>
-								</runCmds>
+								<dockerFile>${docker.image.dockerfile}</dockerFile>
+								<contextDir>${docker.image.context}</contextDir>
+								<args>
+									<BASE_IMAGE>${docker.image.from}</BASE_IMAGE>
+									<BASE_PLATFORM>${docker.image.platform}</BASE_PLATFORM>
+								</args>
+								<buildOptions>
+									<platform>${docker.image.platform}</platform>
+								</buildOptions>
 								<tags>
 									<tag>latest</tag>
 									<tag>${project.version}</tag>
 								</tags>
 							</build>
+							<run>
+								<ports>
+									<!-- Mapeig del port de debug -->
+									<port>8787:8787</port>
+								</ports>
+								<env>
+									<!-- Defineix les JAVA_OPTS per habilitar el debug -->
+									<JAVA_OPTS>-agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=n</JAVA_OPTS>
+								</env>
+							</run>
 						</image>
 					</images>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>prepare-docker-context</id>
+						<phase>package</phase>
+						<goals><goal>copy-resources</goal></goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/docker-ctx</outputDirectory>
+							<overwrite>true</overwrite>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/src/main/docker</directory>
+									<includes>
+										<include>config/standalone-openshift.xml</include>
+										<include>config/jboss_config.sh</include>
+										<include>Dockerfile.maven</include>
+									</includes>
+									<filtering>false</filtering>
+								</resource>
+								<resource>
+									<directory>${project.basedir}/docker/properties</directory>
+									<targetPath>properties</targetPath>
+									<filtering>false</filtering>
+								</resource>
+								<resource>
+									<directory>${project.build.directory}</directory>
+									<includes>
+										<include>distribucio.ear</include>
+									</includes>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>es.caib.distribucio</groupId>
 		<artifactId>distribucio</artifactId>
-		<version>1.0.10</version>
+		<version>1.1.1</version>
 	</parent>
 	<artifactId>distribucio-service</artifactId>
 	<dependencies>
@@ -64,12 +64,26 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>com.turkraft</groupId>
+			<artifactId>spring-filter</artifactId>
+			<version>${spring-filter.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>${jasperreports.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.dynamicreports</groupId>
+			<artifactId>dynamicreports-core</artifactId>
+			<version>${dynamicreports.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>1.6.2</version>
 		</dependency>
 
-		<!-- Notib -->
 		<dependency>
 			<groupId>org.jboss.spec.javax.ws.rs</groupId>
 			<artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
@@ -116,7 +130,7 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>distribucio-backoffice-utils</artifactId>
-			<version>1.0.10</version>
+			<version>1.1.1</version>
 		</dependency>
 		
 		<dependency>

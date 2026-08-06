@@ -1,0 +1,18 @@
+databaseChangeLog:
+- changeSet:
+    id: 1.0.10_001
+    author: limit
+    comment: Preferències de tema visual i estil de menú de la interfície REACT (perfil de l'usuari)
+    changes:
+    - addColumn:
+        tableName: ${app_prefix}usuari
+        columns:
+        - column:
+            name: tema_aplicacio
+            type: VARCHAR(16)
+        - column:
+            name: estil_menu
+            type: VARCHAR(16)
+            defaultValue: TEMA
+            constraints:
+              nullable: false
