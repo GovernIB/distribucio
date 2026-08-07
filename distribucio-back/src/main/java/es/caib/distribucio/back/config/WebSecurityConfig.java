@@ -105,6 +105,12 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 	protected boolean isOauth2ClientActive() {
 		return !isJboss();
 	}
+	@Override
+	protected boolean isOauth2ResourceServerStateless() {
+		// El servidor de recursos (Bearer JWT, per al SPA React en mode dev) conviu amb el login
+		// per sessió (oauth2Login, per a la interfície JSP): STATELESS trencaria aquest darrer.
+		return false;
+	}
 
 	@Override
 	protected RequestMatcher[] internalPublicRequestMatchers() {

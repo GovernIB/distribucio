@@ -85,10 +85,17 @@ public abstract class BaseWebSecurityConfig {
 		if (isOauth2ResourceServerActive()) {
 			log.info("OAUTH2 resource server active");
 			http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthConverter());
-			// Això és per a que funcioni correctament l'autenticació amb el provider de JBoss i les aplicacions React
-			http.sessionManagement().
-				sessionCreationPolicy(SessionCreationPolicy.STATELESS).
-				sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
+			if (isOauth2ResourceServerStateless()) {
+				// Això és per a que funcioni correctament l'autenticació amb el provider de JBoss i les aplicacions React.
+				// Només s'ha d'aplicar quan el bearer JWT és l'ÚNIC mecanisme actiu: si conviu amb un login basat en
+				// sessió (isOauth2ClientActive()/isOidcClientActive()), STATELESS impedeix que Spring Security
+				// persisteixi el SecurityContext a la HttpSession un cop autenticat, provocant que cada petició
+				// següent es torni a tractar com no autenticada i es torni a redirigir cap a l'IdP (bucle de
+				// redireccions infinit).
+				http.sessionManagement().
+					sessionCreationPolicy(SessionCreationPolicy.STATELESS).
+					sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
+			}
 		}
 		if (isOauth2ClientActive()) {
 			log.info("OAUTH2 client active");
@@ -150,6 +157,18 @@ public abstract class BaseWebSecurityConfig {
 	 * @return true si està activa o false en cas contrari.
 	 */
 	protected boolean isOauth2ResourceServerActive() {
+		return true;
+	}
+	/**
+	 * Indica si l'activació del servidor de recursos OAUTH ha de forçar
+	 * {@link SessionCreationPolicy#STATELESS}. Ha de ser {@code false} si conviu amb un
+	 * mecanisme d'autenticació basat en sessió ({@link #isOauth2ClientActive()}/
+	 * {@link #isOidcClientActive()}), ja que en cas contrari es trenca el manteniment de sessió
+	 * d'aquest.
+	 *
+	 * @return true si s'ha de forçar STATELESS o false en cas contrari.
+	 */
+	protected boolean isOauth2ResourceServerStateless() {
 		return true;
 	}
 	/**
