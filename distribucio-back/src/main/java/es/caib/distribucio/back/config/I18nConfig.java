@@ -5,6 +5,7 @@ package es.caib.distribucio.back.config;
 
 import java.util.Locale;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.LocaleResolver;
@@ -20,11 +21,11 @@ import es.caib.distribucio.back.base.config.BaseMessageSourceConfig;
 @Configuration
 public class I18nConfig extends BaseMessageSourceConfig {
 
-	@Bean
-	public LocaleResolver localeResolver() {
-		SessionLocaleResolver localeResolver = new SessionLocaleResolver();
-		return localeResolver;
-	}
+//	@Bean
+//	public LocaleResolver localeResolver() {
+//		SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+//		return localeResolver;
+//	}
 
 	@Override
 	protected String[] getBasenames() {
@@ -35,7 +36,7 @@ public class I18nConfig extends BaseMessageSourceConfig {
 
 	@Override
 	protected Locale getDefaultLocale() {
-		return Locale.forLanguageTag("ca");
+		return Locale.forLanguageTag(BaseConfig.DEFAULT_LOCALE);
 	}
 
 }

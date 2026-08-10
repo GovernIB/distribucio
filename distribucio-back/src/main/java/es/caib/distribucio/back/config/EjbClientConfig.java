@@ -178,7 +178,7 @@ public class EjbClientConfig {
 	}
 
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {
-		String jndiName = jndiServiceName(serviceClass, false);
+		String jndiName = jndiServiceName(serviceClass);
 		log.info("Creating EJB proxy for " + serviceClass.getSimpleName() + " with JNDI name " + jndiName);
 		LocalStatelessSessionProxyFactoryBean factoryBean = new LocalStatelessSessionProxyFactoryBean();
 		factoryBean.setBusinessInterface(serviceClass);
@@ -187,8 +187,9 @@ public class EjbClientConfig {
 		return factoryBean;
 	}
 
-	private String jndiServiceName(Class<?> serviceClass, boolean addServiceClassName) {
-		return EJB_JNDI_PREFIX + serviceClass.getSimpleName() + EJB_JNDI_SUFFIX + (addServiceClassName ? "!" + serviceClass.getName() : "");
+	private String jndiServiceName(Class<?> serviceClass) {
+		boolean addSuffix = serviceClass.getSimpleName().endsWith("ResourceService");
+		return EJB_JNDI_PREFIX + serviceClass.getSimpleName() + (addSuffix ? EJB_JNDI_SUFFIX : "");
 	}
 
 }

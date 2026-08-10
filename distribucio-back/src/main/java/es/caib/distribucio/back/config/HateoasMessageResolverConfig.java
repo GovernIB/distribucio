@@ -1,6 +1,7 @@
 package es.caib.distribucio.back.config;
 
 import es.caib.distribucio.back.base.config.BaseHateoasMessageResolverConfig;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Locale;
@@ -25,7 +26,7 @@ public class HateoasMessageResolverConfig extends BaseHateoasMessageResolverConf
 
 	@Override
 	protected Locale getDefaultLocale() {
-		return Locale.forLanguageTag("ca");
+		return Locale.forLanguageTag(BaseConfig.DEFAULT_LOCALE);
 	}
 
 }

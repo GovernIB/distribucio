@@ -9,10 +9,12 @@
 		<pattern>/ws*</pattern>
 		<pattern>/webdav*</pattern>
 		<pattern>/api/rest/regles*</pattern>
+		<pattern>/api/services*</pattern>
 	</excludes>
 	<decorator name="senseCapNiPeus" page="senseCapNiPeus.jsp">
 		<pattern>/firmapassarela*</pattern>
 		<pattern>/scanweb*</pattern>
+		<pattern>/api/apidoc</pattern>
 		<pattern>/api/rest</pattern>
 		<pattern>/error</pattern>
 	</decorator>

@@ -1,0 +1,93 @@
+/**
+ * 
+ */
+package es.caib.distribucio.ejb;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.Stateless;
+
+import es.caib.distribucio.ejb.base.AbstractServiceEjb;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.dto.IntegracioDiagnosticDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioDto;
+import es.caib.distribucio.logic.intf.dto.IntegracioFiltreDto;
+import es.caib.distribucio.logic.intf.dto.MonitorIntegracioDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
+
+/**
+ * Implementació de MonitorIntegracioService com a EJB que empra una clase
+ * delegada per accedir a la funcionalitat del servei.
+ * 
+ * @author Limit Tecnologies <limit@limit.es>
+ */
+@Stateless
+public class MonitorIntegracioService extends AbstractService<es.caib.distribucio.logic.intf.service.MonitorIntegracioService> implements es.caib.distribucio.logic.intf.service.MonitorIntegracioService {
+
+	@Override
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
+	public List<IntegracioDto> integracioFindAll() {
+		return getDelegateService().integracioFindAll();
+	}
+
+	@Override
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
+	public List<IntegracioDto> findPerDiagnostic() {
+		return getDelegateService().findPerDiagnostic();
+	}
+
+	@Override
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
+	public MonitorIntegracioDto create(MonitorIntegracioDto monitorIntegracio) {
+		return getDelegateService().create(monitorIntegracio);
+	}
+
+	@Override
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
+	public MonitorIntegracioDto findById(Long id) throws NotFoundException {
+		return getDelegateService().findById(id);
+	}
+
+	@Override
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
+	public PaginaDto<MonitorIntegracioDto> findPaginat(PaginacioParamsDto paginacioParams, IntegracioFiltreDto integracioFiltreDto) {
+		return getDelegateService().findPaginat(paginacioParams, integracioFiltreDto);
+	}
+
+	@Override
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
+	public Map<String, Integer> countErrors(IntegracioFiltreDto integracioFiltreDto) {
+		return getDelegateService().countErrors(integracioFiltreDto);
+	}
+	
+	@Override
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
+	public int esborrarDadesAntigues(Date data) {
+		return getDelegateService().esborrarDadesAntigues(data);
+	}
+
+	@Override
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
+	public int delete(String codi) {
+		return getDelegateService().delete(codi);
+	}
+
+	@Override
+	@RolesAllowed(BaseConfig.ROLE_SUPER)
+	public IntegracioDiagnosticDto diagnostic(String codiIntegracio, UsuariDto usuari) {
+		return getDelegateService().diagnostic(codiIntegracio, usuari);
+	}
+	
+	@Override
+	@RolesAllowed("**")
+	public Map<String, Integer> countCanvisEstatFromUser(String user) {
+		return getDelegateService().countCanvisEstatFromUser(user);
+	}
+
+}

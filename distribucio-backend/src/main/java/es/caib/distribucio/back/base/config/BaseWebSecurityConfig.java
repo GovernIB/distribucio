@@ -86,12 +86,6 @@ public abstract class BaseWebSecurityConfig {
 			log.info("OAUTH2 resource server active");
 			http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthConverter());
 			if (isOauth2ResourceServerStateless()) {
-				// Això és per a que funcioni correctament l'autenticació amb el provider de JBoss i les aplicacions React.
-				// Només s'ha d'aplicar quan el bearer JWT és l'ÚNIC mecanisme actiu: si conviu amb un login basat en
-				// sessió (isOauth2ClientActive()/isOidcClientActive()), STATELESS impedeix que Spring Security
-				// persisteixi el SecurityContext a la HttpSession un cop autenticat, provocant que cada petició
-				// següent es torni a tractar com no autenticada i es torni a redirigir cap a l'IdP (bucle de
-				// redireccions infinit).
 				http.sessionManagement().
 					sessionCreationPolicy(SessionCreationPolicy.STATELESS).
 					sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());

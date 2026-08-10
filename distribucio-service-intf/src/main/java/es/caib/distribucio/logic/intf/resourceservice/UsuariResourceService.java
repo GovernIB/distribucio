@@ -10,4 +10,8 @@ import es.caib.distribucio.logic.intf.model.UsuariResource;
  */
 public interface UsuariResourceService extends MutableResourceService<UsuariResource, String> {
 
+    /**
+     * Refresca la informació de l'usuari autenticat.
+     */
+    void refresh();
 }

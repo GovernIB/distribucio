@@ -2,24 +2,27 @@ package es.caib.distribucio.logic.resourceservice;
 
 import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
+import es.caib.distribucio.logic.helper.CacheHelper;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.model.UsuariResource;
 import es.caib.distribucio.logic.intf.resourceservice.UsuariResourceService;
-import es.caib.distribucio.persist.entity.BustiaDefaultEntity;
-import es.caib.distribucio.persist.entity.BustiaEntity;
-import es.caib.distribucio.persist.entity.EntitatEntity;
-import es.caib.distribucio.persist.entity.UsuariEntity;
-import es.caib.distribucio.persist.repository.BustiaDefaultRepository;
-import es.caib.distribucio.persist.repository.BustiaRepository;
-import es.caib.distribucio.persist.repository.EntitatRepository;
-import es.caib.distribucio.persist.repository.UsuariRepository;
+import es.caib.distribucio.persist.resourceentity.BustiaDefaultResourceEntity;
+import es.caib.distribucio.persist.resourceentity.BustiaResourceEntity;
+import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
 import es.caib.distribucio.persist.resourceentity.UsuariResourceEntity;
+import es.caib.distribucio.persist.resourcerepository.BustiaDefaultResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.BustiaResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.UsuariResourceRepository;
+import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Implementació del servei de consulta i modificació del perfil de l'usuari autenticat actual.
@@ -38,10 +41,12 @@ public class UsuariResourceServiceImpl
 	private static final String ROLE_DISPLAY_PREFIX = "DIS_";
 
 	private final AuthenticationHelper authenticationHelper;
-	private final EntitatRepository entitatRepository;
-	private final UsuariRepository usuariRepository;
-	private final BustiaRepository bustiaRepository;
-	private final BustiaDefaultRepository bustiaDefaultRepository;
+	private final CacheHelper cacheHelper;
+	private final EntitatResourceRepository entitatResourceRepository;
+	private final UsuariResourceRepository usuariResourceRepository;
+
+	private final BustiaResourceRepository bustiaResourceRepository;
+	private final BustiaDefaultResourceRepository bustiaDefaultResourceRepository;
 
 	@Override
 	protected Specification<UsuariResourceEntity> additionalSpecification(String[] namedQueries) {
@@ -60,9 +65,9 @@ public class UsuariResourceServiceImpl
 		// interfície REACT encara no disposa d'un selector d'entitat independent (veure
 		// AplicacioServiceImpl.getBustiaPerDefecte/updateUsuariActual per a l'equivalent JSP).
 		if (resource.getEntitatPerDefecteId() != null) {
-			EntitatEntity entitat = entitatRepository.getReferenceById(resource.getEntitatPerDefecteId());
-			UsuariEntity usuari = usuariRepository.getReferenceById(resource.getId());
-			BustiaDefaultEntity bustiaDefault = bustiaDefaultRepository.findByEntitatAndUsuari(entitat, usuari);
+			EntitatResourceEntity entitat = entitatResourceRepository.getReferenceById(resource.getEntitatPerDefecteId());
+			UsuariResourceEntity usuari = usuariResourceRepository.getReferenceById(resource.getId());
+			BustiaDefaultResourceEntity bustiaDefault = bustiaDefaultResourceRepository.findByEntitatAndUsuari(entitat, usuari);
 			if (bustiaDefault != null) {
 				resource.setBustiaPerDefecte(bustiaDefault.getBustia().getId());
 			}
@@ -87,19 +92,63 @@ public class UsuariResourceServiceImpl
 		if (resource.getEntitatPerDefecteId() == null) {
 			return;
 		}
-		EntitatEntity entitat = entitatRepository.getReferenceById(resource.getEntitatPerDefecteId());
-		UsuariEntity usuari = usuariRepository.getReferenceById(resource.getId());
-		BustiaDefaultEntity bustiaDefault = bustiaDefaultRepository.findByEntitatAndUsuari(entitat, usuari);
+		EntitatResourceEntity entitat = entitatResourceRepository.getReferenceById(resource.getEntitatPerDefecteId());
+		UsuariResourceEntity usuari = usuariResourceRepository.getReferenceById(resource.getId());
+		BustiaDefaultResourceEntity bustiaDefault = bustiaDefaultResourceRepository.findByEntitatAndUsuari(entitat, usuari);
 		if (resource.getBustiaPerDefecte() != null) {
-			BustiaEntity bustia = bustiaRepository.getReferenceById(resource.getBustiaPerDefecte());
+			BustiaResourceEntity bustia = bustiaResourceRepository.getReferenceById(resource.getBustiaPerDefecte());
 			if (bustiaDefault != null) {
 				bustiaDefault.updateBustiaDefault(bustia);
 			} else {
-				bustiaDefaultRepository.save(BustiaDefaultEntity.getBuilder(entitat, bustia, usuari).build());
+				bustiaDefaultResourceRepository.save(BustiaDefaultResourceEntity.getBuilder(entitat, bustia, usuari).build());
 			}
 		} else if (bustiaDefault != null) {
-			bustiaDefaultRepository.delete(bustiaDefault);
+			bustiaDefaultResourceRepository.delete(bustiaDefault);
 		}
 	}
 
+    @Override
+    public void refresh() {
+		UsuariResource usuariFromAuth = getUsuariResourceFromAuth();
+		if (usuariFromAuth != null) {
+			Optional<UsuariResourceEntity> usuariOptional = usuariResourceRepository.findById(authenticationHelper.getCurrentUserName());
+			if (usuariOptional.isPresent()) {
+				UsuariResourceEntity usuariFromDb = usuariOptional.get();
+				if (hasToUpdateUsuari(usuariFromDb, usuariFromAuth)) {
+					usuariFromDb.setNom(usuariFromAuth.getNom());
+					usuariFromDb.setNif(usuariFromAuth.getNif());
+					usuariFromDb.setEmail(usuariFromAuth.getEmail());
+					usuariResourceRepository.save(usuariFromDb);
+				}
+			} else {
+				UsuariResourceEntity usuari = new UsuariResourceEntity();
+				usuari.setId(usuariFromAuth.getId());
+				usuari.setNom(usuariFromAuth.getNom());
+				usuari.setNif(usuariFromAuth.getNif());
+				usuari.setEmail(usuariFromAuth.getEmail());
+				usuari.setEstilMenu(usuariFromAuth.getEstilMenu());
+				usuariResourceRepository.save(usuari);
+			}
+		}
+    }
+
+	private UsuariResource getUsuariResourceFromAuth() {
+		String codi = authenticationHelper.getCurrentUserName();
+		DadesUsuari dadesUsuari = cacheHelper.findUsuariAmbCodi(codi);
+		if (dadesUsuari == null) {
+			return null;
+		}
+		UsuariResource usuari = new UsuariResource();
+		usuari.setId(codi);
+		usuari.setNom(dadesUsuari.getNomSencer());
+		usuari.setNif(dadesUsuari.getNif());
+		usuari.setEmail(dadesUsuari.getEmail());
+		return usuari;
+	}
+
+	private boolean hasToUpdateUsuari(UsuariResourceEntity usuariFromDb, UsuariResource usuariFromAuth) {
+		return !Objects.equals(usuariFromDb.getNom(), usuariFromAuth.getNom()) ||
+				!Objects.equals(usuariFromDb.getNif(), usuariFromAuth.getNif()) ||
+				!Objects.equals(usuariFromDb.getEmail(), usuariFromAuth.getEmail());
+	}
 }

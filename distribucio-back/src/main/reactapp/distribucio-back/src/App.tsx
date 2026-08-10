@@ -11,7 +11,7 @@ import distribucioLogoLight from './assets/distribucio_logo_light.svg';
 import distribucioLogoDark from './assets/distribucio_logo_dark.svg';
 import { getThemeForTema } from './theme';
 import { UserPreferencesProvider, useUserPreferences } from './components/UserProfile';
-import { EntitatRolProvider } from './components/EntitatRolSelector';
+import { DistribucioProvider } from './components/DistribucioProvider';
 
 export const envVars = {
     VITE_API_URL: import.meta.env.VITE_API_URL,
@@ -125,9 +125,9 @@ export const App = () => {
         >
             <ResourceApiProvider apiUrl={getEnvApiUrl()}>
                 <UserPreferencesProvider>
-                    <EntitatRolProvider>
+                    <DistribucioProvider>
                         <ThemedApp />
-                    </EntitatRolProvider>
+                    </DistribucioProvider>
                 </UserPreferencesProvider>
             </ResourceApiProvider>
         </AuthProvider>

@@ -1,61 +1,89 @@
 package es.caib.distribucio.back.controller;
 
 import es.caib.distribucio.back.base.controller.BaseUtilsController;
-import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.back.config.WebSecurityConfig;
 import es.caib.distribucio.logic.intf.base.config.PropertyConfig;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.security.Principal;
+import java.util.Objects;
 
 /**
  * Exposa els endpoints de {@link BaseUtilsController} ({@code /ping}, {@code /sysenv},
  * {@code /manifest}, {@code /authToken}, {@code /authRoles}) que el SPA llegeix com a
  * {@code window.__RUNTIME_CONFIG__}/{@code __MANIFEST__}/{@code __AUTH_TOKEN__}/
  * {@code __AUTH_ROLES__} a l'{@code index.html}.
- * <p>
- * Sempre actiu (independent del perfil {@code devProxy}): aquests endpoints viuen fora de
- * {@code /reactapp}, tant si el build estàtic el serveix {@link ReactAppStaticController} com
- * si en mode desenvolupament ({@code npm run dev}) es demanen via proxy des de Vite (mateix
- * origen des del punt de vista del navegador -- veure {@code vite.config.ts}).
  *
  * @author Límit Tecnologies
  */
 @Slf4j
+@Profile("!devProxy")
+@RequiredArgsConstructor
 @Controller
 public class ReactController extends BaseUtilsController {
 
-	@Autowired(required = false)
-	private OAuth2AuthorizedClientService authorizedClientService;
+	private final ServletContext servletContext;
+
+	@RequestMapping(BaseConfig.REACT_APP_PATH + "/**")
+	public ResponseEntity<?> serveReact(HttpServletRequest request, HttpServletResponse response) {
+		String path = request.getRequestURI().replaceFirst(request.getContextPath(), "");
+		try {
+			// Intentem obrir el recurs
+			InputStream resource = servletContext.getResourceAsStream(path);
+			if (resource != null) {
+				// Serveix el fitxer si existeix
+				String mimeType = servletContext.getMimeType(path);
+				MediaType mediaType = mimeType != null ? MediaType.parseMediaType(mimeType) : MediaType.APPLICATION_OCTET_STREAM;
+				return ResponseEntity
+						.ok()
+						.contentType(mediaType)
+						.body(new InputStreamResource(resource));
+			}
+			// Si no existeix el fitxer, i és un recurs estàtic retornam un NOT FOUND
+			String uri = request.getRequestURI();
+			if (uri.matches(".*\\.(js|css|ico|png|jpg|svg|woff2?|map)$") || uri.endsWith("index.html")) {
+				return ResponseEntity.notFound().build();
+			}
+			// En cas contrari, retornem index.html
+			InputStream indexHtml = servletContext.getResourceAsStream(BaseConfig.REACT_APP_PATH + "/index.html");
+			return ResponseEntity
+					.ok()
+					.contentType(MediaType.TEXT_HTML)
+					.body(new InputStreamResource(Objects.requireNonNull(indexHtml)));
+		} catch (Exception ex) {
+			log.error("Error carregant recurs", ex);
+			return ResponseEntity.internalServerError().body("Error carregant recurs");
+		}
+	}
 
 	@Override
 	protected String getAuthToken() {
-		// El SPA reutilitza la sessió ja establerta per Spring Security (ContainerAuthProvider al
-		// front, sense client OIDC propi), així que no cal exposar cap bearer token com a tal: només
-		// cal un JWT vàlid perquè el front en llegeixi el "exp" i sàpiga quan verificar de nou.
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null) {
-			return null;
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs == null) {
+			throw new IllegalStateException("No current request attributes found");
 		}
-		// Mode JBoss (pre-auth): el principal ja és un OidcUser amb l'idToken del Keycloak adapter.
-		if (authentication.getPrincipal() instanceof OidcUser) {
-			return ((OidcUser) authentication.getPrincipal()).getIdToken().getTokenValue();
-		}
-		// Mode standalone (WebSecurityConfig, isOauth2ClientActive/oauth2Login): el principal és un
-		// DefaultOAuth2User sense el JWT -- cal anar a buscar l'access token real via el client
-		// OAuth2 autoritzat associat a aquesta autenticació.
-		if (authentication instanceof OAuth2AuthenticationToken && authorizedClientService != null) {
-			OAuth2AuthenticationToken oauth2Token = (OAuth2AuthenticationToken) authentication;
-			OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
-					oauth2Token.getAuthorizedClientRegistrationId(),
-					oauth2Token.getName());
-			if (authorizedClient != null) {
-				return authorizedClient.getAccessToken().getTokenValue();
+		HttpServletRequest request = attrs.getRequest();
+		Principal principal = request.getUserPrincipal();
+		if (principal instanceof PreAuthenticatedAuthenticationToken) {
+			PreAuthenticatedAuthenticationToken token = ((PreAuthenticatedAuthenticationToken) request.getUserPrincipal());
+			if (token.getDetails() instanceof WebSecurityConfig.PreauthWebAuthenticationDetails) {
+				WebSecurityConfig.PreauthWebAuthenticationDetails tokenDetails = (WebSecurityConfig.PreauthWebAuthenticationDetails) token.getDetails();
+				return tokenDetails.getJwtToken();
 			}
 		}
 		return null;
@@ -78,8 +106,7 @@ public class ReactController extends BaseUtilsController {
 
 	@Override
 	protected boolean isReactAppMappedFrontProperty(String propertyName) {
-		return propertyName.startsWith(PropertyConfig.PROPERTY_PREFIX_FRONT)
-				&& PropertyConfig.REACT_APP_PROPS_MAP.containsKey(propertyName);
+		return propertyName.startsWith(PropertyConfig.PROPERTY_PREFIX_FRONT) && PropertyConfig.REACT_APP_PROPS_MAP.containsKey(propertyName);
 	}
 
 	@Override
@@ -89,8 +116,7 @@ public class ReactController extends BaseUtilsController {
 
 	@Override
 	protected boolean isViteMappedFrontProperty(String propertyName) {
-		return propertyName.startsWith(PropertyConfig.PROPERTY_PREFIX_FRONT)
-				&& PropertyConfig.VITE_PROPS_MAP.containsKey(propertyName);
+		return propertyName.startsWith(PropertyConfig.PROPERTY_PREFIX_FRONT) && PropertyConfig.VITE_PROPS_MAP.containsKey(propertyName);
 	}
 
 	@Override

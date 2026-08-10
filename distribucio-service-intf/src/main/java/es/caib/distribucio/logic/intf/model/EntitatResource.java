@@ -25,11 +25,22 @@ import javax.validation.constraints.Size;
 @ResourceConfig(
 		descriptionField = EntitatResource.Fields.nom,
 		quickFilterFields = { EntitatResource.Fields.codi, EntitatResource.Fields.nom, EntitatResource.Fields.cif },
-		accessConstraints = @ResourceAccessConstraint(
-				type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-				roles = { BaseConfig.ROLE_SUPER },
-				grantedPermissions = { PermissionEnum.READ, PermissionEnum.WRITE }
-		)
+		accessConstraints = {
+				@ResourceAccessConstraint(
+						type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+						roles = { BaseConfig.ROLE_SUPER },
+						grantedPermissions = { PermissionEnum.READ, PermissionEnum.WRITE }
+				),
+				// Nomes lectura per a la resta de rols -- necessari per a poder llistar les
+				// entitats accessibles a l'usuari actual (selector d'entitat de DistribucioProvider);
+				// la gestió (creació/modificació) de l'entitat continua restringida a DIS_SUPER, igual
+				// que a la interfície JSP (veure WebMvcConfig.SUPER_PATHS).
+				@ResourceAccessConstraint(
+						type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+						roles = { BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_USER },
+						grantedPermissions = { PermissionEnum.READ }
+				)
+		}
 )
 public class EntitatResource extends BaseResource<Long> {
 

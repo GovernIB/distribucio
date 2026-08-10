@@ -18,7 +18,8 @@ import { MuiBaseApp, type MenuEntry, useBaseAppContext, useMuiFormDialogApiRef }
 import i18n from '../i18n/i18n';
 import Offline from './Offline';
 import { UserProfileMenu, UserProfileFormDialog } from './UserProfile';
-import { EntitatSelector, RolSelector, useEntitatRol, getRolBadgeIcon } from './EntitatRolSelector';
+import { EntitatSelector, RolSelector, getRolBadgeIcon } from './EntitatRolSelector';
+import { useDistribucioContext } from './DistribucioContext';
 import { MenuEstil } from '../theme';
 
 export type BaseAppProps = React.PropsWithChildren & {
@@ -162,7 +163,7 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
         }
     };
     const formDialogApiRef = useMuiFormDialogApiRef();
-    const { rolActual } = useEntitatRol();
+    const { currentRole: rolActual } = useDistribucioContext();
     return (
         <Box sx={menuColorSetSx}>
         <MuiBaseApp
