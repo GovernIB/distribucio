@@ -10,3 +10,5 @@ target/
 /.idea/
 /application.properties
 /CLAUDE.md
+/.playwright-mcp
+/distribucio_credentials.json

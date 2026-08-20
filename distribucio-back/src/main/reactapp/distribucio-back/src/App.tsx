@@ -7,8 +7,7 @@ import { BaseApp } from './components/BaseApp';
 import DrassanaFooter from './components/DrassanaFooter';
 import goibLogoLight from './assets/goib_logo_light.svg';
 import goibLogoDark from './assets/goib_logo_dark.svg';
-import distribucioLogoLight from './assets/distribucio_logo_light.svg';
-import distribucioLogoDark from './assets/distribucio_logo_dark.svg';
+import distribucioLogo from './assets/DIR_DRA_COL.svg';
 import { getThemeForTema } from './theme';
 import { UserPreferencesProvider, useUserPreferences } from './components/UserProfile';
 import { DistribucioProvider } from './components/DistribucioProvider';
@@ -54,6 +53,13 @@ const isAuthUrlPresent = envVar('VITE_AUTH_URL', envVars) != null;
 const AuthProvider = isAuthUrlPresent ? OidcAuthProvider : ContainerAuthProvider;
 const version = import.meta.env.VITE_APP_VERSION ?? '0.0.0';
 
+// Mides de la capçalera. MENU_WIDTH és l'amplada del menú lateral obert (el valor per defecte
+// del Drawer de la llibreria); APPBAR_PADDING_LEFT desplaça el botó de menú fins a la columna
+// de les icones del menú, i LOGO_BOX_LEFT és on comença la caixa del logo amb aquest padding.
+const MENU_WIDTH = 240;
+const APPBAR_PADDING_LEFT = 30;
+const LOGO_BOX_LEFT = 82;
+
 const InnerApp: React.FC = () => {
     const { t } = useTranslation();
     const theme = useTheme();
@@ -69,27 +75,41 @@ const InnerApp: React.FC = () => {
         {
             id: 'entitats',
             title: t('app.menu.entitats'),
-            to: 'entitats',
+            to: 'entitat',
             icon: 'domain',
         },
     ];
 
     const bgColor= mode === 'light' ? theme.palette.background.paper : undefined;
     const textColor= bgColor ? theme.palette.getContrastText(bgColor) : undefined;
-    const logoColor = mode === 'light' ? distribucioLogoLight : distribucioLogoDark;
+    // DIR_DRA_COL.svg té els colors fixats (verd corporatiu i gris fosc), així que serveix per
+    // als dos modes; si algun dia cal una variant per a fons foscos, tornar a fer el ternari.
+    const logoColor = distribucioLogo;
     const { estilMenu } = useUserPreferences();
 
     return (
         <BaseApp
             code="DISTRIBUCIO"
             logo={mode === 'light' ? goibLogoLight : goibLogoDark}
-            logoStyle={{ '& img': { height: '40px' }, pl: 1 }}
+            logoStyle={{
+                '& img': { height: '49px' },
+                pl: 1,
+                // El separador vertical ha de caure sobre la vora dreta del menú obert. El botó
+                // de menú duu un marge esquerre de -12, així que ocupa de 18 a 66, i amb els seus
+                // 16 de marge dret la caixa del logo arrenca a LOGO_BOX_LEFT. Fixant-ne l'amplada
+                // (en comptes de deixar que la mida del logo mani) la vora cau sempre a MENU_WIDTH.
+                width: MENU_WIDTH - LOGO_BOX_LEFT + 'px',
+                boxSizing: 'border-box',
+                borderRight: `1px solid ${theme.palette.divider}`,
+            }}
             title={<img style={{ marginLeft: '8px', height: '49px', verticalAlign: 'middle' }} src={logoColor} alt="Distribucio"/>}
             version={version}
             menuEntries={menuEntries}
             menuAppearance={estilMenu}
             appbarBackgroundColor={bgColor}
-            appbarStyle={{ color: textColor }}
+            // El botó de menú duu ml -12, així que amb 30 de padding queda centrat a 42px, la
+            // mateixa columna que les icones del menú lateral.
+            appbarStyle={{ color: textColor, paddingLeft: APPBAR_PADDING_LEFT + 'px' }}
             footerHeight={36}
             footer={
                 <div style={{ height: '36px' }}>

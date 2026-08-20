@@ -20,15 +20,15 @@ export const router = createBrowserRouter(
                     element: <Home />,
                 },
                 {
-                    path: 'entitats',
+                    path: 'entitat',
                     element: <EntitatGrid />,
                 },
                 {
-                    path: 'entitats/form',
+                    path: 'entitat/form',
                     element: <EntitatForm />,
                 },
                 {
-                    path: 'entitats/form/:id',
+                    path: 'entitat/form/:id',
                     element: <EntitatForm />,
                 },
                 // Necessari perquè OidcAuthProvider (App -> AuthProvider) es munti també quan

@@ -18,7 +18,7 @@ const translationEs = {
         home: {
             toolbar: {
                 title: 'DISTRIBUCIO',
-                subtitle: 'Repositorio para la Interoperabilidad de los Procedimientos Electrónicos Administrativos',
+                subtitle: 'Distribución de anotaciones de registro a los diferentes buzones de los organismos.',
             },
         },
         entitats: {

@@ -96,6 +96,15 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 			http.sessionManagement(session -> session
 					.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
 					.invalidSessionUrl("/"));
+			// Les autoritats es creen sense prefix (veure BaseWebSecurityConfig.oidcUserService i
+			// MethodSecurityConfig.DEFAULT_ROLE_PREFIX), però el wrapper de Spring Security que
+			// respon HttpServletRequest.isUserInRole() hi anteposa "ROLE_" per defecte i no troba
+			// mai cap coincidència. Sense això RolHelper no ofereix DIS_SUPER a la capçalera
+			// (getRolsUsuariActual és l'únic lloc que el consulta amb isUserInRole) i el canvi de
+			// rol falla en silenci, perquè processarCanviRols també hi passa.
+			// Només en mode Boot standalone: sobre JBoss els rols arriben del contenidor per
+			// pre-autenticació i aquest camí encara no s'ha provat.
+			http.servletApi(servletApi -> servletApi.rolePrefix(MethodSecurityConfig.DEFAULT_ROLE_PREFIX));
 		}
 		super.customHttpSecurityConfiguration(http);
 	}

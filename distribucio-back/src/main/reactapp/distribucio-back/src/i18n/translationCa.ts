@@ -18,7 +18,7 @@ const translationCa = {
         home: {
             toolbar: {
                 title: 'DISTRIBUCIO',
-                subtitle: 'Repositori per a la Interoperabilitat dels Procediments Electrònics Administratius',
+                subtitle: "Distribució d'anotacions de registre a les diferents bústies dels organismes.",
             },
         },
         entitats: {
