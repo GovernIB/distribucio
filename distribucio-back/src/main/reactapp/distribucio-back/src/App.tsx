@@ -11,6 +11,7 @@ import distribucioLogo from './assets/DIR_DRA_COL.svg';
 import { getThemeForTema } from './theme';
 import { UserPreferencesProvider, useUserPreferences } from './components/UserProfile';
 import { DistribucioProvider } from './components/DistribucioProvider';
+import { SessionStorageProvider } from './components/SessionStorageContext';
 
 export const envVars = {
     VITE_API_URL: import.meta.env.VITE_API_URL,
@@ -146,7 +147,9 @@ export const App = () => {
             <ResourceApiProvider apiUrl={getEnvApiUrl()}>
                 <UserPreferencesProvider>
                     <DistribucioProvider>
-                        <ThemedApp />
+                        <SessionStorageProvider>
+                            <ThemedApp />
+                        </SessionStorageProvider>
                     </DistribucioProvider>
                 </UserPreferencesProvider>
             </ResourceApiProvider>

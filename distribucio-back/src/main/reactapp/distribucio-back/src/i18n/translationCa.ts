@@ -4,6 +4,18 @@ const translationCa = {
             option: 'Selecciona...',
         },
     },
+    // Claus compartides pels components portats de RIPEA (StyledMuiFilter...). Es manté el
+    // nom "common" que fan servir aquests components perquè els propers ports hi encaixin
+    // sense retocs.
+    common: {
+        clear: 'Neteja',
+        filter: 'Filtra',
+        filterCount_one: '{{num}} filtre aplicat',
+        filterCount_other: '{{num}} filtres aplicats',
+        advancedSearch: 'Cerca avançada',
+        advancedSearchOpen: 'Obre la cerca avançada',
+        advancedSearchClose: 'Tanca la cerca avançada',
+    },
     app: {
         loading: 'Iniciant DISTRIBUCIO',
         menu: {

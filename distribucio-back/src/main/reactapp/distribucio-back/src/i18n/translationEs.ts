@@ -4,6 +4,18 @@ const translationEs = {
             option: 'Selecciona...',
         },
     },
+    // Claves compartidas por los componentes portados de RIPEA (StyledMuiFilter...). Se mantiene
+    // el nombre "common" que usan estos componentes para que los próximos ports encajen sin
+    // retoques.
+    common: {
+        clear: 'Limpia',
+        filter: 'Filtra',
+        filterCount_one: '{{num}} filtro aplicado',
+        filterCount_other: '{{num}} filtros aplicados',
+        advancedSearch: 'Búsqueda avanzada',
+        advancedSearchOpen: 'Abrir la búsqueda avanzada',
+        advancedSearchClose: 'Cerrar la búsqueda avanzada',
+    },
     app: {
         loading: 'Iniciando DISTRIBUCIO',
         menu: {

@@ -29,6 +29,27 @@ export enum MenuEstil {
 // Compartit per tots els temes: el MuiTreeItem s'adapta automàticament al `theme` actiu que rep
 // per paràmetre, per tant no cal repetir-lo a cada tema.
 const commonComponents = {
+    MuiCssBaseline: {
+        styleOverrides: {
+            // Contenidor del filtre dels llistats (veure components/StyledMuiFilter.tsx).
+            // El padding horitzontal és el mateix desplaçament que la graella aplica a les
+            // seves files, de manera que els camps del filtre queden alineats amb les
+            // columnes i el botó "Filtra" no arriba a tocar la vora dreta de la pàgina.
+            // (A RIPEA aquest padding està comentat perquè allà el filtre va dins d'un CardPage
+            // que ja el proporciona.)
+            '.styledFilter': {
+                marginBottom: '16px',
+                // 16px a dalt (no els 11px de RIPEA) perquè les etiquetes flotants dels camps
+                // no quedin enganxades a la capçalera: aquí el filtre no va dins de cap card.
+                paddingTop: '16px',
+                paddingBottom: '16px',
+                paddingLeft: '16px',
+                paddingRight: '16px',
+                borderRadius: '4px',
+                backgroundColor: 'inherit',
+            },
+        },
+    },
     MuiTreeItem: {
         styleOverrides: {
             content: ({ theme }: { theme: any }) => ({

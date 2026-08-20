@@ -1,0 +1,106 @@
+import { formatEndOfDay, formatStartOfDay } from './dateUtils';
+
+/**
+ * Constructors d'expressions Spring Filter per als filtres dels llistats.
+ *
+ * Port de `src/util/springFilterUtils.ts` de RIPEA. Complementa
+ * `springFilterBuilder` de reactlib amb els operadors que fan servir els filtres de
+ * pantalla (like, eq, exists, betweenDates...) i, sobretot, descarta els operands buits
+ * perquè un camp sense valor no arribi a la consulta.
+ */
+
+const filter = (options: any[]): any[] => {
+    return options.filter(
+        (a) =>
+            a != null &&
+            a.length > 0 &&
+            !a.includes('undefined') &&
+            !(a.includes('null') && !(a.includes('is not null') || a.includes('is null')))
+    );
+};
+
+export const and = (...options: any[]): string => {
+    const joinedValues = filter(options).join(' AND ');
+    return joinedValues.includes(' AND ') ? `(${joinedValues})` : joinedValues;
+};
+
+export const or = (...options: any[]): string => {
+    const joinedValues = filter(options).join(' OR ');
+    return joinedValues.includes(' OR ') ? `(${joinedValues})` : joinedValues;
+};
+
+// Escapa els caràcters reservats de Spring Filter dins del valor d'una cadena.
+// El literal es delimita amb cometa simple, així que una cometa dins del valor
+// (p. ex. "Consell d'Eivissa") tancaria el literal abans d'hora i faria petar el
+// lexer (BadFilterSyntaxException: token recognition error). Spring Filter escapa
+// la cometa amb barra invertida (\'), tal com fa el servidor pel quickFilter a
+// BaseReadonlyResourceService.cleanReservedFilterCharacters(). Repliquem aquí el
+// mateix per al filtre, que construeix la cadena al client.
+const escapeFilterValue = (value: any): any =>
+    value == null ? value : String(value).replace(/'/g, "\\'");
+
+export const like = (option: string, value: string): string => {
+    return `${option}~'%${escapeFilterValue(value)}%'`;
+};
+
+export const likeNormalized = (option: string, value: string): string => {
+    const normalized = value
+        ? value
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+              .toUpperCase()
+        : value;
+    return `${option}~'%${escapeFilterValue(normalized)}%'`;
+};
+
+export const neq = (option: string, value: any): string => {
+    return value === null ? `${option} is not null` : `${option}!${value}`;
+};
+
+export const eq = (option: string, value: any): string => {
+    return value === null ? `${option} is null` : `${option}:${value}`;
+};
+
+export const equals = (option: string, value: any, equals: boolean): string => {
+    return equals ? eq(option, value) : neq(option, value);
+};
+
+export const concat = (...options: any[]): string => {
+    return options.length > 0 ? `concat(${filter(options).join(",' ',")})` : '';
+};
+
+export const exists = (value: string): string => {
+    return value.length > 0 ? `exists(${value})` : '';
+};
+
+export const not = (value: string): string => {
+    return value.length > 0 ? `not(${value})` : '';
+};
+
+export const inside = (value: string, ...options: any[]): string => {
+    return options.length > 0 ? `${value} in (${filter(options).join(',')})` : '';
+};
+
+export const greaterThan = (option: string, value: any): string => {
+    return `${option}>${value}`;
+};
+
+export const greaterEq = (option: string, value: any): string => {
+    return `${option}>:${value}`;
+};
+
+export const lessThan = (option: string, value: any): string => {
+    return `${option}<${value}`;
+};
+
+export const lessEq = (option: string, value: any): string => {
+    return `${option}<:${value}`;
+};
+
+export const between = (option: string, paramStart: any, paramEnd: any) => {
+    return and(greaterEq(option, paramStart), lessEq(option, paramEnd));
+};
+
+export const betweenDates = (option: string, paramStart: any, paramEnd: any) => {
+    return between(option, `'${formatStartOfDay(paramStart)}'`, `'${formatEndOfDay(paramEnd)}'`);
+};
