@@ -27,6 +27,9 @@ const translationEs = {
         },
     },
     page: {
+        forbidden: {
+            message: 'No tiene acceso a esta página con el rol actual',
+        },
         notFound: {
             message: 'Página no encontrada',
         },

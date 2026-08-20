@@ -146,15 +146,17 @@ const useCurrentRole = (broadcast: BroadcastSession) => {
             return;
         }
         const tokenDecoded = decodeJwt(token);
-        if (tokenDecoded.realm_access == null) {
-            const windowAuthRoles = (window as any).__AUTH_ROLES__ ?? [];
-            const rolesAvailable = ALLOWED_ROLES.filter((a) => windowAuthRoles.includes(a));
-            setRolesAvailable(rolesAvailable);
-            return;
-        }
-        const realmRoles = tokenDecoded.realm_access?.roles?.filter((r: string) => r === ROLE_USER || r.startsWith(ROLE_PREFIX)) ?? [];
-        const rolesAvailable = ALLOWED_ROLES.filter((a) => realmRoles.includes(a));
-        setRolesAvailable(rolesAvailable);
+        // Els rols vénen del token (mode OIDC) o de __AUTH_ROLES__ (mode contenidor, on el token
+        // no duu realm_access), i sempre s'hi afegeix ROLE_USER: "tothom" no és un rol de Keycloak
+        // sinó el rol base que el backend concedeix a tot usuari autenticat (veure
+        // WebSecurityConfig.filterAllowedGrantedAuthorities), igual que a RIPEA.
+        const rolsIdp: string[] =
+            tokenDecoded.realm_access != null
+                ? tokenDecoded.realm_access?.roles?.filter(
+                      (r: string) => r === ROLE_USER || r.startsWith(ROLE_PREFIX)
+                  ) ?? []
+                : (window as any).__AUTH_ROLES__ ?? [];
+        setRolesAvailable(ALLOWED_ROLES.filter((a) => a === ROLE_USER || rolsIdp.includes(a)));
     }, [authIsReady]);
 
     React.useEffect(() => {

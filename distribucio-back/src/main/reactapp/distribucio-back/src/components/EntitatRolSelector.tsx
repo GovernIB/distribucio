@@ -8,7 +8,9 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
+import { useNavigate } from 'react-router-dom';
 import { useDistribucioContext, ROLE_SUPER, ROLE_ADMIN } from './DistribucioContext';
+import { rutaInicialPerRol } from '../util/pantalles';
 
 // Icona de distintiu sobre l'avatar de l'usuari segons el rol actual (cap distintiu per a la
 // resta de rols). S'usa a headerAuthBadgeIcon de MuiBaseApp.
@@ -68,6 +70,7 @@ export const EntitatSelector: React.FC = () => {
 export const RolSelector: React.FC = () => {
     const { t } = useTranslation();
     const { rolesAvailable, currentRole, setCurrentRole } = useDistribucioContext();
+    const navigate = useNavigate();
     const [expanded, setExpanded] = React.useState(false);
     const rolsDisponibles = rolesAvailable ?? [];
     const label = (rol: string) => t(`component.EntitatRolSelector.rol.${rol}`, rol);
@@ -105,6 +108,10 @@ export const RolSelector: React.FC = () => {
                         onClick={() => {
                             setCurrentRole(rol);
                             setExpanded(false);
+                            // Amb el rol nou la pantalla actual pot quedar prohibida (p.ex.
+                            // sortir de DIS_SUPER estant a /entitat): s'hi va a la d'inici del
+                            // rol, com fa RIPEA amb el navigate('/') posterior al canvi de rol.
+                            navigate(rutaInicialPerRol(rol));
                         }}
                     >
                         <ListItemText>{label(rol)}</ListItemText>

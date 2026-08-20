@@ -21,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.SimpleAttributes2GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleMappableAttributesRetriever;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
@@ -63,7 +64,8 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 			BaseConfig.ROLE_ADMIN_LECTURA + "," +
 			BaseConfig.ROLE_REGLA + "," +
 			BaseConfig.ROLE_BUSTIA_WS + "," +
-			BaseConfig.ROLE_COMANDA + "}")
+			BaseConfig.ROLE_COMANDA + "," +
+			BaseConfig.ROLE_USER + "}")
 	private String mappableRoles;
 	@Value("${" + BaseConfig.PROP_SECURITY_ROLE_HTTP_HEADER + ":X-App-Role}")
 	private String selectedRoleHttpHeader;
@@ -182,6 +184,25 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 		return allowedRoles;
 	}
 
+	/**
+	 * Concedeix el rol "tothom" ({@link BaseConfig#ROLE_USER}) a qualsevol usuari autenticat, abans
+	 * que s'apliqui el filtre de rols permesos. No és un rol de Keycloak ni està declarat al
+	 * web.xml: és el rol base amb què opera qualsevol usuari de l'aplicació, i la interfície JSP
+	 * ja l'ofereix al selector sempre que l'usuari tengui permís de lectura sobre l'entitat actual
+	 * (veure {@code RolHelper.getRolsUsuariActual}). Sense això el selector de rols de la interfície
+	 * REACT no el pot oferir mai, i seleccionar-lo deixava l'usuari sense cap authority perquè
+	 * {@link #getAllowedRoles()} no el considerava mapejable.
+	 * <p/>
+	 * RIPEA fa el mateix a {@code SpringBootWebSecurityConfig.java:104} (camí Spring Boot) i a
+	 * {@code JBossWebSecurityConfig.java:141} (camí JBoss, que aquí es cobreix a
+	 * {@link #getPreauthFilterAuthenticationDetailsSource()}).
+	 */
+	@Override
+	protected void filterAllowedGrantedAuthorities(Set<GrantedAuthority> grantedAuthorities) {
+		grantedAuthorities.add(new SimpleGrantedAuthority(BaseConfig.ROLE_USER));
+		super.filterAllowedGrantedAuthorities(grantedAuthorities);
+	}
+
 	private boolean isJboss() {
 		return jbossHomeDir != null;
 	}
@@ -191,7 +212,11 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 		J2eeBasedPreAuthenticatedWebAuthenticationDetailsSource authenticationDetailsSource = new J2eeBasedPreAuthenticatedWebAuthenticationDetailsSource() {
 			@Override
 			public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails buildDetails(HttpServletRequest context) {
-				Collection<String> j2eeUserRoles = getUserRoles(context);
+				// El contenidor no coneix el rol "tothom" (no està declarat al web.xml), així que
+				// s'afegeix aquí als rols J2EE perquè tot usuari autenticat el tengui també en
+				// mode EAR -- veure filterAllowedGrantedAuthorities.
+				Collection<String> j2eeUserRoles = new HashSet<>(getUserRoles(context));
+				j2eeUserRoles.add(BaseConfig.ROLE_USER);
 				logger.debug("Roles from ServletRequest for " + context.getUserPrincipal().getName() + ": " + j2eeUserRoles);
 				PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails result;
 				if (context.getUserPrincipal() instanceof KeycloakPrincipal) {

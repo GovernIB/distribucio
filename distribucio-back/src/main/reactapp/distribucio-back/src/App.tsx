@@ -11,6 +11,8 @@ import distribucioLogo from './assets/DIR_DRA_COL.svg';
 import { getThemeForTema } from './theme';
 import { UserPreferencesProvider, useUserPreferences } from './components/UserProfile';
 import { DistribucioProvider } from './components/DistribucioProvider';
+import { useDistribucioContext } from './components/DistribucioContext';
+import { filtrarEntradesMenu, type MenuEntryAmbPantalla } from './util/pantalles';
 import { SessionStorageProvider } from './components/SessionStorageContext';
 
 export const envVars = {
@@ -66,18 +68,23 @@ const InnerApp: React.FC = () => {
     const theme = useTheme();
     const mode = theme.palette.mode;
 
-    const menuEntries = [
+    const { currentRole } = useDistribucioContext();
+    // La pantalla de cada entrada determina a quins rols es mostra (veure PANTALLA_ROLS a
+    // util/pantalles.ts): el menú i les guardes de ruta surten de la mateixa declaració.
+    const menuEntries: MenuEntryAmbPantalla[] = [
         {
             id: 'home',
             title: t('app.menu.home'),
             to: 'home',
             icon: 'home',
+            pantalla: 'home',
         },
         {
             id: 'entitats',
             title: t('app.menu.entitats'),
             to: 'entitat',
             icon: 'domain',
+            pantalla: 'entitat',
         },
     ];
 
@@ -105,7 +112,7 @@ const InnerApp: React.FC = () => {
             }}
             title={<img style={{ marginLeft: '8px', height: '49px', verticalAlign: 'middle' }} src={logoColor} alt="Distribucio"/>}
             version={version}
-            menuEntries={menuEntries}
+            menuEntries={filtrarEntradesMenu(menuEntries, currentRole)}
             menuAppearance={estilMenu}
             appbarBackgroundColor={bgColor}
             // El botó de menú duu ml -12, així que amb 30 de padding queda centrat a 42px, la

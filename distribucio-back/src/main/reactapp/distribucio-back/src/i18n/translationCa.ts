@@ -27,6 +27,9 @@ const translationCa = {
         },
     },
     page: {
+        forbidden: {
+            message: 'No teniu accés a aquesta pàgina amb el rol actual',
+        },
         notFound: {
             message: 'Pàgina no trobada',
         },
