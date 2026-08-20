@@ -256,7 +256,12 @@ body {
 					  <div class="navbar-btn navbar-right">								
 						<div class="btn-group">					
 					<div class="clearfix"></div>									
-						<div class="btn-group pull-right">			
+						<div class="btn-group pull-right">
+							<%-- Enllaç cap a la interfície REACT, amb el mateix estil que a RIPEA: un
+							     "btn btn-default" que encapçala el grup de botons del menú. A diferència
+							     de RIPEA no cal repetir-lo dins de cada rol, perquè aquí el destí és
+							     únic: l'arrel del SPA, que el seu router redirigeix a /home. --%>
+							<a href="<c:url value="/reactapp/"/>" class="btn btn-default"><span class="fa fa-forward" style="color: #ff9523;"></span> <spring:message code="decorator.menu.interficie.moderna"/></a>
 							<c:choose>
 								<c:when test="${isRolActualSuperusuari}">
 									<a href="<c:url value="/entitat"/>" class="btn btn-primary"><spring:message code="decorator.menu.entitats"/></a>

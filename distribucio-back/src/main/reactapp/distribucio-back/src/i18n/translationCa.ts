@@ -10,6 +10,9 @@ const translationCa = {
             home: 'Inici',
             entitats: 'Entitats',
         },
+        interficie: {
+            classica: 'Interfície clàssica',
+        },
     },
     page: {
         notFound: {

@@ -10,6 +10,9 @@ const translationEs = {
             home: 'Inicio',
             entitats: 'Entidades',
         },
+        interficie: {
+            classica: 'Interfaz clásica',
+        },
     },
     page: {
         notFound: {

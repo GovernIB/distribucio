@@ -19,6 +19,7 @@ import i18n from '../i18n/i18n';
 import Offline from './Offline';
 import { UserProfileMenu, UserProfileFormDialog } from './UserProfile';
 import { EntitatSelector, RolSelector, getRolBadgeIcon } from './EntitatRolSelector';
+import { InterficieClassicaButton } from './InterficieClassica';
 import { useDistribucioContext } from './DistribucioContext';
 import { MenuEstil } from '../theme';
 
@@ -175,6 +176,9 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
             headerAppbarStyle={appbarStyle}
             headerVersion={version}
             headerAdditionalComponents={[
+                <Box key="interficie_classica" sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                    <InterficieClassicaButton />
+                </Box>,
                 <Box key="entitat_selector" sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
                     <EntitatSelector />
                 </Box>,
