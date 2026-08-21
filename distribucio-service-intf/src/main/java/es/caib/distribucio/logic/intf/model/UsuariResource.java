@@ -57,6 +57,11 @@ public class UsuariResource extends BaseResource<String> {
 	private TemaAplicacioEnum temaAplicacio;
 	@NotNull
 	private MenuEstilEnum estilMenu = MenuEstilEnum.TEMA;
+	/** Darrer rol amb que ha operat l'usuari (columna dis_usuari.rol_actual, la mateixa que fa
+	 *  servir la interficie JSP): la interficie REACT el recupera en iniciar sessio i el desa
+	 *  quan es canvia de rol des del selector. */
+	@Size(max = 64)
+	private String rolActual;
 	/** Nomes es fixa en llegir el recurs (veure completeResource); no es persisteix. */
 	private String[] rols;
 

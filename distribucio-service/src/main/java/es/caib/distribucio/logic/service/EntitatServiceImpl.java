@@ -4,6 +4,7 @@
 package es.caib.distribucio.logic.service;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -276,12 +278,25 @@ public class EntitatServiceImpl implements EntitatService {
 			String authUserName = auth.getName();
 			logger.trace("Consulta les entitats accessibles per l'usuari actual (" +
 					"usuari=" + authUserName + ")");
-			entitats = cacheHelper.findEntitatsAccessiblesUsuari(authUserName);
+			entitats = cacheHelper.findEntitatsAccessiblesUsuari(
+					authUserName,
+					getRolsClauCache(auth));
 		} else {
 			logger.trace("Consulta de les entitats per l'usuari actual sense usuari autenticat.");
 			entitats = new ArrayList<EntitatDto>();
 		}
 		return entitats;
+	}
+
+	/**
+	 * Rols de l'autenticacio, ordenats i concatenats, per a formar part de la clau de la cache
+	 * d'entitats accessibles (veure {@code CacheHelper.findEntitatsAccessiblesUsuari}).
+	 */
+	private String getRolsClauCache(Authentication auth) {
+		return auth.getAuthorities().stream().
+				map(GrantedAuthority::getAuthority).
+				sorted().
+				collect(Collectors.joining(","));
 	}
 
 	@Transactional(readOnly = true)

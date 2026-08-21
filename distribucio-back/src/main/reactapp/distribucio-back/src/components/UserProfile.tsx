@@ -23,6 +23,7 @@ import {
     useFormContext,
 } from 'reactlib';
 import { TemaAplicacio, MenuEstil } from '../theme';
+import { useDistribucioContext } from './DistribucioContext';
 import GridFormField from './GridFormField';
 
 const selectorLabelSx = {
@@ -199,17 +200,20 @@ const PreferencesSync: React.FC = () => {
     return null;
 };
 
-// Camp de només lectura amb els rols de l'usuari (ja filtrats a DIS_* pel backend). No es
-// tradueixen, es mostren tal qual.
+// Camp de només lectura amb els rols amb què l'usuari pot operar. Es mostren els del context
+// (els mateixos que ofereix el selector de rol) i no data.rols: el backend construeix aquest camp
+// a partir de les autoritats de la petició, i RolSeleccionatFilter les restringeix al rol actiu,
+// de manera que només s'hi veuria el rol amb què s'està operant. No es tradueixen.
 const RolesField: React.FC = () => {
     const { t } = useTranslation();
     const { data } = useFormContext();
+    const { rolesAvailable } = useDistribucioContext();
     return (
         <TextField
             fullWidth
             size="small"
             label={t('component.UserProfile.rols')}
-            value={(data?.rols ?? []).join(', ')}
+            value={(rolesAvailable ?? data?.rols ?? []).join(', ')}
             disabled
             slotProps={{
                 input: {

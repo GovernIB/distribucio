@@ -119,7 +119,7 @@ const useCurrentUser = () => {
     return { currentUser, setCurrentUser };
 };
 
-const useCurrentRole = (broadcast: BroadcastSession) => {
+const useCurrentRole = (broadcast: BroadcastSession, currentUser: any) => {
 
     const {isReady: authIsReady, getUserId: authGetUserId, getToken: authGetToken,} = useAuthContext();
     const { httpHeaders: apiHttpHeaders, setHttpHeaders: apiSetHttpHeaders } = useResourceApiContext();
@@ -160,18 +160,21 @@ const useCurrentRole = (broadcast: BroadcastSession) => {
     }, [authIsReady]);
 
     React.useEffect(() => {
-        // Configura l'estat amb el rol actual si aquest encara no s'ha inicialitzat i els rols disponibles ja s'han obtingut
-        if (rolesAvailable == null || currentRole != null) {
+        // Rol inicial, per aquest ordre: el de la pestanya actual (sessionStorage), el darrer rol
+        // amb què l'usuari va operar (dis_usuari.rol_actual, el mateix camp que la interfície JSP)
+        // i, si cap dels dos no està disponible, el rol base "tothom". S'espera currentUser per no
+        // decidir abans de conèixer el rol desat (isReady ja l'espera igualment).
+        if (rolesAvailable == null || currentUser == null || currentRole != null) {
             return;
         }
-        const sessionValue = roleSessionGetValue();
-        const isSessionValueInRolesAvailable = sessionValue != null && rolesAvailable?.includes(sessionValue);
-        if (sessionValue != null && isSessionValueInRolesAvailable) {
-            setCurrentRole(sessionValue);
-        } else if (rolesAvailable?.length && currentRole == null) {
-            setCurrentRole(rolesAvailable[0]);
+        const rolDisponible = (rol?: string) => rol != null && rolesAvailable.includes(rol);
+        const rolInicial =
+            [roleSessionGetValue() ?? undefined, currentUser.rolActual].find(rolDisponible) ??
+            (rolDisponible(ROLE_USER) ? ROLE_USER : rolesAvailable[0]);
+        if (rolInicial != null) {
+            setCurrentRole(rolInicial);
         }
-    }, [rolesAvailable, currentRole]);
+    }, [rolesAvailable, currentRole, currentUser]);
 
     React.useEffect(() => {
         // Configura el session storage i la capçalera HTTP amb el rol actual quan aquest canvia
@@ -305,8 +308,8 @@ export const DistribucioProvider: React.FC<React.PropsWithChildren> = ({ childre
 
     const { offline: apiOffline } = useResourceApiContext();
     const broadcast = useBroadcastSession();
-    const { currentUserId, currentRole, currentRoleReady, rolesAvailable, setCurrentRole } = useCurrentRole(broadcast);
     const { currentUser, setCurrentUser } = useCurrentUser();
+    const { currentUserId, currentRole, currentRoleReady, rolesAvailable, setCurrentRole } = useCurrentRole(broadcast, currentUser);
     const {
         currentEntitatId,
         currentEntitatReady,

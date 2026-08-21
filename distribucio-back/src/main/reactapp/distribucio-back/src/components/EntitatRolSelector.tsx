@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
+import { useResourceApiService } from 'reactlib';
 import { useDistribucioContext, ROLE_SUPER, ROLE_ADMIN } from './DistribucioContext';
 import { rutaInicialPerRol } from '../util/pantalles';
 
@@ -69,8 +70,22 @@ export const EntitatSelector: React.FC = () => {
 // `selected`).
 export const RolSelector: React.FC = () => {
     const { t } = useTranslation();
-    const { rolesAvailable, currentRole, setCurrentRole } = useDistribucioContext();
+    const { rolesAvailable, currentRole, setCurrentRole, currentUser, setCurrentUser } =
+        useDistribucioContext();
+    const { isReady: usuariApiIsReady, patch: usuariApiPatch } = useResourceApiService('usuariResource');
     const navigate = useNavigate();
+    // Desa el rol triat a dis_usuari.rol_actual perquè el proper inici de sessió hi torni (veure
+    // la resolució del rol inicial a DistribucioProvider). Només es desa des d'aquí, que és
+    // l'acció explícita de l'usuari: les altres pestanyes reben el canvi pel BroadcastChannel i
+    // no l'han de reescriure (dues escriptures simultànies xocarien amb el control de versió).
+    const desarRolActual = (rol: string) => {
+        if (!usuariApiIsReady || currentUser?.id == null) {
+            return;
+        }
+        usuariApiPatch(currentUser.id, { data: { rolActual: rol } })
+            .then(() => setCurrentUser({ ...currentUser, rolActual: rol }))
+            .catch((error: any) => console.error("No s'ha pogut desar el rol actual", error));
+    };
     const [expanded, setExpanded] = React.useState(false);
     const rolsDisponibles = rolesAvailable ?? [];
     const label = (rol: string) => t(`component.EntitatRolSelector.rol.${rol}`, rol);
@@ -108,6 +123,7 @@ export const RolSelector: React.FC = () => {
                         onClick={() => {
                             setCurrentRole(rol);
                             setExpanded(false);
+                            desarRolActual(rol);
                             // Amb el rol nou la pantalla actual pot quedar prohibida (p.ex.
                             // sortir de DIS_SUPER estant a /entitat): s'hi va a la d'inici del
                             // rol, com fa RIPEA amb el navigate('/') posterior al canvi de rol.

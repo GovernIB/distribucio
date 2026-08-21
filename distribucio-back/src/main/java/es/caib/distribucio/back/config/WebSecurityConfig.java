@@ -26,6 +26,7 @@ import org.springframework.security.core.authority.mapping.SimpleAttributes2Gran
 import org.springframework.security.core.authority.mapping.SimpleMappableAttributesRetriever;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails;
 import org.springframework.security.web.authentication.preauth.j2ee.J2eeBasedPreAuthenticatedWebAuthenticationDetailsSource;
@@ -94,6 +95,12 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 		}
 		http.authorizeHttpRequests().
 				requestMatchers(publicRequestMatchers()).permitAll();
+		// La interfície REACT indica a cada petició amb quin rol està operant l'usuari; el filtre
+		// hi restringeix les autoritats perquè les comprovacions per rol responguin "opera amb
+		// aquest rol" i no "té aquest rol" (veure RolSeleccionatFilter).
+		http.addFilterBefore(
+				new RolSeleccionatFilter(selectedRoleHttpHeader),
+				AuthorizationFilter.class);
 		if (!isJboss()) {
 			http.sessionManagement(session -> session
 					.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
@@ -230,9 +237,10 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 								forEach(roles::add);
 					}
 					IDToken idToken = keycloakPrincipal.getKeycloakSecurityContext().getIdToken();
-					Collection<? extends GrantedAuthority> grantedAuthorities = j2eeUserRoles2GrantedAuthoritiesMapper.
-							getGrantedAuthorities(roles);
-					filterAllowedGrantedAuthorities(new HashSet<>(grantedAuthorities));
+					// Les autoritats es construeixen senceres a posta: la restricció al rol
+					// seleccionat es fa per petició a RolSeleccionatFilter, no aquí, perquè
+					// aquest detall es calcula un sol cop i deixaria els rols congelats al que
+					// hi hagués a la capçalera de la primera petició de la sessió.
 					result = new PreauthWebAuthenticationDetails(
 							context,
 							j2eeUserRoles2GrantedAuthoritiesMapper.getGrantedAuthorities(roles),
@@ -245,9 +253,9 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 							(String)idToken.getOtherClaims().get("nif"),
 							roles.toArray(new String[0]));
 				} else {
+					// Veure el comentari del bloc anterior sobre la restricció per rol.
 					Collection<? extends GrantedAuthority> grantedAuthorities = j2eeUserRoles2GrantedAuthoritiesMapper.
 							getGrantedAuthorities(j2eeUserRoles);
-					filterAllowedGrantedAuthorities(new HashSet<>(grantedAuthorities));
 					result = new PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails(
 							context,
 							grantedAuthorities);

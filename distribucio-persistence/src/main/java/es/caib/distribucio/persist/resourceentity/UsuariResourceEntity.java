@@ -66,6 +66,9 @@ public class UsuariResourceEntity extends BaseResourceEntity<UsuariResource, Str
 	@Column(name = "num_elements_pagina")
 	private Long numElementsPagina;
 
+	@Column(name = "rol_actual", length = 64)
+	private String rolActual;
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "tema_aplicacio", length = 16)
 	private TemaAplicacioEnum temaAplicacio;
