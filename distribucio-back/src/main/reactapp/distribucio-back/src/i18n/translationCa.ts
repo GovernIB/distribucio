@@ -49,18 +49,70 @@ const translationCa = {
                     cif: 'CIF',
                     codiDir3: 'Codi DIR3',
                     activa: 'Activa',
+                    permisos: 'Permisos',
+                },
+            },
+            permis: {
+                title: "Permisos de l'entitat {{nom}}",
+                grid: {
+                    buit: 'Aquesta entitat no té cap permís',
+                    column: {
+                        principalTipus: 'Tipus',
+                        principalNom: 'Principal',
+                        administracio: 'Administració',
+                        adminLectura: 'Admin (Lectura)',
+                        usuari: 'Usuari',
+                    },
+                },
+                // Valors de PrincipalTipusEnumDto, els mateixos que la JSP mostra a la columna
+                // "Tipus" (principal.tipus.enum.* de messages_ca.properties).
+                principalTipus: {
+                    USUARI: 'Usuari',
+                    ROL: 'Rol',
+                },
+                form: {
+                    titleCreate: 'Nou permís',
+                    titleUpdate: 'Modifica el permís',
+                },
+                esborrar: {
+                    title: 'Confirmació',
+                    confirm: 'Estau segur que voleu esborrar aquest permís?',
+                },
+                accio: {
+                    gestionar: 'Gestiona els permisos',
+                    nou: 'Nou permís',
+                    modificar: 'Modifica',
+                    esborrar: 'Esborra',
+                    guardarOk: "El permís s'ha desat correctament",
+                    esborrarOk: "El permís s'ha esborrat correctament",
+                    error: "No s'ha pogut executar l'acció",
                 },
             },
             form: {
                 titleCreate: 'Nova entitat',
-                titleUpdate: 'Modificar entitat',
+                titleUpdate: 'Modifica entitat',
+                // El diàleg de la graella compon el títol amb el verb de l'acció ("Crea" o
+                // "Modifica") més aquest nom de recurs.
+                resourceTitle: 'entitat',
+            },
+            accio: {
+                modificar: 'Modifica',
+                activar: 'Activa',
+                desactivar: 'Desactiva',
+                esborrar: 'Esborra',
+                crearOk: "L'entitat s'ha creat correctament",
+                modificarOk: "L'entitat s'ha modificat correctament",
+                esborrarOk: "L'entitat s'ha esborrat correctament",
+                activarOk: "L'entitat s'ha activat correctament",
+                desactivarOk: "L'entitat s'ha desactivat correctament",
+                error: "No s'ha pogut executar l'acció",
             },
         },
     },
     component: {
         Offline: {
             message: 'No s\'ha pogut connectar amb el servidor',
-            retry: 'Reintentar',
+            retry: 'Torna-ho a provar',
         },
         UserProfile: {
             perfil: 'El meu perfil',

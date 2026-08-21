@@ -16,6 +16,8 @@ import 'dayjs/locale/ca';
 import 'dayjs/locale/es';
 import { MuiBaseApp, type MenuEntry, useBaseAppContext, useMuiFormDialogApiRef } from 'reactlib';
 import i18n from '../i18n/i18n';
+import reactlibCa from '../i18n/reactlibCa';
+import reactlibEs from '../i18n/reactlibEs';
 import Offline from './Offline';
 import { UserProfileMenu, UserProfileFormDialog } from './UserProfile';
 import { EntitatSelector, RolSelector, getRolBadgeIcon } from './EntitatRolSelector';
@@ -84,6 +86,12 @@ const getMenuColorSet = (theme: Theme, appearance: MenuEstil): MenuColorSet | un
         hoverBackground: 'rgba(255, 255, 255, 0.08)',
     };
 };
+
+// Espai de noms on base-react registra les seves traduccions (LIB_I18N_NS a lib/components/
+// BaseApp.tsx, que la llibreria no exporta) i sobreescriptures de l'aplicació per idioma.
+// base-react també hi registra l'anglès, que aquí no es fa servir i per això no té paquet.
+const REACTLIB_I18N_NS = 'reactlib';
+const REACTLIB_OVERRIDES: Record<string, any> = { ca: reactlibCa, es: reactlibEs };
 
 export const Link = React.forwardRef<HTMLAnchorElement, RouterLinkProps>((itemProps, ref) => {
     return <RouterLink ref={ref} {...itemProps} role={undefined} />;
@@ -154,6 +162,14 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
     };
     const i18nAddResourceBundleCallback = (language: string, namespace: string, bundle: any) => {
         i18n.addResourceBundle(language, namespace, bundle);
+        // base-react registra aquí les seves traduccions. Com que no s'hi pot tocar, els seus
+        // textos es corregeixen fusionant-hi a sobre el paquet de sobreescriptures de
+        // l'aplicació (veure i18n/reactlibCa.ts): fusió profunda -- només se substitueixen les
+        // claus declarades -- i amb sobreescriptura, perquè la clau ja existeix.
+        const overrides = namespace === REACTLIB_I18N_NS ? REACTLIB_OVERRIDES[language] : undefined;
+        if (overrides != null) {
+            i18n.addResourceBundle(language, namespace, overrides, true, true);
+        }
     };
     const anyHistoryEntryExist = () => location.key !== 'default';
     const goBack = (fallback?: string) => {

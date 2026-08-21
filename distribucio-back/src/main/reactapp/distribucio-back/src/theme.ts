@@ -50,6 +50,40 @@ const commonComponents = {
             },
         },
     },
+    // Els botons mostren l'etiqueta tal com està escrita a les traduccions ("Filtra", "Guarda"),
+    // no en majúscules: MUI aplica `textTransform: uppercase` per defecte a tots els botons i
+    // aquí es desactiva perquè els botons es llegeixin igual que les entrades dels menús.
+    MuiButton: {
+        styleOverrides: {
+            root: {
+                textTransform: 'none' as const,
+            },
+        },
+    },
+    // Ordre dels botons de totes les finestres modals: el d'acció ("Desa", "Accepta",
+    // "Executa"...) a l'esquerra i el de sortida ("Cancel·la") a la dreta.
+    //
+    // base-react els declara sempre en l'ordre contrari ([cancel·lar, acció], veure
+    // lib/components/AppButtons.tsx) i els pinta dins un MuiDialogActions; com que la
+    // llibreria no es pot tocar, la inversió es fa aquí, a nivell de tema, i val per a
+    // qualsevol diàleg de l'aplicació.
+    //
+    // Amb `row-reverse` l'inici de l'eix principal passa a ser la dreta, per això el
+    // `justifyContent` ha de ser `flex-start` perquè el bloc de botons continuï alineat a la
+    // dreta. La separació es passa a `gap` perquè el marge esquerre que MUI posa entre germans
+    // quedaria a la vora exterior del bloc, no entre els botons.
+    MuiDialogActions: {
+        styleOverrides: {
+            root: {
+                flexDirection: 'row-reverse' as const,
+                justifyContent: 'flex-start' as const,
+                gap: '8px',
+                '& > :not(style) ~ :not(style)': {
+                    marginLeft: 0,
+                },
+            },
+        },
+    },
     MuiTreeItem: {
         styleOverrides: {
             content: ({ theme }: { theme: any }) => ({
@@ -73,7 +107,7 @@ const commonComponents = {
 export const lightTheme = createTheme({
     palette: {
         mode: 'light',
-        primary: { main: '#497e3a' },
+        primary: { main: '#439798' },
         customBackground: '#f5f5f5',
         greyBackground: '#f5f5f5',
     },

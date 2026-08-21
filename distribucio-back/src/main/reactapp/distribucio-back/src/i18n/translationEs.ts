@@ -49,18 +49,66 @@ const translationEs = {
                     cif: 'CIF',
                     codiDir3: 'Código DIR3',
                     activa: 'Activa',
+                    permisos: 'Permisos',
+                },
+            },
+            permis: {
+                title: 'Permisos de la entidad {{nom}}',
+                grid: {
+                    buit: 'Esta entidad no tiene ningún permiso',
+                    column: {
+                        principalTipus: 'Tipo',
+                        principalNom: 'Principal',
+                        administracio: 'Administración',
+                        adminLectura: 'Admin (Lectura)',
+                        usuari: 'Usuario',
+                    },
+                },
+                principalTipus: {
+                    USUARI: 'Usuario',
+                    ROL: 'Rol',
+                },
+                form: {
+                    titleCreate: 'Nuevo permiso',
+                    titleUpdate: 'Modifica el permiso',
+                },
+                esborrar: {
+                    title: 'Confirmación',
+                    confirm: '¿Está seguro de que desea eliminar este permiso?',
+                },
+                accio: {
+                    gestionar: 'Gestiona los permisos',
+                    nou: 'Nuevo permiso',
+                    modificar: 'Modifica',
+                    esborrar: 'Elimina',
+                    guardarOk: 'El permiso se ha guardado correctamente',
+                    esborrarOk: 'El permiso se ha eliminado correctamente',
+                    error: 'No se ha podido ejecutar la acción',
                 },
             },
             form: {
                 titleCreate: 'Nueva entidad',
-                titleUpdate: 'Modificar entidad',
+                titleUpdate: 'Modifica entidad',
+                resourceTitle: 'entidad',
+            },
+            accio: {
+                modificar: 'Modifica',
+                activar: 'Activa',
+                desactivar: 'Desactiva',
+                esborrar: 'Elimina',
+                crearOk: 'La entidad se ha creado correctamente',
+                modificarOk: 'La entidad se ha modificado correctamente',
+                esborrarOk: 'La entidad se ha eliminado correctamente',
+                activarOk: 'La entidad se ha activado correctamente',
+                desactivarOk: 'La entidad se ha desactivado correctamente',
+                error: 'No se ha podido ejecutar la acción',
             },
         },
     },
     component: {
         Offline: {
             message: 'No se ha podido conectar con el servidor',
-            retry: 'Reintentar',
+            retry: 'Reinténtalo',
         },
         UserProfile: {
             perfil: 'Mi perfil',
