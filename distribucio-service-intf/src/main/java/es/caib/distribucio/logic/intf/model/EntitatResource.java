@@ -3,15 +3,19 @@ package es.caib.distribucio.logic.intf.model;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceAccessConstraint;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceArtifact;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceConfig;
+import es.caib.distribucio.logic.intf.base.annotation.ResourceField;
 import es.caib.distribucio.logic.intf.base.model.BaseResource;
+import es.caib.distribucio.logic.intf.base.model.FileReference;
 import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.PrincipalTipusEnumDto;
+import es.caib.distribucio.logic.intf.resourcevalidation.ValidImageFile;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.data.annotation.Transient;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -126,6 +130,23 @@ public class EntitatResource extends BaseResource<Long> {
 	private String colorFons;
 	@Size(max = 32)
 	private String colorLletra;
+	private byte[] logoImgBytes;
+	@Size(max = 32)
+	private String colorFonsDark;
+	@Size(max = 32)
+	private String colorLletraDark;
+	private byte[] logoImgBytesDark;
+
+	@Transient
+	@ResourceField(onChangeActive = true)
+	@ValidImageFile
+	private FileReference logoImgFile;
+
+	@Transient
+	@ResourceField(onChangeActive = true)
+	@ValidImageFile
+	private FileReference logoImgFileDark;
+
 	/** Per defecte cert, com fa la interficie JSP: EntitatEntity.getBuilder no permet indicar
 	 *  l'estat i les entitats sempre es creen actives. */
 	private boolean activa = true;

@@ -38,8 +38,8 @@ const EntitatPermisFormContent: React.FC = () => {
             <GridFormField size={{ xs: 12, sm: 4 }} name="principalTipus" disabled={esModificacio} />
             <GridFormField size={{ xs: 12, sm: 8 }} name="principalNom" disabled={esModificacio} />
             <GridFormField size={{ xs: 12, sm: 4 }} name="administracio" />
-            <GridFormField size={{ xs: 12, sm: 4 }} name="adminLectura" />
-            <GridFormField size={{ xs: 12, sm: 4 }} name="usuari" />
+            <GridFormField size={{ xs: 12, sm: 4.5 }} name="adminLectura" />
+            <GridFormField size={{ xs: 12, sm: 3.5 }} name="usuari" />
         </Grid>
     );
 };

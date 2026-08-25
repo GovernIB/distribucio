@@ -52,6 +52,11 @@ public class EntitatEntity extends DistribucioAuditable<Long> {
 	private String colorFons;
 	@Column(name = "color_lletra", length = 32)
 	private String colorLletra;
+
+	@Column(name = "color_fons_dark", length = 32)
+	private String colorFonsDark;
+	@Column(name = "color_lletra_dark", length = 32)
+	private String colorLletraDark;
 	
 	@Column(name = "activa")
 	private boolean activa = true;

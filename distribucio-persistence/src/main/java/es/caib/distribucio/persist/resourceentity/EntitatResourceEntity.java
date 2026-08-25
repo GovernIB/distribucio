@@ -56,8 +56,20 @@ public class EntitatResourceEntity extends BaseResourceEntity<EntitatResource, L
 	@Column(name = "color_lletra", length = 32)
 	private String colorLletra;
 
+	@Column(name = "logo_cap")
+	private byte[] logoImgBytes;
+
 	@Column(name = "activa")
 	private boolean activa = true;
+
+	@Column(name = "color_fons_dark", length = 32)
+	private String colorFonsDark;
+
+	@Column(name = "color_lletra_dark", length = 32)
+	private String colorLletraDark;
+
+	@Column(name = "logo_cap_dark")
+	private byte[] logoImgBytesDark;
 
 	@Version
 	private long version = 0;

@@ -10,6 +10,7 @@ import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.PermisDto;
 import es.caib.distribucio.logic.intf.model.EntitatResource;
+import es.caib.distribucio.logic.intf.base.model.FileReference;
 import es.caib.distribucio.logic.intf.resourceservice.EntitatResourceService;
 import es.caib.distribucio.logic.intf.service.EntitatService;
 import es.caib.distribucio.persist.entity.EntitatEntity;
@@ -60,6 +61,8 @@ public class EntitatResourceServiceImpl
 		register(EntitatResource.PERSPECTIVE_PERMISOS_CODE, new PermisosPerspectiveApplicator());
 		register(EntitatResource.ACTION_PERMIS_GUARDAR_CODE, new PermisGuardarActionExecutor());
 		register(EntitatResource.ACTION_PERMIS_ESBORRAR_CODE, new PermisEsborrarActionExecutor());
+		register(EntitatResource.Fields.logoImgFile, new EntitatImagesOnchangeLogicProcessor());
+		register(EntitatResource.Fields.logoImgFileDark, new EntitatImagesOnchangeLogicProcessor());
 	}
 
 	@Override
@@ -310,4 +313,39 @@ public class EntitatResourceServiceImpl
 
 	}
 
+	private FileReference getFileReferenceByBytes(String name, byte[] bytes) {
+		if (bytes == null) return null;
+		return new FileReference(name, bytes, null, bytes.length);
+	}
+
+	@Override
+	protected void afterConversion(EntitatResourceEntity entity, EntitatResource resource) {
+		resource.setLogoImgFile(
+				this.getFileReferenceByBytes("logo",  resource.getLogoImgBytes()));
+
+		resource.setLogoImgFileDark(
+				this.getFileReferenceByBytes("logoDark",  resource.getLogoImgBytesDark()));
+
+	}
+
+	private class EntitatImagesOnchangeLogicProcessor implements OnChangeLogicProcessor<EntitatResource> {
+		@Override
+		public void onChange(Serializable id, EntitatResource previous, String fieldName, Object fieldValue,
+			 Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, EntitatResource target) {
+
+			if (EntitatResource.Fields.logoImgFile.equals(fieldName)) {
+				if (fieldValue != null) {
+					target.setLogoImgBytes(((FileReference) fieldValue).getContent());
+				} else {
+					target.setLogoImgBytes(null);
+				}
+			} else if (EntitatResource.Fields.logoImgFileDark.equals(fieldName)) {
+				if (fieldValue != null) {
+					target.setLogoImgBytesDark(((FileReference) fieldValue).getContent());
+				} else {
+					target.setLogoImgBytesDark(null);
+				}
+			}
+		}
+	}
 }

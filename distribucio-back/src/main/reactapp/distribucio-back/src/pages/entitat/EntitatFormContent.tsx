@@ -21,10 +21,10 @@ export const EntitatFormContent: React.FC = () => {
             <GridFormField size={4} name="codi" disabled={data?.id != null} />
             <GridFormField size={8} name="nom" />
             <GridFormField size={12} name="descripcio" />
-            <GridFormField size={4} name="cif" />
-            <GridFormField size={4} name="codiDir3" />
-            <GridFormField size={6} name="colorFons" type={'color'} />
-            <GridFormField size={6} name="colorLletra" type={'color'} />
+            <GridFormField size={6} name="cif" />
+            <GridFormField size={6} name="codiDir3" />
+            <GridFormField size={6} name="logoImgFile" />
+            <GridFormField size={6} name="logoImgFileDark" />
         </Grid>
     );
 };
