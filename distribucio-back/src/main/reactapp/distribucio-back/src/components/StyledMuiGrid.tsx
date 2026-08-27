@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, Icon, Tooltip, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { FilterCountChip } from './FilterCountChip'; // TODO: corregir ruta d'import segons projecte

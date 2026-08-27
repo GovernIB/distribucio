@@ -9,6 +9,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.resourceservice.BustiaDefaultResourceService;
+import es.caib.distribucio.logic.intf.resourceservice.BustiaResourceService;
+import es.caib.distribucio.logic.intf.resourceservice.EntitatResourceService;
+import es.caib.distribucio.logic.intf.resourceservice.UsuariResourceService;
 import es.caib.distribucio.logic.intf.service.AlertaService;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
@@ -175,6 +179,30 @@ public class EjbClientConfig {
     @ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean limitCanviEstatService() {
 		return getLocalEjbFactoyBean(LimitCanviEstatService.class);
+	}
+	
+	@Bean
+    @ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean usuariResourceService() {
+		return getLocalEjbFactoyBean(UsuariResourceService.class);
+	}
+	
+	@Bean
+    @ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean entitatResourceService() {
+		return getLocalEjbFactoyBean(EntitatResourceService.class);
+	}
+	
+	@Bean
+    @ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean bustiaResourceService() {
+		return getLocalEjbFactoyBean(BustiaResourceService.class);
+	}
+	
+	@Bean
+    @ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean bustiaDefaultResourceService() {
+		return getLocalEjbFactoyBean(BustiaDefaultResourceService.class);
 	}
 
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {
