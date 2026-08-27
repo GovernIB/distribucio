@@ -8,6 +8,8 @@ const translationCa = {
     // nom "common" que fan servir aquests components perquè els propers ports hi encaixin
     // sense retocs.
     common: {
+        save: "Guarda",
+        cancel: "Cancel·la",
         clear: 'Neteja',
         filter: 'Filtra',
         filterCount_one: '{{num}} filtre aplicat',
@@ -96,6 +98,7 @@ const translationCa = {
                 resourceTitle: 'entitat',
             },
             accio: {
+                new: "Nova entitat",
                 modificar: 'Modifica',
                 activar: 'Activa',
                 desactivar: 'Desactiva',

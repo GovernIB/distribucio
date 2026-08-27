@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next';
 import Badge from '@mui/material/Badge';
 import Icon from '@mui/material/Icon';
 import IconButton from '@mui/material/IconButton';
-import { GridPage, MuiDataGrid, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
+import { GridPage, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
 import EntitatFilter from './EntitatFilter';
 import EntitatFormContent from './EntitatFormContent';
 import { useEntitatAccions } from './EntitatAccions';
 import { useEntitatPermisosDialog } from './EntitatPermisos';
-import FilterCountChip from '../../components/FilterCountChip';
+import { CardPage } from '../../components/CardData';
+import StyledMuiGrid from '../../components/StyledMuiGrid';
 
 /** Perspectiva d'EntitatResource que omple el comptador de permisos de cada fila. */
 const PERSPECTIVA_PERMISOS_COUNT = ['PERMISOS_COUNT'];
@@ -35,7 +36,9 @@ export const EntitatGrid: React.FC = () => {
     const accions = useEntitatAccions(refresh);
     // En tancar el diàleg es refresca el llistat perquè el comptador de permisos de la fila
     // reculli les altes i les baixes que s'hi hagin fet.
-    const { handleShow: mostrarPermisos, dialog: permisosDialog } = useEntitatPermisosDialog(refresh);
+    const { handleShow: mostrarPermisos, dialog: permisosDialog } =
+        useEntitatPermisosDialog(refresh);
+
     const columnsWithLabels = React.useMemo(
         () => [
             ...columns.map((column) => ({
@@ -63,7 +66,11 @@ export const EntitatGrid: React.FC = () => {
                             mostrarPermisos(params.row?.id, params.row?.nom);
                         }}
                     >
-                        <Badge badgeContent={params.row?.permisosCount ?? 0} color="primary" showZero>
+                        <Badge
+                            badgeContent={params.row?.permisosCount ?? 0}
+                            color="primary"
+                            showZero
+                        >
                             <Icon>key</Icon>
                         </Badge>
                     </IconButton>
@@ -73,46 +80,39 @@ export const EntitatGrid: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [t]
     );
-    // Posició 1: just després del títol de la barra d'eines (la posició 0 el precediria).
-    const toolbarElements = React.useMemo(
-        () => [
-            {
-                position: 1,
-                element: <FilterCountChip filter={springFilter} sx={{ ml: 1.5 }} />,
-            },
-        ],
-        [springFilter]
-    );
+
     return (
         <GridPage>
-            <EntitatFilter onSpringFilterChange={setSpringFilter} />
-            <MuiDataGrid
-                title={t('page.entitats.grid.title')}
-                resourceName="entitatResource"
-                apiRef={apiRef}
-                columns={columnsWithLabels}
-                filter={springFilter}
-                perspectives={PERSPECTIVA_PERMISOS_COUNT}
-                toolbarElementsWithPositions={toolbarElements}
-                paginationActive
-                toolbarType="upper"
-                // Creació i modificació en finestra emergent, com a RIPEA: el botó de crear de la
-                // barra d'eines i l'acció "Modifica" obren el mateix formulari dins un diàleg.
-                popupEditActive
-                popupEditFormContent={<EntitatFormContent />}
-                popupEditFormDialogResourceTitle={t('page.entitats.form.resourceTitle')}
-                popupEditFormI18nKeys={{
-                    createSuccess: 'page.entitats.accio.crearOk',
-                    updateSuccess: 'page.entitats.accio.modificarOk',
-                    deleteSuccess: 'page.entitats.accio.esborrarOk',
-                }}
-                // Les accions de la fila són només les del menú (veure useEntitatAccions): s'amaguen
-                // les que la graella hi posa pel seu compte per no duplicar modificar i esborrar.
-                rowHideUpdateButton
-                rowHideDeleteButton
-                rowAdditionalActions={accions}
-            />
-            {permisosDialog}
+            <CardPage title={t('page.entitats.grid.title')}>
+                <EntitatFilter onSpringFilterChange={setSpringFilter} />
+                <StyledMuiGrid
+                    // title={''}
+                    toolbarCreateTitle={t('page.entitats.accio.new')}
+                    resourceName="entitatResource"
+                    apiRef={apiRef}
+                    columns={columnsWithLabels}
+                    filter={springFilter}
+                    perspectives={PERSPECTIVA_PERMISOS_COUNT}
+                    toolbarShowFilterCount
+                    paginationActive
+                    // Creació i modificació en finestra emergent, com a RIPEA: el botó de crear de la
+                    // barra d'eines i l'acció "Modifica" obren el mateix formulari dins un diàleg.
+                    popupEditActive
+                    popupEditFormContent={<EntitatFormContent />}
+                    popupEditFormDialogResourceTitle={t('page.entitats.form.resourceTitle')}
+                    popupEditFormI18nKeys={{
+                        createSuccess: 'page.entitats.accio.crearOk',
+                        updateSuccess: 'page.entitats.accio.modificarOk',
+                        deleteSuccess: 'page.entitats.accio.esborrarOk',
+                    }}
+                    // Les accions de la fila són només les del menú (veure useEntitatAccions): s'amaguen
+                    // les que la graella hi posa pel seu compte per no duplicar modificar i esborrar.
+                    rowHideUpdateButton
+                    rowHideDeleteButton
+                    rowAdditionalActions={accions}
+                />
+                {permisosDialog}
+            </CardPage>
         </GridPage>
     );
 };

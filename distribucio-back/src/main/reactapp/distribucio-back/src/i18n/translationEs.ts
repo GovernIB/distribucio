@@ -8,6 +8,8 @@ const translationEs = {
     // el nombre "common" que usan estos componentes para que los próximos ports encajen sin
     // retoques.
     common: {
+        save: "Guarda",
+        cancel: "Cancela",
         clear: 'Limpia',
         filter: 'Filtra',
         filterCount_one: '{{num}} filtro aplicado',
@@ -92,6 +94,7 @@ const translationEs = {
                 resourceTitle: 'entidad',
             },
             accio: {
+                new: "Nueva entidad",
                 modificar: 'Modifica',
                 activar: 'Activa',
                 desactivar: 'Desactiva',

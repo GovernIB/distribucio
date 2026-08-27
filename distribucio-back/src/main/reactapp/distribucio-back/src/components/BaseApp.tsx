@@ -220,6 +220,7 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
             routerUseLocationPath={useLocationPath}
             routerAnyHistoryEntryExist={anyHistoryEntryExist}
             linkComponent={Link}
+            marginsDisabled={false}
             saveAs={saveAs}
             menuEntries={menuEntries}
         >
