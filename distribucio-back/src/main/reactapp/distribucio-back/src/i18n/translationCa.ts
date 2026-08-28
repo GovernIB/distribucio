@@ -23,6 +23,7 @@ const translationCa = {
         menu: {
             home: 'Inici',
             entitats: 'Entitats',
+            avisos: 'Avisos',
         },
         interficie: {
             classica: 'Interfície clàssica',
@@ -108,6 +109,38 @@ const translationCa = {
                 esborrarOk: "L'entitat s'ha esborrat correctament",
                 activarOk: "L'entitat s'ha activat correctament",
                 desactivarOk: "L'entitat s'ha desactivat correctament",
+                error: "No s'ha pogut executar l'acció",
+            },
+        },
+        avisos: {
+            grid: {
+                title: "Avisos",
+                column: {
+                    assumpte: "Assumpte",
+                    missatge: "Missatge",
+                    dataInici: "Data inici",
+                    dataFinal: "Data final",
+                    avisNivell: "Avís nivell",
+                    entitat: "Entitat",
+                    activa: "Activa",
+                },
+            },
+            form: {
+                titleCreate: 'Nou avis',
+                titleUpdate: 'Modifica avis',
+                resourceTitle: 'avis',
+            },
+            accio: {
+                new: "Nou avis",
+                modificar: 'Modifica',
+                activar: 'Activa',
+                desactivar: 'Desactiva',
+                esborrar: 'Esborra',
+                crearOk: "L'avis s'ha creat correctament",
+                modificarOk: "L'avis s'ha modificat correctament",
+                esborrarOk: "L'avis s'ha esborrat correctament",
+                activarOk: "L'avis s'ha activat correctament",
+                desactivarOk: "L'avis s'ha desactivat correctament",
                 error: "No s'ha pogut executar l'acció",
             },
         },

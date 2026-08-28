@@ -83,8 +83,15 @@ const InnerApp: React.FC = () => {
             id: 'entitats',
             title: t('app.menu.entitats'),
             to: 'entitat',
-            icon: 'domain',
+            icon: 'account_balance',
             pantalla: 'entitat',
+        },
+        {
+            id: 'avisos',
+            title: t('app.menu.avisos'),
+            to: 'avis',
+            icon: 'campaign',
+            pantalla: 'avis',
         },
     ];
 

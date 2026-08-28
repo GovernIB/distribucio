@@ -3,16 +3,13 @@
  */
 package es.caib.distribucio.back.config;
 
+import es.caib.distribucio.logic.intf.resourceservice.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWarDeployment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.resourceservice.BustiaDefaultResourceService;
-import es.caib.distribucio.logic.intf.resourceservice.BustiaResourceService;
-import es.caib.distribucio.logic.intf.resourceservice.EntitatResourceService;
-import es.caib.distribucio.logic.intf.resourceservice.UsuariResourceService;
 import es.caib.distribucio.logic.intf.service.AlertaService;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
@@ -203,6 +200,12 @@ public class EjbClientConfig {
     @ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean bustiaDefaultResourceService() {
 		return getLocalEjbFactoyBean(BustiaDefaultResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean avisResourceService() {
+		return getLocalEjbFactoyBean(AvisResourceService.class);
 	}
 
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {

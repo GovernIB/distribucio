@@ -23,6 +23,7 @@ const translationEs = {
         menu: {
             home: 'Inicio',
             entitats: 'Entidades',
+            avisos: 'Avisos',
         },
         interficie: {
             classica: 'Interfaz clásica',
@@ -104,6 +105,38 @@ const translationEs = {
                 esborrarOk: 'La entidad se ha eliminado correctamente',
                 activarOk: 'La entidad se ha activado correctamente',
                 desactivarOk: 'La entidad se ha desactivado correctamente',
+                error: 'No se ha podido ejecutar la acción',
+            },
+        },
+        avisos: {
+            grid: {
+                title: "Avisos",
+                column: {
+                    assumpte: "Asunto",
+                    missatge: "Mensaje",
+                    dataInici: "Fecha inicio",
+                    dataFinal: "Fecha final",
+                    avisNivell: "Nivel aviso",
+                    entitat: "Entidad",
+                    activa: "Activa",
+                },
+            },
+            form: {
+                titleCreate: 'Nuevo aviso',
+                titleUpdate: 'Modifica aviso',
+                resourceTitle: 'aviso',
+            },
+            accio: {
+                new: "Nuevo aviso",
+                modificar: 'Modifica',
+                activar: 'Activa',
+                desactivar: 'Desactiva',
+                esborrar: 'Elimina',
+                crearOk: 'El aviso se ha creado correctamente',
+                modificarOk: 'El aviso se ha modificado correctamente',
+                esborrarOk: 'El aviso se ha eliminado correctamente',
+                activarOk: 'El aviso se ha activado correctamente',
+                desactivarOk: 'El aviso se ha desactivado correctamente',
                 error: 'No se ha podido ejecutar la acción',
             },
         },
