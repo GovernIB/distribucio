@@ -1,35 +1,26 @@
 package es.caib.distribucio.logic.resourceservice;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.stereotype.Service;
+
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.model.AvisResource;
 import es.caib.distribucio.logic.intf.resourceservice.AvisResourceService;
-import es.caib.distribucio.persist.resourcerepository.AvisResourceRepository;
 import es.caib.distribucio.persist.resourceentity.AvisResourceEntity;
+import es.caib.distribucio.persist.resourcerepository.AvisResourceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.time.DateUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-/**
- * Implementació del servei de consulta i modificació d'avisos via el motor genèric de recursos.
- *
- * @author Límit Tecnologies
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AvisResourceServiceImpl
-        extends BaseMutableResourceService<AvisResource, Long, AvisResourceEntity>
-        implements AvisResourceService {
+public class AvisResourceServiceImpl extends BaseMutableResourceService<AvisResource, Long, AvisResourceEntity> implements AvisResourceService {
 
     private final AvisResourceRepository avisResourceRepository;
 

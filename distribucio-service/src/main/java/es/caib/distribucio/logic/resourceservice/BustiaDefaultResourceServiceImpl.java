@@ -1,20 +1,18 @@
 package es.caib.distribucio.logic.resourceservice;
 
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.model.BustiaDefaultResource;
 import es.caib.distribucio.logic.intf.resourceservice.BustiaDefaultResourceService;
 import es.caib.distribucio.persist.resourceentity.BustiaDefaultResourceEntity;
-import es.caib.distribucio.persist.resourceentity.BustiaResourceEntity;
-import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
-import es.caib.distribucio.persist.resourceentity.UsuariResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.BustiaResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.UsuariResourceRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 /**
  * Implementació del servei de consulta i modificació de bústies per defecte via el motor genèric
@@ -28,9 +26,7 @@ import java.util.Map;
  */
 @Service
 @RequiredArgsConstructor
-public class BustiaDefaultResourceServiceImpl
-		extends BaseMutableResourceService<BustiaDefaultResource, Long, BustiaDefaultResourceEntity>
-		implements BustiaDefaultResourceService {
+public class BustiaDefaultResourceServiceImpl extends BaseMutableResourceService<BustiaDefaultResource, Long, BustiaDefaultResourceEntity> implements BustiaDefaultResourceService {
 
 	private final EntitatResourceRepository entitatResourceRepository;
 	private final BustiaResourceRepository bustiaResourceRepository;

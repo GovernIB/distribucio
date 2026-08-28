@@ -7,15 +7,8 @@ import es.caib.distribucio.persist.resourceentity.BustiaResourceEntity;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-/**
- * Implementació del servei de consulta i modificació de bústies via el motor genèric de recursos.
- *
- * @author Límit Tecnologies
- */
 @Service
-public class BustiaResourceServiceImpl
-		extends BaseMutableResourceService<BustiaResource, Long, BustiaResourceEntity>
-		implements BustiaResourceService {
+public class BustiaResourceServiceImpl extends BaseMutableResourceService<BustiaResource, Long, BustiaResourceEntity> implements BustiaResourceService {
 
 	@Override
 	protected Specification<BustiaResourceEntity> additionalSpecification(String[] namedQueries) {
@@ -24,5 +17,4 @@ public class BustiaResourceServiceImpl
 		// que aplica sempre el mateix filtre a l'equivalent JSP).
 		return (root, query, cb) -> cb.isNotNull(root.get("pareId"));
 	}
-
 }

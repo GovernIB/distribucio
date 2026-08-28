@@ -31,16 +31,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-/**
- * Implementació del servei de consulta i modificació d'entitats via el motor genèric de recursos.
- *
- * @author Límit Tecnologies
- */
 @Service
 @RequiredArgsConstructor
-public class EntitatResourceServiceImpl
-		extends BaseMutableResourceService<EntitatResource, Long, EntitatResourceEntity>
-		implements EntitatResourceService {
+public class EntitatResourceServiceImpl extends BaseMutableResourceService<EntitatResource, Long, EntitatResourceEntity> implements EntitatResourceService {
 
 	private final AuthenticationHelper authenticationHelper;
 	private final EntitatService entitatService;

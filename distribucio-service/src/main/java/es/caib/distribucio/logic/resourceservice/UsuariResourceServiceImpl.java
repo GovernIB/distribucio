@@ -34,9 +34,7 @@ import java.util.Optional;
  */
 @Service
 @RequiredArgsConstructor
-public class UsuariResourceServiceImpl
-		extends BaseMutableResourceService<UsuariResource, String, UsuariResourceEntity>
-		implements UsuariResourceService {
+public class UsuariResourceServiceImpl extends BaseMutableResourceService<UsuariResource, String, UsuariResourceEntity> implements UsuariResourceService {
 
 	private static final String ROLE_DISPLAY_PREFIX = "DIS_";
 
