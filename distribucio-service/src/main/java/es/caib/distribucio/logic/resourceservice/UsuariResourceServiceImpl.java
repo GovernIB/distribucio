@@ -4,6 +4,9 @@ import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.CacheHelper;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
+import es.caib.distribucio.logic.intf.base.model.FieldOption;
+import es.caib.distribucio.logic.intf.base.util.I18nUtil;
+import es.caib.distribucio.logic.intf.dto.IdiomaEnumDto;
 import es.caib.distribucio.logic.intf.model.UsuariResource;
 import es.caib.distribucio.logic.intf.resourceservice.UsuariResourceService;
 import es.caib.distribucio.persist.resourceentity.BustiaDefaultResourceEntity;
@@ -19,10 +22,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Implementació del servei de consulta i modificació del perfil de l'usuari autenticat actual.
@@ -46,6 +53,40 @@ public class UsuariResourceServiceImpl extends BaseMutableResourceService<Usuari
 	private final BustiaResourceRepository bustiaResourceRepository;
 	private final BustiaDefaultResourceRepository bustiaDefaultResourceRepository;
 
+	@PostConstruct
+	public void init() {
+		register(UsuariResource.Fields.idioma, new IdiomaFieldOptionsProvider());
+	}
+
+	/**
+	 * Valors del desplegable d'idioma: els mateixos que ofereix la interfície JSP, que els treu
+	 * d'{@link IdiomaEnumDto} (veure {@code UsuariController} i {@code usuariForm.jsp}). El valor
+	 * de l'opció és el nom de la constant, que és el que la JSP desa a la columna.
+	 */
+	private static class IdiomaFieldOptionsProvider implements FieldOptionsProvider {
+		@Override
+		public List<FieldOption> getOptions(String fieldName, Map<String, String[]> requestParameterMap) {
+			return Arrays.stream(IdiomaEnumDto.values()).
+					map(idioma -> new FieldOption(
+							idioma.name(),
+							I18nUtil.getInstance().getI18nMessage(
+									IdiomaEnumDto.class.getName() + "." + idioma.name()))).
+					collect(Collectors.toList());
+		}
+	}
+
+	/**
+	 * Deixa l'idioma en majúscules, que és el format de les opcions i el que desa la interfície
+	 * JSP. L'alta automàtica d'usuaris hi posa "ca" en minúscules, i sense normalitzar-ho el
+	 * desplegable no trobaria cap opció que hi encaixés i sortiria buit. La fila es queda com
+	 * està fins que l'usuari desa el perfil.
+	 */
+	private void normalitzarIdioma(UsuariResource resource) {
+		if (resource.getIdioma() != null) {
+			resource.setIdioma(resource.getIdioma().toUpperCase());
+		}
+	}
+
 	@Override
 	protected Specification<UsuariResourceEntity> additionalSpecification(String[] namedQueries) {
 		String currentUserName = authenticationHelper.getCurrentUserName();
@@ -58,6 +99,7 @@ public class UsuariResourceServiceImpl extends BaseMutableResourceService<Usuari
 		resource.setRols(Arrays.stream(roles).
 				filter(r -> r.startsWith(ROLE_DISPLAY_PREFIX)).
 				toArray(String[]::new));
+		normalitzarIdioma(resource);
 		// bustiaPerDefecte es guarda a una taula apart (dis_bustia_default), per parella
 		// entitat+usuari -- s'utilitza entitatPerDefecteId com a "entitat de context" ja que la
 		// interfície REACT encara no disposa d'un selector d'entitat independent (veure

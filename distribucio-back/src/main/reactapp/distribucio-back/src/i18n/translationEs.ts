@@ -46,12 +46,8 @@ const translationEs = {
             grid: {
                 title: 'Entidades',
                 column: {
-                    codi: 'Código',
-                    nom: 'Nombre',
-                    descripcio: 'Descripción',
-                    cif: 'CIF',
-                    codiDir3: 'Código DIR3',
-                    activa: 'Activa',
+                    // Única cabecera que no es un atributo del recurso: es la columna del botón
+                    // que abre el listado de permisos. El resto las aporta el backend (_prompt).
                     permisos: 'Permisos',
                 },
             },
@@ -59,17 +55,6 @@ const translationEs = {
                 title: 'Permisos de la entidad {{nom}}',
                 grid: {
                     buit: 'Esta entidad no tiene ningún permiso',
-                    column: {
-                        principalTipus: 'Tipo',
-                        principalNom: 'Principal',
-                        administracio: 'Administración',
-                        adminLectura: 'Admin (Lectura)',
-                        usuari: 'Usuario',
-                    },
-                },
-                principalTipus: {
-                    USUARI: 'Usuario',
-                    ROL: 'Rol',
                 },
                 form: {
                     titleCreate: 'Nuevo permiso',
@@ -111,15 +96,6 @@ const translationEs = {
         avisos: {
             grid: {
                 title: "Avisos",
-                column: {
-                    assumpte: "Asunto",
-                    missatge: "Mensaje",
-                    dataInici: "Fecha inicio",
-                    dataFinal: "Fecha final",
-                    avisNivell: "Nivel aviso",
-                    entitat: "Entidad",
-                    activa: "Activa",
-                },
             },
             form: {
                 titleCreate: 'Nuevo aviso',

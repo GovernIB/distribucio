@@ -2,6 +2,7 @@ package es.caib.distribucio.logic.intf.model;
 
 import es.caib.distribucio.logic.intf.base.annotation.ResourceAccessConstraint;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceConfig;
+import es.caib.distribucio.logic.intf.base.annotation.ResourceField;
 import es.caib.distribucio.logic.intf.base.model.BaseResource;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import lombok.Getter;
@@ -43,7 +44,19 @@ public class UsuariResource extends BaseResource<String> {
 	private String email;
 	@Size(max = 200)
 	private String emailAlternatiu;
+	/**
+	 * Idioma de la interfície. Es guarda com a text (columna {@code dis_usuari.idioma}) i no com
+	 * a enumerat perquè les dades existents barregen majúscules i minúscules: la interfície JSP
+	 * hi desa el nom de la constant d'{@link es.caib.distribucio.logic.intf.dto.IdiomaEnumDto}
+	 * ("CA"/"ES") mentre que l'alta automàtica d'usuaris hi posa "ca" (veure
+	 * {@code AplicacioServiceImpl}), i un {@code @Enumerated} petaria en llegir aquestes files.
+	 * <p>
+	 * {@code enumType} fa que el motor genèric el publiqui com a camp d'opcions, que aporta el
+	 * {@code FieldOptionsProvider} registrat a {@code UsuariResourceServiceImpl} amb els mateixos
+	 * valors que el desplegable de la JSP.
+	 */
 	@Size(max = 2)
+	@ResourceField(enumType = true)
 	private String idioma;
 	private Boolean rebreEmailsBustia;
 	private Boolean rebreEmailsAgrupats;

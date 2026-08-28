@@ -20,6 +20,8 @@ import FormActionDialog, { type FormActionDialogApi } from '../../components/For
 const PERSPECTIVA_PERMISOS = 'PERMISOS';
 const ACCIO_PERMIS_GUARDAR = 'PERMIS_GUARDAR';
 const ACCIO_PERMIS_ESBORRAR = 'PERMIS_ESBORRAR';
+/** Camp enumerat (PrincipalTipusEnumDto) del qual la graella ha de mostrar la descripció. */
+const CAMP_PRINCIPAL_TIPUS = 'principalTipus';
 
 /**
  * Camps del formulari d'un permís, els mateixos que la interfície JSP (entitatPermisForm.jsp).
@@ -67,6 +69,7 @@ const EntitatPermisosContent: React.FC<EntitatPermisosContentProps> = (props) =>
     const {
         isReady: apiIsReady,
         getOne: apiGetOne,
+        artifacts: apiArtifacts,
         artifactAction: apiArtifactAction,
     } = useResourceApiService('entitatResource');
     const [entitat, setEntitat] = React.useState<any>();
@@ -96,6 +99,31 @@ const EntitatPermisosContent: React.FC<EntitatPermisosContentProps> = (props) =>
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [apiIsReady, entitatId]);
     React.useEffect(() => refresh(), [refresh]);
+
+    // Etiquetes de les columnes i valors del desplegable de tipus. Els permisos no són cap recurs
+    // propi (arriben dins l'entitat amb la perspectiva PERMISOS), de manera que aquesta graella no
+    // és el MuiDataGrid de base-react i ningú li omple les capçaleres. Es prenen dels camps del
+    // formulari de l'acció PERMIS_GUARDAR (EntitatResource.FormPermis), que són els mateixos
+    // atributs que mostra el llistat: així el llistat i el formulari no dupliquen res i tot surt
+    // del backend -- les etiquetes del `_prompt` i les descripcions dels valors de
+    // PrincipalTipusEnumDto de les opcions del HAL-FORMS (distribucio-service-messages).
+    const [etiquetes, setEtiquetes] = React.useState<Record<string, string>>({});
+    const [tipusOpcions, setTipusOpcions] = React.useState<Record<string, string>>({});
+    React.useEffect(() => {
+        if (!apiIsReady) {
+            return;
+        }
+        apiArtifacts({}).then((artifacts) => {
+            const camps =
+                artifacts.find((a) => a.type === 'ACTION' && a.code === ACCIO_PERMIS_GUARDAR)
+                    ?.fields ?? [];
+            setEtiquetes(Object.fromEntries(camps.map((f) => [f.name, f.label ?? f.name])));
+            setTipusOpcions(camps.find((f) => f.name === CAMP_PRINCIPAL_TIPUS)?.options ?? {});
+        });
+        // apiArtifacts no és a les dependències a propòsit: el servei el torna a crear a cada
+        // render i tornar-lo a consultar seria un bucle infinit.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [apiIsReady]);
 
     const esborrar = (permisId: any) => {
         messageDialogShow(
@@ -137,34 +165,33 @@ const EntitatPermisosContent: React.FC<EntitatPermisosContentProps> = (props) =>
     // files i no en guarda cap estat de columnes, de manera que reconstruir-les no costa res.
     const columns: GridColDef[] = [
         {
-            field: 'principalTipus',
-            headerName: t('page.entitats.permis.grid.column.principalTipus'),
+            field: CAMP_PRINCIPAL_TIPUS,
+            headerName: etiquetes.principalTipus ?? '',
             flex: 1,
-            valueFormatter: (value: any) =>
-                value != null ? t(`page.entitats.permis.principalTipus.${value}`) : '',
+            valueFormatter: (value: any) => (value != null ? (tipusOpcions[value] ?? value) : ''),
         },
         {
             field: 'principalNom',
-            headerName: t('page.entitats.permis.grid.column.principalNom'),
+            headerName: etiquetes.principalNom ?? '',
             flex: 2,
         },
         {
             field: 'administracio',
-            headerName: t('page.entitats.permis.grid.column.administracio'),
+            headerName: etiquetes.administracio ?? '',
             type: 'boolean',
             flex: 1,
             sortable: false,
         },
         {
             field: 'adminLectura',
-            headerName: t('page.entitats.permis.grid.column.adminLectura'),
+            headerName: etiquetes.adminLectura ?? '',
             type: 'boolean',
             flex: 1,
             sortable: false,
         },
         {
             field: 'usuari',
-            headerName: t('page.entitats.permis.grid.column.usuari'),
+            headerName: etiquetes.usuari ?? '',
             type: 'boolean',
             flex: 1,
             sortable: false,

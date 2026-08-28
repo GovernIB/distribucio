@@ -14,6 +14,10 @@ import StyledMuiGrid from '../../components/StyledMuiGrid';
 /** Perspectiva d'EntitatResource que omple el comptador de permisos de cada fila. */
 const PERSPECTIVA_PERMISOS_COUNT = ['PERMISOS_COUNT'];
 
+// Les capçaleres no es declaren aquí: el MuiDataGrid les omple amb l'etiqueta que el backend
+// publica per a cada camp (el `_prompt` del HAL-FORMS, veure distribucio-back-rest-messages).
+// És la mateixa font que fan servir el formulari, el filtre i les capçaleres del fitxer
+// d'exportació, que es genera al servidor (BaseReadonlyResourceController.toExportFields).
 const columns: MuiDataGridColDef[] = [
     { field: 'codi', flex: 1 },
     { field: 'nom', flex: 3 },
@@ -41,10 +45,7 @@ export const EntitatGrid: React.FC = () => {
 
     const columnsWithLabels = React.useMemo(
         () => [
-            ...columns.map((column) => ({
-                ...column,
-                headerName: t(`page.entitats.grid.column.${column.field}`),
-            })),
+            ...columns,
             // Accés als permisos de l'entitat: el mateix botó de clau amb el nombre de permisos
             // que la interfície JSP posa a cada fila del llistat (entitatList.jsp), però obrint
             // una modal en comptes de canviar de pantalla.

@@ -42,7 +42,7 @@ export const useAvisAccions = (refresh: () => void): AccionsFila => {
             icon: 'check',
             showInMenu: true,
             action: ACCIO_ACTIVAR,
-            hidden: (row: any) => row?.activa,
+            hidden: (row: any) => row?.actiu,
             onClick: (id: any) => executarAccio(id, ACCIO_ACTIVAR, 'page.avisos.accio.activarOk'),
         },
         {
@@ -50,7 +50,7 @@ export const useAvisAccions = (refresh: () => void): AccionsFila => {
             icon: 'close',
             showInMenu: true,
             action: ACCIO_DESACTIVAR,
-            hidden: (row: any) => !row?.activa,
+            hidden: (row: any) => !row?.actiu,
             onClick: (id: any) =>
                 executarAccio(id, ACCIO_DESACTIVAR, 'page.avisos.accio.desactivarOk'),
         },

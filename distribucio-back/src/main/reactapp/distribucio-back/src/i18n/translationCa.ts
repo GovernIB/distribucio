@@ -46,12 +46,8 @@ const translationCa = {
             grid: {
                 title: 'Entitats',
                 column: {
-                    codi: 'Codi',
-                    nom: 'Nom',
-                    descripcio: 'Descripció',
-                    cif: 'CIF',
-                    codiDir3: 'Codi DIR3',
-                    activa: 'Activa',
+                    // Única capçalera que no és cap atribut del recurs: és la columna del botó
+                    // que obre el llistat de permisos. La resta les aporta el backend (_prompt).
                     permisos: 'Permisos',
                 },
             },
@@ -59,19 +55,6 @@ const translationCa = {
                 title: "Permisos de l'entitat {{nom}}",
                 grid: {
                     buit: 'Aquesta entitat no té cap permís',
-                    column: {
-                        principalTipus: 'Tipus',
-                        principalNom: 'Principal',
-                        administracio: 'Administració',
-                        adminLectura: 'Admin (Lectura)',
-                        usuari: 'Usuari',
-                    },
-                },
-                // Valors de PrincipalTipusEnumDto, els mateixos que la JSP mostra a la columna
-                // "Tipus" (principal.tipus.enum.* de messages_ca.properties).
-                principalTipus: {
-                    USUARI: 'Usuari',
-                    ROL: 'Rol',
                 },
                 form: {
                     titleCreate: 'Nou permís',
@@ -115,15 +98,6 @@ const translationCa = {
         avisos: {
             grid: {
                 title: "Avisos",
-                column: {
-                    assumpte: "Assumpte",
-                    missatge: "Missatge",
-                    dataInici: "Data inici",
-                    dataFinal: "Data final",
-                    avisNivell: "Avís nivell",
-                    entitat: "Entitat",
-                    activa: "Activa",
-                },
             },
             form: {
                 titleCreate: 'Nou avis',

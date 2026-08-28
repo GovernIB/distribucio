@@ -159,13 +159,16 @@ export const App = () => {
             mandatory
         >
             <ResourceApiProvider apiUrl={getEnvApiUrl()}>
-                <UserPreferencesProvider>
-                    <DistribucioProvider>
+                {/* UserPreferencesProvider va per dins de DistribucioProvider: les preferències
+                    (idioma, tema, estil de menú...) surten del perfil que aquest carrega, i
+                    DistribucioProvider no pinta els fills fins a tenir-lo. */}
+                <DistribucioProvider>
+                    <UserPreferencesProvider>
                         <SessionStorageProvider>
                             <ThemedApp />
                         </SessionStorageProvider>
-                    </DistribucioProvider>
-                </UserPreferencesProvider>
+                    </UserPreferencesProvider>
+                </DistribucioProvider>
             </ResourceApiProvider>
         </AuthProvider>
     );

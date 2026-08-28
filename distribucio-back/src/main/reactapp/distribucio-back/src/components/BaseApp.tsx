@@ -19,7 +19,7 @@ import i18n from '../i18n/i18n';
 import reactlibCa from '../i18n/reactlibCa';
 import reactlibEs from '../i18n/reactlibEs';
 import Offline from './Offline';
-import { UserProfileMenu, UserProfileFormDialog } from './UserProfile';
+import { UserProfileMenu, UserProfileFormDialog, useUserPreferences } from './UserProfile';
 import { EntitatSelector, RolSelector, getRolBadgeIcon } from './EntitatRolSelector';
 import { InterficieClassicaButton } from './InterficieClassica';
 import { useDistribucioContext } from './DistribucioContext';
@@ -181,6 +181,11 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
     };
     const formDialogApiRef = useMuiFormDialogApiRef();
     const { currentRole: rolActual } = useDistribucioContext();
+    // L'idioma surt del perfil de l'usuari (dis_usuari.idioma), que DistribucioProvider ja té
+    // carregat abans de pintar res. i18n.language -- el que detecta el navegador -- només fa de
+    // recurs si el perfil no en duu cap. Fer-ho aquí, i no des del diàleg de perfil, és el que
+    // evita que obrir el perfil canviï l'idioma i recarregui la pantalla.
+    const { idioma } = useUserPreferences();
     return (
         <Box sx={menuColorSetSx}>
         <MuiBaseApp
@@ -209,9 +214,12 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
             offline={<Offline />}
             footer={footer}
             footerHeight={footerHeight}
-            persistentLanguage
+            // Sense `persistentLanguage`: la llibreria guardaria l'idioma al localStorage i el
+            // rellegiria en arrencar, competint amb el perfil. Amb dues fonts, un canvi no desat
+            // sobrevivia a la recàrrega i el perfil l'havia de desfer després, amb el refresc
+            // corresponent. La preferència desada a la base de dades és l'única font.
             i18nUseTranslation={useTranslation}
-            i18nCurrentLanguage={i18n.language}
+            i18nCurrentLanguage={idioma ?? i18n.language}
             i18nHandleLanguageChange={i18nHandleLanguageChange}
             i18nAddResourceBundleCallback={i18nAddResourceBundleCallback}
             routerGoBack={goBack}

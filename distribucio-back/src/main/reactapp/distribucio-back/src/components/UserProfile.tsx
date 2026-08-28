@@ -17,7 +17,6 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import {
     MuiFormDialog,
     MuiDataFormDialogApi,
-    useBaseAppContext,
     useAuthContext,
     useResourceApiContext,
     useFormContext,
@@ -49,24 +48,66 @@ const endIcon = (name: string) => ({
 });
 
 // ============================================================================
-// Preferències de l'usuari (tema/estil de menú) -- aplicades a tota l'aplicació, no només dins
-// del formulari de perfil. Es mantenen a un context propi (no a reactlib, que ha de romandre
-// genèric) i es sincronitzen des del formulari de perfil (veure PreferencesSync), igual que ja
-// es feia per a l'idioma -- reaprofita el mateix mecanisme de "viure només mentre el formulari
-// existeix" (per tant també es refresquen en cancel·lar, ja que `data` torna als valors previs).
+// Preferències de l'usuari, aplicades a tota l'aplicació.
+//
+// La font de veritat és el perfil desat a la base de dades: DistribucioProvider carrega el
+// recurs de l'usuari en arrencar (useCurrentUser) i no deixa pintar res fins a tenir-lo, de
+// manera que aquí ja hi són disponibles al primer render. Damunt d'aquests valors s'hi pot
+// posar una previsualització transitòria mentre el diàleg de perfil és obert (el tema i
+// l'estil de menú s'apliquen a l'instant per poder-los veure); en tancar el diàleg la
+// previsualització desapareix i tornen a manar els valors desats.
+//
+// Per afegir una preferència nova n'hi ha prou amb declarar-la a UserPreferences i llegir-la
+// a preferenciesDesades: qui la necessiti la té amb useUserPreferences().
 export type UserPreferences = {
+    /** Codi de dues lletres en minúscules ("ca"/"es"), normalitzat des del perfil. */
+    idioma?: string;
     temaAplicacio?: TemaAplicacio;
     estilMenu?: MenuEstil;
+    /** Encara no el consumeix cap graella; queda exposat per a quan s'hi connecti. */
+    numElementsPagina?: number;
 };
 
+/**
+ * El perfil desa l'idioma com el nom de la constant d'IdiomaEnumDto ("CA"/"ES") i pot arribar
+ * en minúscules de l'alta automàtica d'usuaris, mentre que i18next i la capçalera
+ * Accept-Language volen el codi de dues lletres en minúscules. Sense normalitzar, "ES" i "es"
+ * (o "es-ES") es considerarien idiomes diferents i es rellançarien consultes sense necessitat.
+ */
+const normalitzaIdioma = (idioma?: string): string | undefined =>
+    idioma != null && idioma.length > 0 ? idioma.substring(0, 2).toLowerCase() : undefined;
+
+const preferenciesDesades = (usuari: any): UserPreferences => ({
+    idioma: normalitzaIdioma(usuari?.idioma),
+    temaAplicacio: usuari?.temaAplicacio,
+    estilMenu: usuari?.estilMenu,
+    numElementsPagina: usuari?.numElementsPagina,
+});
+
 const UserPreferencesContext = React.createContext<
-    { preferences: UserPreferences; setPreferences: (preferences: UserPreferences) => void } | undefined
+    { preferences: UserPreferences; setPreview: (preview: UserPreferences) => void } | undefined
 >(undefined);
 
 export const UserPreferencesProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-    const [preferences, setPreferences] = React.useState<UserPreferences>({});
+    const { currentUser } = useDistribucioContext();
+    const [preview, setPreview] = React.useState<UserPreferences>({});
+    const desades = React.useMemo(() => preferenciesDesades(currentUser), [currentUser]);
+    // En desar el perfil, DistribucioProvider actualitza currentUser: la previsualització ha de
+    // desaparèixer perquè no tapi els valors que acaben d'arribar del servidor.
+    React.useEffect(() => setPreview({}), [desades]);
+    const preferences = React.useMemo(() => {
+        // Només tapen les claus previsualitzades amb valor; una clau a undefined ha de deixar
+        // veure la preferència desada, no esborrar-la.
+        const efectives: UserPreferences = { ...desades };
+        (Object.keys(preview) as (keyof UserPreferences)[]).forEach((clau) => {
+            if (preview[clau] !== undefined) {
+                (efectives as any)[clau] = preview[clau];
+            }
+        });
+        return efectives;
+    }, [desades, preview]);
     return (
-        <UserPreferencesContext.Provider value={{ preferences, setPreferences }}>
+        <UserPreferencesContext.Provider value={{ preferences, setPreview }}>
             {children}
         </UserPreferencesContext.Provider>
     );
@@ -80,12 +121,12 @@ export const useUserPreferences = (): UserPreferences => {
     return context.preferences;
 };
 
-const useSetUserPreferences = () => {
+const useSetUserPreferencesPreview = () => {
     const context = React.useContext(UserPreferencesContext);
     if (context === undefined) {
-        throw new Error('useSetUserPreferences must be used within a UserPreferencesProvider');
+        throw new Error('useSetUserPreferencesPreview must be used within a UserPreferencesProvider');
     }
-    return context.setPreferences;
+    return context.setPreview;
 };
 
 export const UserProfileMenu: React.FC<{
@@ -94,8 +135,15 @@ export const UserProfileMenu: React.FC<{
     const { formDialogApiRef } = props;
     const { t } = useTranslation();
     const { getUserId: authGetUserId } = useAuthContext();
+    const { setCurrentUser } = useDistribucioContext();
+    // La promesa de show() es resol amb el recurs desat (i no es resol si es cancel·la). En
+    // desar-lo s'actualitza l'usuari de la sessió, que és d'on pengen totes les preferències:
+    // així el canvi d'idioma s'aplica en desar i no mentre s'edita el formulari.
     const showUserProfileDialog = () => {
-        formDialogApiRef.current?.show(authGetUserId()).catch(() => null);
+        formDialogApiRef.current
+            ?.show(authGetUserId())
+            .then((desat: any) => desat != null && setCurrentUser(desat))
+            .catch(() => null);
     };
 
     return (
@@ -181,22 +229,24 @@ const MenuStyleSelector: React.FC = () => {
     );
 };
 
-// Sincronitza l'idioma i les preferències (tema/estil de menú) de la interfície amb el que es
-// carrega/desa al perfil (tant en obrir el diàleg com en guardar-lo o cancel·lar-lo, ja que en
-// tots els casos `data` es refresca amb el valor vigent).
+/**
+ * Previsualitza el tema i l'estil de menú mentre s'edita el perfil, perquè es vegin a l'instant
+ * sense haver de desar. Són canvis purament de client i no toquen cap consulta.
+ *
+ * L'idioma NO es previsualitza a posta: canviar-lo obliga a tornar a demanar les etiquetes i els
+ * enumerats al servidor (base-react refà l'índex de l'API quan canvia Accept-Language), i fer-ho
+ * a cada tecla del formulari recarregava la pantalla de darrere. S'aplica en desar, quan
+ * DistribucioProvider actualitza currentUser (veure UserProfileMenu).
+ */
 const PreferencesSync: React.FC = () => {
     const { data } = useFormContext();
-    const { currentLanguage, setCurrentLanguage } = useBaseAppContext();
-    const setPreferences = useSetUserPreferences();
+    const setPreview = useSetUserPreferencesPreview();
     React.useEffect(() => {
-        const profileLanguage = data?.idioma?.toLowerCase();
-        if (profileLanguage != null && currentLanguage !== profileLanguage) {
-            setCurrentLanguage(profileLanguage);
-        }
-    }, [data?.idioma]);
-    React.useEffect(() => {
-        setPreferences({ temaAplicacio: data?.temaAplicacio, estilMenu: data?.estilMenu });
-    }, [data?.temaAplicacio, data?.estilMenu]);
+        setPreview({ temaAplicacio: data?.temaAplicacio, estilMenu: data?.estilMenu });
+    }, [data?.temaAplicacio, data?.estilMenu, setPreview]);
+    // En tancar el diàleg (desant o cancel·lant) es retira la previsualització i tornen a manar
+    // els valors del perfil desat.
+    React.useEffect(() => () => setPreview({}), [setPreview]);
     return null;
 };
 
@@ -363,7 +413,11 @@ export const UserProfileFormDialog: React.FC<{
                 <Grid size={12}>
                     <Divider>{t('component.UserProfile.seccioConfig')}</Divider>
                 </Grid>
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="idioma" componentProps={endIcon('language')} />
+                {/* Sense endIcon: `idioma` és un camp d'opcions (UsuariResource.idioma duu
+                    @ResourceField(enumType = true)) i es dibuixa com a desplegable, que ja té la
+                    seva fletxa. A més, FormFieldEnum fixa els seus propis slotProps després
+                    d'escampar componentProps, de manera que l'adornament no s'hi aplicaria. */}
+                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="idioma" />
                 <GridFormField
                     size={{ xs: 12, sm: 6, md: 3 }}
                     name="numElementsPagina"

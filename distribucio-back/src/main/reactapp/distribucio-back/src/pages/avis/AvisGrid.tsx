@@ -7,6 +7,10 @@ import AvisFormContent from './AvisFormContent';
 import { formatDate } from '../../util/dateUtils';
 import useAvisAccions from './AvisAccions';
 
+// Les capçaleres no es declaren aquí: el MuiDataGrid les omple amb l'etiqueta que el backend
+// publica per a cada camp (el `_prompt` del HAL-FORMS, veure distribucio-back-rest-messages).
+// És la mateixa font que fan servir el formulari i les capçaleres del fitxer d'exportació, que
+// es genera al servidor (BaseReadonlyResourceController.toExportFields).
 const columns: MuiDataGridColDef[] = [
     { field: 'assumpte', flex: 4 },
     {
@@ -21,7 +25,8 @@ const columns: MuiDataGridColDef[] = [
     },
     { field: 'entitat', flex: 2 },
     { field: 'avisNivell', flex: 1 },
-    { field: 'activa', flex: 0.6, type: 'boolean' },
+    // El camp del recurs es diu `actiu` (AvisResource), no `activa`.
+    { field: 'actiu', flex: 0.6, type: 'boolean' },
 ];
 
 export const AvisGrid: React.FC = () => {
@@ -29,16 +34,6 @@ export const AvisGrid: React.FC = () => {
     const apiRef = useMuiDataGridApiRef();
     const refresh = () => apiRef.current?.refresh?.();
     const accions = useAvisAccions(refresh);
-
-    const columnsWithLabels = React.useMemo(
-        () => [
-            ...columns.map((column) => ({
-                ...column,
-                headerName: t(`page.avisos.grid.column.${column.field}`),
-            })),
-        ],
-        [t]
-    );
 
     return (
         <GridPage>
@@ -48,7 +43,7 @@ export const AvisGrid: React.FC = () => {
                     resourceName="avisResource"
                     apiRef={apiRef}
                     toolbarShowQuickFilter
-                    columns={columnsWithLabels}
+                    columns={columns}
                     paginationActive
                     popupEditActive
                     popupEditFormContent={<AvisFormContent />}
