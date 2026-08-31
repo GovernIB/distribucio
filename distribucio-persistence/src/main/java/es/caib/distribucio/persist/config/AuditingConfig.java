@@ -19,7 +19,12 @@ import es.caib.distribucio.persist.repository.UsuariRepository;
 /**
  * Configuració per a les entitats de base de dades auditables.
  * 
- * @author Limit Tecnologies
+ * L'auditor és el codi de l'usuari i no l'entitat, perquè només hi pot haver
+ * un {@link AuditorAware} per a tot el context i les entitats de recurs de la
+ * capa REACT ({@link es.caib.distribucio.persist.base.entity.BaseAuditableEntity})
+ * guarden l'auditor com a {@link String}.
+ * 
+ * @author Limit Tecnologies <limit@limit.es>
  */
 @Configuration
 @EnableJpaAuditing
@@ -29,16 +34,15 @@ public class AuditingConfig {
 	private UsuariRepository usuariRepository;
 
 	@Bean
-	public AuditorAware<UsuariEntity> auditorProvider() {
-		return new AuditorAware<UsuariEntity>() {
-			@Override
-			public java.util.Optional<UsuariEntity> getCurrentAuditor() {
-				Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-				if (authentication != null && authentication.isAuthenticated()) {
-					return usuariRepository.findById(authentication.getName());
-				} else {
-					return Optional.empty();
-				}
+	public AuditorAware<String> auditorProvider() {
+		return () -> {
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			if (authentication != null && authentication.isAuthenticated()) {
+				// Si l'usuari no està donat d'alta a dis_usuari no s'informa l'auditor,
+				// per a no violar les claus foranes cap a dis_usuari que tenen algunes taules.
+				return usuariRepository.findById(authentication.getName()).map(UsuariEntity::getCodi);
+			} else {
+				return Optional.empty();
 			}
 		};
 	}

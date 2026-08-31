@@ -56,7 +56,7 @@ public interface ContingutLogRepository extends JpaRepository<ContingutLogEntity
 			"	and (:esNullDates = true or l.createdDate  between :dataInici and :dataFi) " +
 			"	and (l.createdDate  between :dataInici and :dataFi) " +
 			" 	and (:isNullTipus = true or l.tipus = :tipus) " +
-			" 	and (:isNullUsuari = true or l.createdBy.codi like :usuari) " +
+			" 	and (:isNullUsuari = true or l.createdBy like :usuari) " +
 			" 	and (:isNullAnotacioEstat = true or r.procesEstat like :anotacioEstat) " +
 			" 	and (:isNullAnotacioError = true " + 
 			"			or (:anotacioError = true and r.procesError != null) " + 

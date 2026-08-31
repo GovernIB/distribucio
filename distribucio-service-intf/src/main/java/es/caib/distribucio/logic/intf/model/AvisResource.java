@@ -71,7 +71,6 @@ public class AvisResource implements Resource<Long> {
     public static final String ACTION_DESACTIVAR_CODE = "DESACTIVAR";
     public static final String ACTION_ACCIO_MASSIVA_CODE = "ACCIO_MASSIVA";
 
-    @NotNull
     private Long id;
 
     @NotNull
@@ -87,8 +86,8 @@ public class AvisResource implements Resource<Long> {
 
     private Date dataFinal;
 
-    @NotNull
-    private Boolean actiu;
+    //Activa per defecte, igual que en la UI antiga
+    private Boolean actiu = true;
 
     @NotNull
     private AvisNivellEnumDto avisNivell;
@@ -110,15 +109,11 @@ public class AvisResource implements Resource<Long> {
     @NoArgsConstructor
     @FieldNameConstants
     public static class FormAccioMassiva implements Serializable {
-
         private static final long serialVersionUID = 1L;
-
         @NotNull
         private String accio; // "activar", "desactivar", "eliminar"
-
         @NotNull
         private List<Long> ids;
-
     }
 
 }

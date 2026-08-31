@@ -31,40 +31,6 @@ public class AvisResourceServiceImpl extends BaseMutableResourceService<AvisReso
         register(AvisResource.ACTION_ACCIO_MASSIVA_CODE, new AccioMassivaActionExecutor());
     }
 
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<AvisResource> findActive() {
-//        List<AvisResourceEntity> entities = avisResourceRepository
-//                .findByActiuTrueAndDataIniciLessThanEqualAndDataFinalIsNullOrDataFinalGreaterThanEqual(
-//                        DateUtils.truncate(new Date(), Calendar.DATE));
-//        return entitiesToResources(entities);
-//    }
-
-    @Override
-    protected void afterCreateSave(
-            AvisResourceEntity entity,
-            AvisResource resource,
-            Map<String, es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException.AnswerValue> answers,
-            boolean anyOrderChanged) {
-        // notificar, si correspon
-    }
-
-    @Override
-    protected void afterUpdateSave(
-            AvisResourceEntity entity,
-            AvisResource resource,
-            Map<String, es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException.AnswerValue> answers,
-            boolean anyOrderChanged) {
-        // notificar, si correspon
-    }
-
-    @Override
-    protected void afterDelete(
-            AvisResourceEntity entity,
-            Map<String, es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException.AnswerValue> answers) {
-        // notificar, si correspon
-    }
-
     /**
      * Activa o desactiva l'avís segons el codi de l'acció executada, l'equivalent d'avis/{id}/enable
      * i avis/{id}/disable de la interfície JSP (AvisController.enable/disable).
@@ -157,7 +123,6 @@ public class AvisResourceServiceImpl extends BaseMutableResourceService<AvisReso
             // notificar una vegada
             return null;
         }
-
     }
 
 }

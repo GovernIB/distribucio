@@ -412,6 +412,10 @@ public class ContingutServiceImpl implements ContingutService {
 			cal.set(Calendar.MILLISECOND, 999);
 			dataFi = cal.getTime();
 		}
+		// La columna de remitent es mostra amb el nom de l'usuari, però a l'entitat
+		// només s'hi guarda el seu codi (veure DistribucioAuditable.createdBy).
+		Map<String, String[]> mapeigPropietatsOrdenacio = new HashMap<String, String[]>();
+		mapeigPropietatsOrdenacio.put("createdBy.nom", new String[] {"createdBy"});
 		return paginacioHelper.toPaginaDto(
 				contingutRepository.findByFiltrePaginat(
 						entitat,
@@ -425,7 +429,7 @@ public class ContingutServiceImpl implements ContingutService {
 						dataFi,
 						filtre.isMostrarEsborrats(),
 						filtre.isMostrarNoEsborrats(),
-						paginacioHelper.toSpringDataPageable(paginacioParams)),
+						paginacioHelper.toSpringDataPageable(paginacioParams, mapeigPropietatsOrdenacio)),
 				ContingutDto.class,
 				new Converter<ContingutEntity, ContingutDto>() {
 					@Override
@@ -718,7 +722,7 @@ public class ContingutServiceImpl implements ContingutService {
 			}
 			logDto.setTipus(log.getTipus());
 			logDto.setTipusDesc(messageHelper.getMessage("log.tipus.enum." + log.getTipus()));
-			logDto.setUsuari(log.getCreatedBy().isPresent() ? log.getCreatedBy().get().getCodi() : null);
+			logDto.setUsuari(log.getCreatedBy().orElse(null));
 			logDto.setAnotacioId(log.getContingut().getId()); 
 			logDto.setAnotacioNumero(registre.getNumero());
 			logDto.setAnotacioEstat(registre.getProcesEstat());

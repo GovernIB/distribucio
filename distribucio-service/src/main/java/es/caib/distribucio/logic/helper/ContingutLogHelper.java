@@ -348,17 +348,15 @@ public class ContingutLogHelper {
 					java.sql.Timestamp.valueOf(log.getCreatedDate().get()));
 		}
 		dto.setCreatedBy(
-				conversioTipusHelper.convertir(
-						log.getCreatedBy().orElse(null),
-						UsuariDto.class));
+				conversioTipusHelper.usuariDtoPerCodi(
+						log.getCreatedBy().orElse(null)));
 		if (log.getLastModifiedDate().isPresent()) {
 			dto.setLastModifiedDate(
 					java.sql.Timestamp.valueOf(log.getLastModifiedDate().get()));
 		}
 		dto.setLastModifiedBy(
-				conversioTipusHelper.convertir(
-						log.getLastModifiedBy().orElse(null),
-						UsuariDto.class));
+				conversioTipusHelper.usuariDtoPerCodi(
+						log.getLastModifiedBy().orElse(null)));
 		dto.setTipus(
 				LogTipusEnumDto.valueOf(
 						log.getTipus().name()));

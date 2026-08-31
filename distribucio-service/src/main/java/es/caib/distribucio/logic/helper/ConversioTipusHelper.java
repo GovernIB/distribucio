@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -41,6 +42,8 @@ import es.caib.distribucio.persist.entity.MetaDadaEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
+import es.caib.distribucio.persist.entity.UsuariEntity;
+import es.caib.distribucio.persist.repository.UsuariRepository;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MapperFacade;
@@ -57,6 +60,9 @@ import ma.glasnost.orika.metadata.Type;
 public class ConversioTipusHelper {
 
 	private MapperFactory mapperFactory;
+
+	@Autowired
+	private UsuariRepository usuariRepository;
 
 	/**
 	 * 
@@ -95,18 +101,20 @@ public class ConversioTipusHelper {
                     public void mapAtoB(ReglaEntity source, ReglaDto target, MappingContext context) {
                         super.mapAtoB(source, target, context);
 
-                        target.setCreatedBy(convertir(source.getCreatedBy().orElse(null), UsuariDto.class));
+                        target.setCreatedBy(usuariDtoPerCodi(source.getCreatedBy().orElse(null)));
                         if (source.getCreatedDate().isPresent()) {
                             target.setCreatedDate(
                                     java.sql.Timestamp.valueOf(source.getCreatedDate().get()));
                         }
-                        target.setLastModifiedBy(convertir(source.getLastModifiedBy().orElse(null), UsuariDto.class));
+                        target.setLastModifiedBy(usuariDtoPerCodi(source.getLastModifiedBy().orElse(null)));
                         if (source.getLastModifiedDate().isPresent()) {
                             target.setLastModifiedDate(
                                     java.sql.Timestamp.valueOf(source.getLastModifiedDate().get()));
                         }
                     }
                 })
+                .exclude("createdBy")
+                .exclude("lastModifiedBy")
                 .byDefault()
                 .field("backofficeDesti.nom", "backofficeDestiNom")
                 .field("backofficeDesti.id", "backofficeDestiId")
@@ -125,12 +133,12 @@ public class ConversioTipusHelper {
 						ContingutComentariDto target = new ContingutComentariDto();
 						target.setId(source.getId());
 						target.setText(source.getText());
-						target.setCreatedBy(convertir(source.getCreatedBy().orElse(null), UsuariDto.class));
+						target.setCreatedBy(usuariDtoPerCodi(source.getCreatedBy().orElse(null)));
 						if (source.getCreatedDate().isPresent()) {
 							target.setCreatedDate(
 									java.sql.Timestamp.valueOf(source.getCreatedDate().get()));
 						}
-						target.setLastModifiedBy(convertir(source.getLastModifiedBy().orElse(null), UsuariDto.class));
+						target.setLastModifiedBy(usuariDtoPerCodi(source.getLastModifiedBy().orElse(null)));
 						if (source.getLastModifiedDate().isPresent()) {
 							target.setLastModifiedDate(
 									java.sql.Timestamp.valueOf(source.getLastModifiedDate().get()));
@@ -311,6 +319,26 @@ public class ConversioTipusHelper {
 						return target;
 					}
 				});
+	}
+
+	/**
+	 * Converteix el codi d'usuari guardat als camps d'auditoria en el seu DTO.
+	 * Si l'usuari ja no existeix es retorna un DTO amb només el codi.
+	 *
+	 * @param codi codi de l'usuari auditor.
+	 * @return el DTO de l'usuari o null si el codi és null.
+	 */
+	public UsuariDto usuariDtoPerCodi(String codi) {
+		if (codi == null) {
+			return null;
+		}
+		UsuariEntity usuari = usuariRepository.findByCodi(codi);
+		if (usuari != null) {
+			return convertir(usuari, UsuariDto.class);
+		}
+		UsuariDto dto = new UsuariDto();
+		dto.setCodi(codi);
+		return dto;
 	}
 
 	public <T> T convertir(Object source, Class<T> targetType) {

@@ -102,7 +102,6 @@ import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexNtiTipusDocumentEnum;
@@ -925,15 +924,14 @@ public class RegistreServiceImpl implements RegistreService {
 		ContingutMovimentEntity moviment = contingutMovimentRepository.findFirstByContingutOrderByCreatedDateAsc(registre); 
 		if (moviment != null) {
 			Optional<LocalDateTime> localDateTime = moviment.getCreatedDate();
-			Optional<UsuariEntity> createdBy = moviment.getCreatedBy();
+			Optional<String> createdBy = moviment.getCreatedBy();
  			if (localDateTime.isPresent()) {
 				registreDto.setDataPosadaBustia(java.sql.Timestamp.valueOf(localDateTime.get()));
 			}
 			if (RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(registre.getProcesEstat()) && createdBy.isPresent()) {
 				registreDto.setProcessadaPer(
-						conversioTipusHelper.convertir(
-								createdBy.get(), 
-								UsuariDto.class));
+						conversioTipusHelper.usuariDtoPerCodi(
+								createdBy.get()));
 			}
 		}
 	}

@@ -60,8 +60,8 @@ public class ConfigEntity {
 	private int position;
 
 	@LastModifiedBy
-	@ManyToOne
-	private UsuariEntity lastModifiedBy;
+	@Column(name = "lastmodifiedby_codi", length = 64)
+	private String lastModifiedBy;
 
 	@LastModifiedDate
 	@Temporal(TemporalType.TIMESTAMP)
@@ -152,7 +152,7 @@ public class ConfigEntity {
 	public void setPosition(int position) {
 		this.position = position;
 	}
-	public void setLastModifiedBy(UsuariEntity lastModifiedBy) {
+	public void setLastModifiedBy(String lastModifiedBy) {
 		this.lastModifiedBy = lastModifiedBy;
 	}
 	public void setLastModifiedDate(Date lastModifiedDate) {

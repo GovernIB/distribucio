@@ -924,11 +924,11 @@ public class ReglaServiceImpl implements ReglaService {
 		}
 
         if (regla.getCreatedBy().isPresent())  {
-            dto.setCreatedBy(conversioTipusHelper.convertir(regla.getCreatedBy().get(), UsuariDto.class));
+            dto.setCreatedBy(conversioTipusHelper.usuariDtoPerCodi(regla.getCreatedBy().get()));
         }
 
         if (regla.getLastModifiedBy().isPresent())  {
-            dto.setLastModifiedBy(conversioTipusHelper.convertir(regla.getLastModifiedBy().get(), UsuariDto.class));
+            dto.setLastModifiedBy(conversioTipusHelper.usuariDtoPerCodi(regla.getLastModifiedBy().get()));
         }
         
 		regla.getCreatedDate()
