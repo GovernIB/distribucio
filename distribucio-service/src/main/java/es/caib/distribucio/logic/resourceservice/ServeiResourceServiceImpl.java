@@ -1,15 +1,22 @@
 package es.caib.distribucio.logic.resourceservice;
 
+import java.io.Serializable;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
-import es.caib.distribucio.logic.intf.base.util.RequestSessionUtil;
 import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 import es.caib.distribucio.logic.intf.model.ServeiResource;
-import es.caib.distribucio.logic.intf.model.UserSession;
 import es.caib.distribucio.logic.intf.resourceservice.ServeiResourceService;
 import es.caib.distribucio.logic.intf.service.ServeiService;
+import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
 import es.caib.distribucio.persist.resourceentity.ServeiResourceEntity;
@@ -17,12 +24,6 @@ import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.ServeiResourceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import java.io.Serializable;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -43,7 +44,7 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 
 	@Override
 	protected Specification<ServeiResourceEntity> additionalSpecification(String[] namedQueries) {
-		Long entitatId = getCurrentEntitatId();
+		Long entitatId = SessioActualUtil.getEntitatId();
 		if (entitatId != null) {
 			return (root, query, cb) -> cb.equal(root.get("entitat").get("id"), entitatId);
 		}
@@ -67,7 +68,7 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 			ServeiResource resource,
 			Map<String, AnswerRequiredException.AnswerValue> answers) {
 		if (entity.getEntitat() == null) {
-			Long entitatId = getCurrentEntitatId();
+			Long entitatId = SessioActualUtil.getEntitatId();
 			if (entitatId != null) {
 				EntitatResourceEntity entitat = entitatResourceRepository.getReferenceById(entitatId);
 				entity.setEntitat(entitat);
@@ -88,14 +89,6 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 //		} else {
 //			entity.setUnitatOrganitzativa(null);
 //		}
-	}
-
-	private Long getCurrentEntitatId() {
-		Object session = RequestSessionUtil.getRequestSession();
-		if (session instanceof UserSession) {
-			return ((UserSession) session).getEntitatId();
-		}
-		return null;
 	}
 
 	/**
@@ -119,7 +112,7 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 				String code,
 				ServeiResourceEntity entity,
 				Serializable params) throws ActionExecutionException {
-			Long entitatId = getCurrentEntitatId();
+			Long entitatId = SessioActualUtil.getEntitatId();
 			if (entitatId == null && entity != null && entity.getEntitat() != null) {
 				entitatId = entity.getEntitat().getId();
 			}
@@ -166,7 +159,7 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 				String code,
 				ServeiResourceEntity entity,
 				Serializable params) throws ActionExecutionException {
-			Long entitatId = getCurrentEntitatId();
+			Long entitatId = SessioActualUtil.getEntitatId();
 			if (entitatId == null && entity.getEntitat() != null) {
 				entitatId = entity.getEntitat().getId();
 			}
@@ -213,7 +206,7 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 				String code,
 				ServeiResourceEntity entity,
 				Serializable params) throws ActionExecutionException {
-			Long entitatId = getCurrentEntitatId();
+			Long entitatId = SessioActualUtil.getEntitatId();
 			if (entitatId == null && entity != null && entity.getEntitat() != null) {
 				entitatId = entity.getEntitat().getId();
 			}

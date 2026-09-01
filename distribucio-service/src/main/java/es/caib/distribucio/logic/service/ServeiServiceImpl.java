@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
@@ -99,6 +100,12 @@ public class ServeiServiceImpl implements ServeiService{
     @Transactional
     public ServeiDto findAndUpdateServei(Long entitatId, String serveiCodi) throws Exception {
         EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
+        // Els plugins s'instancien per entitat i llegeixen el codi de l'entitat actual del
+        // ThreadLocal de ConfigHelper. A la interfície JSP l'hi deixa LlistaEntitatsInterceptor,
+        // però les peticions de la interfície REACT (/api/**) estan excloses dels interceptors
+        // (veure INTERCEPTOR_EXCLUSIONS a WebMvcConfig), així que el fixam aquí a partir de
+        // l'entitat que rep el mètode -- mateix patró que RegistreServiceImpl i SegonPlaServiceImpl.
+        ConfigHelper.setEntitatActualCodi(entitat.getCodi());
 
         Servei servei = null;
         int reintents = 1;
@@ -152,6 +159,12 @@ public class ServeiServiceImpl implements ServeiService{
 		}
 		
 		EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
+		// Els plugins s'instancien per entitat i llegeixen el codi de l'entitat actual del
+		// ThreadLocal de ConfigHelper. A la interfície JSP l'hi deixa LlistaEntitatsInterceptor,
+		// però les peticions de la interfície REACT (/api/**) estan excloses dels interceptors
+		// (veure INTERCEPTOR_EXCLUSIONS a WebMvcConfig), així que el fixam aquí a partir de
+		// l'entitat que rep el mètode -- mateix patró que RegistreServiceImpl i SegonPlaServiceImpl.
+		ConfigHelper.setEntitatActualCodi(entitat.getCodi());
 		msgInfo = "Inici del procés d'actualització de serveis de l'entitat " + entitat.getCodi() + " " + entitat.getNom();
 		progres.setEstat(Estat.INICIALITZANT);
 		logger.info(msgInfo);

@@ -1,6 +1,7 @@
 package es.caib.distribucio.persist.resourceentity;
 
 import es.caib.distribucio.logic.intf.model.EntitatResource;
+import es.caib.distribucio.persist.base.entity.BaseAuditableEntity;
 import es.caib.distribucio.persist.base.entity.BaseResourceEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,7 @@ import javax.persistence.Version;
 @Getter
 @Setter
 @NoArgsConstructor
-public class EntitatResourceEntity extends BaseResourceEntity<EntitatResource, Long> {
+public class EntitatResourceEntity extends BaseAuditableEntity<EntitatResource, Long> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "default_seq")
