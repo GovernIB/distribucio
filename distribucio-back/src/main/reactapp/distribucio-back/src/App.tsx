@@ -1,15 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import { Outlet } from 'react-router-dom';
-import { CssBaseline, useMediaQuery } from '@mui/material';
-import { ThemeProvider, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import { envVar, OidcAuthProvider, ContainerAuthProvider, ResourceApiProvider } from 'reactlib';
 import { BaseApp } from './components/BaseApp';
 import DrassanaFooter from './components/DrassanaFooter';
 import goibLogoLight from './assets/goib_logo_light.svg';
 import goibLogoDark from './assets/goib_logo_dark.svg';
 import distribucioLogo from './assets/DIR_DRA_COL.svg';
-import { getThemeForTema } from './theme';
 import { UserPreferencesProvider, useUserPreferences } from './components/UserProfile';
+import { TemaProvider } from './components/TemaProvider';
 import { DistribucioProvider } from './components/DistribucioProvider';
 import { useDistribucioContext } from './components/DistribucioContext';
 import { filtrarEntradesMenu, type MenuEntryAmbPantalla } from './util/pantalles';
@@ -161,18 +160,6 @@ const InnerApp: React.FC = () => {
     );
 };
 
-const ThemedApp: React.FC = () => {
-    const { temaAplicacio } = useUserPreferences();
-    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-    const theme = getThemeForTema(temaAplicacio, prefersDarkMode);
-    return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <InnerApp />
-        </ThemeProvider>
-    );
-};
-
 export const App = () => {
     const authConfig = getAuthConfig();
     return (
@@ -183,16 +170,22 @@ export const App = () => {
             mandatory
         >
             <ResourceApiProvider apiUrl={getEnvApiUrl()}>
-                {/* UserPreferencesProvider va per dins de DistribucioProvider: les preferències
-                    (idioma, tema, estil de menú...) surten del perfil que aquest carrega, i
-                    DistribucioProvider no pinta els fills fins a tenir-lo. */}
-                <DistribucioProvider>
-                    <UserPreferencesProvider>
-                        <SessionStorageProvider>
-                            <ThemedApp />
-                        </SessionStorageProvider>
-                    </UserPreferencesProvider>
-                </DistribucioProvider>
+                {/* TemaProvider va per fora de tot, també de la pantalla de càrrega de
+                    DistribucioProvider: arrenca amb l'últim tema conegut de l'usuari perquè no hi
+                    hagi parpelleig mentre no arriba el perfil.
+
+                    UserPreferencesProvider, en canvi, va per dins de DistribucioProvider: les
+                    preferències (idioma, tema, estil de menú, mida de pàgina...) surten del perfil
+                    que aquest carrega, i DistribucioProvider no pinta els fills fins a tenir-lo. */}
+                <TemaProvider>
+                    <DistribucioProvider>
+                        <UserPreferencesProvider>
+                            <SessionStorageProvider>
+                                <InnerApp />
+                            </SessionStorageProvider>
+                        </UserPreferencesProvider>
+                    </DistribucioProvider>
+                </TemaProvider>
             </ResourceApiProvider>
         </AuthProvider>
     );

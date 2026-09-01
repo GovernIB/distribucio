@@ -200,6 +200,7 @@ const useCurrentRole = (broadcast: BroadcastSession, currentUser: any) => {
 const useCurrentEntitat = (
     broadcast: BroadcastSession,
     currentUserId: string | undefined,
+    entitatPerDefecteId: number | undefined,
     currentRole: string | undefined,
     currentRoleReady: boolean
 ) => {
@@ -235,15 +236,22 @@ const useCurrentEntitat = (
             const entitatsAvailable = response.rows;
             setEntitatsAvailable(entitatsAvailable);
 
+            // Entitat de treball inicial, per aquest ordre: la de la pestanya actual
+            // (sessionStorage), l'entitat per defecte del perfil (dis_usuari.entitat_defecte_id) i
+            // la primera accessible. És el mateix ordre que la interfície JSP, on l'atribut de
+            // sessió mana i el perfil només s'aplica quan no n'hi ha cap de vàlida (veure
+            // EntitatHelper.getEntitatActual). Com la JSP, canviar d'entitat al selector no
+            // reescriu la preferència: només es canvia des del perfil.
             const storedSession = sessionSessionGetValue();
-
             const parsedSession = storedSession ? JSON.parse(storedSession) : {};
-            const sessionValue = parsedSession.e;
-            const isSessionValueInEntitatsAvailable = entitatsAvailable.map((e) => e.id).includes(sessionValue);
-            if (isSessionValueInEntitatsAvailable) {
-                setCurrentEntitatId(sessionValue);
-            } else if (entitatsAvailable?.length && currentEntitatId == null) {
-                setCurrentEntitatId(entitatsAvailable[0].id);
+            const idsAccessibles = entitatsAvailable.map((e) => e.id);
+            const esAccessible = (id?: number) => id != null && idsAccessibles.includes(id);
+            const entitatInicial =
+                [parsedSession.e, entitatPerDefecteId].find(esAccessible) ?? idsAccessibles[0];
+            // Sense comprovar currentEntitatId: l'efecte acaba de posar-lo a undefined i el valor
+            // que es veuria des d'aquí seria el del rol anterior, que impediria fixar el nou.
+            if (entitatInicial != null) {
+                setCurrentEntitatId(entitatInicial);
             }
         });
     }, [apiIsReady, currentRoleReady, currentRole]);
@@ -317,7 +325,13 @@ export const DistribucioProvider: React.FC<React.PropsWithChildren> = ({ childre
         currentEntitatLoading,
         entitatsAvailable,
         setCurrentEntitatId,
-    } = useCurrentEntitat(broadcast, currentUserId, currentRole, currentRoleReady);
+    } = useCurrentEntitat(
+        broadcast,
+        currentUserId,
+        currentUser?.entitatPerDefecteId,
+        currentRole,
+        currentRoleReady
+    );
     const isReady = apiOffline || (currentRoleReady && currentEntitatReady && currentUser != null);
     const contextValue = {
         isReady,

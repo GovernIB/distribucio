@@ -5,6 +5,8 @@ import es.caib.distribucio.back.helper.RolHelper;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.IdNomDto;
+import es.caib.distribucio.logic.intf.dto.OpcionsPaginacio;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.service.EntitatService;
@@ -18,12 +20,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- * Opcions (entitats i bústies accessibles per a l'usuari actual) per a emplenar els selectors del
- * perfil de l'usuari a la interfície REACT (recurs {@code usuariResource}).
+ * Opcions (entitats i bústies accessibles per a l'usuari actual, mides de pàgina) per a emplenar
+ * els selectors del perfil de l'usuari a la interfície REACT (recurs {@code usuariResource}).
  * <p>
  * No formen part del motor genèric de recursos HAL-FORMS perquè els llistats depenen de l'usuari
  * autenticat actual (no de l'entitat administrada per {@code EntitatResource}, restringida al rol
- * {@code DIS_SUPER}).
+ * {@code DIS_SUPER}) o, en el cas de les mides de pàgina, perquè el camp és numèric i el motor
+ * genèric no en pot publicar les opcions (veure {@link #opcionsPaginacio()}).
  *
  * @author Límit Tecnologies
  */
@@ -44,6 +47,21 @@ public class UsuariPreferenciesController {
 	@GetMapping("/busties")
 	public List<BustiaDto> bustiesAccessibles(@RequestParam Long entitatId) {
 		return bustiaService.findBustiesPermesesPerUsuari(entitatId, false);
+	}
+
+	/**
+	 * Mides de pàgina que pot triar l'usuari: les mateixes d'{@link OpcionsPaginacio} que ofereix
+	 * el desplegable de la interfície JSP (veure {@code UsuariController} i {@code usuariForm.jsp}).
+	 * <p>
+	 * No es publiquen com a opcions del camp {@code numElementsPagina} amb
+	 * {@code @ResourceField(enumType = true)} -- com es fa amb {@code idioma} -- perquè el motor
+	 * genèric lliura els valors de les opcions com a text ({@code FieldOption.value} és un
+	 * {@code String}) mentre que el camp és un {@code Long}: el desplegable no reconeixeria el
+	 * valor desat (el compara amb {@code ===}) i sortiria buit.
+	 */
+	@GetMapping("/opcionsPaginacio")
+	public List<IdNomDto> opcionsPaginacio() {
+		return OpcionsPaginacio.toDtoList();
 	}
 
 	/**

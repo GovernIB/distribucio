@@ -23,6 +23,7 @@ import {
 } from 'reactlib';
 import { TemaAplicacio, MenuEstil } from '../theme';
 import { useDistribucioContext } from './DistribucioContext';
+import { desarTemaCache, useSetTemaAplicacio } from './TemaProvider';
 import GridFormField from './GridFormField';
 
 const selectorLabelSx = {
@@ -64,7 +65,7 @@ export type UserPreferences = {
     idioma?: string;
     temaAplicacio?: TemaAplicacio;
     estilMenu?: MenuEstil;
-    /** Encara no el consumeix cap graella; queda exposat per a quan s'hi connecti. */
+    /** Mida de pàgina per defecte de tots els llistats (veure StyledMuiGrid). */
     numElementsPagina?: number;
 };
 
@@ -90,11 +91,18 @@ const UserPreferencesContext = React.createContext<
 
 export const UserPreferencesProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     const { currentUser } = useDistribucioContext();
+    const setTemaAplicacio = useSetTemaAplicacio();
     const [preview, setPreview] = React.useState<UserPreferences>({});
     const desades = React.useMemo(() => preferenciesDesades(currentUser), [currentUser]);
     // En desar el perfil, DistribucioProvider actualitza currentUser: la previsualització ha de
     // desaparèixer perquè no tapi els valors que acaben d'arribar del servidor.
     React.useEffect(() => setPreview({}), [desades]);
+    // Només es recorda el tema desat, no la previsualització: així la propera arrencada ja pinta
+    // amb el tema correcte (veure TemaProvider) sense ressuscitar cap canvi descartat.
+    React.useEffect(
+        () => desarTemaCache(currentUser?.id, desades.temaAplicacio),
+        [currentUser?.id, desades.temaAplicacio]
+    );
     const preferences = React.useMemo(() => {
         // Només tapen les claus previsualitzades amb valor; una clau a undefined ha de deixar
         // veure la preferència desada, no esborrar-la.
@@ -106,6 +114,15 @@ export const UserPreferencesProvider: React.FC<React.PropsWithChildren> = ({ chi
         });
         return efectives;
     }, [desades, preview]);
+    // El tema efectiu (inclosa la previsualització del diàleg de perfil, que s'ha de veure a
+    // l'instant) puja al TemaProvider, que és qui munta el ThemeProvider de tota l'aplicació.
+    // Sense perfil no s'hi puja res: amb l'API caiguda DistribucioProvider pinta igualment els
+    // fills (mode offline) i s'esborraria el tema que TemaProvider ha recuperat de la memòria cau.
+    React.useEffect(() => {
+        if (currentUser != null) {
+            setTemaAplicacio(preferences.temaAplicacio);
+        }
+    }, [currentUser, preferences.temaAplicacio, setTemaAplicacio]);
     return (
         <UserPreferencesContext.Provider value={{ preferences, setPreview }}>
             {children}
@@ -281,39 +298,66 @@ const RolesField: React.FC = () => {
 
 type OptionItem = { id: number; nom: string };
 
-// Selector de l'entitat per defecte, alimentat per un endpoint propi (no és un ResourceReference
-// genèric perquè el llistat depèn de l'usuari autenticat, no del recurs administratiu
-// entitatResource restringit a DIS_SUPER).
-const EntitatPerDefecteSelect: React.FC = () => {
-    const { t } = useTranslation();
-    const { data, apiRef } = useFormContext();
+/**
+ * Opcions d'un desplegable del perfil. No es publiquen com a camp d'opcions del recurs
+ * (`@ResourceField(enumType = true)`, com `idioma`) sinó com a endpoints propis de
+ * `usuariPreferencies`: els llistats d'entitats i bústies depenen de l'usuari autenticat -- no del
+ * recurs administratiu `entitatResource`, restringit a DIS_SUPER -- i les mides de pàgina són
+ * numèriques, mentre que el motor genèric només sap publicar opcions de text.
+ */
+const useOpcions = (href?: string, hrefParams?: any): OptionItem[] => {
     const { apiUrl, requestHref } = useResourceApiContext();
     const [options, setOptions] = React.useState<OptionItem[]>([]);
-
+    // Els paràmetres es comparen serialitzats: l'objecte literal que passa qui crida el hook és nou
+    // a cada render i, com a dependència, rellançaria la consulta indefinidament.
+    const hrefParamsKey = JSON.stringify(hrefParams ?? null);
     React.useEffect(() => {
-        requestHref(apiUrl + 'usuariPreferencies/entitats')
+        if (href == null) {
+            setOptions([]);
+            return;
+        }
+        requestHref(apiUrl + href, hrefParams)
             .then((state) => setOptions((state.data as OptionItem[]) ?? []))
             .catch(() => setOptions([]));
-    }, [apiUrl]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [apiUrl, href, hrefParamsKey]);
+    return options;
+};
 
-    const value = data?.entitatPerDefecteId ?? '';
+/**
+ * Desplegable d'una preferència del perfil, alimentat per {@link useOpcions}. El valor es manté
+ * numèric (l'id de l'opció tal com arriba del servidor) perquè el camp del recurs també ho és.
+ */
+const PreferenciaSelect: React.FC<{
+    name: string;
+    label: string;
+    value?: number | null;
+    options: OptionItem[];
+    /** Afegeix l'opció buida per poder deixar la preferència sense valor. */
+    emptyOption?: boolean;
+    disabled?: boolean;
+    onChange: (value: number | null) => void;
+}> = (props) => {
+    const { name, label, value, options, emptyOption, disabled, onChange } = props;
+    const { t } = useTranslation();
+    const labelId = name + '-label';
     return (
-        <FormControl fullWidth size="small">
-            <InputLabel id="entitatPerDefecte-label">
-                {t('component.UserProfile.entitatPerDefecte')}
-            </InputLabel>
-            <Select
-                labelId="entitatPerDefecte-label"
-                label={t('component.UserProfile.entitatPerDefecte')}
-                value={value}
+        <FormControl fullWidth size="small" disabled={disabled}>
+            <InputLabel id={labelId}>{label}</InputLabel>
+            <Select<number | ''>
+                labelId={labelId}
+                label={label}
+                value={value ?? ''}
                 onChange={(event) => {
-                    apiRef?.current?.setFieldValue('entitatPerDefecteId', event.target.value || null);
-                    apiRef?.current?.setFieldValue('bustiaPerDefecte', null);
+                    const seleccionat = event.target.value;
+                    onChange(seleccionat !== '' ? Number(seleccionat) : null);
                 }}
             >
-                <MenuItem value="">
-                    <em>{t('comu.empty.option')}</em>
-                </MenuItem>
+                {emptyOption && (
+                    <MenuItem value="">
+                        <em>{t('comu.empty.option')}</em>
+                    </MenuItem>
+                )}
                 {options.map((option) => (
                     <MenuItem key={option.id} value={option.id}>
                         {option.nom}
@@ -324,51 +368,64 @@ const EntitatPerDefecteSelect: React.FC = () => {
     );
 };
 
+// Selector de l'entitat per defecte.
+const EntitatPerDefecteSelect: React.FC = () => {
+    const { t } = useTranslation();
+    const { data, apiRef } = useFormContext();
+    const options = useOpcions('usuariPreferencies/entitats');
+    return (
+        <PreferenciaSelect
+            name="entitatPerDefecte"
+            label={t('component.UserProfile.entitatPerDefecte')}
+            value={data?.entitatPerDefecteId}
+            options={options}
+            emptyOption
+            onChange={(value) => {
+                apiRef?.current?.setFieldValue('entitatPerDefecteId', value);
+                apiRef?.current?.setFieldValue('bustiaPerDefecte', null);
+            }}
+        />
+    );
+};
+
 // Selector de la bústia per defecte -- depèn de l'entitat per defecte seleccionada (es guarda per
 // parella entitat+usuari, veure UsuariResourceServiceImpl).
 const BustiaPerDefecteSelect: React.FC = () => {
     const { t } = useTranslation();
     const { data, apiRef } = useFormContext();
-    const { apiUrl, requestHref } = useResourceApiContext();
-    const [options, setOptions] = React.useState<OptionItem[]>([]);
     const entitatPerDefecteId = data?.entitatPerDefecteId;
-
-    React.useEffect(() => {
-        if (entitatPerDefecteId == null) {
-            setOptions([]);
-            return;
-        }
-        requestHref(apiUrl + 'usuariPreferencies/busties?entitatId={entitatId}', {
-            entitatId: entitatPerDefecteId,
-        })
-            .then((state) => setOptions((state.data as OptionItem[]) ?? []))
-            .catch(() => setOptions([]));
-    }, [apiUrl, entitatPerDefecteId]);
-
-    const value = data?.bustiaPerDefecte ?? '';
+    const options = useOpcions(
+        entitatPerDefecteId != null ? 'usuariPreferencies/busties?entitatId={entitatId}' : undefined,
+        entitatPerDefecteId != null ? { entitatId: entitatPerDefecteId } : undefined
+    );
     return (
-        <FormControl fullWidth size="small" disabled={entitatPerDefecteId == null}>
-            <InputLabel id="bustiaPerDefecte-label">
-                {t('component.UserProfile.bustiaPerDefecte')}
-            </InputLabel>
-            <Select
-                labelId="bustiaPerDefecte-label"
-                label={t('component.UserProfile.bustiaPerDefecte')}
-                value={value}
-                onChange={(event) => {
-                    apiRef?.current?.setFieldValue('bustiaPerDefecte', event.target.value || null);
-                }}
-            >
-                <MenuItem value="">
-                    <em>{t('comu.empty.option')}</em>
-                </MenuItem>
-                {options.map((option) => (
-                    <MenuItem key={option.id} value={option.id}>
-                        {option.nom}
-                    </MenuItem>
-                ))}
-            </Select>
-        </FormControl>
+        <PreferenciaSelect
+            name="bustiaPerDefecte"
+            label={t('component.UserProfile.bustiaPerDefecte')}
+            value={data?.bustiaPerDefecte}
+            options={options}
+            emptyOption
+            disabled={entitatPerDefecteId == null}
+            onChange={(value) => apiRef?.current?.setFieldValue('bustiaPerDefecte', value)}
+        />
+    );
+};
+
+// Mida de pàgina per defecte dels llistats. Com a la interfície JSP (usuariForm.jsp) és un
+// desplegable amb els valors d'OpcionsPaginacio i sense opció buida, no un camp numèric lliure.
+// L'etiqueta surt del `_prompt` del recurs, la mateixa que faria servir un GridFormField.
+const NumElementsPaginaSelect: React.FC = () => {
+    const { data, apiRef, fields } = useFormContext();
+    const options = useOpcions('usuariPreferencies/opcionsPaginacio');
+    const label = fields?.find((field) => field.name === 'numElementsPagina')?.label ?? '';
+    return (
+        <PreferenciaSelect
+            name="numElementsPagina"
+            label={label}
+            value={data?.numElementsPagina}
+            options={options}
+            onChange={(value) => apiRef?.current?.setFieldValue('numElementsPagina', value)}
+        />
     );
 };
 
@@ -418,11 +475,9 @@ export const UserProfileFormDialog: React.FC<{
                     seva fletxa. A més, FormFieldEnum fixa els seus propis slotProps després
                     d'escampar componentProps, de manera que l'adornament no s'hi aplicaria. */}
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="idioma" />
-                <GridFormField
-                    size={{ xs: 12, sm: 6, md: 3 }}
-                    name="numElementsPagina"
-                    componentProps={endIcon('format_list_numbered')}
-                />
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <NumElementsPaginaSelect />
+                </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <EntitatPerDefecteSelect />
                 </Grid>

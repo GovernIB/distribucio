@@ -2,6 +2,7 @@ import { Button, Icon, Tooltip, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { FilterCountChip } from './FilterCountChip'; // TODO: corregir ruta d'import segons projecte
 import { MuiDataGrid, MuiDataGridProps } from 'reactlib';
+import { useUserPreferences } from './UserProfile';
 
 /**
  * Wrapper propi sobre MuiDataGrid (base-react).
@@ -14,6 +15,7 @@ import { MuiDataGrid, MuiDataGridProps } from 'reactlib';
  *  - Botó estàndard de barra d'eines (ToolbarButton) reutilitzat per "Refrescar".
  *  - Defaults pel formulari popup: botons Guardar/Cancel·lar, mida del diàleg,
  *    no tancar en fer clic fora, i no permetre guardar si hi ha errors de validació.
+ *  - Mida de pàgina per defecte treta del perfil de l'usuari (numElementsPagina).
  *
  * Deliberadament NO s'inclou (pendent de decidir més endavant):
  *  - Accions massives (RIPEA #3).
@@ -55,6 +57,19 @@ export const ToolbarButton = (props: any) => {
     );
 };
 
+/**
+ * Mides de pàgina que es poden triar al peu de les graelles: les mateixes que ofereix el perfil de
+ * l'usuari (OpcionsPaginacio, veure UsuariPreferenciesController.opcionsPaginacio) i que la
+ * interfície JSP posa al desplegable de les seves taules.
+ */
+const OPCIONS_PAGINACIO = [10, 20, 50, 100, 250];
+
+/**
+ * Mida de pàgina per als usuaris que no en tenen cap de configurada al perfil. És la mateixa que
+ * la interfície JSP aplica per defecte a les seves taules (iDisplayLength de dataTable.tag).
+ */
+const NUM_ELEMENTS_PAGINA_DEFECTE = 10;
+
 type FilterCount = number | ((num: number) => number);
 
 export type StyledMuiGridProps = Omit<MuiDataGridProps, 'toolbarElementsWithPositions'> & {
@@ -82,6 +97,9 @@ const defaultProps: Partial<StyledMuiGridProps> = {
 
 const StyledMuiGrid = (props: StyledMuiGridProps) => {
     const { t } = useTranslation();
+    // Mida de pàgina desada al perfil (dis_usuari.num_elements_pagina). Hi és sempre al primer
+    // render: DistribucioProvider no pinta cap pantalla fins a tenir el perfil carregat.
+    const { numElementsPagina } = useUserPreferences();
 
     const {
         filter,
@@ -94,6 +112,8 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
         toolbarShowQuickFilter = false,
         onRefresh,
         apiRef,
+        defaultPaginationModel,
+        pageSizeOptions,
         popupEditFormDialogComponentProps,
         popupEditFormComponentProps,
         popupEditFormDialogOnClose,
@@ -156,6 +176,16 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
             {...others}
             filter={filter}
             apiRef={apiRef}
+            // Fixar la mida de pàgina desactiva l'autoPageSize de la llibreria (que ajusta el
+            // nombre de files a l'alçada disponible), que és el que s'aplicaria si no se'n
+            // passés cap. Una pantalla concreta encara pot imposar-ne una de pròpia.
+            defaultPaginationModel={
+                defaultPaginationModel ?? {
+                    page: 0,
+                    pageSize: numElementsPagina ?? NUM_ELEMENTS_PAGINA_DEFECTE,
+                }
+            }
+            pageSizeOptions={pageSizeOptions ?? OPCIONS_PAGINACIO}
             toolbarHideRefresh
             toolbarHideCreate
             toolbarHideQuickFilter={!toolbarShowQuickFilter ? true : undefined}
