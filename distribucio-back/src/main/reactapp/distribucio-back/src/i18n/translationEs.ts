@@ -27,6 +27,10 @@ const translationEs = {
             consultar: "Consultar",
             serveis: 'Servicios',
         },
+        avisos: {
+            mostra: 'Muestra el detalle del aviso',
+            amaga: 'Oculta el detalle del aviso',
+        },
         interficie: {
             classica: 'Interfaz clásica',
         },

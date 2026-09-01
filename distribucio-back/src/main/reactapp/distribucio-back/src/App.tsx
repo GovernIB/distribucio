@@ -13,6 +13,7 @@ import { DistribucioProvider } from './components/DistribucioProvider';
 import { useDistribucioContext } from './components/DistribucioContext';
 import { filtrarEntradesMenu, type MenuEntryAmbPantalla } from './util/pantalles';
 import { SessionStorageProvider } from './components/SessionStorageContext';
+import { SseProvider } from './components/SseClient';
 import TitolPagina from './components/TitolPagina';
 
 export const envVars = {
@@ -185,7 +186,12 @@ export const App = () => {
                     <DistribucioProvider>
                         <UserPreferencesProvider>
                             <SessionStorageProvider>
-                                <InnerApp />
+                                {/* Dins de DistribucioProvider: la subscripció d'esdeveniments
+                                    va lligada a l'usuari, el rol i l'entitat actuals, i es
+                                    refà quan en canvia qualsevol. */}
+                                <SseProvider>
+                                    <InnerApp />
+                                </SseProvider>
                             </SessionStorageProvider>
                         </UserPreferencesProvider>
                     </DistribucioProvider>

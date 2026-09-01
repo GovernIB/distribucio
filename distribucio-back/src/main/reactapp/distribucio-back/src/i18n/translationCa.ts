@@ -27,6 +27,10 @@ const translationCa = {
             consultar: "Consultar",
             serveis: 'Serveis',
         },
+        avisos: {
+            mostra: "Mostra el detall de l'avís",
+            amaga: "Amaga el detall de l'avís",
+        },
         interficie: {
             classica: 'Interfície clàssica',
         },

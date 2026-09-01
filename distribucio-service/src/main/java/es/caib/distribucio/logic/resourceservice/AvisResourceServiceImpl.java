@@ -9,7 +9,9 @@ import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
+import es.caib.distribucio.logic.helper.EventHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
+import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.model.AvisResource;
 import es.caib.distribucio.logic.intf.resourceservice.AvisResourceService;
 import es.caib.distribucio.persist.resourceentity.AvisResourceEntity;
@@ -23,12 +25,42 @@ import lombok.extern.slf4j.Slf4j;
 public class AvisResourceServiceImpl extends BaseMutableResourceService<AvisResource, Long, AvisResourceEntity> implements AvisResourceService {
 
     private final AvisResourceRepository avisResourceRepository;
+    private final EventHelper eventHelper;
 
     @PostConstruct
     public void init() {
         register(AvisResource.ACTION_ACTIVAR_CODE, new ActivaActionExecutor());
         register(AvisResource.ACTION_DESACTIVAR_CODE, new ActivaActionExecutor());
         register(AvisResource.ACTION_ACCIO_MASSIVA_CODE, new AccioMassivaActionExecutor());
+    }
+
+    /**
+     * Qualsevol canvi a la taula d'avisos s'ha de veure a l'instant a les pantalles que ja estan
+     * obertes, i no només a la següent recàrrega: després de desar-lo o esborrar-lo es notifica
+     * per SSE (veure {@link EventHelper#notifyAvisosActius()}, que difereix l'enviament fins que
+     * la transacció s'ha confirmat).
+     */
+    @Override
+    protected void afterCreate(
+            AvisResourceEntity entity,
+            AvisResource resource,
+            Map<String, AnswerRequiredException.AnswerValue> answers) {
+        eventHelper.notifyAvisosActius();
+    }
+
+    @Override
+    protected void afterUpdate(
+            AvisResourceEntity entity,
+            AvisResource resource,
+            Map<String, AnswerRequiredException.AnswerValue> answers) {
+        eventHelper.notifyAvisosActius();
+    }
+
+    @Override
+    protected void afterDelete(
+            AvisResourceEntity entity,
+            Map<String, AnswerRequiredException.AnswerValue> answers) {
+        eventHelper.notifyAvisosActius();
     }
 
     /**
@@ -70,7 +102,7 @@ public class AvisResourceServiceImpl extends BaseMutableResourceService<AvisReso
             }
 
             avisResourceRepository.save(entity);
-            // notificar
+            eventHelper.notifyAvisosActius();
             return null;
         }
 
@@ -120,7 +152,9 @@ public class AvisResourceServiceImpl extends BaseMutableResourceService<AvisReso
                         "Tipus d'acció massiva desconegut: " + params.getAccio());
             }
 
-            // notificar una vegada
+            // Una sola notificació per a tota l'acció massiva: el missatge no diu quins avisos
+            // han canviat, només que n'han canviat, i qui el rep torna a consultar-los tots.
+            eventHelper.notifyAvisosActius();
             return null;
         }
     }

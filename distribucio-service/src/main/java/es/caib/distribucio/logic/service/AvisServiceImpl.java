@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
+import es.caib.distribucio.logic.helper.EventHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.intf.dto.AvisDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
@@ -37,6 +38,8 @@ public class AvisServiceImpl implements AvisService {
 	private ConversioTipusHelper conversioTipusHelper;
 	@Autowired
 	private PaginacioHelper paginacioHelper;
+	@Autowired
+	private EventHelper eventHelper;
 
     @Transactional
 	@Override
@@ -50,9 +53,11 @@ public class AvisServiceImpl implements AvisService {
 				avis.getDataFinal(),
 				avis.getAvisNivell(),
                 avis.getEntitatId()).build();
-		return conversioTipusHelper.convertir(
+		AvisDto creat = conversioTipusHelper.convertir(
 				avisRepository.save(entity),
 				AvisDto.class);
+		eventHelper.notifyAvisosActius();
+		return creat;
 	}
 
 	@Transactional
@@ -70,6 +75,7 @@ public class AvisServiceImpl implements AvisService {
 				avis.getDataFinal(),
 				avis.getAvisNivell(),
                 avis.getEntitatId());
+		eventHelper.notifyAvisosActius();
 		return conversioTipusHelper.convertir(
 				avisEntity,
 				AvisDto.class);
@@ -86,6 +92,7 @@ public class AvisServiceImpl implements AvisService {
 		AvisEntity avisEntity = avisRepository.getReferenceById(id);
 		
 		avisEntity.updateActiva(activa);
+		eventHelper.notifyAvisosActius();
 		return conversioTipusHelper.convertir(
 				avisEntity,
 				AvisDto.class);
@@ -102,6 +109,7 @@ public class AvisServiceImpl implements AvisService {
 		
 		AvisEntity avisEntity = avisRepository.getReferenceById(id);
 		avisRepository.delete(avisEntity);
+		eventHelper.notifyAvisosActius();
 
 		return conversioTipusHelper.convertir(
 				avisEntity,

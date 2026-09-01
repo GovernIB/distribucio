@@ -9,6 +9,17 @@
 	</parent>
 	<artifactId>distribucio-service</artifactId>
 	<dependencies>
+		<!-- Broker JMS intern que fa de pont entre la capa de negoci i les connexions SSE del WAR
+		     distribucio-back (veure es.caib.distribucio.logic.config.JmsConfig). Les versions les
+		     gestiona el BOM de Spring Boot. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-artemis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>artemis-jms-server</artifactId>
+		</dependency>
         <dependency>
             <groupId>org.fundaciobit.pluginsib.utils</groupId>
             <artifactId>pluginsib-utils-signature</artifactId>

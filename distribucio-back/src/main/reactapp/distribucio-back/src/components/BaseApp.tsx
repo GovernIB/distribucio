@@ -18,6 +18,7 @@ import { MuiBaseApp, type MenuEntry, useBaseAppContext, useMuiFormDialogApiRef }
 import i18n from '../i18n/i18n';
 import reactlibCa from '../i18n/reactlibCa';
 import reactlibEs from '../i18n/reactlibEs';
+import AvisosBanner from './AvisosBanner';
 import Offline from './Offline';
 import { UserProfileMenu, UserProfileFormDialog, useUserPreferences } from './UserProfile';
 import { EntitatSelector, RolSelector, getRolBadgeIcon } from './EntitatRolSelector';
@@ -234,6 +235,9 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
         >
             <CustomLocalizationProvider>
                 <UserProfileFormDialog formDialogApiRef={formDialogApiRef} />
+                {/* Damunt del contingut i a totes les pantalles, com l'acordió d'avisos de la
+                    interfície JSP. */}
+                <AvisosBanner />
                 {children}
             </CustomLocalizationProvider>
         </MuiBaseApp>
