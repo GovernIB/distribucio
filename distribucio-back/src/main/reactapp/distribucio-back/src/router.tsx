@@ -20,6 +20,9 @@ export const router = createBrowserRouter(
                     index: true,
                     element: <RutaInicial />,
                 },
+                // El "handle" de cada ruta duu la clau de traducció del títol de la pestanya del
+                // navegador (veure TitolPagina): el mateix títol que la pantalla mostra a la barra
+                // d'eines, com a la interfície JSP.
                 // Cada pantalla penja d'un ProtectedRoute que en comprova el rol (veure
                 // PANTALLA_ROLS a util/pantalles.ts). Una ruta nova ha d'anar dins d'un
                 // d'aquests grups: si es penja directament d'aquí queda oberta a tots els rols.
@@ -29,6 +32,7 @@ export const router = createBrowserRouter(
                         {
                             path: 'home',
                             element: <Home />,
+                            handle: { titol: 'app.menu.home' },
                         },
                     ],
                 },
@@ -38,14 +42,17 @@ export const router = createBrowserRouter(
                         {
                             path: 'entitat',
                             element: <EntitatGrid />,
+                            handle: { titol: 'page.entitats.grid.title' },
                         },
                         {
                             path: 'entitat/form',
                             element: <EntitatForm />,
+                            handle: { titol: 'page.entitats.form.titleCreate' },
                         },
                         {
                             path: 'entitat/form/:id',
                             element: <EntitatForm />,
+                            handle: { titol: 'page.entitats.form.titleUpdate' },
                         },
                     ],
                 },
@@ -55,14 +62,17 @@ export const router = createBrowserRouter(
                         {
                             path: 'avis',
                             element: <AvisGrid />,
+                            handle: { titol: 'page.avisos.grid.title' },
                         },
                         {
                             path: 'avis/form',
                             element: <AvisForm />,
+                            handle: { titol: 'page.avisos.form.titleCreate' },
                         },
                         {
                             path: 'avis/form/:id',
                             element: <AvisForm />,
+                            handle: { titol: 'page.avisos.form.titleUpdate' },
                         },
                     ],
                 },
@@ -72,6 +82,7 @@ export const router = createBrowserRouter(
                         {
                             path: 'servei',
                             element: <ServeiGrid />,
+                            handle: { titol: 'page.serveis.grid.title' },
                         },
                     ],
                 },
@@ -83,6 +94,7 @@ export const router = createBrowserRouter(
                 {
                     path: '*',
                     element: <NotFound />,
+                    handle: { titol: 'page.notFound.message' },
                 },
             ],
         },

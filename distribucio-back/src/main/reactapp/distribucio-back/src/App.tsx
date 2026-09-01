@@ -13,6 +13,7 @@ import { DistribucioProvider } from './components/DistribucioProvider';
 import { useDistribucioContext } from './components/DistribucioContext';
 import { filtrarEntradesMenu, type MenuEntryAmbPantalla } from './util/pantalles';
 import { SessionStorageProvider } from './components/SessionStorageContext';
+import TitolPagina from './components/TitolPagina';
 
 export const envVars = {
     VITE_API_URL: import.meta.env.VITE_API_URL,
@@ -155,6 +156,9 @@ const InnerApp: React.FC = () => {
                 </div>
             }
         >
+            {/* Va per davant de l'<Outlet> perquè una pàgina que es posi el títol pel seu
+                compte (useTitolPagina) sobreescrigui el que declara la ruta. */}
+            <TitolPagina />
             <Outlet />
         </BaseApp>
     );
