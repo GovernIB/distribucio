@@ -24,6 +24,8 @@ const translationCa = {
             home: 'Inici',
             entitats: 'Entitats',
             avisos: 'Avisos',
+            consultar: "Consultar",
+            serveis: 'Serveis',
         },
         interficie: {
             classica: 'Interfície clàssica',
@@ -115,6 +117,20 @@ const translationCa = {
                 esborrarOk: "L'avis s'ha esborrat correctament",
                 activarOk: "L'avis s'ha activat correctament",
                 desactivarOk: "L'avis s'ha desactivat correctament",
+                error: "No s'ha pogut executar l'acció",
+            },
+        },
+        serveis: {
+            grid: {
+                title: "Serveis",
+            },
+            accio: {
+                actualitzarTots: 'Actualitza tots els serveis',
+                actualitzar: 'Actualitza el servei',
+                esborrar: 'Esborra',
+                actualitzarOk: "El servei s'ha actualitzat correctament",
+                actualitzarTotsOk: "Tots els serveis s'han actualitzat correctament",
+                esborrarOk: "El servei s'ha esborrat correctament",
                 error: "No s'ha pogut executar l'acció",
             },
         },

@@ -8,6 +8,7 @@ import EntitatGrid from './pages/entitat/EntitatGrid';
 import EntitatForm from './pages/entitat/EntitatForm';
 import AvisGrid from './pages/avis/AvisGrid';
 import AvisForm from './pages/avis/AvisForm';
+import ServeiGrid from './pages/servei/ServeiGrid';
 
 export const router = createBrowserRouter(
     [
@@ -62,6 +63,15 @@ export const router = createBrowserRouter(
                         {
                             path: 'avis/form/:id',
                             element: <AvisForm />,
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="servei" />,
+                    children: [
+                        {
+                            path: 'servei',
+                            element: <ServeiGrid />,
                         },
                     ],
                 },

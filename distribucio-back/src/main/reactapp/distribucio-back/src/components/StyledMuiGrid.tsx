@@ -90,6 +90,7 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
         toolbarCreateTitle,
         toolbarElementsWithPositions,
         toolbarHideRefresh,
+        toolbarHideCreate,
         toolbarShowQuickFilter = false,
         onRefresh,
         apiRef,
@@ -145,7 +146,7 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
                     {toolbarCreateTitle}
                 </ToolbarButton>
             ),
-            // hidden: toolbarHideCreate || !toolbarShowCreate || readOnly,
+            hidden: toolbarHideCreate, // || !toolbarShowCreate || readOnly,
         },
         ...(toolbarElementsWithPositions ?? []),
     ].filter((e: any) => !e?.hidden);

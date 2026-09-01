@@ -24,6 +24,8 @@ const translationEs = {
             home: 'Inicio',
             entitats: 'Entidades',
             avisos: 'Avisos',
+            consultar: "Consultar",
+            serveis: 'Servicios',
         },
         interficie: {
             classica: 'Interfaz clásica',
@@ -116,6 +118,20 @@ const translationEs = {
                 error: 'No se ha podido ejecutar la acción',
             },
         },
+        serveis: {
+            grid: {
+                title: "Servicios",
+            },
+            accio: {
+                actualitzarTots: 'Actualizar todos los servicios',
+                actualitzar: 'Actualiza el servicio',
+                esborrar: 'Borra',
+                actualitzarOk: "El servicio se ha actualizado correctamente",
+                actualitzarTotsOk: "Todos los servicios se han actualizado correctamente",
+                esborrarOk: "El servicio se ha borrado correctamente",
+                error: "No se ha podido ejecutar la acción",
+            }
+        }
     },
     component: {
         Offline: {

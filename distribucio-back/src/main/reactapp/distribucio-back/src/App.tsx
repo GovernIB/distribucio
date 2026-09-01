@@ -93,10 +93,24 @@ const InnerApp: React.FC = () => {
             icon: 'campaign',
             pantalla: 'avis',
         },
+        {
+            id: 'consultar',
+            title: t('app.menu.consultar'),
+            icon: 'info',
+            children: [
+                {
+                    id: 'serveis',
+                    title: t('app.menu.serveis'),
+                    to: 'servei',
+                    icon: 'leak_add',
+                    pantalla: 'servei',
+                },
+            ],
+        },
     ];
 
-    const bgColor= mode === 'light' ? theme.palette.background.paper : undefined;
-    const textColor= bgColor ? theme.palette.getContrastText(bgColor) : undefined;
+    const bgColor = mode === 'light' ? theme.palette.background.paper : undefined;
+    const textColor = bgColor ? theme.palette.getContrastText(bgColor) : undefined;
     // DIR_DRA_COL.svg té els colors fixats (verd corporatiu i gris fosc), així que serveix per
     // als dos modes; si algun dia cal una variant per a fons foscos, tornar a fer el ternari.
     const logoColor = distribucioLogo;
@@ -117,7 +131,13 @@ const InnerApp: React.FC = () => {
                 boxSizing: 'border-box',
                 borderRight: `1px solid ${theme.palette.divider}`,
             }}
-            title={<img style={{ marginLeft: '8px', height: '49px', verticalAlign: 'middle' }} src={logoColor} alt="Distribucio"/>}
+            title={
+                <img
+                    style={{ marginLeft: '8px', height: '49px', verticalAlign: 'middle' }}
+                    src={logoColor}
+                    alt="Distribucio"
+                />
+            }
             version={version}
             menuEntries={filtrarEntradesMenu(menuEntries, currentRole)}
             menuAppearance={estilMenu}
@@ -128,7 +148,11 @@ const InnerApp: React.FC = () => {
             footerHeight={36}
             footer={
                 <div style={{ height: '36px' }}>
-                    <DrassanaFooter title="DISTRIBUCIÓ" backgroundColor="#5F5D5D" style={{ position: 'fixed', width: '100%', bottom: 0 }}/>
+                    <DrassanaFooter
+                        title="DISTRIBUCIÓ"
+                        backgroundColor="#5F5D5D"
+                        style={{ position: 'fixed', width: '100%', bottom: 0 }}
+                    />
                 </div>
             }
         >
