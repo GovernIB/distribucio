@@ -54,6 +54,7 @@ import java.io.Serializable;
 				@ResourceArtifact(
 						type = ResourceArtifactType.ACTION,
 						code = ServeiResource.ACTION_ACTUALITZAR_CODE,
+						formClass = ServeiResource.FormAction.class,
 						requiresId = false),
 				@ResourceArtifact(
 						type = ResourceArtifactType.ACTION,
@@ -106,6 +107,11 @@ public class ServeiResource extends BaseResource<Long> {
 		private Boolean nomesComu;
 		private Long unitatOrganitzativa;
 
+	}
+
+	@Getter
+	@Setter
+	public static class FormAction implements Serializable {
 	}
 
 }

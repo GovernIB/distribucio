@@ -9,7 +9,9 @@ const translationEs = {
     // retoques.
     common: {
         save: "Guarda",
+        actualitza: "Actualiza",
         cancel: "Cancela",
+        close: 'Cierra',
         clear: 'Limpia',
         filter: 'Filtra',
         filterCount_one: '{{num}} filtro aplicado',
@@ -127,14 +129,35 @@ const translationEs = {
                 title: "Servicios",
             },
             accio: {
-                actualitzarTots: 'Actualizar todos los servicios',
+                actualitzarTotsButton: 'Actualizar todos los servicios',
                 actualitzar: 'Actualiza el servicio',
                 esborrar: 'Borra',
                 actualitzarOk: "El servicio se ha actualizado correctamente",
                 actualitzarTotsOk: "Todos los servicios se han actualizado correctamente",
                 esborrarOk: "El servicio se ha borrado correctamente",
                 error: "No se ha podido ejecutar la acción",
-            }
+                actualitzarTots: {
+                    title: "Actualización de servicios",
+                    confirmacio: "¿Quiere actualizar los servicios con la información de ROLSAC?",
+                    estat: "Estado",
+                    total: "Numero de servicios totales",
+                    processats: "Número de servicios processados",
+                    estats: {
+                        INICIALITZANT: "Inicializando",
+                        ACTUALITZANT: "Actualizando",
+                        FINALITZAT: "Finalizado",
+                        ERROR: "Error",
+                    },
+                    close: {
+					    check: "¿Está seguro de que desea cerrar esta ventana?",
+					    description: "La importación continuará en segundo plano y podrá consultar el resultado en el expediente más tarde.",
+					},
+					cancel: {
+					    check: "¿Está seguro de que desea cancelar la importación?",
+					    description: "Los documentos importados hasta este momento se conservarán en el expediente.",
+					},
+                },
+            },
         }
     },
     component: {

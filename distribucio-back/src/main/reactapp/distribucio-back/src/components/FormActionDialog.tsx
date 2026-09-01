@@ -26,8 +26,10 @@ export type FormActionDialogProps = {
     dialogComponentProps?: any;
     /** Referència per a poder obrir i tancar el diàleg des de fora. */
     apiRef?: React.RefObject<FormActionDialogApi | undefined>;
+    formDialogResultProcessor?: (result: any) => any;
     onSuccess?: (result?: any) => void;
     onError?: (error?: any) => void;
+    confirm?: boolean;
     /** Camps del formulari (GridFormField...). */
     children: React.ReactElement;
 };
@@ -52,8 +54,10 @@ export const FormActionDialog: React.FC<FormActionDialogProps> = (props) => {
         buttons,
         dialogComponentProps,
         apiRef,
+        formDialogResultProcessor,
         onSuccess,
         onError,
+        confirm = false,
         children,
     } = props;
     const { temporalMessageShow } = useBaseAppContext();
@@ -67,7 +71,7 @@ export const FormActionDialog: React.FC<FormActionDialogProps> = (props) => {
         action,
         undefined, // report
         undefined, // reportFileType
-        false, // confirm
+        confirm, // confirm
         undefined, // confirmMessage
         undefined, // formAdditionalData
         undefined, // formI18nKeys
@@ -76,7 +80,7 @@ export const FormActionDialog: React.FC<FormActionDialogProps> = (props) => {
         undefined, // formDialogLoading
         buttons,
         dialogComponentProps,
-        undefined, // formDialogResultProcessor
+        formDialogResultProcessor, // formDialogResultProcessor
         onSuccess,
         onError ??
             ((error: any) => error?.message && temporalMessageShow(null, error.message, 'error')),

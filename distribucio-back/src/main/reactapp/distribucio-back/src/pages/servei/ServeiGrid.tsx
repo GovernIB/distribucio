@@ -1,14 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-    GridPage,
-    MuiDataGridColDef,
-    useMuiDataGridApiRef,
-} from 'reactlib';
+import { GridPage, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
 import { CardPage } from '../../components/CardData';
 import StyledMuiGrid, { ToolbarButton } from '../../components/StyledMuiGrid';
 import ServeiFilter from './ServeiFilter';
 import useServeiAccions from './ServeiAccions';
+import useServeiActualitzarTots from './ServeiActualitzarTots';
 
 const columns: MuiDataGridColDef[] = [
     { field: 'codiSia', flex: 1 },
@@ -26,6 +23,8 @@ export const ServeiGrid: React.FC = () => {
     const [springFilter, setSpringFilter] = React.useState<string>();
     const refresh = () => apiRef.current?.refresh?.();
     const accions = useServeiAccions(refresh);
+    const { handleShow: handleActualitzarTots, content: contentActualitzarTots } =
+        useServeiActualitzarTots(refresh);
 
     return (
         <GridPage>
@@ -43,24 +42,25 @@ export const ServeiGrid: React.FC = () => {
                             position: 3,
                             element: (
                                 <ToolbarButton
-                                    title={t('page.serveis.accio.actualitzarTots')}
+                                    title={t('page.serveis.accio.actualitzarTots.title')}
                                     icon={'sync'}
-                                    // onClick={create}
+                                    onClick={handleActualitzarTots}
                                     color={'primary'}
                                 >
-                                    {t('page.serveis.accio.actualitzarTots')}
+                                    {t('page.serveis.accio.actualitzarTots.title')}
                                 </ToolbarButton>
                             ),
                         },
                     ]}
                     paginationActive
                     popupEditActive
-                    popupEditFormDialogResourceTitle={t('page.serveis.form.resourceTitle')}
+                    popupEditFormDialogResourceTitle={t('page.serveis.accio.actualitzarTots.title')}
                     rowHideUpdateButton
                     rowHideDeleteButton
                     rowAdditionalActions={accions}
                     defaultSortModel={sortModel}
                 />
+                {contentActualitzarTots}
             </CardPage>
         </GridPage>
     );

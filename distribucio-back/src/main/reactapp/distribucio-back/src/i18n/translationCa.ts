@@ -9,7 +9,9 @@ const translationCa = {
     // sense retocs.
     common: {
         save: "Guarda",
+        actualitza: "Actualitza",
         cancel: "Cancel·la",
+        close: 'Tanca',
         clear: 'Neteja',
         filter: 'Filtra',
         filterCount_one: '{{num}} filtre aplicat',
@@ -129,13 +131,34 @@ const translationCa = {
                 title: "Serveis",
             },
             accio: {
-                actualitzarTots: 'Actualitza tots els serveis',
+                actualitzarTotsButton: 'Actualitza tots els serveis',
                 actualitzar: 'Actualitza el servei',
                 esborrar: 'Esborra',
                 actualitzarOk: "El servei s'ha actualitzat correctament",
                 actualitzarTotsOk: "Tots els serveis s'han actualitzat correctament",
                 esborrarOk: "El servei s'ha esborrat correctament",
                 error: "No s'ha pogut executar l'acció",
+                actualitzarTots: {
+                    title: "Actualització de serveis",
+                    confirmacio: "Voleu actualitzar els serveis amb la informació de ROLSAC?",
+                    estat: "Estat",
+                    total: "Número de serveis totals",
+                    processats: "Número de serveis processats",
+                    estats: {
+                        INICIALITZANT: "Inicialitzant",
+                        ACTUALITZANT: "Actualitzant",
+                        FINALITZAT: "Finalitzat",
+                        ERROR: "Error",
+                    },
+                    close: {
+						check: "Estau segur que voleu tancar aquesta finestra?",
+						description: "L'importació continuarà en segon pla i podreu consultar el resultat a l'expedient més tard.",
+					},
+					cancel: {
+						check: "Esteu segur que voleu cancel·lar la importació?",
+						description: "Els documents importats fins a aquest moment es conservaran a l’expedient.",
+					},
+                },
             },
         },
     },
