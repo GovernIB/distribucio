@@ -25,7 +25,7 @@ const springFilterBuilder = (data: any) => {
     return builder.and(
         builder.like('codiSia', data?.codiSia),
         builder.like('nom', data?.nom),
-        builder.eq('unitatOrganitzativa', data?.unitatOrganitzativa?.id),
+        builder.eq('unitatOrganitzativa.id', data?.unitatOrganitzativa?.id),
         builder.eq('estat', `'${data?.estat}'`),
         comu != null && comu ? builder.eq('comu', true) : ''
     );

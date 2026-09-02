@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import es.caib.distribucio.logic.helper.ServeiHelper;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +17,10 @@ import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 import es.caib.distribucio.logic.intf.model.ServeiResource;
 import es.caib.distribucio.logic.intf.resourceservice.ServeiResourceService;
-import es.caib.distribucio.logic.intf.service.ServeiService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
-import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
 import es.caib.distribucio.persist.resourceentity.ServeiResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
-import es.caib.distribucio.persist.resourcerepository.ServeiResourceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,9 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ServeiResourceServiceImpl extends BaseMutableResourceService<ServeiResource, Long, ServeiResourceEntity> implements ServeiResourceService {
 
-	private final ServeiService serveiService;
-	private final ServeiResourceRepository serveiResourceRepository;
-	private final UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+	private final ServeiHelper serveiHelper;
 	private final EntitatResourceRepository entitatResourceRepository;
 
 	@PostConstruct
@@ -54,9 +50,6 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 
 	@Override
 	protected void afterConversion(ServeiResourceEntity entity, ServeiResource resource) {
-		// El mapeig automatic entitat -> ResourceReference no funciona perque
-		// UnitatOrganitzativaResourceEntity i EntitatResourceEntity implementen Serializable
-		// i ObjectMappingHelper.isSimpleType() les tracta com a tipus simples.
 		if (entity.getUnitatOrganitzativa() != null) {
 			resource.setUnitatOrganitzativa(ResourceReference.toResourceReference(
 					entity.getUnitatOrganitzativa().getId(),
@@ -81,9 +74,6 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 				entity.setEntitat(entitat);
 			}
 		}
-//		if (resource.getUnitatOrganitzativaId() != null) {
-//			entity.setUnitatOrganitzativa(unitatOrganitzativaRepository.getReferenceById(resource.getUnitatOrganitzativaId()));
-//		}
 	}
 
 	@Override
@@ -91,11 +81,6 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 			ServeiResourceEntity entity,
 			ServeiResource resource,
 			Map<String, AnswerRequiredException.AnswerValue> answers) {
-//		if (resource.getUnitatOrganitzativaId() != null) {
-//			entity.setUnitatOrganitzativa(unitatOrganitzativaRepository.getReferenceById(resource.getUnitatOrganitzativaId()));
-//		} else {
-//			entity.setUnitatOrganitzativa(null);
-//		}
 	}
 
 	/**
@@ -131,7 +116,7 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 						"No s'ha pogut determinar l'entitat de context.");
 			}
 			try {
-				serveiService.findAndUpdateServeis(entitatId);
+				serveiHelper.findAndUpdateServeis(entitatId);
 				return null;
 			} catch (Exception e) {
 				log.error("Error actualitzant serveis per a l'entitat " + entitatId, e);
@@ -178,7 +163,7 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 						"No s'ha pogut determinar l'entitat de context.");
 			}
 			try {
-				ServeiDto serveiDto = serveiService.findAndUpdateServei(entitatId, entity.getCodi());
+				ServeiDto serveiDto = serveiHelper.findAndUpdateServei(entitatId, entity.getCodi());
 				return serveiDto != null ? serveiDto.getId() : null;
 			} catch (Exception e) {
 				log.warn("No s'ha pogut actualitzar el servei {}: {}", entity.getCodi(), e.getMessage());
@@ -220,8 +205,9 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 			if (entitatId == null) {
 				return null;
 			}
-			UpdateProgressDto progres = serveiService.getProgresActualitzacio(entitatId);
-			return (Serializable) progres;
+			UpdateProgressDto progres = serveiHelper.serveisActualitzacio.get(entitatId);
+
+			return progres;
 		}
 
 	}

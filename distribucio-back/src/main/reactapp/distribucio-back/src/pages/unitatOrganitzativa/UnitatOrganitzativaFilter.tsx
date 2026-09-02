@@ -17,8 +17,8 @@ const UnitatOrganitzativaFilterForm: React.FC = () => {
 const springFilterBuilder = (data: any) => {
     return builder.and(
         builder.like('codi', data?.codi),
-        builder.like('nom', data?.nom),
-        builder.eq('unitatSuperior.id', data?.unitatSuperior?.id),
+        builder.like('denominacio', data?.denominacio),
+        // builder.eq('unitatSuperior.id', data?.unitatSuperior?.id), TODO: revisar
         builder.eq('estat', `'${data?.estat}'`),
     );
 };

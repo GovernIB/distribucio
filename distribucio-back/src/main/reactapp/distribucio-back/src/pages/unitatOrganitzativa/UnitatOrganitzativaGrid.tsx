@@ -5,7 +5,6 @@ import {CardPage} from "../../components/CardData.tsx";
 import {useTranslation} from "react-i18next";
 import UnitatOrganitzativaFilter from "./UnitatOrganitzativaFilter.tsx";
 import {useUnitatOrganitzativaOrganigrama} from "./UnitatOrganitzativaOrganigrama.tsx";
-import * as builder from "../../util/springFilterUtils.ts";
 import {useDistribucioContext} from "../../components/DistribucioContext.ts";
 import {useSincronitzar} from "./actions/Sincronitzar.tsx";
 import {Icon, Tooltip} from "@mui/material";
@@ -21,7 +20,7 @@ const columns: MuiDataGridColDef[] = [
 
 export const UnitatOrganitzativaGrid = () => {
     const { t } = useTranslation();
-    const { currentEntitatId, currentEntitat } = useDistribucioContext();
+    const { currentEntitat } = useDistribucioContext();
     const [springFilter, setSpringFilter] = React.useState<string>();
     const {handleOpen: handleOrgOpen, dialog: organigrama} = useUnitatOrganitzativaOrganigrama()
     const {handleOpen: handleSinc, dialog: dialogSinc} = useSincronitzar()
@@ -33,10 +32,7 @@ export const UnitatOrganitzativaGrid = () => {
                 <StyledMuiGrid
                     resourceName="unitatOrganitzativaResource"
                     columns={columns}
-                    filter={builder.and(
-                        springFilter,
-                        builder.eq('entitat.id', currentEntitatId),
-                    )}
+                    filter={springFilter}
                     toolbarElementsWithPositions={[
                         {
                             position: 2,
@@ -67,7 +63,6 @@ export const UnitatOrganitzativaGrid = () => {
                         },
                     ]}
                     toolbarShowFilterCount
-                    filterCount={num => num-1}
                     paginationActive
                     toolbarHideRefresh
                     readOnly

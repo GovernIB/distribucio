@@ -4,7 +4,6 @@ import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
-import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.model.UnitatOrganitzativaResource;
@@ -17,12 +16,13 @@ import es.caib.distribucio.persist.resourceentity.UnitatOrganitzativaResourceEnt
 import lombok.*;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.criteria.Predicate;
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,24 +39,18 @@ public class UnitatOrganitzativaResourceServiceImpl extends BaseMutableResourceS
     }
 
     @Override
-    protected void afterConversion(UnitatOrganitzativaResourceEntity entity, UnitatOrganitzativaResource resource) {
-        // TODO: revisar construcción de referencia
-        if (entity.getUnitatSuperior() != null) {
-            resource.setUnitatSuperior(ResourceReference.toResourceReference(
-                    entity.getUnitatSuperior().getId(),
-                    entity.getUnitatSuperior().getCodi() + " - " + entity.getUnitatSuperior().getDenominacio()));
-        }
-        if (entity.getUnitatArrel() != null) {
-            resource.setUnitatArrel(ResourceReference.toResourceReference(
-                    entity.getUnitatArrel().getId(),
-                    entity.getUnitatArrel().getCodi() + " - " + entity.getUnitatArrel().getDenominacio()));
-        }
+    protected Specification<UnitatOrganitzativaResourceEntity> additionalSpecification(String[] namedQueries) {
+        Long entitatActualId = SessioActualUtil.getEntitatId();
 
-        if (entity.getEntitat() != null) {
-            resource.setEntitat(ResourceReference.toResourceReference(
-                    entity.getEntitat().getId(),
-                    entity.getEntitat().getCodi() + " - " + entity.getEntitat().getNom()));
-        }
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (entitatActualId != null) {
+//                predicates.add(cb.equal(root.get("entitat").get("id"), entitatActualId));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 
     private class SynchronizeActionExecutor implements ActionExecutor<UnitatOrganitzativaResourceEntity, Boolean, Serializable> {
