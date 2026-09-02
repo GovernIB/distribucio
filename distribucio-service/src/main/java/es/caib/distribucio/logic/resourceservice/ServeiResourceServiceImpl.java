@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
+import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 import es.caib.distribucio.logic.intf.model.ServeiResource;
@@ -53,12 +54,18 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 
 	@Override
 	protected void afterConversion(ServeiResourceEntity entity, ServeiResource resource) {
+		// El mapeig automatic entitat -> ResourceReference no funciona perque
+		// UnitatOrganitzativaResourceEntity i EntitatResourceEntity implementen Serializable
+		// i ObjectMappingHelper.isSimpleType() les tracta com a tipus simples.
 		if (entity.getUnitatOrganitzativa() != null) {
-//			resource.setUnitatOrganitzativaId(entity.getUnitatOrganitzativa().getId());
-//			resource.setUnitatOrganitzativaCodi(entity.getUnitatOrganitzativa().getCodi());
-//			resource.setUnitatOrganitzativaDenominacio(entity.getUnitatOrganitzativa().getDenominacio());
-//			resource.setUnitatOrganitzativaEstat(entity.getUnitatOrganitzativa().getEstat());
-//			resource.setUnitatOrganitzativaDescripcio(entity.getUnitatOrganitzativa().getCodiAndNom());
+			resource.setUnitatOrganitzativa(ResourceReference.toResourceReference(
+					entity.getUnitatOrganitzativa().getId(),
+					entity.getUnitatOrganitzativa().getCodi() + " - " + entity.getUnitatOrganitzativa().getDenominacio()));
+		}
+		if (entity.getEntitat() != null) {
+			resource.setEntitat(ResourceReference.toResourceReference(
+					entity.getEntitat().getId(),
+					entity.getEntitat().getCodi() + " - " + entity.getEntitat().getNom()));
 		}
 	}
 
