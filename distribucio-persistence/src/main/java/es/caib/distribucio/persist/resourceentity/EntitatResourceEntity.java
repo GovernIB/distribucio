@@ -2,7 +2,6 @@ package es.caib.distribucio.persist.resourceentity;
 
 import es.caib.distribucio.logic.intf.model.EntitatResource;
 import es.caib.distribucio.persist.base.entity.BaseAuditableEntity;
-import es.caib.distribucio.persist.base.entity.BaseResourceEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * Entitat de base de dades del recurs {@link EntitatResource}.
@@ -29,7 +30,7 @@ import javax.persistence.Version;
 @Getter
 @Setter
 @NoArgsConstructor
-public class EntitatResourceEntity extends BaseAuditableEntity<EntitatResource, Long> {
+public class EntitatResourceEntity extends BaseAuditableEntity<EntitatResource, Long> implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "default_seq")
@@ -71,6 +72,12 @@ public class EntitatResourceEntity extends BaseAuditableEntity<EntitatResource, 
 
 	@Column(name = "logo_cap_dark")
 	private byte[] logoImgBytesDark;
+
+    @Column(name = "fecha_actualizacion")
+    private LocalDateTime fechaActualizacion;
+
+    @Column(name = "fecha_sincronizacion")
+    private LocalDateTime fechaSincronizacion;
 
 	@Version
 	private long version = 0;

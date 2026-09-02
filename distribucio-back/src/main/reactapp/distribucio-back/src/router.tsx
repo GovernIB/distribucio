@@ -8,6 +8,7 @@ import EntitatGrid from './pages/entitat/EntitatGrid';
 import EntitatForm from './pages/entitat/EntitatForm';
 import AvisGrid from './pages/avis/AvisGrid';
 import AvisForm from './pages/avis/AvisForm';
+import {UnitatOrganitzativaGrid} from "./pages/unitatOrganitzativa/UnitatOrganitzativaGrid.tsx";
 import ServeiGrid from './pages/servei/ServeiGrid';
 
 export const router = createBrowserRouter(
@@ -83,6 +84,16 @@ export const router = createBrowserRouter(
                             path: 'servei',
                             element: <ServeiGrid />,
                             handle: { titol: 'page.serveis.grid.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="unitatOrganitzativa" />,
+                    children: [
+                        {
+                            path: 'unitatOrganitzativa',
+                            element: <UnitatOrganitzativaGrid />,
+                            handle: { titol: 'page.unitatOrganitzativa.grid.title' },
                         },
                     ],
                 },

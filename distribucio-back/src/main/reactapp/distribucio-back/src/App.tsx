@@ -88,6 +88,20 @@ const InnerApp: React.FC = () => {
             pantalla: 'entitat',
         },
         {
+            id: 'config',
+            title: 'Configuració',
+            icon: 'settings',
+            children: [
+                {
+                    id: 'uo',
+                    title: 'Unitats Organitzatives',
+                    to: 'unitatOrganitzativa',
+                    icon: 'account_tree',
+                    pantalla: 'unitatOrganitzativa'
+                }
+            ]
+        },
+        {
             id: 'avisos',
             title: t('app.menu.avisos'),
             to: 'avis',

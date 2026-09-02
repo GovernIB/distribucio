@@ -1,7 +1,7 @@
 import { Button, Icon, Tooltip, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { FilterCountChip } from './FilterCountChip'; // TODO: corregir ruta d'import segons projecte
-import { MuiDataGrid, MuiDataGridProps } from 'reactlib';
+import { MuiDataGrid, MuiDataGridProps, useMuiDataGridApiRef } from 'reactlib';
 import { useUserPreferences } from './UserProfile';
 
 /**
@@ -100,6 +100,7 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
     // Mida de pàgina desada al perfil (dis_usuari.num_elements_pagina). Hi és sempre al primer
     // render: DistribucioProvider no pinta cap pantalla fins a tenir el perfil carregat.
     const { numElementsPagina } = useUserPreferences();
+    const defApiRef = useMuiDataGridApiRef();
 
     const {
         filter,
@@ -111,7 +112,7 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
         toolbarHideCreate,
         toolbarShowQuickFilter = false,
         onRefresh,
-        apiRef,
+        apiRef = defApiRef,
         defaultPaginationModel,
         pageSizeOptions,
         popupEditFormDialogComponentProps,
@@ -166,7 +167,7 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
                     {toolbarCreateTitle}
                 </ToolbarButton>
             ),
-            hidden: toolbarHideCreate, // || !toolbarShowCreate || readOnly,
+            hidden: toolbarHideCreate || others?.readOnly,
         },
         ...(toolbarElementsWithPositions ?? []),
     ].filter((e: any) => !e?.hidden);

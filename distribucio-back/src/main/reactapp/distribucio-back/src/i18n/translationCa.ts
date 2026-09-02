@@ -161,6 +161,43 @@ const translationCa = {
                 },
             },
         },
+        unitatOrganitzativa: {
+            grid: {
+                title: "Gestió d'unitats organitzatives",
+                dataSinc: "Data sincronització",
+                dataDarrerSinc: "Data darrera actualització",
+            },
+            accio: {
+                organigrama: {
+                    label: "Mostrar arbre d'unitats vigents",
+                    title: "Arbre d'unitats vigents",
+                },
+                descarregarPdf: {
+                    label: "Descarrega pdf",
+                },
+                sincronitzar: {
+                    label: "Sincronitzar",
+                    title: "Predicció de sincronització",
+                    sincronitzar: "Sincronitza",
+                    forzar: "Força sincronització",
+                    ok: "Sincronització realitzada amb èxit",
+                    info: {
+                        first: 'Primera sincronización',
+                        empty: {
+                            title: "No hi ha canvis",
+                            label: "Les unitats organitzatives estan actualizades",
+                            unitat: "No s'ha trobat cap unitat vigent amb aquesta unitat pare",
+                        },
+                        noves: 'NOVES',
+                        divisions: 'DIVISIONS',
+                        fusions: 'FUSIONS',
+                        substitucio: 'SUBSTITUCIONS',
+                        canvi: 'CANVIS EN ATRIBUTS',
+                        reglesAfectades: 'REGLES AFECTADES PER LA SINCRONITZACIÓ',
+                    }
+                },
+            },
+        },
     },
     component: {
         Offline: {

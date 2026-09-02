@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -146,6 +147,9 @@ public class EntitatResource extends BaseResource<Long> {
 	@ResourceField(onChangeActive = true)
 	@ValidImageFile
 	private FileReference logoImgFileDark;
+
+    private LocalDateTime fechaActualizacion;
+    private LocalDateTime fechaSincronizacion;
 
 	/** Per defecte cert, com fa la interficie JSP: EntitatEntity.getBuilder no permet indicar
 	 *  l'estat i les entitats sempre es creen actives. */
