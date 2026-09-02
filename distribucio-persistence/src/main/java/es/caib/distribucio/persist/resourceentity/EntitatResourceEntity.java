@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Version;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -30,7 +29,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class EntitatResourceEntity extends BaseAuditableEntity<EntitatResource, Long> implements Serializable {
+public class EntitatResourceEntity extends BaseAuditableEntity<EntitatResource, Long> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "default_seq")
