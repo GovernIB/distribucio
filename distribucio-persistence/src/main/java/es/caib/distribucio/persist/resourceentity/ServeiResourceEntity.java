@@ -61,8 +61,7 @@ public class ServeiResourceEntity extends BaseResourceEntity<ServeiResource, Lon
 	@JoinColumn(
 			name = "id_unitat_organitzativa",
 			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "servei_unitat_fk"))
-	private UnitatOrganitzativaEntity unitatOrganitzativa;
-	// TODO: private UnitatOrganitzativaResoruceEntity unitatOrganitzativa;
+	private UnitatOrganitzativaResourceEntity unitatOrganitzativa;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(

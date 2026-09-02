@@ -89,7 +89,7 @@ public class ServeiResource extends BaseResource<Long> {
 
 	private ResourceReference<EntitatResource, Long> entitat;
 
-	// TODO: private ResourceReference<UnitatOrganitzativaResource, Long> unitatOrganitzativa;
+	private ResourceReference<UnitatOrganitzativaResource, Long> unitatOrganitzativa;
 
 	/**
 	 * Camps del filtre del llistat de serveis.
@@ -105,7 +105,7 @@ public class ServeiResource extends BaseResource<Long> {
 		private String codiSia;
 		private ServeiEstatEnumDto estat;
 		private Boolean nomesComu;
-		private Long unitatOrganitzativa;
+		private ResourceReference<UnitatOrganitzativaResource, Long> unitatOrganitzativa;
 
 	}
 

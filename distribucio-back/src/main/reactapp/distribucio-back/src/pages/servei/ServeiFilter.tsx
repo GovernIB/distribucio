@@ -8,8 +8,8 @@ const ServeiFilterForm: React.FC = () => {
         <>
             <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="codiSia" />
             <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="nom" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="unitatOrganitzativa" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="estat" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="unitatOrganitzativa" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="estat" />
             <GridButtonField
                 size={{ xs: 12, sm: 6, md: 0.5 }}
                 name={'nomesComu'}

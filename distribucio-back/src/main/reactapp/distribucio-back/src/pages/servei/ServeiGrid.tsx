@@ -9,10 +9,10 @@ import useServeiActualitzarTots from './ServeiActualitzarTots';
 
 const columns: MuiDataGridColDef[] = [
     { field: 'codiSia', flex: 1 },
-    { field: 'nom', flex: 1 },
-    { field: 'unitatOrganitzativa', flex: 1 },
-    { field: 'comu', flex: 0.5, type: 'boolean' },
-    { field: 'estat', flex: 0.5 },
+    { field: 'nom', flex: 3 },
+    { field: 'unitatOrganitzativa', flex: 3 },
+    { field: 'comu', flex: 1, type: 'boolean' },
+    { field: 'estat', flex: 1 },
 ];
 
 const sortModel: any = [{ field: 'codiSia', sort: 'desc' }];
