@@ -1,28 +1,5 @@
 package es.caib.distribucio.logic.resourceservice;
 
-import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
-import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
-import es.caib.distribucio.logic.helper.CacheHelper;
-import es.caib.distribucio.logic.helper.ConfigHelper;
-import es.caib.distribucio.logic.helper.PermisosHelper;
-import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
-import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
-import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.PermisDto;
-import es.caib.distribucio.logic.intf.model.EntitatResource;
-import es.caib.distribucio.logic.intf.base.model.FileReference;
-import es.caib.distribucio.logic.intf.resourceservice.EntitatResourceService;
-import es.caib.distribucio.logic.intf.service.EntitatService;
-import es.caib.distribucio.persist.entity.EntitatEntity;
-import es.caib.distribucio.persist.repository.AvisRepository;
-import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
-import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,12 +8,36 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
+import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
+import es.caib.distribucio.logic.helper.CacheHelper;
+import es.caib.distribucio.logic.helper.ConfigHelper;
+import es.caib.distribucio.logic.helper.EntitatHelper;
+import es.caib.distribucio.logic.helper.PermisosHelper;
+import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
+import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
+import es.caib.distribucio.logic.intf.base.model.FileReference;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.dto.PermisDto;
+import es.caib.distribucio.logic.intf.model.EntitatResource;
+import es.caib.distribucio.logic.intf.resourceservice.EntitatResourceService;
+import es.caib.distribucio.persist.entity.EntitatEntity;
+import es.caib.distribucio.persist.repository.AvisRepository;
+import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
+import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
+import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
 public class EntitatResourceServiceImpl extends BaseMutableResourceService<EntitatResource, Long, EntitatResourceEntity> implements EntitatResourceService {
 
 	private final AuthenticationHelper authenticationHelper;
-	private final EntitatService entitatService;
+	private final EntitatHelper entitatHelper;
 	private final EntitatResourceRepository entitatResourceRepository;
 	private final AvisRepository avisRepository;
 	private final CacheHelper cacheHelper;
@@ -66,7 +67,7 @@ public class EntitatResourceServiceImpl extends BaseMutableResourceService<Entit
 		if (authenticationHelper.isCurrentUserInRole(BaseConfig.ROLE_SUPER)) {
 			return null;
 		}
-		List<Long> accessibleIds = entitatService.findAccessiblesUsuariActual().stream().
+		List<Long> accessibleIds = entitatHelper.findAccessiblesUsuariActual().stream().
 				map(entitat -> entitat.getId()).
 				collect(Collectors.toList());
 		return (root, query, cb) -> accessibleIds.isEmpty() ? cb.disjunction() : root.get("id").in(accessibleIds);
@@ -216,7 +217,7 @@ public class EntitatResourceServiceImpl extends BaseMutableResourceService<Entit
 				String code,
 				EntitatResourceEntity entity,
 				EntitatResource resource) {
-			List<PermisDto> permisos = new ArrayList<>(entitatService.findPermisSuper(entity.getId()));
+			List<PermisDto> permisos = new ArrayList<>(entitatHelper.findPermisSuper(entity.getId()));
 			permisos.sort(PermisDto.sortByPrincipalNom());
 			resource.setPermisos(permisos.stream().
 					map(this::toPermis).
@@ -270,7 +271,7 @@ public class EntitatResourceServiceImpl extends BaseMutableResourceService<Entit
 			permis.setAdministration(params.isAdministracio());
 			permis.setAdminLectura(params.isAdminLectura());
 			permis.setRead(params.isUsuari());
-			entitatService.updatePermisSuper(entity.getId(), permis);
+			entitatHelper.updatePermisSuper(entity.getId(), permis);
 			return null;
 		}
 
@@ -300,7 +301,7 @@ public class EntitatResourceServiceImpl extends BaseMutableResourceService<Entit
 				String code,
 				EntitatResourceEntity entity,
 				EntitatResource.FormPermisEsborrar params) throws ActionExecutionException {
-			entitatService.deletePermisSuper(entity.getId(), params.getPermisId());
+			entitatHelper.deletePermisSuper(entity.getId(), params.getPermisId());
 			return null;
 		}
 
