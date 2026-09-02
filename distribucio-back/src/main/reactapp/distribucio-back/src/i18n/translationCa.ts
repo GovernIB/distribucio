@@ -211,6 +211,10 @@ const translationCa = {
             rols: 'Rols',
             entitatPerDefecte: 'Entitat per defecte',
             bustiaPerDefecte: 'Bústia per defecte',
+            interficieUsuari: {
+                // Etiqueta de l'opció buida: sense valor mana la propietat del sistema.
+                perDefecte: 'Per defecte del sistema',
+            },
             tema: {
                 label: 'Tema',
                 clar: 'Clar',

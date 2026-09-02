@@ -34,6 +34,8 @@ public class UsuariDto implements Serializable {
     private Long entitatPerDefecteId;
     private Long numElementsPagina;
     private Boolean emailErrorAnotacio;
+    /** Interfície amb la que l'usuari entra a l'aplicació; nul vol dir "la del sistema". */
+    private InterficieUsuariEnumDto interficieUsuari;
 
 	public String getCodiAndNom() {
 		return nom + " (" + codi + ")";

@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.security.Principal;
-import java.util.Objects;
 
 /**
  * Exposa els endpoints de {@link BaseUtilsController} ({@code /ping}, {@code /sysenv},
@@ -61,10 +60,20 @@ public class ReactController extends BaseUtilsController {
 			}
 			// En cas contrari, retornem index.html
 			InputStream indexHtml = servletContext.getResourceAsStream(BaseConfig.REACT_APP_PATH + "/index.html");
+			if (indexHtml == null) {
+				// El SPA no esta desplegat dins del document root de l'aplicacio web. Passa
+				// quan s'arrenca des del codi font, on el document root es src/main/webapp:
+				// cal que el build de Vite s'hi hagi copiat (ho fa el perfil "front" del pom).
+				log.error("No s'ha trobat {}/index.html al document root de l'aplicacio web ({}). Cal construir el SPA i copiar-lo a src/main/webapp{}.",
+						BaseConfig.REACT_APP_PATH,
+						servletContext.getRealPath("/"),
+						BaseConfig.REACT_APP_PATH);
+				return ResponseEntity.notFound().build();
+			}
 			return ResponseEntity
 					.ok()
 					.contentType(MediaType.TEXT_HTML)
-					.body(new InputStreamResource(Objects.requireNonNull(indexHtml)));
+					.body(new InputStreamResource(indexHtml));
 		} catch (Exception ex) {
 			log.error("Error carregant recurs", ex);
 			return ResponseEntity.internalServerError().body("Error carregant recurs");

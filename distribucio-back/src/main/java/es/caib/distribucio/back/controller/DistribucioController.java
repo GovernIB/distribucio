@@ -6,6 +6,8 @@ package es.caib.distribucio.back.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -19,7 +21,10 @@ import es.caib.distribucio.back.helper.AjaxHelper;
 import es.caib.distribucio.back.helper.EntitatHelper;
 import es.caib.distribucio.back.helper.ModalHelper;
 import es.caib.distribucio.back.helper.RolHelper;
+import es.caib.distribucio.back.helper.SessioHelper;
+import es.caib.distribucio.logic.intf.config.PropertyConfig;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.InterficieUsuariEnumDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
 
@@ -31,11 +36,17 @@ import es.caib.distribucio.logic.intf.service.AplicacioService;
 @Controller
 public class DistribucioController {
 
+	/** Paràmetre de petició per a forçar una interfície concreta (veure {@link #getInterficieEfectiva}). */
+	public static final String REQUEST_PARAMETER_INTERFICIE = "interficie";
+
 	@Autowired
 	private AplicacioService aplicacioService;
 
 	@RequestMapping(path = { "/", "/index" }, method = RequestMethod.GET)
 	public String get(HttpServletRequest request) {
+		if (InterficieUsuariEnumDto.REACT.equals(getInterficieEfectiva(request))) {
+			return "redirect:/reactapp/";
+		}
 		if (RolHelper.isRolActualSuperusuari(request)) {
 			return "redirect:integracio";
 		} else {
@@ -49,6 +60,60 @@ public class DistribucioController {
 			} else {
 				return "index";
 			}
+		}
+	}
+
+	/**
+	 * Interfície amb la que s'ha d'entrar a l'aplicació, per ordre de prioritat:
+	 * <ol>
+	 * <li>el paràmetre {@value #REQUEST_PARAMETER_INTERFICIE} de la petició, que la interfície
+	 * actual afegeix als seus enllaços cap a l'arrel (canvi de rol o d'entitat, logotip...) per
+	 * no fer saltar l'usuari a l'altra interfície;</li>
+	 * <li>la interfície triada per l'usuari al seu perfil;</li>
+	 * <li>la propietat {@code es.caib.distribucio.interface.defecte};</li>
+	 * <li>{@link InterficieUsuariEnumDto#REACT} si res del anterior no té un valor vàlid.</li>
+	 * </ol>
+	 */
+	private InterficieUsuariEnumDto getInterficieEfectiva(HttpServletRequest request) {
+		InterficieUsuariEnumDto interficie = toInterficie(request.getParameter(REQUEST_PARAMETER_INTERFICIE));
+		if (interficie == null) {
+			interficie = getInterficieUsuariActual(request);
+		}
+		if (interficie == null) {
+			interficie = toInterficie(aplicacioService.propertyFindByNom(PropertyConfig.INTERFACE_DEFECTE));
+		}
+		return interficie != null ? interficie : InterficieUsuariEnumDto.REACT;
+	}
+
+	/**
+	 * Interfície triada per l'usuari al seu perfil. Es consulta al servei i no a la sessió perquè
+	 * la interfície REACT també pot modificar el perfil, i la còpia de la sessió quedaria
+	 * desfasada; si la consulta falla (p. ex. un usuari sense fitxa a dis_usuari) es cau cap a la
+	 * còpia de la sessió per no impedir l'entrada a l'aplicació.
+	 */
+	private InterficieUsuariEnumDto getInterficieUsuariActual(HttpServletRequest request) {
+		try {
+			UsuariDto usuariActual = aplicacioService.getUsuariActual();
+			if (usuariActual != null) {
+				return usuariActual.getInterficieUsuari();
+			}
+		} catch (Exception ex) {
+			logger.warn("No s'ha pogut consultar l'usuari actual per a decidir la interfície", ex);
+		}
+		UsuariDto usuariSessio = SessioHelper.getUsuariActual(request);
+		return usuariSessio != null ? usuariSessio.getInterficieUsuari() : null;
+	}
+
+	/** Converteix el text a interfície, o null si és buit o no és cap valor conegut. */
+	private InterficieUsuariEnumDto toInterficie(String valor) {
+		if (valor == null || valor.trim().isEmpty()) {
+			return null;
+		}
+		try {
+			return InterficieUsuariEnumDto.valueOf(valor.trim().toUpperCase());
+		} catch (IllegalArgumentException ex) {
+			logger.warn("Valor d'interfície d'usuari desconegut: " + valor);
+			return null;
 		}
 	}
 
@@ -103,6 +168,8 @@ public class DistribucioController {
 				new ErrorObject(request));
 		return "util/error";
 	}*/
+
+	private static final Logger logger = LoggerFactory.getLogger(DistribucioController.class);
 
 	public static class ErrorObject {
 		Integer statusCode;

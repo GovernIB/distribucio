@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.back.helper.ConversioTipusHelper;
+import es.caib.distribucio.logic.intf.dto.InterficieUsuariEnumDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
 
 
@@ -35,6 +36,7 @@ public class UsuariCommand implements Serializable {
     private Long entitatPerDefecteId;
     private Long numElementsPagina;
     private Boolean emailErrorAnotacio;
+    private InterficieUsuariEnumDto interficieUsuari;
 
 	public static UsuariCommand asCommand(UsuariDto dto) {
 		return ConversioTipusHelper.convertir(

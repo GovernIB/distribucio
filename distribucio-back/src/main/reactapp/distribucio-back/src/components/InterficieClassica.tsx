@@ -10,6 +10,12 @@ import { useResourceApiContext } from 'reactlib';
 // rol actual (integracio / registreAdmin / registreUser).
 const RUTES_SENSE_EQUIVALENT_JSP = ['/', '/home'];
 
+// L'arrel del back antic decideix la interfície (perfil de l'usuari o la propietat
+// es.caib.distribucio.interface.defecte) i, si és la REACT, hi torna a redirigir. Amb aquest
+// paràmetre li diem que aquesta petició vol la JSP explícitament -- sense ell, l'usuari que té
+// la REACT per defecte no en podria sortir. Veure DistribucioController.getInterficieEfectiva().
+const PARAM_INTERFICIE_JSP = '?interficie=JSP';
+
 /**
  * Enllaç cap a la interfície JSP. La URL del back antic surt de l'apiUrl del context de
  * recursos: n'hi ha prou de treure-li el sufix "/api". Així funciona igual desplegat (mateix
@@ -22,10 +28,10 @@ export const useInterficieClassica = () => {
     const baseUrl = apiUrl.replace(/\/api\/?$/, '/');
     const { pathname } = useLocation();
     const getUrl = React.useCallback(() => {
-        const ref = RUTES_SENSE_EQUIVALENT_JSP.includes(pathname)
-            ? ''
-            : pathname.replace(/^\//, '');
-        return baseUrl + ref;
+        if (RUTES_SENSE_EQUIVALENT_JSP.includes(pathname)) {
+            return baseUrl + PARAM_INTERFICIE_JSP;
+        }
+        return baseUrl + pathname.replace(/^\//, '');
     }, [baseUrl, pathname]);
     return {
         getUrl,

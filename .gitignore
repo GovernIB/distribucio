@@ -12,3 +12,4 @@ target/
 /CLAUDE.md
 /.playwright-mcp
 /distribucio_credentials.json
+/distribucio-back/src/main/webapp/reactapp/

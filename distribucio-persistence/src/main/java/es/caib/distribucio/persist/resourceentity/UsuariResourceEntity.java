@@ -1,5 +1,6 @@
 package es.caib.distribucio.persist.resourceentity;
 
+import es.caib.distribucio.logic.intf.dto.InterficieUsuariEnumDto;
 import es.caib.distribucio.logic.intf.model.MenuEstilEnum;
 import es.caib.distribucio.logic.intf.model.TemaAplicacioEnum;
 import es.caib.distribucio.logic.intf.model.UsuariResource;
@@ -76,6 +77,10 @@ public class UsuariResourceEntity extends BaseResourceEntity<UsuariResource, Str
 	@Enumerated(EnumType.STRING)
 	@Column(name = "estil_menu", length = 16, nullable = false)
 	private MenuEstilEnum estilMenu;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "interficie_usuari", length = 5)
+	private InterficieUsuariEnumDto interficieUsuari;
 
 	@Version
 	private long version = 0;

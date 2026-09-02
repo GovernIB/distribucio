@@ -162,7 +162,11 @@ body {
 						<img src="<c:url value="/entitat/logo"/>"  height="65" alt="Govern de les Illes Balears" />
 					</div>
 					<div id="app-logo" class="pull-left">
-						<a href="<c:url value="/"/>">
+						<%-- El paràmetre "interficie" manté l'usuari a la interfície actual: sense ell,
+						     DistribucioController.get() el podria enviar a la interfície REACT si la té
+						     com a interfície per defecte (perfil o es.caib.distribucio.interface.defecte). --%>
+						<c:url var="urlInici" value="/"><c:param name="interficie" value="JSP"/></c:url>
+						<a href="${urlInici}">
 							<img src="<c:url value="/img/logo.png"/>" alt="DISTRIBUCIO" />
 						</a>				
 					</div>
@@ -182,6 +186,7 @@ body {
 											<c:if test="${entitat.id != entitatActual.id}">
 												<c:url var="urlCanviEntitat" value="/index">
 													<c:param name="${requestParameterCanviEntitat}" value="${entitat.id}"/>
+													<c:param name="interficie" value="JSP"/>
 												</c:url>
 												<li><a href="${urlCanviEntitat}">${entitat.nom}</a></li>
 											</c:if>
@@ -204,6 +209,7 @@ body {
 												<li>
 													<c:url var="canviRolUrl" value="/index">
 														<c:param name="${requestParameterCanviRol}" value="${rol}"/>
+														<c:param name="interficie" value="JSP"/>
 													</c:url>
 													<a href="${canviRolUrl}"><spring:message code="decorator.menu.rol.${rol}"/></a>
 												</li>

@@ -1,0 +1,39 @@
+databaseChangeLog:
+- changeSet:
+    id: 1.1.1_002
+    author: limit
+    comment: Interfície per defecte al entrar a l'aplicació (preferència de l'usuari i propietat de sistema)
+    changes:
+    - addColumn:
+        tableName: ${app_prefix}usuari
+        columns:
+        - column:
+            name: interficie_usuari
+            type: VARCHAR(5)
+    - insert:
+        tableName: ${app_prefix}config
+        columns:
+        - column:
+            name: key
+            value: es.caib.distribucio.interface.defecte
+        - column:
+            name: value
+            value: REACT
+        - column:
+            name: description
+            value: Interfície (JSP o REACT) amb la que s'entra a l'aplicació quan l'usuari no n'ha triat cap al seu perfil
+        - column:
+            name: group_code
+            value: GENERAL
+        - column:
+            name: position
+            valueNumeric: 24
+        - column:
+            name: jboss_property
+            valueBoolean: false
+        - column:
+            name: type_code
+            value: TEXT
+        - column:
+            name: configurable
+            valueBoolean: false

@@ -407,6 +407,35 @@
 							</execution>
 						</executions>
 					</plugin>
+					<!-- Copia el build del SPA dins del document root de l'aplicacio web.
+					     En el WAR empaquetat el SPA hi arriba per <webResources>, pero quan
+					     s'arrenca DistribucioBackBootApp des del codi font el document root
+					     del Tomcat embegut es src/main/webapp: sense aquesta copia
+					     ServletContext.getResourceAsStream("/reactapp/index.html") torna null
+					     i ReactController peta. La carpeta esta al .gitignore. -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copia-reactapp-a-webapp</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${basedir}/src/main/webapp/reactapp</outputDirectory>
+									<overwrite>true</overwrite>
+									<resources>
+										<resource>
+											<directory>${frontend.app.path}/dist</directory>
+											<filtering>false</filtering>
+										</resource>
+									</resources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -511,6 +540,10 @@
 								<include>**/dist/**</include>
 								<include>**/node_modules/**</include>
 							</includes>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+						<fileset>
+							<directory>${basedir}/src/main/webapp/reactapp</directory>
 							<followSymlinks>false</followSymlinks>
 						</fileset>
 					</filesets>

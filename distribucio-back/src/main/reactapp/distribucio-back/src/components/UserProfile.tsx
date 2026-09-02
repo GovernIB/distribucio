@@ -429,6 +429,24 @@ const NumElementsPaginaSelect: React.FC = () => {
     );
 };
 
+/**
+ * Interfície amb la que l'usuari entra a l'aplicació. `UsuariResource.interficieUsuari` és un
+ * enumerat del recurs, de manera que el motor genèric ja en publica les opcions i el camp es
+ * dibuixa com a desplegable (les etiquetes surten de distribucio-service-messages). No és
+ * obligatori: sense valor mana la propietat es.caib.distribucio.interface.defecte, i per això
+ * s'etiqueta l'opció buida en lloc de deixar-la en blanc.
+ */
+const InterficieUsuariField: React.FC = () => {
+    const { t } = useTranslation();
+    return (
+        <GridFormField
+            size={{ xs: 12, sm: 6, md: 3 }}
+            name="interficieUsuari"
+            emptyValueDescription={t('component.UserProfile.interficieUsuari.perDefecte')}
+        />
+    );
+};
+
 export const UserProfileFormDialog: React.FC<{
     formDialogApiRef: React.RefObject<MuiDataFormDialogApi | null>;
 }> = (props) => {
@@ -485,6 +503,7 @@ export const UserProfileFormDialog: React.FC<{
                     <BustiaPerDefecteSelect />
                 </Grid>
                 <GridFormField size={{ xs: 12, sm: 6, md: 4 }} name="emailErrorAnotacio" />
+                <InterficieUsuariField />
                 <Grid size={12}>
                     <ThemeSelector />
                 </Grid>

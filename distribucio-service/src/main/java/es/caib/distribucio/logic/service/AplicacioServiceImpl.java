@@ -268,7 +268,8 @@ public class AplicacioServiceImpl implements AplicacioService {
 				dto.getIdioma(),
                 dto.getEntitatPerDefecteId() != null ? entitatRepository.getOne(dto.getEntitatPerDefecteId()) : null,
                 dto.getNumElementsPagina(),
-                dto.getEmailErrorAnotacio());
+                dto.getEmailErrorAnotacio(),
+                dto.getInterficieUsuari());
 		BustiaDefaultEntity bustiaDefaultEntity = bustiaDefaultRepository.findByEntitatAndUsuari(
 				entitatActual, 
 				usuari);

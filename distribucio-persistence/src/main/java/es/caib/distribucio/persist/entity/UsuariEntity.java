@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.dto.InterficieUsuariEnumDto;
 import es.caib.distribucio.logic.intf.model.MenuEstilEnum;
 import es.caib.distribucio.logic.intf.model.TemaAplicacioEnum;
 
@@ -67,6 +68,12 @@ public class UsuariEntity implements Serializable {
     @Column(name = "estil_menu", length = 16, nullable = false)
     private MenuEstilEnum estilMenu = MenuEstilEnum.TEMA;
 
+    /** Interfície amb la que l'usuari entra a l'aplicació. Nul a posta: vol dir que mana la
+     *  propietat es.caib.distribucio.interface.defecte (veure DistribucioController.get()). */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "interficie_usuari", length = 5)
+    private InterficieUsuariEnumDto interficieUsuari;
+
 	@Version
 	private long version = 0;
 	
@@ -90,13 +97,15 @@ public class UsuariEntity implements Serializable {
 			String idioma,
             EntitatEntity entitatPerDefecte,
             Long numElementsPagina,
-            boolean emailErrorAnotacio) {
+            boolean emailErrorAnotacio,
+            InterficieUsuariEnumDto interficieUsuari) {
 		this.rebreEmailsBustia = rebreEmailsBustia;
 		this.rebreEmailsAgrupats = rebreEmailsAgrupats;
 		this.idioma = idioma;
         this.entitatPerDefecte = entitatPerDefecte;
         this.numElementsPagina = numElementsPagina;
         this.emailErrorAnotacio = emailErrorAnotacio;
+        this.interficieUsuari = interficieUsuari;
 	}
 	
 	public void updateRolActual(String rolActual) {

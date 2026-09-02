@@ -5,6 +5,7 @@ import es.caib.distribucio.logic.intf.base.annotation.ResourceConfig;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceField;
 import es.caib.distribucio.logic.intf.base.model.BaseResource;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
+import es.caib.distribucio.logic.intf.dto.InterficieUsuariEnumDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -75,6 +76,12 @@ public class UsuariResource extends BaseResource<String> {
 	 *  quan es canvia de rol des del selector. */
 	@Size(max = 64)
 	private String rolActual;
+	/**
+	 * Interficie amb la que l'usuari entra a l'aplicacio (columna dis_usuari.interficie_usuari,
+	 * la mateixa que fa servir la interficie JSP). Es opcional a posta: sense valor mana la
+	 * propietat es.caib.distribucio.interface.defecte (veure DistribucioController.get()).
+	 */
+	private InterficieUsuariEnumDto interficieUsuari;
 	/** Nomes es fixa en llegir el recurs (veure completeResource); no es persisteix. */
 	private String[] rols;
 
