@@ -4,14 +4,18 @@
 package es.caib.distribucio.logic.helper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
+import es.caib.distribucio.persist.repository.EntitatRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,16 +39,17 @@ import es.caib.distribucio.plugin.servei.Servei;
 @Component
 public class ServeiHelper {
 
-	@Autowired
-	private ServeiRepository serveiRepository;
-	@Autowired
-	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+	@Autowired private ServeiRepository serveiRepository;
+	@Autowired private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+	@Autowired private EntitatRepository entitatRepository;
 
-	@Resource
-	private PluginHelper pluginHelper;
-	@Autowired
-	private ConversioTipusHelper conversioTipusHelper;
-	
+	@Resource private PluginHelper pluginHelper;
+	@Autowired private ConversioTipusHelper conversioTipusHelper;
+
+	/** Progrés d'acualització actual.*/
+	public static Map<Long, UpdateProgressDto> serveisActualitzacio = new HashMap<Long, UpdateProgressDto>();
+
+
 	/** Consutla la llista de serveis de BBDD i marca com a extingits els que no hagi retornat la consulta a Rolsac.
 	 * 
 	 * @param serveiMap Map amb els serveis de Distribucio.
@@ -170,7 +175,7 @@ public class ServeiHelper {
 	/** Troba la unitat organitzativa de la BBDD a partir de les dades del servei de Distribucio. Si no troba
 	 * la UO amb codi SIA del serveis afegeix un avís al progrés per a que s'actualitzi l'arbre d'unitats. 
 	 * @param servei
-	 * @param progres 
+	 * @param progres
 	 * @return
 	 */
 	private UnitatOrganitzativaEntity resoldreUnitatOrganitzativa(
@@ -245,6 +250,146 @@ public class ServeiHelper {
 		}
 		return uo;
 	}
-	
+
+	@Async
+	@Transactional
+	public void findAndUpdateServeis(Long entitatId) throws Exception {
+
+		String msgInfo;
+		UpdateProgressDto progres = null;
+		// Comprova si hi ha una altre instància del procés en execució
+		if (isUpdatingServeis(entitatId)) {
+			logger.debug("Ja existeix un altre procés que està executant l'actualització de serveis per l'entitat " + entitatId + ".");
+			return;    // S'està executant l'actualitzacio
+		} else {
+			progres = new UpdateProgressDto();
+			serveisActualitzacio.put(entitatId, progres);
+		}
+
+		EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
+		// Els plugins s'instancien per entitat i llegeixen el codi de l'entitat actual del
+		// ThreadLocal de ConfigHelper. A la interfície JSP l'hi deixa LlistaEntitatsInterceptor,
+		// però les peticions de la interfície REACT (/api/**) estan excloses dels interceptors
+		// (veure INTERCEPTOR_EXCLUSIONS a WebMvcConfig), així que el fixam aquí a partir de
+		// l'entitat que rep el mètode -- mateix patró que RegistreServiceImpl i SegonPlaServiceImpl.
+		ConfigHelper.setEntitatActualCodi(entitat.getCodi());
+		msgInfo = "Inici del procés d'actualització de serveis de l'entitat " + entitat.getCodi() + " " + entitat.getNom();
+		progres.setEstat(UpdateProgressDto.Estat.INICIALITZANT);
+		logger.info(msgInfo);
+
+		List<Servei> serveiList = null;
+		int reintents = 1;
+		boolean errorConsultaServeis = false;
+		Exception exConsultaServeis = null;
+		String errMsg = "-";
+		do {
+			try {
+				msgInfo = "Obtenint el llistat de serveis per a l'entitat " + entitat.getCodiDir3();
+				logger.info(msgInfo);
+				serveiList = pluginHelper.serveiFindByCodiDir3(entitat.getCodiDir3());
+			} catch (Exception e) {
+				exConsultaServeis = e;
+				errMsg = "Error consultant els serveis per l'entitat: " + entitat.getCodiDir3();
+				errorConsultaServeis = reintents++ >= 3;
+			}
+		}
+		while (serveiList == null && !errorConsultaServeis);
+
+		try {
+			// Comprova si hi ha hagut errors consultant els serveis
+			if (errorConsultaServeis) {
+				String errorMessage = exConsultaServeis.getMessage() != null ? exConsultaServeis.getMessage() : errMsg;
+				throw new Exception(errorMessage, exConsultaServeis);
+			}
+
+			if (serveiList == null || serveiList.isEmpty()) {
+				throw new Exception(
+						"No s'ha obtingut cap llista o resultat per la consulta de serveis: (llista " + (serveiList == null ? "nul·la" : "buida") + ")"
+				);
+			}
+
+			// Processa els serveis consultats
+			msgInfo = "S'han obtingut " + serveiList.size() + " serveis vigents a Rolsac.";
+			logger.info(msgInfo);
+			progres.setEstat(UpdateProgressDto.Estat.ACTUALITZANT);
+			progres.setTotal(serveiList.size());
+
+			// Crea un Map amb els serveis de Distribucio per codi
+			Map<String, Servei> serveiMap = new HashMap<String, Servei>();
+			for (Servei servei : serveiList) {
+				serveiMap.put(servei.getCodigo(), servei);
+			}
+
+			// Deshabilita els serveis que no hagi retornat Distribucio
+			actualtizarServeisNoVigents(entitat, serveiMap);
+
+			// Processa tots els serveis, actualitza-ne la informació, donant-los d'alta i revisant la seva UO
+			msgInfo = "Es procedeix a processar els " + serveiList.size() + " serveis consultats a Rolsac.";
+			logger.info(msgInfo);
+
+			// Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
+			Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
+			for (Servei servei : serveiList) {
+				// Tracta el servei en una transacció a part.
+				actualitzaServei(servei, unitatsOrganitzatives, entitat);
+				progres.incProcessats();
+			}
+
+			progres.setEstat(UpdateProgressDto.Estat.FINALITZAT);
+		} catch (Exception e) {
+			progres.setEstat(UpdateProgressDto.Estat.ERROR);
+			progres.setErrorMsg(e.getMessage());
+		}
+	}
+
+	public ServeiDto findAndUpdateServei(Long entitatId, String serveiCodi) throws Exception {
+		EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
+		// Els plugins s'instancien per entitat i llegeixen el codi de l'entitat actual del
+		// ThreadLocal de ConfigHelper. A la interfície JSP l'hi deixa LlistaEntitatsInterceptor,
+		// però les peticions de la interfície REACT (/api/**) estan excloses dels interceptors
+		// (veure INTERCEPTOR_EXCLUSIONS a WebMvcConfig), així que el fixam aquí a partir de
+		// l'entitat que rep el mètode -- mateix patró que RegistreServiceImpl i SegonPlaServiceImpl.
+		ConfigHelper.setEntitatActualCodi(entitat.getCodi());
+
+		Servei servei = null;
+		int reintents = 1;
+		boolean errorConsultaServeis = false;
+		Exception exConsultaServeis = null;
+		String errMsg = "-";
+		do {
+			try {
+				servei = pluginHelper.serveiGetByCodi(serveiCodi);
+			} catch (Exception e) {
+				exConsultaServeis = e;
+				errMsg = "Error consultant el servei per codi: " + serveiCodi;
+			}
+			errorConsultaServeis = reintents++ >= 3;
+		}
+		while (servei == null && !errorConsultaServeis);
+
+		// Comprova si hi ha hagut errors consultant els serveis
+		if (errorConsultaServeis && exConsultaServeis != null) {
+			String errorMessage = exConsultaServeis.getMessage() != null ? exConsultaServeis.getMessage() : errMsg;
+			throw new Exception(errorMessage, exConsultaServeis);
+		}
+
+		if (servei == null) {
+			throw new Exception(
+					"No s'ha obtingut cap resultat per la consulta de servei: (" + serveiCodi + ")"
+			);
+		}
+
+		ServeiDto serveiDto = actualitzaServei(servei, new HashMap<String, UnitatOrganitzativaEntity>(), entitat);
+
+		return serveiDto;
+	}
+
+	public boolean isUpdatingServeis(Long entitatId) {
+		UpdateProgressDto progres = serveisActualitzacio.get(entitatId);
+		return progres != null
+				&& progres.getEstat() != UpdateProgressDto.Estat.FINALITZAT
+				&& progres.getEstat() != UpdateProgressDto.Estat.ERROR;
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(ServeiHelper.class);
 }
