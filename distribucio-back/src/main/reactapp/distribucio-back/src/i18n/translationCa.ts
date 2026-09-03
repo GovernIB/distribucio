@@ -28,6 +28,10 @@ const translationCa = {
             avisos: 'Avisos',
             consultar: "Consultar",
             serveis: 'Serveis',
+            configuracio: 'Configuració',
+            configurar: 'Configurar',
+            unitatOrganitzativa: 'Unitats organitzatives',
+            limitCanviEstat: "Limits canvis d'estat",
         },
         avisos: {
             mostra: "Mostra el detall de l'avís",
@@ -196,6 +200,22 @@ const translationCa = {
                         reglesAfectades: 'REGLES AFECTADES PER LA SINCRONITZACIÓ',
                     }
                 },
+            },
+        },
+        limitCanviEstat: {
+            grid: {
+                title: "Límits de canvis d'estat",
+            },
+            form: {
+                resourceTitle: "limit de canvi d'estat",
+            },
+            accio: {
+                new: "Nou limit de canvi d'estat",
+                modificar: 'Modifica',
+                esborrar: 'Esborra',
+                crearOk: "El nou limit de canvi d'estat s'ha creat correctament",
+                modificarOk: "El limit de canvi d'estat s'ha modificat correctament",
+                esborrarOk: "El limit de canvi d'estat s'ha esborrat correctament",
             },
         },
     },

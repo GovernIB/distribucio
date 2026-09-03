@@ -24,7 +24,7 @@
 </head>
 <body>
 <table id="limits" data-toggle="datatable" data-url="<c:url value="/limitCanviEstat/datatable"/>" data-default-order="0"
-       data-default-dir="asc"
+       data-default-dir="desc"
        class="table table-bordered table-striped"
        data-botons-template="#botonsTemplate">
     <thead>

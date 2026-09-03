@@ -10,6 +10,7 @@ import AvisGrid from './pages/avis/AvisGrid';
 import AvisForm from './pages/avis/AvisForm';
 import {UnitatOrganitzativaGrid} from "./pages/unitatOrganitzativa/UnitatOrganitzativaGrid.tsx";
 import ServeiGrid from './pages/servei/ServeiGrid';
+import LimitCanviEstatGrid from './pages/limitCanviEstat/LimitCanviEstatGrid.tsx';
 
 export const router = createBrowserRouter(
     [
@@ -94,6 +95,16 @@ export const router = createBrowserRouter(
                             path: 'unitatOrganitzativa',
                             element: <UnitatOrganitzativaGrid />,
                             handle: { titol: 'page.unitatOrganitzativa.grid.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="limitCanviEstat" />,
+                    children: [
+                        {
+                            path: 'limitCanviEstat',
+                            element: <LimitCanviEstatGrid />,
+                            handle: { titol: 'page.limitCanviEstat.grid.title' },
                         },
                     ],
                 },

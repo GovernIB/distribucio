@@ -1,4 +1,4 @@
-import { Button, Icon, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Icon, Tooltip, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { FilterCountChip } from './FilterCountChip'; // TODO: corregir ruta d'import segons projecte
 import { MuiDataGrid, MuiDataGridProps, useMuiDataGridApiRef } from 'reactlib';
@@ -173,55 +173,69 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
     ].filter((e: any) => !e?.hidden);
 
     return (
-        <MuiDataGrid
-            {...others}
-            filter={filter}
-            apiRef={apiRef}
-            // Fixar la mida de pàgina desactiva l'autoPageSize de la llibreria (que ajusta el
-            // nombre de files a l'alçada disponible), que és el que s'aplicaria si no se'n
-            // passés cap. Una pantalla concreta encara pot imposar-ne una de pròpia.
-            defaultPaginationModel={
-                defaultPaginationModel ?? {
-                    page: 0,
-                    pageSize: numElementsPagina ?? NUM_ELEMENTS_PAGINA_DEFECTE,
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                height: '100%',
+                // El filtre ràpid de la barra d'eines és un TextField "small" de 37px i quedava
+                // més alt que la resta de controls de la barra (32px). S'iguala des d'aquí perquè
+                // el crea reactlib i no admet ni props ni estils des de fora.
+                '& .MuiToolbar-root .MuiOutlinedInput-root': { height: '32px' },
+                '& .MuiToolbar-root .MuiOutlinedInput-input': { pt: 0, pb: 0 },
+            }}
+        >
+            <MuiDataGrid
+                {...others}
+                filter={filter}
+                apiRef={apiRef}
+                // Fixar la mida de pàgina desactiva l'autoPageSize de la llibreria (que ajusta el
+                // nombre de files a l'alçada disponible), que és el que s'aplicaria si no se'n
+                // passés cap. Una pantalla concreta encara pot imposar-ne una de pròpia.
+                defaultPaginationModel={
+                    defaultPaginationModel ?? {
+                        page: 0,
+                        pageSize: numElementsPagina ?? NUM_ELEMENTS_PAGINA_DEFECTE,
+                    }
                 }
-            }
-            pageSizeOptions={pageSizeOptions ?? OPCIONS_PAGINACIO}
-            toolbarHideRefresh
-            toolbarHideCreate
-            toolbarHideQuickFilter={!toolbarShowQuickFilter ? true : undefined}
-            getRowClassName={getRowClassName}
-            toolbarElementsWithPositions={toolbarElements}
-            // Defaults pel formulari popup: cada pantalla pot sobreescriure'ls parcialment,
-            // ja que el spread de `others` no inclou aquestes props (es gestionen aquí).
-            popupEditFormDialogComponentProps={{
-                fullWidth: true,
-                maxWidth: 'md',
-                ...popupEditFormDialogComponentProps,
-            }}
-            popupEditFormComponentProps={{
-                avoidSubmitIfAnyValidatorErrors: true,
-                ...popupEditFormComponentProps,
-            }}
-            popupEditFormDialogOnClose={
-                popupEditFormDialogOnClose ?? ((reason?: string) => reason !== 'backdropClick')
-            }
-            popupEditFormDialogButtons={
-                popupEditFormDialogButtons ?? [
-                    {
-                        icon: 'save',
-                        text: t('common.save'),
-                        componentProps: { variant: 'contained' },
-                        value: true,
-                    },
-                    {
-                        text: t('common.cancel'),
-                        componentProps: { variant: 'outlined' },
-                        value: false,
-                    },
-                ]
-            }
-        />
+                pageSizeOptions={pageSizeOptions ?? OPCIONS_PAGINACIO}
+                toolbarHideRefresh
+                toolbarHideCreate
+                toolbarHideQuickFilter={!toolbarShowQuickFilter ? true : undefined}
+                getRowClassName={getRowClassName}
+                toolbarElementsWithPositions={toolbarElements}
+                // Defaults pel formulari popup: cada pantalla pot sobreescriure'ls parcialment,
+                // ja que el spread de `others` no inclou aquestes props (es gestionen aquí).
+                popupEditFormDialogComponentProps={{
+                    fullWidth: true,
+                    maxWidth: 'md',
+                    ...popupEditFormDialogComponentProps,
+                }}
+                popupEditFormComponentProps={{
+                    avoidSubmitIfAnyValidatorErrors: true,
+                    ...popupEditFormComponentProps,
+                }}
+                popupEditFormDialogOnClose={
+                    popupEditFormDialogOnClose ?? ((reason?: string) => reason !== 'backdropClick')
+                }
+                popupEditFormDialogButtons={
+                    popupEditFormDialogButtons ?? [
+                        {
+                            icon: 'save',
+                            text: t('common.save'),
+                            componentProps: { variant: 'contained' },
+                            value: true,
+                        },
+                        {
+                            text: t('common.cancel'),
+                            componentProps: { variant: 'outlined' },
+                            value: false,
+                        },
+                    ]
+                }
+            />
+        </Box>
     );
 };
 

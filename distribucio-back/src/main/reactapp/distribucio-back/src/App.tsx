@@ -88,18 +88,32 @@ const InnerApp: React.FC = () => {
             pantalla: 'entitat',
         },
         {
-            id: 'config',
-            title: 'Configuració',
+            id: 'configuracio',
+            title: t('app.menu.configuracio'),
             icon: 'settings',
             children: [
                 {
                     id: 'uo',
-                    title: 'Unitats Organitzatives',
+                    title: t('app.menu.unitatOrganitzativa'),
                     to: 'unitatOrganitzativa',
                     icon: 'account_tree',
                     pantalla: 'unitatOrganitzativa'
-                }
-            ]
+                },
+            ],
+        },
+        {
+            id: 'configurar',
+            title: t('app.menu.configurar'),
+            icon: 'settings',
+            children: [
+                {
+                    id: 'limitCanviEstat',
+                    title: t('app.menu.limitCanviEstat'),
+                    to: 'limitCanviEstat',
+                    icon: 'display_settings',
+                    pantalla: 'limitCanviEstat'
+                },
+            ],
         },
         {
             id: 'avisos',

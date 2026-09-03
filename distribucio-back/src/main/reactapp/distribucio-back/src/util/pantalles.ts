@@ -13,7 +13,7 @@ import {
 export const ROLS_APLICACIO = [ROLE_SUPER, ROLE_ADMIN, ROLE_ADMIN_LECTURA, ROLE_USER];
 
 /** Identificador de cada pantalla amb control d'accés. Una pantalla nova s'ha d'afegir aquí. */
-export type Pantalla = 'home' | 'entitat' | 'avis' | 'servei' | string;
+export type Pantalla = 'home' | 'entitat' | 'avis' | 'servei' | 'unitatOrganitzativa' | 'limitCanviEstat';
 
 /**
  * Rols autoritzats per pantalla. És l'única font de veritat del control d'accés de la interfície:
@@ -37,6 +37,7 @@ export const PANTALLA_ROLS: Record<Pantalla, string[]> = {
     avis: [ROLE_SUPER],
     servei: [ROLE_ADMIN],
     unitatOrganitzativa: [ROLE_ADMIN],
+    limitCanviEstat: [ROLE_SUPER],
 };
 
 export const isPantallaPermesa = (pantalla: Pantalla, rol?: string): boolean =>

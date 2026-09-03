@@ -28,6 +28,10 @@ const translationEs = {
             avisos: 'Avisos',
             consultar: "Consultar",
             serveis: 'Servicios',
+            configuracio: "Configuración",
+            configurar: "Configurar",
+            unitatOrganitzativa: "Unidades Organizativas",
+            limitCanviEstat: "Limites de cambios de estado",
         },
         avisos: {
             mostra: 'Muestra el detalle del aviso',
@@ -194,6 +198,22 @@ const translationEs = {
                         reglesAfectades: 'REGLAS AFECTADAS POR LA SINCRONIZACIÓN',
                     }
                 },
+            },
+        },
+        limitCanviEstat: {
+            grid: {
+                title: "Límites de cambios de estado",
+            },
+            form: {
+                resourceTitle: "limite de cambio de estado",
+            },
+            accio: {
+                new: "Nuevo límite de cambio de estado",
+                modificar: 'Modifica',
+                esborrar: 'Borra',
+                crearOk: "El nuevo límite de cambio de estado se ha creado correctamente",
+                modificarOk: "El límite de cambio de estado se ha modificado correctamente",
+                esborrarOk: "El límite de cambio de estado se ha borrado correctamente",
             },
         },
     },
