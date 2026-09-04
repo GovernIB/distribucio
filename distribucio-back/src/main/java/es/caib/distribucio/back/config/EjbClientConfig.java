@@ -221,11 +221,23 @@ public class EjbClientConfig {
 		return getLocalEjbFactoyBean(ServeiResourceService.class);
 	}
 
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean procedimentResourceService() {
+		return getLocalEjbFactoyBean(ProcedimentResourceService.class);
+	}
+
     @Bean
     @ConditionalOnWarDeployment
     public LocalStatelessSessionProxyFactoryBean unitatOrganitzativaResourceService() {
         return getLocalEjbFactoyBean(UnitatOrganitzativaResourceService.class);
     }
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean limitCanviEstatResourceService() {
+		return getLocalEjbFactoyBean(LimitCanviEstatResourceService.class);
+	}
 
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {
 		String jndiName = jndiServiceName(serviceClass);

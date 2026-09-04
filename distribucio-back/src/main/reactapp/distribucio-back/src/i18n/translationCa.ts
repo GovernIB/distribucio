@@ -32,6 +32,7 @@ const translationCa = {
             configurar: 'Configurar',
             unitatOrganitzativa: 'Unitats organitzatives',
             limitCanviEstat: "Limits canvis d'estat",
+            procediment: 'Procediments',
         },
         avisos: {
             mostra: "Mostra el detall de l'avís",
@@ -156,11 +157,36 @@ const translationCa = {
                     },
                     close: {
 						check: "Estau segur que voleu tancar aquesta finestra?",
-						description: "L'importació continuarà en segon pla i podreu consultar el resultat a l'expedient més tard.",
+						description: "L'acció continuarà en segon pla i podreu consultar el resultat més tard.",
 					},
-					cancel: {
-						check: "Esteu segur que voleu cancel·lar la importació?",
-						description: "Els documents importats fins a aquest moment es conservaran a l’expedient.",
+                },
+            },
+        },
+        procediments: {
+            grid: {
+                title: "Procediments",
+            },
+            accio: {
+                actualitzarTotsButton: "Actualitza tots els procediments",
+                actualitzar: "Actualitza el procediment",
+                actualitzarOk: "El procediment s'ha actualitzat correctament",
+                actualitzarTotsOk: "Tots els procediments s'han actualitzat correctament",
+                error: "No s'ha pogut executar l'acció",
+                actualitzarTots: {
+                    title: "Actualització de procediments",
+                    confirmacio: "Voleu actualitzar els procediments amb la informació de ROLSAC?",
+                    estat: "Estat",
+                    total: "Número de procediments totals",
+                    processats: "Número de procediments processats",
+                    estats: {
+                        INICIALITZANT: "Inicialitzant",
+                        ACTUALITZANT: "Actualitzant",
+                        FINALITZAT: "Finalitzat",
+                        ERROR: "Error",
+                    },
+                    close: {
+						check: "Estau segur que voleu tancar aquesta finestra?",
+						description: "L'acció continuarà en segon pla i podreu consultar el resultat més tard.",
 					},
                 },
             },

@@ -32,6 +32,7 @@ const translationEs = {
             configurar: "Configurar",
             unitatOrganitzativa: "Unidades Organizativas",
             limitCanviEstat: "Limites de cambios de estado",
+            procediment: 'Procedimientos',
         },
         avisos: {
             mostra: 'Muestra el detalle del aviso',
@@ -144,7 +145,7 @@ const translationEs = {
                     title: "Actualización de servicios",
                     confirmacio: "¿Quiere actualizar los servicios con la información de ROLSAC?",
                     estat: "Estado",
-                    total: "Numero de servicios totales",
+                    total: "Número de servicios totales",
                     processats: "Número de servicios processados",
                     estats: {
                         INICIALITZANT: "Inicializando",
@@ -154,11 +155,36 @@ const translationEs = {
                     },
                     close: {
 					    check: "¿Está seguro de que desea cerrar esta ventana?",
-					    description: "La importación continuará en segundo plano y podrá consultar el resultado en el expediente más tarde.",
+					    description: "La acción continuará en segundo plano y podrá consultar el resultado más tarde.",
 					},
-					cancel: {
-					    check: "¿Está seguro de que desea cancelar la importación?",
-					    description: "Los documentos importados hasta este momento se conservarán en el expediente.",
+                },
+            },
+        },
+        procediments: {
+            grid: {
+                title: "Procedimientos",
+            },
+            accio: {
+                actualitzarTotsButton: "Actualizar todos los procedimientos",
+                actualitzar: "Actualiza el procedimiento",
+                actualitzarOk: "El procedimiento se ha actualizado correctamente",
+                actualitzarTotsOk: "Todos los procedimientos se han actualizado correctamente",
+                error: "No se ha podido ejecutar la acción",
+                actualitzarTots: {
+                    title: "Actualización de procedimientos",
+                    confirmacio: "¿Quiere actualizar los procedimientos con la información de ROLSAC?",
+                    estat: "Estado",
+                    total: "Número de procedimientos totales",
+                    processats: "Número de procedimientos processados",
+                    estats: {
+                        INICIALITZANT: "Inicializando",
+                        ACTUALITZANT: "Actualizando",
+                        FINALITZAT: "Finalizado",
+                        ERROR: "Error",
+                    },
+                    close: {
+					    check: "¿Está seguro de que desea cerrar esta ventana?",
+					    description: "La acción continuará en segundo plano y podrá consultar el resultado más tarde.",
 					},
                 },
             },

@@ -128,10 +128,17 @@ const InnerApp: React.FC = () => {
             icon: 'info',
             children: [
                 {
+                    id: 'procediment',
+                    title: t('app.menu.procediment'),
+                    to: 'procediment',
+                    icon: 'rule',
+                    pantalla: 'procediment',
+                },
+                {
                     id: 'serveis',
                     title: t('app.menu.serveis'),
                     to: 'servei',
-                    icon: 'leak_add',
+                    icon: 'rule',
                     pantalla: 'servei',
                 },
             ],

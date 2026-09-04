@@ -11,6 +11,7 @@ import AvisForm from './pages/avis/AvisForm';
 import {UnitatOrganitzativaGrid} from "./pages/unitatOrganitzativa/UnitatOrganitzativaGrid.tsx";
 import ServeiGrid from './pages/servei/ServeiGrid';
 import LimitCanviEstatGrid from './pages/limitCanviEstat/LimitCanviEstatGrid.tsx';
+import ProcedimentGrid from './pages/procediment/ProcedimentGrid.tsx';
 
 export const router = createBrowserRouter(
     [
@@ -75,6 +76,16 @@ export const router = createBrowserRouter(
                             path: 'avis/form/:id',
                             element: <AvisForm />,
                             handle: { titol: 'page.avisos.form.titleUpdate' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="procediment" />,
+                    children: [
+                        {
+                            path: 'procediment',
+                            element: <ProcedimentGrid />,
+                            handle: { titol: 'page.procediment.grid.title' },
                         },
                     ],
                 },
