@@ -1,8 +1,8 @@
 package es.caib.distribucio.persist.resourceentity;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.ServeiEstatEnumDto;
-import es.caib.distribucio.logic.intf.model.ServeiResource;
+import es.caib.distribucio.logic.intf.dto.ProcedimentEstatEnumDto;
+import es.caib.distribucio.logic.intf.model.ProcedimentResource;
 import es.caib.distribucio.persist.base.entity.BaseAuditableEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,22 +21,21 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Version;
 
 /**
- * Entitat de base de dades del recurs {@link ServeiResource}.
+ * Entitat de base de dades del recurs {@link ProcedimentResource}.
  * <p>
- * Mapeja la mateixa taula que l'entitat de negoci {@link es.caib.distribucio.persist.entity.ServeiEntity},
+ * Mapeja la mateixa taula que l'entitat de negoci {@link es.caib.distribucio.persist.entity.ProcedimentEntity},
  * dedicada exclusivament al mapeig genèric per reflexió del recurs REST.
  *
  * @author Límit Tecnologies
  */
 @Entity
-@Table(name = "dis_servei")
+@Table(name = "dis_procediment")
 @Getter
 @Setter
 @NoArgsConstructor
-public class ServeiResourceEntity extends BaseAuditableEntity<ServeiResource, Long> {
+public class ProcedimentResourceEntity extends BaseAuditableEntity<ProcedimentResource, Long> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "default_seq")
@@ -54,18 +53,18 @@ public class ServeiResourceEntity extends BaseAuditableEntity<ServeiResource, Lo
 
 	@Column(name = "estat", length = 20)
 	@Enumerated(EnumType.STRING)
-	private ServeiEstatEnumDto estat = ServeiEstatEnumDto.VIGENT;
+	private ProcedimentEstatEnumDto estat = ProcedimentEstatEnumDto.VIGENT;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "id_unitat_organitzativa",
-			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "servei_unitat_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "procediment_unitat_fk"))
 	private UnitatOrganitzativaResourceEntity unitatOrganitzativa;
 
 	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(
 			name = "entitat",
-			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "servei_entitat_fk"))
+			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "procediment_entitat_fk"))
 	private EntitatResourceEntity entitat;
 
 	@Column(name = "comu")

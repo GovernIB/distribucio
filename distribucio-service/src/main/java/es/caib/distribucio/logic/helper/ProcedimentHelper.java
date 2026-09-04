@@ -4,14 +4,19 @@
 package es.caib.distribucio.logic.helper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
 
+import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
+import es.caib.distribucio.persist.repository.EntitatRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,12 +44,17 @@ public class ProcedimentHelper {
 	private ProcedimentRepository procedimentRepository;
 	@Autowired
 	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
+	@Autowired
+	private EntitatRepository entitatRepository;
 
 	@Resource
 	private PluginHelper pluginHelper;
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
-	
+
+	/** Progrés d'acualització actual.*/
+	public static Map<Long, UpdateProgressDto> progressosActualitzacio = new ConcurrentHashMap<Long, UpdateProgressDto>();
+
 	/** Consutla la llista de procediments de BBDD i marca com a extingits els que no hagi retornat la consulta a Distribucio.
 	 * 
 	 * @param procedimentMap Map amb els procediments de Distribucio.
@@ -238,6 +248,136 @@ public class ProcedimentHelper {
 		}
 		return uo;
 	}
-	
+
+	@Async
+	@Transactional
+	public void findAndUpdateProcediments(Long entitatId) throws Exception {
+
+		String msgInfo;
+		UpdateProgressDto progres = null;
+		// Comprova si hi ha una altre instància del procés en execució
+		if (isUpdatingProcediments(entitatId)) {
+			logger.debug("Ja existeix un altre procés que està executant l'actualització de procediments per l'entitat " + entitatId + ".");
+			return;	// S'està executant l'actualitzacio
+		} else {
+			progres = new UpdateProgressDto();
+			progressosActualitzacio.put(entitatId, progres);
+		}
+
+		EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
+		msgInfo = "Inici del procés d'actualització de procediments de l'entitat " + entitat.getCodi() + " " + entitat.getNom();
+		progres.setEstat(UpdateProgressDto.Estat.INICIALITZANT);
+		logger.info(msgInfo);
+
+		List<Procediment> procedimentList = null;
+		int reintents = 1;
+		boolean errorConsultaProcediments = false;
+		Exception exConsultaProcediments = null;
+		String errMsg = "-";
+		do {
+			try {
+				msgInfo = "Obtenint el llistat de procediments per a l'entitat " + entitat.getCodiDir3();
+				logger.info(msgInfo);
+				procedimentList = pluginHelper.procedimentFindByCodiDir3(entitat.getCodiDir3());
+			} catch (Exception e) {
+				exConsultaProcediments = e;
+				errMsg = "Error consultant els procediments per l'entitat: " + entitat.getCodiDir3();
+				errorConsultaProcediments = reintents++ >= 3;
+			}
+		}
+		while (procedimentList == null && !errorConsultaProcediments);
+
+		try {
+			// Comprova si hi ha hagut errors consultant els procediments
+			if (errorConsultaProcediments) {
+				String errorMessage = exConsultaProcediments.getMessage() != null ? exConsultaProcediments.getMessage() : errMsg;
+				throw new Exception(errorMessage, exConsultaProcediments);
+			}
+
+			if (procedimentList == null || procedimentList.isEmpty()) {
+				throw new Exception(
+						"No s'ha obtingut cap llista o resultat per la consulta de procediments: (llista " + (procedimentList == null? "nul·la" :  "buida") + ")"
+				);
+			}
+
+			// Processa els procediments consultats
+			msgInfo="S'han obtingut " + procedimentList.size() + " procediments vigents a Distribucio.";
+			logger.info(msgInfo);
+			progres.setEstat(UpdateProgressDto.Estat.ACTUALITZANT);
+			progres.setTotal(procedimentList.size());
+
+			// Crea un Map amb els procediments de Distribucio per codi
+			Map<String, Procediment> procedimentMap = new HashMap<String, Procediment>();
+			for (Procediment procediment : procedimentList) {
+				procedimentMap.put(procediment.getCodigo(), procediment);
+			}
+
+			// Deshabilita els procediments que no hagi retornat Distribucio
+			actualtizarProcedimentsNoVigents(entitat, procedimentMap);
+
+			// Processa tots els procediments, actualitza-ne la informació, donant-los d'alta i revisant la seva UO
+			msgInfo = "Es procedeix a processar els " + procedimentList.size() + " procediments consultats a Distribucio.";
+			logger.info(msgInfo);
+
+			// Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
+			Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
+			for (Procediment procediment : procedimentList) {
+				// Tracta el procediment en una transacció a part.
+				actualitzaProcediment(procediment, unitatsOrganitzatives, entitat);
+				progres.incProcessats();
+			}
+
+			progres.setEstat(UpdateProgressDto.Estat.FINALITZAT);
+		} catch (Exception e) {
+			progres.setEstat(UpdateProgressDto.Estat.ERROR);
+			progres.setErrorMsg(e.getMessage());
+		}
+	}
+
+	public boolean isUpdatingProcediments(Long entitatId) {
+		UpdateProgressDto progres = progressosActualitzacio.get(entitatId);
+		return progres != null
+				&& progres.getEstat() != UpdateProgressDto.Estat.FINALITZAT
+				&& progres.getEstat() != UpdateProgressDto.Estat.ERROR;
+	}
+
+	public ProcedimentDto findAndUpdateProcediment(Long entitatId, String procedimentCodi) throws Exception {
+		EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
+
+		Procediment procediment = null;
+		int reintents = 1;
+		boolean errorConsultaServeis = false;
+		Exception exConsultaServeis = null;
+		String errMsg = "-";
+		do {
+			try {
+				procediment = pluginHelper.procedimentGetByCodi(procedimentCodi);
+			} catch (Exception e) {
+				exConsultaServeis = e;
+				errMsg = "Error consultant el procediment per codi: " + procedimentCodi;
+			}
+			errorConsultaServeis = reintents++ >= 3;
+		}
+		while (procediment == null && !errorConsultaServeis);
+
+		// Comprova si hi ha hagut errors consultant els procediments
+		if (errorConsultaServeis && exConsultaServeis != null) {
+			String errorMessage = exConsultaServeis.getMessage() != null ? exConsultaServeis.getMessage() : errMsg;
+			throw new Exception(errorMessage, exConsultaServeis);
+		}
+
+		if (procediment == null) {
+			throw new Exception(
+					"No s'ha obtingut cap resultat per la consulta de procediment: (" + procedimentCodi + ")"
+			);
+		}
+
+		// Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
+		Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
+		ProcedimentDto procedimentDto = actualitzaProcediment(procediment, unitatsOrganitzatives, entitat);
+
+		return procedimentDto;
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(ProcedimentHelper.class);
 }

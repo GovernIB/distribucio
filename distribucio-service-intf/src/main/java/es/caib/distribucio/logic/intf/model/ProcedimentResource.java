@@ -8,7 +8,7 @@ import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.ServeiEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.ProcedimentEstatEnumDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
- * Informació d'un servei.
+ * Informació d'un procediment.
  *
  * @author Límit Tecnologies
  */
@@ -28,8 +28,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @FieldNameConstants
 @ResourceConfig(
-		descriptionField = ServeiResource.Fields.nom,
-		quickFilterFields = { ServeiResource.Fields.codi, ServeiResource.Fields.nom, ServeiResource.Fields.codiSia },
+		descriptionField = ProcedimentResource.Fields.nom,
+		quickFilterFields = { ProcedimentResource.Fields.codi, ProcedimentResource.Fields.nom, ProcedimentResource.Fields.codiSia },
 		accessConstraints = {
 				@ResourceAccessConstraint(
 						type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
@@ -49,28 +49,28 @@ import java.io.Serializable;
 		artifacts = {
 				@ResourceArtifact(
 						type = ResourceArtifactType.FILTER,
-						code = ServeiResource.FILTER_CODE,
-						formClass = ServeiResource.FormFilter.class),
+						code = ProcedimentResource.FILTER_CODE,
+						formClass = ProcedimentResource.FormFilter.class),
 				@ResourceArtifact(
 						type = ResourceArtifactType.ACTION,
-						code = ServeiResource.ACTION_ACTUALITZAR_CODE,
-						formClass = ServeiResource.FormAction.class,
+						code = ProcedimentResource.ACTION_ACTUALITZAR_CODE,
+						formClass = ProcedimentResource.FormAction.class,
 						requiresId = false),
 				@ResourceArtifact(
 						type = ResourceArtifactType.ACTION,
-						code = ServeiResource.ACTION_ACTUALITZAR_SERVEI_CODE,
+						code = ProcedimentResource.ACTION_ACTUALITZAR_PROCEDIMENT_CODE,
 						requiresId = true),
 				@ResourceArtifact(
 						type = ResourceArtifactType.ACTION,
-						code = ServeiResource.ACTION_PROGRES_CODE,
+						code = ProcedimentResource.ACTION_PROGRES_CODE,
 						requiresId = false)
 		}
 )
-public class ServeiResource extends BaseResource<Long> {
+public class ProcedimentResource extends BaseResource<Long> {
 
 	public static final String FILTER_CODE = "FILTER";
 	public static final String ACTION_ACTUALITZAR_CODE = "ACTUALITZAR";
-	public static final String ACTION_ACTUALITZAR_SERVEI_CODE = "ACTUALITZAR_SERVEI";
+	public static final String ACTION_ACTUALITZAR_PROCEDIMENT_CODE = "ACTUALITZAR_PROCEDIMENT";
 	public static final String ACTION_PROGRES_CODE = "PROGRES";
 
 	@NotNull
@@ -83,7 +83,7 @@ public class ServeiResource extends BaseResource<Long> {
 	@Size(max = 64)
 	private String codiSia;
 
-	private ServeiEstatEnumDto estat = ServeiEstatEnumDto.VIGENT;
+	private ProcedimentEstatEnumDto estat = ProcedimentEstatEnumDto.VIGENT;
 
 	private boolean comu;
 
@@ -92,7 +92,7 @@ public class ServeiResource extends BaseResource<Long> {
 	private ResourceReference<UnitatOrganitzativaResource, Long> unitatOrganitzativa;
 
 	/**
-	 * Camps del filtre del llistat de serveis.
+	 * Camps del filtre del llistat de procediments.
 	 */
 	@Getter
 	@Setter
@@ -103,7 +103,7 @@ public class ServeiResource extends BaseResource<Long> {
 		private String codi;
 		private String nom;
 		private String codiSia;
-		private ServeiEstatEnumDto estat;
+		private ProcedimentEstatEnumDto estat;
 		private Boolean nomesComu;
 		private ResourceReference<UnitatOrganitzativaResource, Long> unitatOrganitzativa;
 

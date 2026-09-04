@@ -79,10 +79,9 @@ const BackdropLoading: React.FC<BackdropLoadingProps> = ({
                     variant="determinate"
                     value={progress}
                     sx={{
-                        height: 6,
+                        height: 8,
                         borderRadius: 2,
-                        mt: 2,
-                        mb: 2,
+                        my: 2,
                     }}
                 />
                 <Typography
@@ -109,7 +108,7 @@ const BackdropLoading: React.FC<BackdropLoadingProps> = ({
                     </Typography>
                 </Box>
 
-                <Box sx={{ mt: 3, display: 'flex', justifyContent: 'end', gap: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'end', gap: 2 }}>
                     {/* <Button variant="outlined" color="error" onClick={handleCancelClick}>
                         {t('common.cancel')}
                     </Button> */}

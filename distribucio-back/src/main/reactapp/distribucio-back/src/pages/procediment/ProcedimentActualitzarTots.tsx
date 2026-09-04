@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { buildEstatServeisMessage, UpdateProgressDto } from './ServeiEstats';
 import FormActionDialog, { FormActionDialogApi } from '../../components/FormActionDialog';
 import BackdropLoading from '../../components/BackdropLoading';
 import { usePollingArtifactAction } from '../../components/ActionPollingOptions';
 import { useBaseAppContext } from 'reactlib';
+import { buildEstatProcedimentsMessage, UpdateProgressDto } from './ProcedimentEstat';
 
 const TEMPS_REFRES_PROGRES = 1000;
 /**
@@ -29,9 +29,9 @@ const usePolling = () => {
 };
 
 /**
- * Hook principal per controlar l'acció "Actualitzar tots els serveis".
+ * Hook principal per controlar l'acció "Actualitzar tots els procediments".
  */
-const useServeiActualitzarTots = (refresh?: () => void) => {
+const useProcedimentActualitzarTots = (refresh?: () => void) => {
     const { t } = useTranslation();
     const apiRef = useRef<FormActionDialogApi | undefined>(undefined);
     const polling = usePolling();
@@ -72,23 +72,23 @@ const useServeiActualitzarTots = (refresh?: () => void) => {
 
             if (finalResult?.estat === 'FINALITZAT') {
                 refresh?.();
-                temporalMessageShow(null, t('page.serveis.accio.actualitzarTotsOk'), 'success');
+                temporalMessageShow(null, t('page.procediments.accio.actualitzarTotsOk'), 'success');
                 setIsProcessing(false);
                 return (
                     <Typography
                         variant="body2"
                         sx={{ mt: 2 }}
                         dangerouslySetInnerHTML={{
-                            __html: buildEstatServeisMessage(t, finalResult),
+                            __html: buildEstatProcedimentsMessage(t, finalResult),
                         }}
                     />
                 );
             }
             if (finalResult?.estat === 'ERROR') {
                 refresh?.();
-                temporalMessageShow(null, t('page.serveis.accio.error'), 'error');
+                temporalMessageShow(null, t('page.procediments.accio.error'), 'error');
                 setIsProcessing(false);
-                return <Typography>{t('page.serveis.accio.error')}</Typography>;
+                return <Typography>{t('page.procediments.accio.error')}</Typography>;
             }
 
             setIsProcessing(false);
@@ -107,7 +107,7 @@ const useServeiActualitzarTots = (refresh?: () => void) => {
                 apiRef={apiRef}
                 resourceName="serveiResource"
                 action="ACTUALITZAR"
-                title={t('page.serveis.accio.actualitzarTots.title')}
+                title={t('page.procediments.accio.actualitzarTots.title')}
                 buttons={[
                     {
                         icon: 'sync',
@@ -126,12 +126,12 @@ const useServeiActualitzarTots = (refresh?: () => void) => {
             >
                 <>
                     <Typography variant="body2">
-                        {t('page.serveis.accio.actualitzarTots.confirmacio')}
+                        {t('page.procediments.accio.actualitzarTots.confirmacio')}
                     </Typography>
                     <Typography
                         variant="body2"
                         sx={{ mt: 2 }}
-                        dangerouslySetInnerHTML={{ __html: buildEstatServeisMessage(t) }}
+                        dangerouslySetInnerHTML={{ __html: buildEstatProcedimentsMessage(t) }}
                     />
                 </>
             </FormActionDialog>
@@ -139,7 +139,7 @@ const useServeiActualitzarTots = (refresh?: () => void) => {
             <BackdropLoading
                 open={showBackdrop}
                 progress={polling.progres?.progres ?? 0}
-                progressMessage={buildEstatServeisMessage(t, polling.progres)}
+                progressMessage={buildEstatProcedimentsMessage(t, polling.progres)}
                 onCancel={handleCloseBackdrop}
                 onClose={handleCloseBackdrop}
             />
@@ -149,4 +149,4 @@ const useServeiActualitzarTots = (refresh?: () => void) => {
     return { handleShow, content };
 };
 
-export default useServeiActualitzarTots;
+export default useProcedimentActualitzarTots;
