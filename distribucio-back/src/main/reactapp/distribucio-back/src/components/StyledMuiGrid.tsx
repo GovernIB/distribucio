@@ -2,7 +2,11 @@ import { Box, Button, Icon, Tooltip, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { FilterCountChip } from './FilterCountChip'; // TODO: corregir ruta d'import segons projecte
 import { MuiDataGrid, MuiDataGridProps, useMuiDataGridApiRef } from 'reactlib';
+import {useGridApiRef as useMuiDatagridApiRef} from "@mui/x-data-grid-pro";
 import { useUserPreferences } from './UserProfile';
+import MassiveActionSelector, {MassiveActionProps} from "./MassiveActionSelector.tsx";
+import { useState } from "react";
+import {fromSelectionModel, toSelectionModel} from "../util/selectionModelUtils.ts";
 
 /**
  * Wrapper propi sobre MuiDataGrid (base-react).
@@ -72,7 +76,7 @@ const NUM_ELEMENTS_PAGINA_DEFECTE = 10;
 
 type FilterCount = number | ((num: number) => number);
 
-export type StyledMuiGridProps = Omit<MuiDataGridProps, 'toolbarElementsWithPositions'> & {
+export type StyledMuiGridProps = Omit<MuiDataGridProps, 'toolbarElementsWithPositions' | 'onRowSelectionModelChange'> & {
     /** Nombre de filtres aplicats a mostrar al xip (per defecte es calcula a partir de `filter`). */
     filterCount?: FilterCount;
     /** Mostra el xip amb el nombre de filtres aplicats a la barra d'eines. */
@@ -83,6 +87,10 @@ export type StyledMuiGridProps = Omit<MuiDataGridProps, 'toolbarElementsWithPosi
     toolbarElementsWithPositions?: MuiDataGridProps['toolbarElementsWithPositions'];
     /** Oculta el camp de quickFilter de la barra d'eines. Per defecte es false. */
     toolbarShowQuickFilter?: boolean;
+    /** Event que es llença quan hi ha canvis en les files seleccionades de la graella */
+    onRowSelectionModelChange?: (ids:any[], detail:any) => void,
+    /** Accions addicionals per les files seleccionades */
+    toolbarMassiveActions?: MassiveActionProps[],
     /** Acció a executar en clicar el botó de refresc (a més del refresc intern de la graella). */
     onRefresh?: () => void;
 };
@@ -101,26 +109,33 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
     // render: DistribucioProvider no pinta cap pantalla fins a tenir el perfil carregat.
     const { numElementsPagina } = useUserPreferences();
     const defApiRef = useMuiDataGridApiRef();
+    const dataApiRef = useMuiDatagridApiRef();
 
     const {
         filter,
         filterCount,
+        namedQueries,
         toolbarShowFilterCount = false,
         toolbarCreateTitle,
         toolbarElementsWithPositions,
         toolbarHideRefresh,
         toolbarHideCreate,
         toolbarShowQuickFilter = false,
+        toolbarMassiveActions,
         onRefresh,
         apiRef = defApiRef,
+        datagridApiRef = dataApiRef,
         defaultPaginationModel,
         pageSizeOptions,
         popupEditFormDialogComponentProps,
         popupEditFormComponentProps,
         popupEditFormDialogOnClose,
         popupEditFormDialogButtons,
+        onRowSelectionModelChange,
         ...others
     } = { ...defaultProps, ...props };
+
+    const [selectedRows, setSelectedRows] = useState<any[]>([]);
 
     const refresh = () => {
         onRefresh?.();
@@ -130,6 +145,10 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
     const create = () => {
         apiRef?.current?.triggerCreate?.();
     };
+
+    const setGridSelectedRows = (value:any) => {
+        datagridApiRef?.current?.setRowSelectionModel?.(toSelectionModel(value))
+    }
 
     // Custom row styling with colored bar
     const getRowClassName = (params: any): string =>
@@ -142,6 +161,21 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
             position: 0,
             element: <FilterCountChip filter={filter} filterCount={filterCount} sx={{ ml: 1.5 }} />,
             hidden: !toolbarShowFilterCount,
+        },
+        {
+            position: 3,
+            element: <MassiveActionSelector
+                resourceName={others?.resourceName}
+                selectedRows={selectedRows}
+                setSelectedRows={setGridSelectedRows}
+                filter={filter}
+                namedQueries={namedQueries}
+                actions={toolbarMassiveActions ?? []}
+                // disabledDefSelector={disabledMassiveDefSelector}
+                // hiddenDefSelector={hiddenMassiveDefSelector}
+                isRowSelectable={props?.isRowSelectable}
+            />,
+            hidden: !toolbarMassiveActions || others?.readOnly,
         },
         {
             position: 3,
@@ -189,7 +223,9 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
             <MuiDataGrid
                 {...others}
                 filter={filter}
+                namedQueries={namedQueries}
                 apiRef={apiRef}
+                datagridApiRef={datagridApiRef}
                 // Fixar la mida de pàgina desactiva l'autoPageSize de la llibreria (que ajusta el
                 // nombre de files a l'alçada disponible), que és el que s'aplicaria si no se'n
                 // passés cap. Una pantalla concreta encara pot imposar-ne una de pròpia.
@@ -234,6 +270,11 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
                         },
                     ]
                 }
+                onRowSelectionModelChange={(newSelection, details) => {
+                    const ids = fromSelectionModel(newSelection);
+                    setSelectedRows(ids);
+                    onRowSelectionModelChange?.(ids, details);
+                }}
             />
         </Box>
     );

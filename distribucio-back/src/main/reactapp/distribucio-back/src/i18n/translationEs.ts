@@ -319,7 +319,13 @@ const translationEs = {
         AclPermissionManager: {
             title: "Permisos",
             resourceTitle: "permiso",
+        },
+        MassiveActionSelector: {
+            options: "Opciones",
+            all: "Seleccionarlo todo",
+            clear: "Limpiar la selección",
         }
+
     },
 };
 

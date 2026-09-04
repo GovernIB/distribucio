@@ -321,6 +321,11 @@ const translationCa = {
         AclPermissionManager: {
             title: "Permisos",
             resourceTitle: "permís",
+        },
+        MassiveActionSelector: {
+            options: "Opcions",
+            all: "Selecciona-ho tot",
+            clear: "Neteja la selecció",
         }
     },
 };
