@@ -10,8 +10,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
-import es.caib.distribucio.persist.repository.EntitatRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +18,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.ServeiEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.ServeiEntity;
 import es.caib.distribucio.persist.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.ServeiRepository;
 import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.plugin.Link;
@@ -100,7 +99,7 @@ public class ServeiHelper {
 	 * 			La entitat per a actualitzar el servei
 	 */
 	@Transactional( propagation = Propagation.REQUIRES_NEW)
-	public ServeiDto actualitzaServei(
+	public ServeiEntity actualitzaServei(
 			Servei servei, 
 			Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives,
 			EntitatEntity entitatEntity) {
@@ -166,9 +165,8 @@ public class ServeiHelper {
 		} catch(Exception e) {
 			logger.error("Error actualitzant el servei: " + e.toString());		
 		}
-		return conversioTipusHelper.convertir(
-				serveiEntity, 
-				ServeiDto.class);
+
+		return serveiEntity;
 	}
 
 	
@@ -342,7 +340,7 @@ public class ServeiHelper {
 		}
 	}
 
-	public ServeiDto findAndUpdateServei(Long entitatId, String serveiCodi) throws Exception {
+	public ServeiEntity findAndUpdateServei(Long entitatId, String serveiCodi) throws Exception {
 		EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
 		// Els plugins s'instancien per entitat i llegeixen el codi de l'entitat actual del
 		// ThreadLocal de ConfigHelper. A la interfície JSP l'hi deixa LlistaEntitatsInterceptor,
@@ -379,9 +377,7 @@ public class ServeiHelper {
 			);
 		}
 
-		ServeiDto serveiDto = actualitzaServei(servei, new HashMap<String, UnitatOrganitzativaEntity>(), entitat);
-
-		return serveiDto;
+		return actualitzaServei(servei, new HashMap<String, UnitatOrganitzativaEntity>(), entitat);
 	}
 
 	public boolean isUpdatingServeis(Long entitatId) {

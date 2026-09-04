@@ -8,11 +8,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.ConversioTipusHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
@@ -23,7 +21,6 @@ import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.ServeiEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.ServeiFiltreDto;
 import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
-import es.caib.distribucio.logic.intf.dto.UpdateProgressDto.Estat;
 import es.caib.distribucio.logic.intf.service.ServeiService;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.ServeiEntity;
@@ -97,7 +94,10 @@ public class ServeiServiceImpl implements ServeiService{
     @Override
     @Transactional
     public ServeiDto findAndUpdateServei(Long entitatId, String serveiCodi) throws Exception {
-        return serveiHelper.findAndUpdateServei(entitatId, serveiCodi);
+        ServeiEntity serveiEntity = serveiHelper.findAndUpdateServei(entitatId, serveiCodi);
+		return conversioTipusHelper.convertir(
+				serveiEntity, 
+				ServeiDto.class);
     }
 
 	/** Mètode per trobar i actualitzar els serveis. Es pot fer manualment o des de la tasca

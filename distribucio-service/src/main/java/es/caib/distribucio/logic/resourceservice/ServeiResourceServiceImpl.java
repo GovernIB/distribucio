@@ -5,19 +5,19 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import es.caib.distribucio.logic.helper.ServeiHelper;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
+import es.caib.distribucio.logic.helper.ServeiHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
-import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 import es.caib.distribucio.logic.intf.model.ServeiResource;
 import es.caib.distribucio.logic.intf.resourceservice.ServeiResourceService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
+import es.caib.distribucio.persist.entity.ServeiEntity;
 import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
 import es.caib.distribucio.persist.resourceentity.ServeiResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
@@ -163,8 +163,8 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 						"No s'ha pogut determinar l'entitat de context.");
 			}
 			try {
-				ServeiDto serveiDto = serveiHelper.findAndUpdateServei(entitatId, entity.getCodi());
-				return serveiDto != null ? serveiDto.getId() : null;
+				ServeiEntity serveiEntity = serveiHelper.findAndUpdateServei(entitatId, entity.getCodi());
+				return serveiEntity != null ? serveiEntity.getId() : null;
 			} catch (Exception e) {
 				log.warn("No s'ha pogut actualitzar el servei {}: {}", entity.getCodi(), e.getMessage());
 				throw new ActionExecutionException(
