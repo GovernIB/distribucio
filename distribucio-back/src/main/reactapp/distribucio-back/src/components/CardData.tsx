@@ -247,13 +247,13 @@ export const CardPage = (props:CardPageProps) => {
                 '& h1': { color: theme.palette.primary.contrastText, fontWeight: 600 },
                 backgroundColor: theme.palette.mode === 'dark' ? darken(theme.palette.primary.main, 0.3) : theme.palette.primary.main,
                 ...headerProps,
-            })} {...other}>
+            })}>
                 {title && <Typography mt={0.5} variant={"h4"} component={"h1"}>{title}</Typography>}
                 {header}
             </CardHead>
         }
 
-        <CardContent sx={{height: '100%', display: 'flex', flexDirection: 'column'}}>
+        <CardContent sx={{height: '100%', display: 'flex', flexDirection: 'column'}} {...other}>
             {children}
         </CardContent>
     </Card>

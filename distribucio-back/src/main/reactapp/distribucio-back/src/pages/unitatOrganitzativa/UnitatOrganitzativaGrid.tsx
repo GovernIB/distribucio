@@ -22,17 +22,19 @@ export const UnitatOrganitzativaGrid = () => {
     const { t } = useTranslation();
     const { currentEntitat } = useDistribucioContext();
     const [springFilter, setSpringFilter] = React.useState<string>();
+    const [namedQueries, setNamedQueries] = React.useState<string[]>([]);
     const {handleOpen: handleOrgOpen, dialog: organigrama} = useUnitatOrganitzativaOrganigrama()
     const {handleOpen: handleSinc, dialog: dialogSinc} = useSincronitzar()
     return (
         <GridPage>
             <CardPage title={t('page.unitatOrganitzativa.grid.title')}>
-                <UnitatOrganitzativaFilter onSpringFilterChange={setSpringFilter} />
+                <UnitatOrganitzativaFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
 
                 <StyledMuiGrid
                     resourceName="unitatOrganitzativaResource"
                     columns={columns}
                     filter={springFilter}
+                    namedQueries={namedQueries}
                     toolbarElementsWithPositions={[
                         {
                             position: 2,

@@ -174,10 +174,10 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
     };
     const anyHistoryEntryExist = () => location.key !== 'default';
     const goBack = (fallback?: string) => {
-        if (anyHistoryEntryExist()) {
-            navigate(-1);
-        } else if (fallback != null) {
+        if (fallback != null) {
             navigate(fallback);
+        } else if (anyHistoryEntryExist()) {
+            navigate(-1);
         }
     };
     const formDialogApiRef = useMuiFormDialogApiRef();

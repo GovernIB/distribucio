@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
@@ -17,7 +18,7 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UnitatOrganitzativaResourceEntity extends BaseAuditableEntity<UnitatOrganitzativaResource, Long> {
+public class UnitatOrganitzativaResourceEntity extends BaseAuditableEntity<UnitatOrganitzativaResource, Long> implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "default_seq")
@@ -39,26 +40,26 @@ public class UnitatOrganitzativaResourceEntity extends BaseAuditableEntity<Unita
 	@Column(name = "tipus_transicio", length = 12)
 	@Enumerated(EnumType.STRING)
 	private TipusTransicioEnumDto tipusTransicio;
-	@Column(name = "codi", length = 9, nullable = false)
+	@Column(name = "codi", length = 9, nullable = false, unique = true)
 	private String codi;
 	@Column(name = "denominacio", length = 300, nullable = false)
 	private String denominacio;
 	@Column(name = "nif_cif", length = 9)
 	private String nifCif;
 
-//    @ManyToOne(optional = true, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "codi_unitat_superior", referencedColumnName = "codi")
-//	private UnitatOrganitzativaResourceEntity unitatSuperior;
-//
-//    @ManyToOne(optional = true, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "codi_unitat_arrel", referencedColumnName = "codi")
-//	private UnitatOrganitzativaResourceEntity unitatArrel;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "codi_dir3_entitat", referencedColumnName = "codi_dir3")
-//    private EntitatResourceEntity entitat;
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "codi_unitat_superior", referencedColumnName = "codi")
+	private UnitatOrganitzativaResourceEntity unitatSuperior;
 
-	@Column(name = "data_creacio_oficial") 
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "codi_unitat_arrel", referencedColumnName = "codi")
+	private UnitatOrganitzativaResourceEntity unitatArrel;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "codi_dir3_entitat", referencedColumnName = "codi_dir3")
+    private EntitatResourceEntity entitat;
+
+	@Column(name = "data_creacio_oficial")
 	private Date dataCreacioOficial;
 	@Column(name = "data_supressio_oficial") 
 	private Date dataSupressioOficial;

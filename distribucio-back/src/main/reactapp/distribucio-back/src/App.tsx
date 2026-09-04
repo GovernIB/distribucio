@@ -93,6 +93,13 @@ const InnerApp: React.FC = () => {
             icon: 'settings',
             children: [
                 {
+                    id: 'bustia',
+                    title: t('app.menu.bustia'),
+                    to: 'bustiaAdminOrganigrama',
+                    icon: 'folder',
+                    pantalla: 'bustiaAdminOrganigrama'
+                },
+                {
                     id: 'uo',
                     title: t('app.menu.unitatOrganitzativa'),
                     to: 'unitatOrganitzativa',

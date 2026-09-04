@@ -34,18 +34,15 @@ export const useUnitatOrganitzativaOrganigrama = () => {
     const [unitats, setUnitats] = useState<any>();
 
     const organigrama:any = useMemo(() => {
-        if (currentEntitat && unitats) {
+        if (unitats) {
             return structureUnitats(null, unitats)
         }
         return undefined;
-    }, [currentEntitat, unitats]);
+    }, [unitats]);
 
     const handleOpen = () => {
-        if(apiIsReady && currentEntitat){
-            apiFind({filter: builder.and(
-                    builder.eq('entitat.id', currentEntitat.id),
-                    builder.eq('estat', `'V'`),
-                ), unpaged: true, sorts: ['codi,asc']})
+        if(apiIsReady){
+            apiFind({filter: builder.eq('estat', `'V'`), unpaged: true, sorts: ['codi,asc']})
                 .then((app) => setUnitats(app?.rows))
                 .catch((error) => {
                     handleClose()
@@ -70,7 +67,7 @@ export const useUnitatOrganitzativaOrganigrama = () => {
             componentProps={{ fullWidth: true, maxWidth: 'md' }}
             // dialogContentProps={{ sx: { height: '100%', px: 2, py: 0 } }}
         >
-            <Load value={currentEntitat && organigrama}>
+            <Load value={organigrama}>
                 <TreeView
                     defaultExpandedItems={[currentEntitat?.codiDir3]}
                     list={organigrama}/>

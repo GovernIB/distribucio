@@ -9,6 +9,8 @@ const translationCa = {
     // sense retocs.
     common: {
         save: "Guarda",
+        update: 'Modifica',
+        delete: 'Esborra',
         actualitza: "Actualitza",
         cancel: "Cancel·la",
         close: 'Tanca',
@@ -30,8 +32,9 @@ const translationCa = {
             serveis: 'Serveis',
             configuracio: 'Configuració',
             configurar: 'Configurar',
-            unitatOrganitzativa: 'Unitats organitzatives',
             limitCanviEstat: "Limits canvis d'estat",
+            bustia: 'Bústies',
+            unitatOrganitzativa: 'Unitats Organitzatives',
             procediment: 'Procediments',
         },
         avisos: {
@@ -244,6 +247,38 @@ const translationCa = {
                 esborrarOk: "El limit de canvi d'estat s'ha esborrat correctament",
             },
         },
+        bustia: {
+            title: "Bústia",
+            vista: "Canvi de vista",
+            grid: {
+                title: "Gestió de bústies",
+                writeAllowed: "Accés",
+            },
+            permisos: {
+                readAllowed: "Només lectura",
+                writeAllowed: "Complet",
+            },
+            accio: {
+                new: {
+                    label: "Nova bústia",
+                },
+                update: {
+                    title: "Modifica bústia",
+                },
+                moureAnotacions: {
+                    label: 'Mou anotacions'
+                },
+                perDefecte: {
+                    label: 'Marca com a principal'
+                },
+                activar: {
+                    label: 'Activa'
+                },
+                desactivar: {
+                    label: 'Desactiva'
+                },
+            },
+        },
     },
     component: {
         Offline: {
@@ -283,6 +318,10 @@ const translationCa = {
                 tothom: 'Usuari',
             },
         },
+        AclPermissionManager: {
+            title: "Permisos",
+            resourceTitle: "permís",
+        }
     },
 };
 

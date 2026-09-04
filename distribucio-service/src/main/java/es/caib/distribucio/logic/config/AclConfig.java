@@ -222,6 +222,38 @@ public class AclConfig {
 				"and (" + tableEntry + ".sid in (select " + tableSid + ".id from " + tableSid + " where " + tableSid + ".principal = :isPrincipal and " + tableSid + ".sid in (:sids))) ";
 	}
 
+    public String getIdsWithPermissionQuery(
+            boolean anyPermission,
+            boolean anyPrincipalSid,
+            boolean anyGrantedAuthoritiesSids) {
+        String tableClass = getPrefix() + "acl_class";
+        String tableSid = getPrefix() + "acl_sid";
+        String tableOid = getPrefix() + "acl_object_identity";
+        String tableEntry = getPrefix() + "acl_entry";
+        String sidsCondition;
+        if (anyPrincipalSid && anyGrantedAuthoritiesSids) {
+            sidsCondition = "and ( " +
+                    "    " + tableEntry + ".sid in (select " + tableSid + ".id from " + tableSid + " where " + tableSid + ".principal = :isTrue and " + tableSid + ".sid = :principal) " +
+                    "    or " + tableEntry + ".sid in (select " + tableSid + ".id from " + tableSid + " where " + tableSid + ".principal = :isFalse and " + tableSid + ".sid in (:grantedAuthorities))) ";
+        } else if (anyPrincipalSid) {
+            sidsCondition = "and " + tableEntry + ".sid in (select " + tableSid + ".id from " + tableSid + " where " + tableSid + ".principal = :isTrue and " + tableSid + ".sid = :principal)";
+        } else if (anyGrantedAuthoritiesSids) {
+            sidsCondition = "and " + tableEntry + ".sid in (select " + tableSid + ".id from " + tableSid + " where " + tableSid + ".principal = :isFalse and " + tableSid + ".sid in (:grantedAuthorities)) ";;
+        } else {
+            sidsCondition = "";
+        }
+        return "select " +
+                "    distinct " + tableOid + ".object_id_identity id " +
+                "from " +
+                "    " + tableEntry + " " +
+                "    left join " + tableOid + " on " + tableOid + ".id = " + tableEntry + ".acl_object_identity " +
+                "where " +
+                "    " + tableEntry + ".granting = :isTrue " +
+                (anyPermission ? "and " + tableEntry + ".mask in (:masks) " : "") +
+                "and " + tableOid + ".object_id_class = (select id from " + tableClass + " where class = :className) " +
+                sidsCondition;
+    }
+
 	protected String getPrefix() {
 		return BaseConfig.DB_PREFIX;
 	}

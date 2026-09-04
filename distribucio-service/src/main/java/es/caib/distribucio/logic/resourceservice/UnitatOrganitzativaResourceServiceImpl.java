@@ -11,8 +11,10 @@ import es.caib.distribucio.logic.intf.resourceservice.UnitatOrganitzativaResourc
 import es.caib.distribucio.logic.intf.service.ReglaService;
 import es.caib.distribucio.logic.intf.service.UnitatOrganitzativaService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
+import es.caib.distribucio.logic.intf.util.Utils;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.resourceentity.UnitatOrganitzativaResourceEntity;
+import es.caib.distribucio.persist.resourcerepository.UnitatOrganitzativaResourceRepository;
 import lombok.*;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
@@ -31,6 +33,7 @@ public class UnitatOrganitzativaResourceServiceImpl extends BaseMutableResourceS
     private final UnitatOrganitzativaService unitatOrganitzativaService;
     private final ReglaService reglaService;
     private final EntitatRepository entitatRepository;
+    private final UnitatOrganitzativaResourceRepository unitatOrganitzativaResourceRepository;
 
     @PostConstruct
     public void init() {
@@ -41,12 +44,31 @@ public class UnitatOrganitzativaResourceServiceImpl extends BaseMutableResourceS
     @Override
     protected Specification<UnitatOrganitzativaResourceEntity> additionalSpecification(String[] namedQueries) {
         Long entitatActualId = SessioActualUtil.getEntitatId();
-
+        Map<String, String> mapaNamedQueries =  Utils.namedQueriesToMap(namedQueries);
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             if (entitatActualId != null) {
-//                predicates.add(cb.equal(root.get("entitat").get("id"), entitatActualId));
+                predicates.add(cb.equal(root.get("entitat").get("id"), entitatActualId));
+            }
+
+            if (mapaNamedQueries.containsKey("UNITAT_SUPERIOR")) {
+                String unitatId = mapaNamedQueries.get("UNITAT_SUPERIOR");
+                List<Long> idsJerarquia = unitatOrganitzativaResourceRepository.findUnitatAndAllDescendentsIds(Long.valueOf(unitatId));
+                if (idsJerarquia.isEmpty()) {
+                    return cb.disjunction(); // No existe tal unidad, no devolver nada
+                }
+
+                int chunkSize = 900;
+                List<Predicate> orPredicates = new ArrayList<>();
+
+                for (int i = 0; i < idsJerarquia.size(); i += chunkSize) {
+                    List<Long> chunk = idsJerarquia.subList(i, Math.min(i + chunkSize, idsJerarquia.size()));
+                    orPredicates.add(root.get("id").in(chunk));
+                }
+
+                predicates.add(cb.notEqual(root.get("id"), unitatId));
+                predicates.add( cb.or(orPredicates.toArray(new Predicate[0])) );
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

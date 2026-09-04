@@ -1,18 +1,13 @@
 package es.caib.distribucio.persist.resourceentity;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.model.BustiaResource;
-import es.caib.distribucio.persist.base.entity.BaseResourceEntity;
+import es.caib.distribucio.persist.base.entity.ResourceEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import javax.persistence.*;
 
 /**
  * Entitat de base de dades del recurs {@link BustiaResource}.
@@ -24,37 +19,21 @@ import javax.persistence.Version;
  * @author Límit Tecnologies
  */
 @Entity
-@Table(name = "dis_bustia")
-@SecondaryTable(name = "dis_contingut", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id"))
+@Table(name = BaseConfig.DB_PREFIX + "bustia")
+@DiscriminatorValue("BUSTIA")
 @Getter
 @Setter
 @NoArgsConstructor
-public class BustiaResourceEntity extends BaseResourceEntity<BustiaResource, Long> {
+public class BustiaResourceEntity extends ContingutResourceEntity<BustiaResource> implements ResourceEntity<BustiaResource, Long> {
 
-	@Id
-	@Column(name = "id")
-	private Long id;
-
-	@Column(name = "nom", table = "dis_contingut", length = 1024, nullable = false)
-	private String nom;
-
-	@Column(name = "entitat_id", table = "dis_contingut", nullable = false)
-	private Long entitatId;
-
-	@Column(name = "pare_id", table = "dis_contingut")
-	private Long pareId;
-
-	@Column(name = "unitat_id", nullable = false)
-	private Long unitatOrganitzativaId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "unitat_id")
+	private UnitatOrganitzativaResourceEntity unitatOrganitzativa;
 
 	@Column(name = "per_defecte")
 	private boolean perDefecte;
 
 	@Column(name = "activa")
 	private boolean activa = true;
-
-	@Version
-	@Column(name = "version", table = "dis_contingut")
-	private long version = 0;
 
 }

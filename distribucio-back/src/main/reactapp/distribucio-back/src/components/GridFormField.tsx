@@ -61,7 +61,7 @@ export const GridButtonField = (props: any) => {
     const { data, apiRef, fields } = useFormContext();
 
     const active = !!data?.[name];
-    const label = fields?.find?.((item: any) => item?.name === name)?.label || '';
+    const label = fields?.find?.((item: any) => item?.name === name)?.label || name;
     return (
         <Load value={apiRef} noEffect>
             <GridButton

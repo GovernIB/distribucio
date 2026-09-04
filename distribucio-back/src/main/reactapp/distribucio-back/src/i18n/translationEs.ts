@@ -9,6 +9,8 @@ const translationEs = {
     // retoques.
     common: {
         save: "Guarda",
+        update: 'Modifica',
+        delete: 'Borra',
         actualitza: "Actualiza",
         cancel: "Cancela",
         close: 'Cierra',
@@ -30,8 +32,9 @@ const translationEs = {
             serveis: 'Servicios',
             configuracio: "Configuración",
             configurar: "Configurar",
-            unitatOrganitzativa: "Unidades Organizativas",
             limitCanviEstat: "Limites de cambios de estado",
+            bustia: 'Buzones',
+            unitatOrganitzativa: 'Unidades Organizativas',
             procediment: 'Procedimientos',
         },
         avisos: {
@@ -242,6 +245,38 @@ const translationEs = {
                 esborrarOk: "El límite de cambio de estado se ha borrado correctamente",
             },
         },
+        bustia: {
+            title: "Buzón",
+            vista: "Cambiar vista",
+            grid: {
+                title: "Gestión de buzones",
+                writeAllowed: "Acceso",
+            },
+            permisos: {
+                readAllowed: "Solo lectura",
+                writeAllowed: "Completo",
+            },
+            accio: {
+                new: {
+                    label: "Nuevo buzón",
+                },
+                update: {
+                    title: "Modificar buzón",
+                },
+                moureAnotacions: {
+                    label: "Mover anotaciones"
+                },
+                perDefecte: {
+                    label: "Marcar como principal"
+                },
+                activar: {
+                    label: "Activar"
+                },
+                desactivar: {
+                    label: "Desactivar"
+                },
+            },
+        },
     },
     component: {
         Offline: {
@@ -281,6 +316,10 @@ const translationEs = {
                 tothom: 'Usuario',
             },
         },
+        AclPermissionManager: {
+            title: "Permisos",
+            resourceTitle: "permiso",
+        }
     },
 };
 

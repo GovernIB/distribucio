@@ -14,11 +14,16 @@ const UnitatOrganitzativaFilterForm: React.FC = () => {
     );
 };
 
-const springFilterBuilder = (data: any) => {
+const springFilterBuilder = (data: any, setNamedQuery?: (value:string[]) => void) => {
+    const namedQueries = []
+
+    if (data?.unitatSuperior?.id != null)
+        namedQueries.push(`UNITAT_SUPERIOR#${data?.unitatSuperior?.id}`)
+
+    setNamedQuery?.(namedQueries)
     return builder.and(
         builder.like('codi', data?.codi),
         builder.like('denominacio', data?.denominacio),
-        // builder.eq('unitatSuperior.id', data?.unitatSuperior?.id), TODO: revisar
         builder.eq('estat', `'${data?.estat}'`),
     );
 };
@@ -28,7 +33,7 @@ export const UnitatOrganitzativaFilter: React.FC<any> = (props) => {
         <StyledMuiFilter
             resourceName="unitatOrganitzativaResource"
             code="FILTER"
-            springFilterBuilder={springFilterBuilder}
+            springFilterBuilder={(data:any) => springFilterBuilder(data, props.onNamedQueriesChange)}
             {...props}
         >
             <UnitatOrganitzativaFilterForm />
