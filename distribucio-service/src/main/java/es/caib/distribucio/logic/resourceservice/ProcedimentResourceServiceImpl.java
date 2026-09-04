@@ -13,12 +13,12 @@ import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
-import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.UpdateProgressDto;
 import es.caib.distribucio.logic.intf.model.ProcedimentResource;
 import es.caib.distribucio.logic.intf.resourceservice.ProcedimentResourceService;
 import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
+import es.caib.distribucio.persist.entity.ProcedimentEntity;
 import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
 import es.caib.distribucio.persist.resourceentity.ProcedimentResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
@@ -164,8 +164,8 @@ public class ProcedimentResourceServiceImpl extends BaseMutableResourceService<P
 						"No s'ha pogut determinar l'entitat de context.");
 			}
 			try {
-				ProcedimentDto procedimentDto = procedimentHelper.findAndUpdateProcediment(entitatId, entity.getCodi());
-				return procedimentDto != null ? procedimentDto.getId() : null;
+				ProcedimentEntity procedimentEntity = procedimentHelper.findAndUpdateProcediment(entitatId, entity.getCodi());
+				return procedimentEntity != null ? procedimentEntity.getId() : null;
 			} catch (Exception e) {
 				log.warn("No s'ha pogut actualitzar el procediment {}: {}", entity != null ? entity.getCodi() : null, e.getMessage());
 				throw new ActionExecutionException(

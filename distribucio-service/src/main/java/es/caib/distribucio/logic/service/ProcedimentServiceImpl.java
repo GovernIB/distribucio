@@ -97,7 +97,10 @@ public class ProcedimentServiceImpl implements ProcedimentService{
     @Override
     @Transactional
     public ProcedimentDto findAndUpdateProcediment(Long entitatId, String procedimentCodi) throws Exception {
-        return procedimentHelper.findAndUpdateProcediment(entitatId, procedimentCodi);
+        ProcedimentEntity procedimentEntity = procedimentHelper.findAndUpdateProcediment(entitatId, procedimentCodi);
+		return conversioTipusHelper.convertir(
+				procedimentEntity,
+				ProcedimentDto.class);
     }
 
 	/** Mètode per trobar i actualitzar els procediments. Es pot fer manualment o des de la tasca

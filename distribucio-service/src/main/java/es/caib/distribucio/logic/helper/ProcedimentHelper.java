@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentEstatEnumDto;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.ProcedimentEntity;
@@ -105,8 +104,8 @@ public class ProcedimentHelper {
 	 * 			La entitat per a actualitzar el procediment
 	 */
 	@Transactional( propagation = Propagation.REQUIRES_NEW)
-	public ProcedimentDto actualitzaProcediment(
-			Procediment procediment, 
+	public ProcedimentEntity actualitzaProcediment(
+			Procediment procediment,
 			Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives,
 			EntitatEntity entitatEntity) {
 		
@@ -165,11 +164,10 @@ public class ProcedimentHelper {
 				} 
 			}
 		} catch(Exception e) {
-			logger.error("Error actualitzant el procediment: " + e.toString());		
-		}		
-		return conversioTipusHelper.convertir(
-				procedimentEntity, 
-				ProcedimentDto.class);				
+			logger.error("Error actualitzant el procediment: " + e.toString());
+		}
+
+		return procedimentEntity;
 	}
 
 	
@@ -341,7 +339,7 @@ public class ProcedimentHelper {
 				&& progres.getEstat() != UpdateProgressDto.Estat.ERROR;
 	}
 
-	public ProcedimentDto findAndUpdateProcediment(Long entitatId, String procedimentCodi) throws Exception {
+	public ProcedimentEntity findAndUpdateProcediment(Long entitatId, String procedimentCodi) throws Exception {
 		EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
 
 		Procediment procediment = null;
@@ -374,9 +372,8 @@ public class ProcedimentHelper {
 
 		// Map<codi unitat rolsac, unitatOrganitzativa> per no haver de consultar la UO de totes les unitats per codi rolsac
 		Map<String, UnitatOrganitzativaEntity> unitatsOrganitzatives = new HashMap<String, UnitatOrganitzativaEntity>();
-		ProcedimentDto procedimentDto = actualitzaProcediment(procediment, unitatsOrganitzatives, entitat);
 
-		return procedimentDto;
+		return actualitzaProcediment(procediment, unitatsOrganitzatives, entitat);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ProcedimentHelper.class);
