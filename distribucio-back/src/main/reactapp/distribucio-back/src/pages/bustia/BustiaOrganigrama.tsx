@@ -14,8 +14,9 @@ import {Link} from "../../components/BaseApp.tsx";
 import {ToolbarButton} from "../../components/StyledMuiGrid.tsx";
 import {useSimpleTreeViewApiRef} from "@mui/x-tree-view";
 import {MenuActionButton} from "../../components/MenuButton.tsx";
+import {useActions, useBustiaActions} from "./detail/BustiaActions.tsx";
 
-export const useOrganigrama = ({filter, namedQueries, onClick}:any) => {
+export const useOrganigrama = ({filter, namedQueries, onClick, ...other}:any) => {
     const { currentEntitat } = useDistribucioContext();
     const apiRef = useSimpleTreeViewApiRef();
 
@@ -41,10 +42,10 @@ export const useOrganigrama = ({filter, namedQueries, onClick}:any) => {
     }
 
     useEffect(() => {
-        if(apiBustiaIsReady){
+        if (apiBustiaIsReady) {
             refresh()
         }
-    }, [apiBustiaIsReady]);
+    }, [apiBustiaIsReady, filter, namedQueries]);
 
     useEffect(() => {
         if(apiUnitatIsReady){
@@ -69,7 +70,10 @@ export const useOrganigrama = ({filter, namedQueries, onClick}:any) => {
                     id: u.codi,
                     label: `${u.denominacio} (${u.codi})`,
                     icon: pareId == null ?'home' :'folder',
-                    children: (children?.length > 0) ?children :undefined
+                    children: (children?.length > 0) ?children :undefined,
+                    componentProps: {
+                        disableSelection: true
+                    }
                 }
             })
             ?.filter((u:any) => u?.children != undefined)
@@ -112,6 +116,7 @@ export const useOrganigrama = ({filter, namedQueries, onClick}:any) => {
                     apiRef={apiRef}
                     defaultExpandedItems={[currentEntitat?.codiDir3]}
                     list={organigrama}
+                    {...other}
                 />
             </Load>
         </Box>
@@ -119,6 +124,7 @@ export const useOrganigrama = ({filter, namedQueries, onClick}:any) => {
 
     return {
         apiRef,
+        busties,
         refresh,
         content
     }
@@ -133,45 +139,36 @@ export const BustiaOrganigrama = () => {
     const [namedQueries, setNamedQueries] = React.useState<string[]>([]);
 
     const formDialogApiRef = useMuiFormDialogApiRef();
-
     const formApiRef = React.useRef<FormApi | any>({});
 
-    const actions = [
-        {
-            label: t('page.bustia.accio.moureAnotacions.label'),
-            icon: 'turn_right',
-        },
-        {
-            label: t('page.bustia.accio.perDefecte.label'),
-            icon: 'check_box',
-            hidden: (row:any) => row.perDefecte,
-        },
-        {
-            label: t('page.bustia.accio.activar.label'),
-            icon: 'check',
-            hidden: (row:any) => row.activa,
-        },
-        {
-            label: t('page.bustia.accio.desactivar.label'),
-            icon: 'close',
-            hidden: (row:any) => !row.activa,
-        },
+    const {apiRef, busties, content, refresh} = useOrganigrama({
+        filter: springFilter,
+        namedQueries: namedQueries,
+        onClick: (_id:any, row:any) => setEntity(row)
+    })
+
+    useEffect(() => {
+        if (entity != null && busties!= null) {
+            const bustia = busties.find((b:any) => b.id === entity.id)
+            setEntity(bustia || undefined)
+        }
+    }, [busties]);
+
+    const {actions, components} = useBustiaActions(refresh);
+    const { usersBustia } = useActions()
+
+    const additionalActions = [
+        ...actions,
         {
             label: t('common.delete'),
             icon: 'delete',
             onClick: () => {
                 formApiRef.current?.delete()
-                refresh?.()
+                refresh()
                 setEntity(undefined)
             },
         },
     ];
-
-    const {apiRef, content, refresh} = useOrganigrama({
-        filter: springFilter,
-        namedQueries: namedQueries,
-        onClick: (_id:any, row:any) => setEntity(row)
-    })
 
     const create = (event:any) => {
         formDialogApiRef.current?.show(undefined, {entitat: {id: currentEntitatId}})
@@ -186,7 +183,9 @@ export const BustiaOrganigrama = () => {
 
     const update = () => {
         formApiRef.current?.save()
-        refresh()
+            .then(() => {
+                refresh()
+            })
     }
 
     return (
@@ -196,7 +195,7 @@ export const BustiaOrganigrama = () => {
 
                 <Grid container>
                     <Grid container size={4} rowSpacing={1} columnSpacing={1} pr={1}>
-                        <Grid size={6}>
+                        <Grid size={4.9}>
                             <ToolbarButton
                                 icon={'list'}
                                 variant={'contained'}
@@ -205,7 +204,16 @@ export const BustiaOrganigrama = () => {
                             >{t('page.bustia.vista')}</ToolbarButton>
                         </Grid>
 
-                        <Grid size={6} display={'flex'} justifyContent={'end'}>
+                        <Grid size={3} justifyContent={'end'}>
+                            <ToolbarButton
+                                icon={'description'}
+                                variant={'contained'}
+                                color={'success'}
+                                onClick={() => usersBustia(springFilter, namedQueries)}
+                            >{t('page.bustia.accio.usuarisBustia.label')}</ToolbarButton>
+                        </Grid>
+
+                        <Grid size={4.1} display={'flex'} justifyContent={'end'}>
                             <ToolbarButton
                                 title={t('common.create')}
                                 icon={'add'}
@@ -235,11 +243,12 @@ export const BustiaOrganigrama = () => {
                                         entity={entity}
                                         ButtonComponent={IconButton}
                                         buttonLabel={<Icon>more_vert</Icon>}
-                                        actions={actions}
+                                        actions={additionalActions}
                                     />,
                                 }
                             ]}/>
                         </Load>
+                        {components}
                     </Grid>
                 </Grid>
             </CardPage>

@@ -25,7 +25,7 @@ import java.util.Date;
 @NoArgsConstructor
 @FieldNameConstants
 @ResourceConfig(
-		descriptionField = UnitatOrganitzativaResource.Fields.denominacio,
+		descriptionField = UnitatOrganitzativaResource.Fields.codiNom,
 		quickFilterFields = { UnitatOrganitzativaResource.Fields.codi, UnitatOrganitzativaResource.Fields.denominacio },
 		accessConstraints = {
 				@ResourceAccessConstraint(
@@ -96,6 +96,11 @@ public class UnitatOrganitzativaResource implements Resource<Long> {
     private ResourceReference<UnitatOrganitzativaResource, Long> unitatSuperior;
     private ResourceReference<UnitatOrganitzativaResource, Long> unitatArrel;
     private ResourceReference<EntitatResource, Long> entitat;
+
+    private String codiNom;
+    public String getCodiNom() {
+        return codi + " - " + denominacio;
+    }
 
     /**
 	 * Camps del filtre del llistat d'entitats.

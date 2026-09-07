@@ -12,6 +12,7 @@ import {useDistribucioContext} from "../../components/DistribucioContext.ts";
 import {useAclCustomPermissionManager} from "../../components/AclPermissionManager.tsx";
 import {Link} from "../../components/BaseApp.tsx";
 import {BustiaPermisosForm, useBustiaPermisosColumns} from "./BustiaPermisosForm.tsx";
+import {useActions, useBustiaActions} from "./detail/BustiaActions.tsx";
 
 const columns: MuiDataGridColDef[] = [
     { field: 'nom', flex: 4,
@@ -66,31 +67,8 @@ export const BustiaGrid = () => {
         },
     ], [t, columns])
 
-    const actions = [
-        {
-            label: t('page.bustia.accio.moureAnotacions.label'),
-            icon: 'turn_right',
-            showInMenu: true,
-        },
-        {
-            label: t('page.bustia.accio.perDefecte.label'),
-            icon: 'check_box',
-            hidden: (row:any) => row.perDefecte,
-            showInMenu: true,
-        },
-        {
-            label: t('page.bustia.accio.activar.label'),
-            icon: 'check',
-            hidden: (row:any) => row.activa,
-            showInMenu: true,
-        },
-        {
-            label: t('page.bustia.accio.desactivar.label'),
-            icon: 'close',
-            hidden: (row:any) => !row.activa,
-            showInMenu: true,
-        },
-    ];
+    const {actions, components} = useBustiaActions(refresh);
+    const { usersBustia } = useActions()
 
     const {
         show: permissionShow,
@@ -134,12 +112,22 @@ export const BustiaGrid = () => {
                                 component={Link}
                                 to={'/bustiaAdminOrganigrama'}
                             >{t('page.bustia.vista')}</ToolbarButton>
+                        },
+                        {
+                            position: 2,
+                            element: <ToolbarButton
+                                icon={'description'}
+                                variant={'contained'}
+                                color={'success'}
+                                onClick={() => usersBustia(springFilter, namedQueries)}
+                            >{t('page.bustia.accio.usuarisBustia.label')}</ToolbarButton>
                         }
                     ]}
 
                     paginationActive
                 />
                 {permissionComponent}
+                {components}
             </CardPage>
         </GridPage>
     );

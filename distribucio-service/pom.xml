@@ -191,8 +191,14 @@
             <version>5.3.33</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.5</version>
+            <scope>compile</scope>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 	<repositories>
 		<repository>
 			<id>github-governib-maven-repos</id>

@@ -93,7 +93,7 @@ public class UnitatOrganitzativaResourceEntity extends BaseAuditableEntity<Unita
 	@Column(name = "num_via", length = 100) 
 	private String numVia;
 
-    public String getCodiAndNom() {
+    public String getCodiNom() {
 		return this.codi + " - " + this.denominacio;
 	}
 }

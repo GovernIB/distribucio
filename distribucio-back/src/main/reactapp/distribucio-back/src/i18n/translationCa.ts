@@ -275,17 +275,25 @@ const translationCa = {
                     title: "Modifica bústia",
                 },
                 moureAnotacions: {
+                    title : "Moure les anotacions de registre de la bústia '{{nom}}'",
                     label: 'Mou anotacions'
                 },
                 perDefecte: {
-                    label: 'Marca com a principal'
+                    label: 'Marca com a principal',
+                    ok: "La bústia s'ha marcat com a principal",
                 },
                 activar: {
-                    label: 'Activa'
+                    label: 'Activa',
+                    ok: "La bústia s'ha activat correctament",
                 },
                 desactivar: {
-                    label: 'Desactiva'
+                    label: 'Desactiva',
+                    ok: "La bústia s'ha desactivat correctament",
                 },
+                usuarisBustia: {
+                    label: 'Usuaris',
+                    ok: "El document s'ha descarregat correctament",
+                }
             },
         },
     },

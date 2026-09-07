@@ -273,17 +273,25 @@ const translationEs = {
                     title: "Modificar buzón",
                 },
                 moureAnotacions: {
-                    label: "Mover anotaciones"
+                    title: "Mover las anotaciones de registro del buzón '{{nom}}'",
+                    label: "Mueve anotaciones"
                 },
                 perDefecte: {
-                    label: "Marcar como principal"
+                    label: "Marca como principal",
+                    ok: "El buzón se ha marcado como principal",
                 },
                 activar: {
-                    label: "Activar"
+                    label: "Activa",
+                    ok: "El buzón se ha activado correctamente",
                 },
                 desactivar: {
-                    label: "Desactivar"
+                    label: "Desactiva",
+                    ok: "El buzón se ha desactivado correctamente",
                 },
+                usuarisBustia: {
+                    label: "Usuarios",
+                    ok: "El documento se ha descargado correctamente",
+                }
             },
         },
     },
