@@ -106,6 +106,13 @@ const InnerApp: React.FC = () => {
                     icon: 'account_tree',
                     pantalla: 'unitatOrganitzativa'
                 },
+                {
+                    id: 'permis',
+                    title: t('page.entitats.permis.title'),
+                    to: 'permis',
+                    icon: 'key',
+                    pantalla: 'permis'
+                },
             ],
         },
         {

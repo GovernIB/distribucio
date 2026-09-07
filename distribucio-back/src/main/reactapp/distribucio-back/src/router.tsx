@@ -14,6 +14,7 @@ import LimitCanviEstatGrid from './pages/limitCanviEstat/LimitCanviEstatGrid.tsx
 import ProcedimentGrid from './pages/procediment/ProcedimentGrid.tsx';
 import {BustiaGrid} from "./pages/bustia/BustiaGrid.tsx";
 import {BustiaOrganigrama} from "./pages/bustia/BustiaOrganigrama.tsx";
+import {EntitatPermisos} from "./pages/entitat/EntitatPermisos.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -138,6 +139,16 @@ export const router = createBrowserRouter(
                             path: 'bustiaAdminOrganigrama',
                             element: <BustiaOrganigrama />,
                             handle: { titol: 'page.bustia.grid.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="permis" />,
+                    children: [
+                        {
+                            path: 'permis',
+                            element: <EntitatPermisos/>,
+                            handle: { titol: 'page.entitats.permis.title' },
                         },
                     ],
                 },

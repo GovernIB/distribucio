@@ -43,14 +43,13 @@ export const AclPermissionGrid = (
         formContent = <AclEntryForm />,
         additionalData,
         ...other
-    }: {resourceId: any, resourceType: string, columns?:MuiDataGridColDef[], formContent?: any, additionalData?: any }
+    }: {resourceId: any, resourceType: string, columns?:MuiDataGridColDef[], formContent?: any, additionalData?: any, [key: string]: any; }
 ) => {
     const { t } = useTranslation();
     const { currentRole } = useDistribucioContext()
     const gestorReadOnly = !(currentRole == ROLE_SUPER ||  currentRole == ROLE_ADMIN);
 
     return <StyledMuiGrid
-        title={t('component.AclPermissionManager.title')}
         popupEditFormDialogResourceTitle={t('component.AclPermissionManager.resourceTitle')}
         resourceName={"aclEntryResource"}
         filter={"resourceType:'" + resourceType + "' and resourceId:" + resourceId}
@@ -60,7 +59,7 @@ export const AclPermissionGrid = (
         formAdditionalData={{
             resourceId,
             resourceType,
-            readAllowed: true,
+            // readAllowed: true,
             ...additionalData
         }}
         paginationActive

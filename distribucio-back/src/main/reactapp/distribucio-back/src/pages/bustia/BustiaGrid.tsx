@@ -1,4 +1,4 @@
-import {GridPage, MuiDataGridColDef} from "reactlib";
+import {GridPage, MuiDataGridColDef, useMuiDataGridApiRef} from "reactlib";
 import {CardPage} from "../../components/CardData.tsx";
 import {useTranslation} from "react-i18next";
 import StyledMuiGrid, {ToolbarButton} from "../../components/StyledMuiGrid.tsx";
@@ -29,9 +29,14 @@ const perspectives = ['PERMISOS_COUNT']
 
 export const BustiaGrid = () => {
     const { t } = useTranslation();
+    const apiRef = useMuiDataGridApiRef();
     const { currentEntitatId } = useDistribucioContext();
     const [springFilter, setSpringFilter] = React.useState<string>();
     const [namedQueries, setNamedQueries] = React.useState<string[]>([]);
+
+    const refresh = () => {
+        apiRef.current?.refresh()
+    }
 
     const additionalColumns = useMemo(() => [
         ...columns,
@@ -95,6 +100,7 @@ export const BustiaGrid = () => {
         columns: useBustiaPermisosColumns(),
         formContent: <BustiaPermisosForm/>,
         additionalData: { readAllowed: true },
+        onEntryChanged: refresh,
     });
 
     return (
@@ -103,6 +109,7 @@ export const BustiaGrid = () => {
                 <BustiaFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
 
                 <StyledMuiGrid
+                    apiRef={apiRef}
                     resourceName="bustiaResource"
                     columns={additionalColumns}
                     perspectives={perspectives}

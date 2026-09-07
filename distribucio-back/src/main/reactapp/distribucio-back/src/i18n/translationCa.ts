@@ -66,9 +66,12 @@ const translationCa = {
                     // que obre el llistat de permisos. La resta les aporta el backend (_prompt).
                     permisos: 'Permisos',
                 },
+                adminAllowed: 'Administració',
+                perm0Allowed: 'Admin (Lectura)',
+                readAllowed: 'Usuaris',
             },
             permis: {
-                title: "Permisos de l'entitat {{nom}}",
+                title: "Permisos de l'entitat",
                 grid: {
                     buit: 'Aquesta entitat no té cap permís',
                 },

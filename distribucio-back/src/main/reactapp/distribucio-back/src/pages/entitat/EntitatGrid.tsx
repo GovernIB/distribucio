@@ -40,8 +40,7 @@ export const EntitatGrid: React.FC = () => {
     const accions = useEntitatAccions(refresh);
     // En tancar el diàleg es refresca el llistat perquè el comptador de permisos de la fila
     // reculli les altes i les baixes que s'hi hagin fet.
-    const { handleShow: mostrarPermisos, dialog: permisosDialog } =
-        useEntitatPermisosDialog(refresh);
+    const { show: mostrarPermisos, component: permisosDialog } = useEntitatPermisosDialog(refresh);
 
     const columnsWithLabels = React.useMemo(
         () => [

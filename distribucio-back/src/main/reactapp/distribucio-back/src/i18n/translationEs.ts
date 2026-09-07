@@ -66,9 +66,12 @@ const translationEs = {
                     // que abre el listado de permisos. El resto las aporta el backend (_prompt).
                     permisos: 'Permisos',
                 },
+                adminAllowed: "Administración",
+                perm0Allowed: "Admin (Lectura)",
+                readAllowed: "Usuarios",
             },
             permis: {
-                title: 'Permisos de la entidad {{nom}}',
+                title: 'Permisos de la entidad',
                 grid: {
                     buit: 'Esta entidad no tiene ningún permiso',
                 },

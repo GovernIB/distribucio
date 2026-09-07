@@ -52,6 +52,7 @@ export const BustiaOrganigramaForm = ({apiRef, entity, toolbarElementsWithPositi
             <AclPermissionGrid
                 resourceId={entity.id}
                 resourceType={'BUSTIA'}
+                title={t('component.AclPermissionManager.title')}
                 columns={useBustiaPermisosColumns()}
                 formContent={<BustiaPermisosForm/>}
             />
