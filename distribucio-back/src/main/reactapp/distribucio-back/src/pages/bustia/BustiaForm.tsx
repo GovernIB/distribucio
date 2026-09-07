@@ -29,7 +29,7 @@ export const BustiaFormDialog: React.FC<{
     </MuiFormDialog>
 }
 
-export const BustiaOrganigramaForm = ({apiRef, entity, toolbarElementsWithPositions}:any) => {
+export const BustiaOrganigramaForm = ({entity, ...other}:any) => {
     const { t } = useTranslation();
 
     return (
@@ -38,14 +38,12 @@ export const BustiaOrganigramaForm = ({apiRef, entity, toolbarElementsWithPositi
             id={entity.id}
             title={t('page.bustia.accio.update.title')}
             resourceName={'bustiaResource'}
-            apiRef={apiRef}
-            goBackLink={'/bustiaAdminOrganigrama'}
 
             hiddenBackButton
             hiddenRevertButton
             hiddenSaveButton
             hiddenDeleteButton
-            toolbarElementsWithPositions={toolbarElementsWithPositions}
+            {...other}
         >
             <BustiaForm />
 

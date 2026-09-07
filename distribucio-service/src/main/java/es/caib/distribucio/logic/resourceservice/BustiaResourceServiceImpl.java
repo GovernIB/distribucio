@@ -7,7 +7,6 @@ import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.ReportGenerationException;
 import es.caib.distribucio.logic.intf.base.model.BaseAuditableResource;
-import es.caib.distribucio.logic.intf.base.model.BaseResource;
 import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
 import es.caib.distribucio.logic.intf.base.model.ReportFileType;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
@@ -15,18 +14,17 @@ import es.caib.distribucio.logic.intf.dto.PermisDto;
 import es.caib.distribucio.logic.intf.dto.PrincipalTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganizzativaEstatEnumDto;
 import es.caib.distribucio.logic.intf.model.BustiaResource;
-import es.caib.distribucio.logic.intf.model.ContingutResource;
 import es.caib.distribucio.logic.intf.resourceservice.BustiaResourceService;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.logic.intf.util.Utils;
+import es.caib.distribucio.persist.entity.AclEntryEntity;
+import es.caib.distribucio.persist.entity.AclSidEntity;
 import es.caib.distribucio.persist.entity.BustiaEntity;
 import es.caib.distribucio.persist.resourceentity.BustiaResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.BustiaResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.UnitatOrganitzativaResourceRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +32,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -105,7 +106,18 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
             }
 
             if (mapaNamedQueries.containsKey("PERMIS_PER_USUARI")) {
-                // TODO: implementar filtro por numero de permisos
+                Subquery<Long> subquery = query.subquery(Long.class);
+                Root<AclEntryEntity> entryRoot = subquery.from(AclEntryEntity.class);
+
+                Join<AclEntryEntity, AclSidEntity> sidJoin = entryRoot.join("aclSid");
+
+                subquery.select(cb.countDistinct(sidJoin.get("id")));
+                subquery.where(
+                        cb.equal(entryRoot.get("aclObjectIdentity").get("objectIdIdentity"), root.get("id"))
+//                        cb.equal(sidJoin.get("principal"), true) // Solo usuarios, no roles
+                );
+
+                predicates.add( cb.greaterThan(subquery, 1L) );
             }
 
             if (mapaNamedQueries.containsKey("UNITAT_SUPERIOR")) {

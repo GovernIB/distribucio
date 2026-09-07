@@ -15,6 +15,7 @@ import {ToolbarButton} from "../../components/StyledMuiGrid.tsx";
 import {useSimpleTreeViewApiRef} from "@mui/x-tree-view";
 import {MenuActionButton} from "../../components/MenuButton.tsx";
 import {useActions, useBustiaActions} from "./detail/BustiaActions.tsx";
+import {ResourceApiError} from "../../../lib/components/ResourceApiProvider.tsx";
 
 export const useOrganigrama = ({filter, namedQueries, onClick, ...other}:any) => {
     const { currentEntitat } = useDistribucioContext();
@@ -141,6 +142,11 @@ export const BustiaOrganigrama = () => {
     const formDialogApiRef = useMuiFormDialogApiRef();
     const formApiRef = React.useRef<FormApi | any>({});
 
+    const {
+        delete: apiDelete
+    } = useResourceApiService('bustiaResource');
+    const {temporalMessageShow, t: tLib} = useBaseAppContext();
+
     const {apiRef, busties, content, refresh} = useOrganigrama({
         filter: springFilter,
         namedQueries: namedQueries,
@@ -163,21 +169,28 @@ export const BustiaOrganigrama = () => {
             label: t('common.delete'),
             icon: 'delete',
             onClick: () => {
-                formApiRef.current?.delete()
-                refresh()
-                setEntity(undefined)
+                apiDelete(entity.id)
+                    .then(() => {
+                        setEntity(undefined)
+                        refresh()
+                        temporalMessageShow(null, tLib('form.delete.success'), 'success');
+                    })
+                    .catch((error: ResourceApiError) => {
+                        temporalMessageShow(tLib('form.delete.error'), error.message, 'error');
+                    });
             },
         },
     ];
 
-    const create = (event:any) => {
+    const create = () => {
         formDialogApiRef.current?.show(undefined, {entitat: {id: currentEntitatId}})
             .then((response:any) => {
                 setEntity(response)
                 refresh()
 
                 // TODO: revisar seleción al crear
-                apiRef.current?.focusItem(event, response.id);
+                const input = apiRef.current?.getItemDOMElement(response.id);
+                input?.focus();
             })
     }
 
