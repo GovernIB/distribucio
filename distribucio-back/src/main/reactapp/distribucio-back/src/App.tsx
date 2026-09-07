@@ -142,6 +142,13 @@ const InnerApp: React.FC = () => {
             icon: 'info',
             children: [
                 {
+                    id: 'contingut',
+                    title: t('app.menu.contingut'),
+                    to: 'contingut',
+                    icon: 'search',
+                    pantalla: 'contingut',
+                },
+                {
                     id: 'procediment',
                     title: t('app.menu.procediment'),
                     to: 'procediment',

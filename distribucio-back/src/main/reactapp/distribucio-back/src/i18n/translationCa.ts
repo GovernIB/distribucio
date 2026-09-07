@@ -36,6 +36,7 @@ const translationCa = {
             bustia: 'Bústies',
             unitatOrganitzativa: 'Unitats Organitzatives',
             procediment: 'Procediments',
+            contingut: 'Continguts',
         },
         avisos: {
             mostra: "Mostra el detall de l'avís",
@@ -195,6 +196,11 @@ const translationCa = {
 						description: "L'acció continuarà en segon pla i podreu consultar el resultat més tard.",
 					},
                 },
+            },
+        },
+        contingut: {
+            grid: {
+                title: "Localitzador de continguts",
             },
         },
         unitatOrganitzativa: {

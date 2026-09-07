@@ -8,5 +8,5 @@ import es.caib.distribucio.persist.resourceentity.ContingutResourceEntity;
  *
  * @author Límit Tecnologies
  */
-public interface ContingutResourceRepository extends BaseRepository<ContingutResourceEntity<?>, Long> {
+public interface ContingutResourceRepository extends BaseRepository<ContingutResourceEntity, Long> {
 }

@@ -36,6 +36,7 @@ const translationEs = {
             bustia: 'Buzones',
             unitatOrganitzativa: 'Unidades Organizativas',
             procediment: 'Procedimientos',
+            contingut: 'Contenidos',
         },
         avisos: {
             mostra: 'Muestra el detalle del aviso',
@@ -193,6 +194,11 @@ const translationEs = {
 					    description: "La acción continuará en segundo plano y podrá consultar el resultado más tarde.",
 					},
                 },
+            },
+        },
+        contingut: {
+            grid: {
+                title: "Localizador de contenidos",
             },
         },
         unitatOrganitzativa: {

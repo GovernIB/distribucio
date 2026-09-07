@@ -15,6 +15,7 @@ import ProcedimentGrid from './pages/procediment/ProcedimentGrid.tsx';
 import {BustiaGrid} from "./pages/bustia/BustiaGrid.tsx";
 import {BustiaOrganigrama} from "./pages/bustia/BustiaOrganigrama.tsx";
 import {EntitatPermisos} from "./pages/entitat/EntitatPermisos.tsx";
+import ContingutGrid from './pages/contingut/ContingutGrid.tsx';
 
 export const router = createBrowserRouter(
     [
@@ -139,6 +140,16 @@ export const router = createBrowserRouter(
                             path: 'bustiaAdminOrganigrama',
                             element: <BustiaOrganigrama />,
                             handle: { titol: 'page.bustia.grid.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="contingut" />,
+                    children: [
+                        {
+                            path: 'contingut',
+                            element: <ContingutGrid />,
+                            handle: { titol: 'page.contingut.grid.title' },
                         },
                     ],
                 },
