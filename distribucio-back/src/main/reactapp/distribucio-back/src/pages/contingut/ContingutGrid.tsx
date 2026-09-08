@@ -5,9 +5,11 @@ import { CardPage } from '../../components/CardData';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
 import { formatDate } from '../../util/dateUtils';
 import ContingutFilter from './ContingutFilter';
+import useContingutAccions from './ContingutAccions';
+import useContingutHistorialDialog from './actions/ContingutHistorialDialog';
 
-// TODO: accions de fila (detall, historial, recuperar/esborrar) pendents -- veure
-// ContingutAdminController legacy.
+// TODO: accions de fila "Detalls"/"Recuperar"/"Esborrar" pendents -- veure
+// ContingutAdminController legacy. 
 const columns: MuiDataGridColDef[] = [
     { field: 'nom', flex: 3 },
     { field: 'createdByFullName', flex: 1.5 },
@@ -29,6 +31,8 @@ export const ContingutGrid: React.FC = () => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
+    const { show: mostrarHistorial, component: historialDialog } = useContingutHistorialDialog();
+    const accions = useContingutAccions(mostrarHistorial);
 
     return (
         <GridPage>
@@ -44,7 +48,10 @@ export const ContingutGrid: React.FC = () => {
                     paginationActive
                     rowHideUpdateButton
                     rowHideDeleteButton
+                    rowAdditionalActions={accions}
+                    sortModel={[{ field: 'createdDate', sort: 'desc' }]}
                 />
+                {historialDialog}
             </CardPage>
         </GridPage>
     );

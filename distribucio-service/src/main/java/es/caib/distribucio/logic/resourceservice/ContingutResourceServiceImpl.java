@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.intf.model.ContingutResource;
 import es.caib.distribucio.logic.intf.resourceservice.ContingutResourceService;
+import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.persist.resourceentity.BustiaResourceEntity;
 import es.caib.distribucio.persist.resourceentity.ContingutResourceEntity;
 import es.caib.distribucio.persist.resourceentity.UsuariResourceEntity;
@@ -29,6 +31,21 @@ public class ContingutResourceServiceImpl
 		implements ContingutResourceService {
 
 	private final UsuariResourceRepository usuariResourceRepository;
+
+	/**
+	 * Restringeix totes les consultes (llistat, exportació i lectura d'un sol registre) a l'entitat
+	 * actualment seleccionada per l'usuari -- mateix patró que {@code ServeiResourceServiceImpl}/
+	 * {@code BustiaResourceServiceImpl}. Sense entitat seleccionada (p.ex. DIS_SUPER) no restringeix
+	 * res.
+	 */
+	@Override
+	protected Specification<ContingutResourceEntity<ContingutResource>> additionalSpecification(String[] namedQueries) {
+		Long entitatId = SessioActualUtil.getEntitatId();
+		if (entitatId != null) {
+			return (root, query, cb) -> cb.equal(root.get("entitat").get("id"), entitatId);
+		}
+		return null;
+	}
 
 	/**
 	 * Completa els camps que el llistat legacy "Contingut" mostra i que no es poden obtenir per

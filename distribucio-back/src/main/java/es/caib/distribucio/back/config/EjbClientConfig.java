@@ -245,6 +245,18 @@ public class EjbClientConfig {
 		return getLocalEjbFactoyBean(ContingutResourceService.class);
 	}
 
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean contingutLogResourceService() {
+		return getLocalEjbFactoyBean(ContingutLogResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean contingutMovimentResourceService() {
+		return getLocalEjbFactoyBean(ContingutMovimentResourceService.class);
+	}
+
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {
 		String jndiName = jndiServiceName(serviceClass);
 		log.info("Creating EJB proxy for " + serviceClass.getSimpleName() + " with JNDI name " + jndiName);

@@ -145,7 +145,7 @@ const InnerApp: React.FC = () => {
                     id: 'contingut',
                     title: t('app.menu.contingut'),
                     to: 'contingut',
-                    icon: 'search',
+                    icon: 'archive',
                     pantalla: 'contingut',
                 },
                 {

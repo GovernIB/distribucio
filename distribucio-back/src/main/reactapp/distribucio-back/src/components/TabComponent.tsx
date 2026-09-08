@@ -1,0 +1,96 @@
+import {Box, Tab, Tabs} from "@mui/material";
+import {useEffect, useState} from "react";
+import {StyledBadge} from "./StyledBadge.tsx";
+import Load from "./Load.tsx";
+
+type TabProps = {
+    value: string;
+    label: string;
+    content: any;
+    title?: string;
+    badge?: string;
+    badgeColor?: 'primary' | 'secondary' | 'default' | 'error' | 'info' | 'success' | 'warning' | string;
+    disabled?: boolean;
+    hidden?: boolean;
+    showZero?: boolean;
+    error?: boolean;
+};
+
+const TabPanel = (props:any) => {
+    const { children, value, index, panelScroll = true, ...other } = props;
+
+    // Amb panelScroll el panell ocupa l'alçada disponible i el contingut que no hi cap scrolleja dins seu: és el
+    // que necessiten les vistes que omplen la pantalla (graelles, detalls d'expedient). Dins un diàleg, en canvi,
+    // el panell no té cap alçada de referència i qualsevol excedent de pocs píxels hi dibuixa una barra de scroll
+    // pròpia; amb panelScroll={false} el panell creix amb el contingut i el scroll queda a càrrec del contenidor
+    // (el DialogContent), que ja en té un de sol per a tot el formulari.
+    const style = panelScroll ?
+            { height: '100%', minHeight: 0, overflow: 'auto' } :
+            { minHeight: 0 };
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            style={style}
+            {...other}
+        >
+            {value === index && (
+                <Box sx={{ pt: 1, height: panelScroll ? '100%' : 'auto' }}>{children}</Box>
+            )}
+        </div>
+    );
+}
+
+const TabComponent = (props :any) => {
+    const [valueDef, setValueDef] = useState<any>();
+    const { tabs, headerAdditionalData, defaultValue, panelScroll = true, value = valueDef, onChange:setValue = setValueDef, ...other}=props;
+
+    const handleChange = (_event :any, newValue :string) : void => {
+        if (tabs.some((tab:TabProps)=>tab?.value==newValue)) {
+            setValue(newValue);
+        }
+    };
+
+    useEffect(() => {
+        if (!value && defaultValue) {
+            setValue(defaultValue)
+        }else if (!tabs.some((tab:TabProps)=>tab?.value==value)) {
+            setValue(tabs?.[0]?.value);
+        }
+    }, [tabs, value]);
+
+    return <Load value={tabs?.length && value}>
+    <Box sx={{ width: '100%', height: panelScroll ? '100%' : 'auto', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{flexShrink: 0, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
+            <Tabs
+                value={value}
+                onChange={handleChange}
+                {...other}
+                sx={{px: 1}}
+            >
+                {tabs.filter((tab:TabProps)=>!tab.hidden).map((tab:TabProps) => {
+                    const {title, value: tabValue, label, disabled, showZero = false, content, badge = 0, badgeColor= 'primary', error = false} = tab;
+
+                    const errorProps = error ?{
+                        sx: {color: 'error.main'}
+                    } :{}
+
+                    return <Tab value={tabValue} disabled={disabled} title={title} content={content} key={"tab-" + tabValue} {...errorProps} label={
+                        <StyledBadge badgeContent={badge} badgecolor={badgeColor} showZero={showZero}>{label}</StyledBadge>}/>
+                })}
+            </Tabs>
+            {headerAdditionalData}
+        </Box>
+        {tabs.map((tab:TabProps) =>
+            <TabPanel value={value} index={tab.value} panelScroll={panelScroll} key={"tab-panel-"+tab.value}>
+                {!tab.hidden && tab.content}
+            </TabPanel>
+        )}
+    </Box>
+    </Load>
+}
+
+export default TabComponent;

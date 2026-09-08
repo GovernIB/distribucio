@@ -202,6 +202,37 @@ const translationCa = {
             grid: {
                 title: "Localitzador de continguts",
             },
+            accio: {
+                historial: {
+                    label: "Historial",
+                },
+            },
+            historial: {
+                title: "Historial",
+                tab: {
+                    accions: "Accions",
+                    moviments: "Moviments",
+                    auditoria: "Auditoria",
+                },
+                accio: {
+                    veureDetall: "Veure detalls",
+                },
+                detall: {
+                    title: "Detall de l'acció",
+                    objecte: "Objecte: {{nom}}",
+                    params: "Paràmetres",
+                    accioPare: "Acció pare",
+                    moviment: "Moviment",
+                    movimentOrigen: "Origen",
+                    movimentDesti: "Destí",
+                },
+                auditoria: {
+                    creacio: "Creació",
+                    modificacio: "Darrera modificació",
+                    usuari: "Usuari",
+                    data: "Data",
+                },
+            },
         },
         unitatOrganitzativa: {
             grid: {

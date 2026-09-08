@@ -200,6 +200,37 @@ const translationEs = {
             grid: {
                 title: "Localizador de contenidos",
             },
+            accio: {
+                historial: {
+                    label: "Historial",
+                },
+            },
+            historial: {
+                title: "Historial",
+                tab: {
+                    accions: "Acciones",
+                    moviments: "Movimientos",
+                    auditoria: "Auditoría",
+                },
+                accio: {
+                    veureDetall: "Ver detalles",
+                },
+                detall: {
+                    title: "Detalle de la acción",
+                    objecte: "Objeto: {{nom}}",
+                    params: "Parámetros",
+                    accioPare: "Acción padre",
+                    moviment: "Movimiento",
+                    movimentOrigen: "Origen",
+                    movimentDesti: "Destino",
+                },
+                auditoria: {
+                    creacio: "Creación",
+                    modificacio: "Última modificación",
+                    usuari: "Usuario",
+                    data: "Fecha",
+                },
+            },
         },
         unitatOrganitzativa: {
             grid: {
