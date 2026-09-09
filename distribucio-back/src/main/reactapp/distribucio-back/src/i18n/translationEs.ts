@@ -341,6 +341,24 @@ const translationEs = {
                 },
             }
         },
+        backoffice: {
+            title: "Backoffices",
+            form: {
+                resourceTitle: "backoffice",
+                codi: "Código para identificar con qué Backoffice se ha distribuido la anotación",
+                url: "Clave del fichero de propiedades correspondiente a la URL para la conexión con formato ${clau.fitxer.propietats.url} o URL directamente",
+                usuari: "Clave del fichero de propiedades correspondiente al nombre de usuario para la conexión con formato ${clau.fitxer.propietats.usuari} o usuario directamente",
+                contrasenya: "Clave del fichero de propiedades correspondiente a la contraseña para la conexión con formato ${clau.fitxer.propietats.contrasenya} o contraseña directamente",
+            },
+            accio: {
+                new: {
+                    label: "Nuevo backoffice",
+                },
+                prova: {
+                    label: "Prueba",
+                }
+            }
+        },
     },
     component: {
         Offline: {

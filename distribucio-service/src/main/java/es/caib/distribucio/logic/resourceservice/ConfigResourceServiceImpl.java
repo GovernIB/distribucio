@@ -5,14 +5,9 @@ import es.caib.distribucio.logic.config.SegonPlaConfig;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
-import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.PermisDto;
-import es.caib.distribucio.logic.intf.model.BustiaResource;
 import es.caib.distribucio.logic.intf.model.ConfigResource;
 import es.caib.distribucio.logic.intf.resourceservice.ConfigResourceService;
 import es.caib.distribucio.logic.intf.util.Utils;
-import es.caib.distribucio.persist.entity.BustiaEntity;
-import es.caib.distribucio.persist.resourceentity.BustiaResourceEntity;
 import es.caib.distribucio.persist.resourceentity.ConfigResourceEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +16,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Slf4j
 @Service

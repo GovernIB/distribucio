@@ -15,6 +15,7 @@ import { filtrarEntradesMenu, type MenuEntryAmbPantalla } from './util/pantalles
 import { SessionStorageProvider } from './components/SessionStorageContext';
 import { SseProvider } from './components/SseClient';
 import TitolPagina from './components/TitolPagina';
+import {SnackbarProvider} from "notistack";
 
 export const envVars = {
     VITE_API_URL: import.meta.env.VITE_API_URL,
@@ -105,6 +106,13 @@ const InnerApp: React.FC = () => {
                     to: 'unitatOrganitzativa',
                     icon: 'account_tree',
                     pantalla: 'unitatOrganitzativa'
+                },
+                {
+                    id: 'backoffice',
+                    title: t('page.backoffice.title'),
+                    to: 'backoffice',
+                    icon: 'wifi',
+                    pantalla: 'backoffice'
                 },
                 {
                     id: 'permis',
@@ -246,6 +254,7 @@ export const App = () => {
                     preferències (idioma, tema, estil de menú, mida de pàgina...) surten del perfil
                     que aquest carrega, i DistribucioProvider no pinta els fills fins a tenir-lo. */}
                 <TemaProvider>
+                    <SnackbarProvider maxSnack={99}>
                     <DistribucioProvider>
                         <UserPreferencesProvider>
                             <SessionStorageProvider>
@@ -258,6 +267,7 @@ export const App = () => {
                             </SessionStorageProvider>
                         </UserPreferencesProvider>
                     </DistribucioProvider>
+                    </SnackbarProvider>
                 </TemaProvider>
             </ResourceApiProvider>
         </AuthProvider>

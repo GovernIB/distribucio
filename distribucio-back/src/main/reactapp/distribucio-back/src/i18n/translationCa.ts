@@ -341,6 +341,24 @@ const translationCa = {
                 },
             }
         },
+        backoffice: {
+            title: "Backoffices",
+            form: {
+                resourceTitle: "backoffice",
+                codi: "Codi per identificar amb quin Backoffice s'ha distribuit l'anotació",
+                url: "Clau de el fitxer de propietats corresponent a la url per a la connexió amb format ${clau.fitxer.propietats.url} o url directament",
+                usuari: "Clau de el fitxer de propietats corresponent a el nom d'usuari per a la connexió amb format ${clau.fitxer.propietats.usuari} o usuari directament",
+                contrasenya: "Clau de el fitxer de propietats corresponent a la contrasenya per a la connexió amb format ${clau.fitxer.propietats.contrasenya} o contrasenya directament",
+            },
+            accio: {
+                new: {
+                    label: "Nou backoffice",
+                },
+                prova: {
+                    label: "Prova",
+                }
+            }
+        },
     },
     component: {
         Offline: {
