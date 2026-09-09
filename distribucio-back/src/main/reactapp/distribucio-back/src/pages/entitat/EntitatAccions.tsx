@@ -52,6 +52,12 @@ export const useEntitatAccions = (refresh: () => void): AccionsFila => {
             clickShowUpdateDialog: true,
         },
         {
+            label: t('page.config.title'),
+            icon: 'settings',
+            showInMenu: true,
+            linkTo: (row) => `/config/propietatsEntitat/${row.id}`,
+        },
+        {
             label: t('page.entitats.accio.activar'),
             icon: 'check',
             showInMenu: true,

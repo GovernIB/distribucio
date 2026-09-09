@@ -37,6 +37,7 @@ const translationCa = {
             unitatOrganitzativa: 'Unitats Organitzatives',
             procediment: 'Procediments',
             contingut: 'Continguts',
+            config: 'Propietats configurables',
         },
         avisos: {
             mostra: "Mostra el detall de l'avís",
@@ -326,6 +327,19 @@ const translationCa = {
                     ok: "El document s'ha descarregat correctament",
                 }
             },
+        },
+        config: {
+            title: "Propietats de configuració",
+            accio: {
+                restart: {
+                    label: "Reinicia tasques en segon pla",
+                    ok: "S'han reiniciat les tasques en segon pla. Pot comprovar l'estat d'execució de cada tasca en el monitor del sistema.",
+                },
+                sync: {
+                    label: "Sincronitza",
+                    ok: "Sincronització realitzada amb èxit",
+                },
+            }
         },
     },
     component: {

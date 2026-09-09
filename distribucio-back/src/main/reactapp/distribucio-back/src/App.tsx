@@ -121,6 +121,13 @@ const InnerApp: React.FC = () => {
             icon: 'settings',
             children: [
                 {
+                    id: 'config',
+                    title: t('app.menu.config'),
+                    to: 'config',
+                    icon: 'display_settings',
+                    pantalla: 'config'
+                },
+                {
                     id: 'limitCanviEstat',
                     title: t('app.menu.limitCanviEstat'),
                     to: 'limitCanviEstat',

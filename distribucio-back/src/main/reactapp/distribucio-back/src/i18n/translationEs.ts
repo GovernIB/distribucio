@@ -37,6 +37,7 @@ const translationEs = {
             unitatOrganitzativa: 'Unidades Organizativas',
             procediment: 'Procedimientos',
             contingut: 'Contenidos',
+            config: 'Propiedades configurables',
         },
         avisos: {
             mostra: 'Muestra el detalle del aviso',
@@ -97,6 +98,8 @@ const translationEs = {
             form: {
                 titleCreate: 'Nueva entidad',
                 titleUpdate: 'Modifica entidad',
+                // El diálogo de la cuadrícula compone el título con el verbo de la acción ("Crea" o
+                // "Modifica") más este nombre de recurso.
                 resourceTitle: 'entidad',
             },
             accio: {
@@ -325,6 +328,19 @@ const translationEs = {
                 }
             },
         },
+        config: {
+            title: "Propiedades de configuración",
+            accio: {
+                restart: {
+                    label: "Reinicia tareas en segundo plano",
+                    ok: "Se han reiniciado las tareas en segundo plano. Puede comprobar el estado de ejecución de cada tarea en el monitor del sistema.",
+                },
+                sync: {
+                    label: "Sincroniza",
+                    ok: "Sincronización realizada correctamente",
+                },
+            }
+        },
     },
     component: {
         Offline: {
@@ -373,7 +389,6 @@ const translationEs = {
             all: "Seleccionarlo todo",
             clear: "Limpiar la selección",
         }
-
     },
 };
 

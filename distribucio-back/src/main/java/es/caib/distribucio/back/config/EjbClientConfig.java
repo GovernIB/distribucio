@@ -4,6 +4,9 @@
 package es.caib.distribucio.back.config;
 
 import es.caib.distribucio.logic.intf.resourceservice.*;
+import es.caib.distribucio.logic.intf.resourceservice.ConfigGroupResourceService;
+import es.caib.distribucio.logic.intf.resourceservice.ConfigResourceService;
+import es.caib.distribucio.logic.intf.resourceservice.ConfigTypeResourceService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWarDeployment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -255,6 +258,30 @@ public class EjbClientConfig {
 	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean contingutMovimentResourceService() {
 		return getLocalEjbFactoyBean(ContingutMovimentResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean aclEntryResourceService() {
+		return getLocalEjbFactoyBean(AclEntryResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean configResourceService() {
+		return getLocalEjbFactoyBean(ConfigResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean configGroupResourceService() {
+		return getLocalEjbFactoyBean(ConfigGroupResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean configTypeResourceService() {
+		return getLocalEjbFactoyBean(ConfigTypeResourceService.class);
 	}
 
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {
