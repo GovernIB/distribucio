@@ -67,6 +67,8 @@ public class ReglaCommand {
 		if (dto.getUnitatOrganitzativaFiltre() != null)
 			command.setUnitatFiltreId(
 					dto.getUnitatOrganitzativaFiltre().getId());
+        if (dto.getServeiCodiFiltre() != null)
+            command.setTipusSia(RegistreClassificarTipusEnum.SERVEI);
 		return command;
 	}
 	public static ReglaDto asDto(ReglaCommand command) {
