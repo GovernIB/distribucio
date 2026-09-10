@@ -4,7 +4,7 @@ import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.base.exception.*;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException.AnswerValue;
 import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
-import es.caib.distribucio.logic.intf.resourceservice.BackofficeResourceService;
+import es.caib.distribucio.logic.intf.resourceservice.ExecucioMassivaResourceService;
 import lombok.experimental.Delegate;
 
 import javax.annotation.security.RolesAllowed;
@@ -13,11 +13,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class BackofficeResourceServiceEjb extends AbstractServiceEjb<BackofficeResourceService> implements BackofficeResourceService {
+public class ExecucioMassivaResourceServiceEjb extends AbstractServiceEjb<ExecucioMassivaResourceService> implements ExecucioMassivaResourceService {
 
-	@Delegate private BackofficeResourceService delegateService;
+	@Delegate private ExecucioMassivaResourceService delegateService;
 	
-	protected void setDelegateService(BackofficeResourceService delegateService) {
+	protected void setDelegateService(ExecucioMassivaResourceService delegateService) {
 		this.delegateService = delegateService;
 	}
 	

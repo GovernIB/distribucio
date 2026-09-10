@@ -359,6 +359,30 @@ const translationEs = {
                 }
             }
         },
+        massiva: {
+            title: "Ejecuciones masivas globales",
+            refresh: "Actualizar cada {{segons}}s.",
+            contingut: "Contenido",
+            accio: {
+                play: {
+                    label: "Reanudar",
+                    ok: "La acción se ha reanudado correctamente",
+                },
+                pause: {
+                    label: "Pausar",
+                    ok: "La acción se ha pausado correctamente",
+                },
+                cancel: {
+                    label: "Cancelar",
+                    ok: "La acción se ha cancelado correctamente",
+                },
+                download: {
+                    label: "Descargar",
+                    notFound: "Documento no disponible",
+                    ok: "Documento descargado correctamente",
+                }
+            }
+        }
     },
     component: {
         Offline: {

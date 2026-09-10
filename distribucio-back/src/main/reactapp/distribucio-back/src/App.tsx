@@ -177,6 +177,14 @@ const InnerApp: React.FC = () => {
                     icon: 'rule',
                     pantalla: 'servei',
                 },
+                // { divider: true },
+                {
+                    id: 'massiva',
+                    title: t('app.menu.massiva'),
+                    to: 'massiva',
+                    icon: 'list',
+                    pantalla: 'massiva',
+                },
             ],
         },
     ];

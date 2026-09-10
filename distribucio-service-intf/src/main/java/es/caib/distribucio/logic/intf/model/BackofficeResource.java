@@ -26,8 +26,8 @@ import java.util.List;
 @NoArgsConstructor
 @FieldNameConstants
 @ResourceConfig(
-        quickFilterFields = { "key", "value", "description" },
-        descriptionField = "description",
+        quickFilterFields = { "codi", "nom", "url" },
+        descriptionField = "nom",
         accessConstraints = {
                 @ResourceAccessConstraint(
                         type = ResourceAccessConstraint.ResourceAccessConstraintType.AUTHENTICATED,

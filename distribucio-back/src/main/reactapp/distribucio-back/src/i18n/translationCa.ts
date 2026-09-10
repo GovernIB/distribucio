@@ -38,6 +38,7 @@ const translationCa = {
             procediment: 'Procediments',
             contingut: 'Continguts',
             config: 'Propietats configurables',
+            massiva: "Consultar accions massives",
         },
         avisos: {
             mostra: "Mostra el detall de l'avís",
@@ -359,6 +360,30 @@ const translationCa = {
                 }
             }
         },
+        massiva: {
+            title: "Execucions massives globals",
+            refresh: "Refresca cada {{segons}}s.",
+            contingut: "Contingut",
+            accio: {
+                play: {
+                    label: "Reprèn",
+                    ok: "L'acció s'ha reprès correctament",
+                },
+                pause: {
+                    label: "Pausa",
+                    ok: "L'acció s'ha pausat correctament",
+                },
+                cancel: {
+                    label: "Cancel·la",
+                    ok: "L'acció s'ha cancel·lat correctament",
+                },
+                download: {
+                    label: "Descarrega",
+                    notFound: "Document no disponible",
+                    ok: "Document descarregat correctament",
+                }
+            }
+        }
     },
     component: {
         Offline: {
