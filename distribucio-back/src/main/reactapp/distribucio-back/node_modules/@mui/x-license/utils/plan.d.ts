@@ -1,0 +1,4 @@
+export declare const PLAN_SCOPES: readonly ["pro", "premium"];
+export declare const PLAN_VERSIONS: readonly ["initial", "Q3-2024"];
+export type PlanScope = (typeof PLAN_SCOPES)[number];
+export type PlanVersion = (typeof PLAN_VERSIONS)[number];

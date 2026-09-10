@@ -1,0 +1,2 @@
+export declare const LICENSE_MODELS: readonly ["perpetual", "annual", "subscription"];
+export type LicenseModel = (typeof LICENSE_MODELS)[number];
