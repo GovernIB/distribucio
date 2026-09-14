@@ -44,9 +44,7 @@ export const IntegracioGrid: React.FC = () => {
     const { value: tab, tabElement, refreshCounts } = useIntegracioTabs(filterData);
     const { show: mostrarDetall, component: detailDialog } = useIntegracioDetail();
 
-    
-    // El codi de la pestanya seleccionada s'afegeix com un filtre més (codi és un camp normal del
-    // recurs), en lloc de fer servir namedQueries com RIPEA -- estalvia canvis al backend.
+    // El codi de la pestanya seleccionada s'afegeix com un filtre més (codi és un camp normal del recurs)
     const filter = React.useMemo(
         () => builder.and(builder.eq('codi', tab ? `'${tab}'` : undefined), formFilter),
         [tab, formFilter]
@@ -55,7 +53,10 @@ export const IntegracioGrid: React.FC = () => {
     return (
         <GridPage>
             <CardPage title={t('page.integracio.grid.title')}>
-                <IntegracioFilter onSpringFilterChange={setFormFilter} onDataChange={setFilterData} />
+                <IntegracioFilter
+                    onSpringFilterChange={setFormFilter}
+                    onDataChange={setFilterData}
+                />
                 <StyledMuiGrid
                     readOnly
                     toolbarHideCreate
@@ -70,6 +71,14 @@ export const IntegracioGrid: React.FC = () => {
                     sortModel={sortModel}
                     onRefresh={refreshCounts}
                     onRowClick={(params: any) => mostrarDetall(params?.row?.id, params?.row)}
+                    rowAdditionalActions={[
+                        {
+                            label: t('page.integracio.detail.title'),
+                            icon: 'info',
+                            showInMenu: false,
+                            onClick: (id: any, row: any) => mostrarDetall(id, row),
+                        },
+                    ]}
                     toolbarElementsWithPositions={[{ position: 0, element: tabElement }]}
                 />
                 {detailDialog}
