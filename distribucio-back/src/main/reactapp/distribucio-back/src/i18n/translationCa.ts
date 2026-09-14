@@ -21,6 +21,7 @@ const translationCa = {
         advancedSearch: 'Cerca avançada',
         advancedSearchOpen: 'Obre la cerca avançada',
         advancedSearchClose: 'Tanca la cerca avançada',
+        copiat: 'Copiat correctament',
     },
     app: {
         loading: 'Iniciant DISTRIBUCIO',
@@ -39,6 +40,8 @@ const translationCa = {
             contingut: 'Continguts',
             config: 'Propietats configurables',
             massiva: "Consultar accions massives",
+            monitoritzar: 'Monitoritzar',
+            integracio: 'Integracions',
         },
         avisos: {
             mostra: "Mostra el detall de l'avís",
@@ -234,6 +237,46 @@ const translationCa = {
                     usuari: "Usuari",
                     data: "Data",
                 },
+            },
+        },
+        integracio: {
+            grid: {
+                title: "Monitor d'integracions",
+                column: {
+                    data: 'Data',
+                    descripcio: 'Descripció',
+                    tipus: 'Tipus',
+                    codiUsuari: 'Usuari',
+                    entitat: 'Entitat',
+                    numeroRegistre: 'Número de registre',
+                    tempsResposta: 'Temps resposta',
+                    estat: 'Estat',
+                },
+            },
+            pipella: {
+                USUARIS: 'Usuaris',
+                UNITATS: 'Unitats admin.',
+                ARXIU: 'Arxiu digital',
+                DADESEXT: 'Dades ext.',
+                SIGNATURA: 'Signatura',
+                VALIDASIG: 'Valida sig.',
+                GESDOC: 'Gestió documental',
+                BUSTIAWS: 'Bústia WS',
+                PROCEDIMENT: 'Procediments',
+                SERVEI: 'Serveis',
+                DISTRIBUCIO: 'Distribució',
+                BACKOFFICE: 'Backoffice',
+            },
+            detail: {
+                title: 'Detall',
+                tipus: {
+                    ENVIAMENT: 'Enviament',
+                    RECEPCIO: 'Recepció',
+                },
+                errorDescripcio: 'Descripció de l\'error',
+                excepcioMessage: 'Missatge',
+                excepcioStacktrace: 'Traça',
+                copyTooltip: 'Copia la traça al portapapeles',
             },
         },
         unitatOrganitzativa: {

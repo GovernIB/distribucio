@@ -19,6 +19,7 @@ import ContingutGrid from './pages/contingut/ContingutGrid.tsx';
 import {Propietats} from "./pages/propietats/Propietats.tsx";
 import {BackofficeGrid} from "./pages/backoffice/BackofficeGrid.tsx";
 import {ExecucioMassivaGrid} from "./pages/execucioMassiva/ExecucioMassivaGrid.tsx";
+import IntegracioGrid from './pages/integracio/IntegracioGrid.tsx';
 
 export const router = createBrowserRouter(
     [
@@ -153,6 +154,16 @@ export const router = createBrowserRouter(
                             path: 'contingut',
                             element: <ContingutGrid />,
                             handle: { titol: 'page.contingut.grid.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="integracio" />,
+                    children: [
+                        {
+                            path: 'integracio',
+                            element: <IntegracioGrid />,
+                            handle: { titol: 'page.integracio.grid.title' },
                         },
                     ],
                 },

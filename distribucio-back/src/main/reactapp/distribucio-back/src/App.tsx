@@ -152,6 +152,20 @@ const InnerApp: React.FC = () => {
             pantalla: 'avis',
         },
         {
+            id: 'monitoritzar',
+            title: t('app.menu.monitoritzar'),
+            icon: 'monitor_heart',
+            children: [
+                {
+                    id: 'integracio',
+                    title: t('app.menu.integracio'),
+                    to: 'integracio',
+                    icon: 'sync_alt',
+                    pantalla: 'integracio',
+                },
+            ],
+        },
+        {
             id: 'consultar',
             title: t('app.menu.consultar'),
             icon: 'info',

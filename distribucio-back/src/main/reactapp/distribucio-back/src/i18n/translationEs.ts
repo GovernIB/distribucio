@@ -21,6 +21,7 @@ const translationEs = {
         advancedSearch: 'Búsqueda avanzada',
         advancedSearchOpen: 'Abrir la búsqueda avanzada',
         advancedSearchClose: 'Cerrar la búsqueda avanzada',
+        copiat: 'Copiado correctamente',
     },
     app: {
         loading: 'Iniciando DISTRIBUCIO',
@@ -38,6 +39,8 @@ const translationEs = {
             procediment: 'Procedimientos',
             contingut: 'Contenidos',
             config: 'Propiedades configurables',
+            monitoritzar: 'Monitorizar',
+            integracio: 'Integraciones',
         },
         avisos: {
             mostra: 'Muestra el detalle del aviso',
@@ -233,6 +236,46 @@ const translationEs = {
                     usuari: "Usuario",
                     data: "Fecha",
                 },
+            },
+        },
+        integracio: {
+            grid: {
+                title: 'Monitor de integraciones',
+                column: {
+                    data: 'Fecha',
+                    descripcio: 'Descripción',
+                    tipus: 'Tipo',
+                    codiUsuari: 'Usuario',
+                    entitat: 'Entidad',
+                    numeroRegistre: 'Número de registro',
+                    tempsResposta: 'Tiempo respuesta',
+                    estat: 'Estado',
+                },
+            },
+            pipella: {
+                USUARIS: 'Usuarios',
+                UNITATS: 'Unidades admin.',
+                ARXIU: 'Archivo digital',
+                DADESEXT: 'Datos ext.',
+                SIGNATURA: 'Signatura',
+                VALIDASIG: 'Valida firma',
+                GESDOC: 'Gestión documental',
+                BUSTIAWS: 'Buzón WS',
+                PROCEDIMENT: 'Procedimientos',
+                SERVEI: 'Servicios',
+                DISTRIBUCIO: 'Distribución',
+                BACKOFFICE: 'Backoffice',
+            },
+            detail: {
+                title: 'Detalle',
+                tipus: {
+                    ENVIAMENT: 'Enviado',
+                    RECEPCIO: 'Recepción',
+                },
+                errorDescripcio: 'Descripción del error',
+                excepcioMessage: 'Mensaje',
+                excepcioStacktrace: 'Traza',
+                copyTooltip: 'Copia la traza al portapapeles',
             },
         },
         unitatOrganitzativa: {
@@ -431,6 +474,7 @@ const translationEs = {
             all: "Seleccionarlo todo",
             clear: "Limpiar la selección",
         }
+
     },
 };
 
