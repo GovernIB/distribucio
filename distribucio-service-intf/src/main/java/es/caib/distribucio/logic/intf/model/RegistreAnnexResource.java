@@ -24,14 +24,11 @@ import java.time.ZoneId;
 import java.util.Date;
 
 /**
- * Document (annex) adjunt a una anotació de registre. Anomenat "RegistreAnnexResource" (i no
- * simplement "AnnexResource") perquè coincideixi amb el nom de la pantalla i l'entitat de negoci
- * legacy ({@code AnnexosAdminController}, {@link es.caib.distribucio.persist.entity.RegistreAnnexEntity})
- * i evitar confusions -- a la interfície REACT la pantalla es continua anomenant "Annex" per simplicitat.
+ * Document (annex) adjunt a una anotació de registre. Anomenat "RegistreAnnexResource" perquè coincideixi
+ * amb el nom de la pantalla i l'entitat de negoci legacy i evitar confusions.
  * <p>
- * Recurs de només lectura: només es concedeix el permís READ, tot i
- * que el controller extén la classe mutable genèrica. Els annexos es creen com a efecte secundari de l'entrada d'una
- * anotació de registre, no des d'aquesta pantalla.
+ * Recurs de només lectura: només es concedeix el permís READ, tot i que el controller extén la classe mutable genèrica.
+ * Els annexos es creen com a efecte secundari de l'entrada d'una anotació de registre, no des d'aquesta pantalla.
  * <p>
  * Camps NO inclosos deliberadament (a diferència de la resta, que hi són encara que no s'usin totes
  * de moment -- veure comentaris per camp):
@@ -63,18 +60,41 @@ import java.util.Date;
 				@ResourceArtifact(
 						type = ResourceArtifactType.FILTER,
 						code = RegistreAnnexResource.FILTER_CODE,
-						formClass = RegistreAnnexResource.FormFilter.class)
+						formClass = RegistreAnnexResource.FormFilter.class),
+				@ResourceArtifact(
+						type = ResourceArtifactType.REPORT,
+						code = RegistreAnnexResource.REPORT_DESCARREGAR_ORIGINAL_CODE,
+						requiresId = true,
+						accessConstraints = {
+								@ResourceAccessConstraint(
+										type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+										roles = {BaseConfig.ROLE_ADMIN},
+										grantedPermissions = {PermissionEnum.READ}
+								)
+						}),
+				@ResourceArtifact(
+						type = ResourceArtifactType.REPORT,
+						code = RegistreAnnexResource.REPORT_DESCARREGAR_IMPRIMIBLE_CODE,
+						requiresId = true,
+						accessConstraints = {
+								@ResourceAccessConstraint(
+										type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+										roles = {BaseConfig.ROLE_ADMIN},
+										grantedPermissions = {PermissionEnum.READ}
+								)
+						})
 		}
 )
 public class RegistreAnnexResource extends BaseResource<Long> {
 
 	public static final String FILTER_CODE = "FILTER";
+	public static final String REPORT_DESCARREGAR_ORIGINAL_CODE = "DESCARREGAR_ORIGINAL";
+	public static final String REPORT_DESCARREGAR_IMPRIMIBLE_CODE = "DESCARREGAR_IMPRIMIBLE";
 
 	private String titol;
 	private String fitxerNom;
 	private Integer fitxerTamany;
 	private String fitxerTipusMime;
-	/** Pendent: necessari per a la futura acció de "Descàrrega original". */
 	private String fitxerArxiuUuid;
 	private Date dataCaptura;
 	private String localitzacio;
@@ -88,8 +108,9 @@ public class RegistreAnnexResource extends BaseResource<Long> {
 	private String ntiElaboracioEstat;
 	private String observacions;
 	private Integer firmaMode;
-	/** Pendent: necessari per a la futura acció de "Custòdia" (validació de CSV). */
 	private String firmaCsv;
+	/** Adreça per veure la firma CSV de l'annex a CONCSV. Buit si l'annex no té firma CSV o CONCSV no està configurat. */
+	private String concsvUrl;
 	/** Pendent: futura acció de detall de firma. */
 	private String timestamp;
 	/** Pendent: futura acció de detall/validació de firma. */

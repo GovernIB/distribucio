@@ -259,6 +259,12 @@ const translationCa = {
                     buitAvis: "Aquest annex no està guardat dins l'Arxiu",
                 },
             },
+            accio: {
+                concsv: 'Enllaç al ConCSV',
+                descarregarOriginal: 'Descàrrega original',
+                descarregarImprimible: 'Descàrrega imprimible',
+                error: "No s'ha pogut executar l'acció",
+            },
         },
         integracio: {
             grid: {

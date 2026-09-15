@@ -257,6 +257,12 @@ const translationEs = {
                     buitAvis: 'Este anexo no está guardado dentro del Arxiu',
                 },
             },
+            accio: {
+                concsv: 'Enlace a ConCSV',
+                descarregarOriginal: 'Descarga original',
+                descarregarImprimible: 'Descarga imprimible',
+                error: 'No se ha podido ejecutar la acción',
+            },
         },
         integracio: {
             grid: {

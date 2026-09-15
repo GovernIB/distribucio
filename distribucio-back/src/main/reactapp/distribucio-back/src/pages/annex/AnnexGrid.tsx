@@ -6,6 +6,7 @@ import { CardPage } from '../../components/CardData';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
 import { formatDate } from '../../util/dateUtils';
 import AnnexFilter from './AnnexFilter';
+import useAnnexAccions from './AnnexAccions';
 
 const ESTATS_FIRMA_AMB_ERROR = ['FIRMA_INVALIDA', 'ERROR_VALIDANT'];
 
@@ -31,7 +32,7 @@ const AnnexArxiuEstatCell: React.FC<{ params: any }> = ({ params }) => {
                             },
                         }}
                     >
-                        <Icon fontSize="small" color="error">
+                        <Icon fontSize="small" color="error" sx={{ fontSize: '18px' }}>
                             error
                         </Icon>
                     </Tooltip>
@@ -57,6 +58,7 @@ const AnnexGrid: React.FC = () => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
+    const accions = useAnnexAccions();
 
     const columns: MuiDataGridColDef[] = React.useMemo(
         () => [
@@ -109,6 +111,7 @@ const AnnexGrid: React.FC = () => {
                     filter={springFilter}
                     paginationActive
                     sortModel={sortModel}
+                    rowAdditionalActions={accions}
                 />
             </CardPage>
         </GridPage>
