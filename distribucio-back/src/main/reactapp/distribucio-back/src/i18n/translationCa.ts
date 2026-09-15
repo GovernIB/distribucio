@@ -38,6 +38,7 @@ const translationCa = {
             unitatOrganitzativa: 'Unitats Organitzatives',
             procediment: 'Procediments',
             contingut: 'Continguts',
+            annex: 'Annexos',
             config: 'Propietats configurables',
             massiva: "Consultar accions massives",
             monitoritzar: 'Monitoritzar',
@@ -237,6 +238,18 @@ const translationCa = {
                     modificacio: "Darrera modificació",
                     usuari: "Usuari",
                     data: "Data",
+                },
+            },
+        },
+        annex: {
+            grid: {
+                title: "Localitzador d'annexos",
+                registre: {
+                    original: 'original',
+                    copia: 'còpia {{num}}',
+                },
+                arxiuEstat: {
+                    buitAvis: "Aquest annex no està guardat dins l'Arxiu",
                 },
             },
         },

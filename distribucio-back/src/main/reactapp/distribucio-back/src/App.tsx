@@ -185,6 +185,13 @@ const InnerApp: React.FC = () => {
                     pantalla: 'contingut',
                 },
                 {
+                    id: 'annex',
+                    title: t('app.menu.annex'),
+                    to: 'annexosAdmin',
+                    icon: 'attach_file',
+                    pantalla: 'annex',
+                },
+                {
                     id: 'procediment',
                     title: t('app.menu.procediment'),
                     to: 'procediment',

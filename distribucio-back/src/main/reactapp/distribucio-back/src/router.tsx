@@ -20,6 +20,7 @@ import {Propietats} from "./pages/propietats/Propietats.tsx";
 import {BackofficeGrid} from "./pages/backoffice/BackofficeGrid.tsx";
 import {ExecucioMassivaGrid} from "./pages/execucioMassiva/ExecucioMassivaGrid.tsx";
 import IntegracioGrid from './pages/integracio/IntegracioGrid.tsx';
+import AnnexGrid from './pages/annex/AnnexGrid.tsx';
 import {RegistreGrid} from "./pages/registre/RegistreGrid.tsx";
 
 export const router = createBrowserRouter(
@@ -165,6 +166,16 @@ export const router = createBrowserRouter(
                             path: 'integracio',
                             element: <IntegracioGrid />,
                             handle: { titol: 'page.integracio.grid.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="annex" />,
+                    children: [
+                        {
+                            path: 'annexosAdmin',
+                            element: <AnnexGrid />,
+                            handle: { titol: 'page.annex.grid.title' },
                         },
                     ],
                 },

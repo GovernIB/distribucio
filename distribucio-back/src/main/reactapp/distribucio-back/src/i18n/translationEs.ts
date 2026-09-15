@@ -38,6 +38,7 @@ const translationEs = {
             unitatOrganitzativa: 'Unidades Organizativas',
             procediment: 'Procedimientos',
             contingut: 'Contenidos',
+            annex: 'Anexos',
             config: 'Propiedades configurables',
             monitoritzar: 'Monitorizar',
             integracio: 'Integraciones',
@@ -235,6 +236,18 @@ const translationEs = {
                     modificacio: "Última modificación",
                     usuari: "Usuario",
                     data: "Fecha",
+                },
+            },
+        },
+        annex: {
+            grid: {
+                title: 'Localizador de anexos',
+                registre: {
+                    original: 'original',
+                    copia: 'copia {{num}}',
+                },
+                arxiuEstat: {
+                    buitAvis: 'Este anexo no está guardado dentro del Arxiu',
                 },
             },
         },
