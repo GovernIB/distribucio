@@ -11,6 +11,7 @@ import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioAccioTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioCodi;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +20,8 @@ import org.springframework.data.domain.Sort;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Entrada del monitor d'integracions (log d'accions contra sistemes externs).
@@ -110,6 +113,23 @@ public class MonitorIntegracioResource implements Resource<Long> {
 		private Date dataFi;
 		private String usuari;
 		private String numeroRegistre;
+
+	}
+
+	/**
+	 * Resposta de l'acció {@link #ACTION_COUNT_ERRORS_CODE}: els codis d'integració a mostrar com a
+	 * pestanyes i el nombre d'errors de cada un. Els codis sense cap error no apareixen a {@code errors}.
+	 */
+	@Getter
+	@Setter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class CountErrorsResult implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		private List<String> codis;
+		private Map<String, Integer> errors;
 
 	}
 

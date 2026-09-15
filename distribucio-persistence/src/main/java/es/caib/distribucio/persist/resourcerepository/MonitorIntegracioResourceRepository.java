@@ -18,13 +18,14 @@ public interface MonitorIntegracioResourceRepository extends BaseRepository<Moni
 
 	@Query("select mon.codi, count(mon) " +
 			"from MonitorIntegracioResourceEntity mon " +
+			"left join mon.entitat ent " +
 			"where mon.estat = 'ERROR' " +
 			"and (:isDataNula = true or mon.data >= :data) " +
 			"and (:isDataFiNula = true or mon.data < :dataFi) " +
 			"and (:isNullDescripcio = true or lower(mon.descripcio) like lower('%'||:descripcio||'%')) " +
 			"and (:isNullUsuari = true or lower(mon.codiUsuari) like lower('%'||:usuari||'%')) " +
 			"and (:isNullTipus = true or mon.tipus = :tipus) " +
-			"and (:isNullEntitat = true or mon.entitat.id = :entitatId) " +
+			"and (:isNullEntitat = true or ent.id = :entitatId) " +
 			"and (:isNullNumeroRegistre = true or lower(mon.numeroRegistre) like lower('%'||:numeroRegistre||'%')) " +
 			"group by mon.codi")
 	List<Object[]> countErrorsGroupByCodi(

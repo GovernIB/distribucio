@@ -3,9 +3,10 @@ import Icon from '@mui/material/Icon';
 
 type IntegracioEstatProps = {
     value?: string;
+    excepcioMessage?: string;
 };
 
-export const IntegracioEstat: React.FC<IntegracioEstatProps> = ({ value }) => {
+export const IntegracioEstat: React.FC<IntegracioEstatProps> = ({ value, excepcioMessage }) => {
     if (value === 'OK') {
         return (
             <Box
@@ -20,7 +21,9 @@ export const IntegracioEstat: React.FC<IntegracioEstatProps> = ({ value }) => {
                     borderRadius: '4px',
                 }}
             >
-                <Icon fontSize="small">check_circle</Icon>
+                <Icon fontSize="small" sx={{ fontSize: '18px' }}>
+                    check_circle
+                </Icon>
                 {value}
             </Box>
         );
@@ -28,6 +31,7 @@ export const IntegracioEstat: React.FC<IntegracioEstatProps> = ({ value }) => {
     if (value === 'ERROR') {
         return (
             <Box
+                title={excepcioMessage}
                 sx={{
                     display: 'flex',
                     alignItems: 'center',
@@ -39,7 +43,9 @@ export const IntegracioEstat: React.FC<IntegracioEstatProps> = ({ value }) => {
                     borderRadius: '4px',
                 }}
             >
-                <Icon fontSize="small">warning</Icon>
+                <Icon fontSize="small" sx={{ fontSize: '18px' }}>
+                    warning
+                </Icon>
                 {value}
             </Box>
         );

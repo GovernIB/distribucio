@@ -30,7 +30,12 @@ const columns: MuiDataGridColDef[] = [
     {
         field: 'estat',
         flex: 0.4,
-        renderCell: (params: any) => <IntegracioEstat value={params?.row?.estat} />,
+        renderCell: (params: any) => (
+            <IntegracioEstat
+                value={params?.row?.estat}
+                excepcioMessage={params?.row?.excepcioMessage}
+            />
+        ),
     },
 ];
 

@@ -5,35 +5,23 @@ import Tabs from '@mui/material/Tabs';
 import { useResourceApiService } from 'reactlib';
 import { StyledBadge } from '../../components/StyledBadge';
 
-/**
- * Codis d'integració actualment actius (mateix conjunt tancat que l'enum IntegracioCodi del backend).
- */
-export const INTEGRACIO_CODIS = [
-    'USUARIS',
-    'UNITATS',
-    'ARXIU',
-    'DADESEXT',
-    'SIGNATURA',
-    'VALIDASIG',
-    'GESDOC',
-    'BUSTIAWS',
-    'PROCEDIMENT',
-    'SERVEI',
-    'DISTRIBUCIO',
-    'BACKOFFICE',
-] as const;
-
-export type IntegracioCodi = (typeof INTEGRACIO_CODIS)[number];
+export type IntegracioCodi = string;
 
 const ACTION_COUNT_ERRORS = 'COUNT_ERRORS';
 
+interface CountErrorsResult {
+    codis: string[];
+    errors: Record<string, number>;
+}
+
 /**
- * Nombre d'errors per codi d'integració, per pintar els xips de les pestanyes.
+ * Codis d'integració a mostrar com a pestanyes i el nombre d'errors de cadascun.
  */
-const useIntegracioErrorCounts = (filterData: any) => {
+const useIntegracioTabsData = (filterData: any) => {
     const { isReady: apiIsReady, artifactAction } = useResourceApiService(
         'monitorIntegracioResource'
     );
+    const [codis, setCodis] = useState<string[]>([]);
     const [counts, setCounts] = useState<Record<string, number>>({});
 
     const refresh = () => {
@@ -41,10 +29,14 @@ const useIntegracioErrorCounts = (filterData: any) => {
             return;
         }
         artifactAction(undefined, { code: ACTION_COUNT_ERRORS, data: filterData })
-            .then((result: Record<string, number>) => {
-                setCounts(result ?? {});
+            .then((result: CountErrorsResult) => {
+                setCodis(result?.codis ?? []);
+                setCounts(result?.errors ?? {});
             })
-            .catch(() => setCounts({}));
+            .catch(() => {
+                setCodis([]);
+                setCounts({});
+            });
     };
 
     useEffect(() => {
@@ -52,22 +44,29 @@ const useIntegracioErrorCounts = (filterData: any) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [apiIsReady, filterData]);
 
-    return { counts, refresh };
+    return { codis, counts, refresh };
 };
 
 /** Pestanyes del monitor d'integracions: una per codi, amb el nombre d'errors si n'hi ha. */
 export const useIntegracioTabs = (filterData?: any) => {
     const { t } = useTranslation();
-    const [value, setValue] = useState<IntegracioCodi>(INTEGRACIO_CODIS[0]);
-    const { counts, refresh: refreshCounts } = useIntegracioErrorCounts(filterData);
+    const [value, setValue] = useState<IntegracioCodi | undefined>(undefined);
+    const { codis, counts, refresh: refreshCounts } = useIntegracioTabsData(filterData);
+
+    useEffect(() => {
+        if (codis.length > 0 && (value === undefined || !codis.includes(value))) {
+            setValue(codis[0]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [codis]);
 
     const handleChange = (_event: React.SyntheticEvent, newValue: IntegracioCodi) => {
         setValue(newValue);
     };
 
     const tabElement = (
-        <Tabs value={value} onChange={handleChange} variant="scrollable" sx={{ px: 1 }}>
-            {INTEGRACIO_CODIS.map((codi) => (
+        <Tabs value={value ?? false} onChange={handleChange} variant="scrollable" sx={{ px: 1 }}>
+            {codis.map((codi) => (
                 <Tab
                     key={codi}
                     value={codi}
