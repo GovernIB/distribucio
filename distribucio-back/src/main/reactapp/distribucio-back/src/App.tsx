@@ -82,6 +82,13 @@ const InnerApp: React.FC = () => {
             pantalla: 'home',
         },
         {
+            id: 'registre',
+            title: t('app.menu.registre'),
+            to: 'registre',
+            icon: 'home',
+            pantalla: 'registre',
+        },
+        {
             id: 'entitats',
             title: t('app.menu.entitats'),
             to: 'entitat',
@@ -97,7 +104,7 @@ const InnerApp: React.FC = () => {
                     id: 'bustia',
                     title: t('app.menu.bustia'),
                     to: 'bustiaAdminOrganigrama',
-                    icon: 'folder',
+                    icon: 'inbox',
                     pantalla: 'bustiaAdminOrganigrama'
                 },
                 {

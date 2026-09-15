@@ -6,6 +6,7 @@ import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
 import es.caib.distribucio.persist.base.entity.BaseAuditableEntity;
 import es.caib.distribucio.persist.entity.AlertaEntity;
 import es.caib.distribucio.persist.entity.ContingutLogEntity;
+import es.caib.distribucio.persist.entity.ContingutMovimentEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -76,6 +77,12 @@ public abstract class ContingutResourceEntity<R extends Resource<?>> extends Bas
 //			orphanRemoval = true)
 //	protected Set<ContingutResourceEntity<?>> fills;
 
+    @ManyToOne(optional = true, fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "contmov_id",
+            foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "contingut_contmov_fk"))
+    protected ContingutMovimentResourceEntity darrerMoviment;
+
     // TODO: revisar si es necesaria versión Resource
     @OneToMany(
             mappedBy = "contingut",
@@ -83,10 +90,12 @@ public abstract class ContingutResourceEntity<R extends Resource<?>> extends Bas
             orphanRemoval = true)
     @OrderBy("createdDate ASC")
     protected List<AlertaEntity> alertes = new ArrayList<AlertaEntity>();
+
     @OneToMany(
             mappedBy = "contingut",
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    protected List<ContingutLogEntity> logs = new ArrayList<ContingutLogEntity>();
+    protected List<ContingutLogResourceEntity> logs = new ArrayList<>();
+
 }

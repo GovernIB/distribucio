@@ -27,6 +27,7 @@ export type Pantalla = 'home'
     | 'config'
     | 'backoffice'
     | 'massiva'
+    | 'registre'
     | 'integracio';
 
 /**
@@ -61,6 +62,7 @@ export const PANTALLA_ROLS: Record<Pantalla, string[]> = {
     backoffice: [ROLE_ADMIN],
     massiva: [ROLE_ADMIN, ROLE_USER],
     integracio: [ROLE_SUPER],
+    registre: [ROLE_ADMIN, ROLE_ADMIN_LECTURA, ROLE_USER],
 };
 
 export const isPantallaPermesa = (pantalla: Pantalla, rol?: string): boolean =>

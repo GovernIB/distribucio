@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.data.annotation.Transient;
 
 /**
  * Moviment (trasllat entre bústies) d'un {@link ContingutResource} (pestanya "Moviments" de
@@ -37,20 +38,24 @@ import lombok.experimental.FieldNameConstants;
 )
 public class ContingutMovimentResource extends BaseAuditableResource<Long> {
 
-	protected ResourceReference<ContingutResource, Long> contingut;
-
 	protected Long origenId;
+    protected String origenNom;
 	protected Long destiId;
-	protected String origenNom;
 	protected String destiNom;
 
-	protected ResourceReference<UsuariResource, String> remitent;
+    @Size(max = 3940)
+    protected String comentari;
+    @Size(max = 256)
+    protected String comentariDestins;
+    protected Boolean perConeixement;
+    protected Integer numDuplicat;
 
-	@Size(max = 3940)
-	protected String comentari;
-	protected Boolean perConeixement;
-	@Size(max = 256)
-	protected String comentariDestins;
-	protected Integer numDuplicat;
+	protected ResourceReference<UsuariResource, String> remitent;
+    protected ResourceReference<ContingutResource, Long> contingut;
+
+    @Transient private ResourceReference<UnitatOrganitzativaResource, Long> bustiaOrigen;
+    @Transient private ResourceReference<UnitatOrganitzativaResource, Long> bustiaDesti;
+    @Transient private ResourceReference<UnitatOrganitzativaResource, Long> unitatOrganitzativaOrigen;
+    @Transient private ResourceReference<UnitatOrganitzativaResource, Long> unitatOrganitzativaDesti;
 
 }

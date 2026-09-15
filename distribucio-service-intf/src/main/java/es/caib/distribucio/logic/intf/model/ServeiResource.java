@@ -28,7 +28,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @FieldNameConstants
 @ResourceConfig(
-		descriptionField = ServeiResource.Fields.nom,
+        descriptionField = "codiNom",
 		quickFilterFields = { ServeiResource.Fields.codi, ServeiResource.Fields.nom, ServeiResource.Fields.codiSia },
 		accessConstraints = {
 				@ResourceAccessConstraint(
@@ -113,5 +113,9 @@ public class ServeiResource extends BaseResource<Long> {
 	@Setter
 	public static class FormAction implements Serializable {
 	}
+
+    public String getCodiNom() {
+        return codiSia + " - " + nom;
+    }
 
 }

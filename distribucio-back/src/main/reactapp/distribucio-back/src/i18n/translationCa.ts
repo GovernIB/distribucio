@@ -42,6 +42,7 @@ const translationCa = {
             massiva: "Consultar accions massives",
             monitoritzar: 'Monitoritzar',
             integracio: 'Integracions',
+            registre: "Anotacions",
         },
         avisos: {
             mostra: "Mostra el detall de l'avís",
@@ -426,7 +427,37 @@ const translationCa = {
                     ok: "Document descarregat correctament",
                 }
             }
-        }
+        },
+        registre: {
+            title: "Anotacions de registre",
+            remitentEmpty: "Remitent buit",
+            grid: {
+                avisos: "Avisos",
+            },
+            estat: {
+                regla: "L'anotació està pendent de regla sense regla, cal reprocessar-la",
+                maxReintents: "S'han realitzat {{num}} intents d'un màxim de {{max}}",
+            },
+            avisos: {
+                sobreescriure: "Marcat per a sobreescriure",
+                enviatPerEmail: "Enviat per correu electrònic",
+                documentacio: {
+                    _1: "Documentació adjunta en suport PAPER (o altres suports)",
+                    _2: "Documentació adjunta digitalitzada i complementàriament en paper",
+                    _3: "Documentació adjunta digitalitzada",
+                },
+                estatEsborrany: "L'anotació té annexos en estat d'esborrany a l'Arxiu",
+                alerta: "Aquest registre s'ha distribuït amb regles",
+                procesError: {
+                    ARXIU_PENDENT: "Error en desar l'anotació de registre a l'Arxiu",
+                    REGLA_PENDENT: "Error en aplicar la regla de distribució",
+                    BACK_PENDENT: "Error en enviar l'anotació al backoffice",
+                    BACK_ERROR: "Processada al backoffice amb errors",
+                    default: "Anotació amb error",
+                },
+                pendentExecucioMassiva: "Inclosa en una acció massiva pendent d'execució",
+            }
+        },
     },
     component: {
         Offline: {

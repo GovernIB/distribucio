@@ -425,7 +425,37 @@ const translationEs = {
                     ok: "Documento descargado correctamente",
                 }
             }
-        }
+        },
+        registre: {
+            title: "Anotaciones de registro",
+            remitentEmpty: "Remitente vacío",
+            grid: {
+                avisos: "Avisos",
+            },
+            estat: {
+                regla: "La anotación está pendiente de una regla sin regla, es necesario reprocesarla",
+                maxReintents: "Se han realizado {{num}} intentos de un máximo de {{max}}",
+            },
+            avisos: {
+                sobreescriure: "Marcada para sobrescribir",
+                enviatPerEmail: "Enviada por correo electrónico",
+                documentacio: {
+                    _1: "Documentación adjunta en soporte PAPEL (u otros soportes)",
+                    _2: "Documentación adjunta digitalizada y complementariamente en papel",
+                    _3: "Documentación adjunta digitalizada",
+                },
+                estatEsborrany: "La anotación tiene anexos en estado de borrador en el Archivo",
+                alerta: "Este registro se ha distribuido con reglas",
+                procesError: {
+                    ARXIU_PENDENT: "Error al guardar la anotación de registro en el Archivo",
+                    REGLA_PENDENT: "Error al aplicar la regla de distribución",
+                    BACK_PENDENT: "Error al enviar la anotación al backoffice",
+                    BACK_ERROR: "Procesada en el backoffice con errores",
+                    default: "Anotación con error",
+                },
+                pendentExecucioMassiva: "Incluida en una acción masiva pendiente de ejecución",
+            }
+        },
     },
     component: {
         Offline: {

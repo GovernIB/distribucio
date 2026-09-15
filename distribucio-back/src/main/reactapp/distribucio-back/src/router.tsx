@@ -20,6 +20,7 @@ import {Propietats} from "./pages/propietats/Propietats.tsx";
 import {BackofficeGrid} from "./pages/backoffice/BackofficeGrid.tsx";
 import {ExecucioMassivaGrid} from "./pages/execucioMassiva/ExecucioMassivaGrid.tsx";
 import IntegracioGrid from './pages/integracio/IntegracioGrid.tsx';
+import {RegistreGrid} from "./pages/registre/RegistreGrid.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -209,6 +210,16 @@ export const router = createBrowserRouter(
                             path: 'massiva',
                             element: <ExecucioMassivaGrid/>,
                             handle: { titol: 'page.massiva.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="registre" />,
+                    children: [
+                        {
+                            path: 'registre',
+                            element: <RegistreGrid/>,
+                            handle: { titol: 'page.registre.title' },
                         },
                     ],
                 },

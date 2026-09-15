@@ -1,12 +1,16 @@
 import React from 'react';
 import { Box, Breakpoint, Button, Grid, GridSize, Icon, useMediaQuery, useTheme } from '@mui/material';
-import { FormField, FormFieldProps, useFormContext } from 'reactlib';
+import {FormField, FormFieldProps, useFormContext, useResourceApiContext} from 'reactlib';
 import Load from './Load';
+import {FormFieldRefOptionsResponse} from "../../lib/components/mui/form/FormFieldReference.tsx";
+import {GridSortModel} from "@mui/x-data-grid-pro";
 
 type ResponsiveStyleValue<T> = T | Array<T | null> | { [key in Breakpoint]?: T | null };
 
 type GridFormFieldProps = FormFieldProps & {
     size: ResponsiveStyleValue<GridSize>;
+    sortModel?: GridSortModel;
+    additionalOpctions?: (q:string) => any[];
 };
 
 /**
@@ -80,10 +84,54 @@ export const GridButtonField = (props: any) => {
 };
 
 const GridFormField: React.FC<GridFormFieldProps> = (props) => {
-    const { size } = props;
+    const { size, valueField: vField, additionalOpctions } = props;
+    const { fields } = useFormContext();
+
+    const field = fields?.find?.((item: any) => item?.name === props.name);
+
+    const { requestHref } = useResourceApiContext();
+    const optionsRequest = (q:any) => {
+        const dataSource = field.dataSource;
+        const valueField = vField || dataSource.valueField;
+        const labelField = dataSource.labelField;
+        const pageArgs = props.optionsUnpaged
+            ? { page: 'UNPAGED' }
+            : { page: 0, size: props.optionsPageSize };
+        const sorts =
+            props.sortModel && props.sortModel?.length
+                ? props.sortModel?.map((sm:any) => sm.field + ',' + sm.sort)
+                : undefined;
+        const templateData = {
+            quickFilter: q,
+            filter: props.filter,
+            sorts,
+            namedQuery: props.namedQueries,
+            perspective: props.perspectives,
+            ...pageArgs,
+        };
+
+        return new Promise<FormFieldRefOptionsResponse>((resolve, reject) => {
+            requestHref(dataSource.href, templateData)
+                .then((state) => {
+                    const options = state.getEmbedded().map((e) => ({
+                        id: e.data[valueField],
+                        description: e.data[labelField],
+                    }));
+                    if (additionalOpctions)
+                        options.push(...(additionalOpctions?.(q) || []))
+                    const response = {
+                        options,
+                        page: state.data.page,
+                    };
+                    resolve(response);
+                })
+                .catch(reject);
+        })
+    }
+
     return (
         <Grid size={size}>
-            <FormField {...props} />
+            <FormField optionsRequest={optionsRequest} {...props} />
         </Grid>
     );
 };

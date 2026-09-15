@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.data.annotation.Transient;
 
 @SuppressWarnings("serial")
 @Getter
@@ -59,6 +60,10 @@ public class ContingutResource extends BaseAuditableResource<Long> {
 
 	protected ResourceReference<EntitatResource, Long> entitat;
 	protected ResourceReference<ContingutResource, Long> pare;
+	protected ResourceReference<ContingutMovimentResource, Long> darrerMoviment;
+    @Transient protected ContingutMovimentResource darrerMovimentResource;
+
+    @Transient private boolean alerta;
 
 	/**
 	 * Breadcrumb dels avantpassats (columna "Bústia" del llistat legacy): de la unitat organitzativa
