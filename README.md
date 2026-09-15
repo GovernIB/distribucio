@@ -2,7 +2,7 @@
 
 # DISTRIBUCIO
 
-> - Versió Estable: __1.0.10__ (tag [Distribucio_1.0.10](https://github.com/GovernIB/distribucio/tree/Distribucio_1.0.10))
+> - Versió Estable: __1.0.10.1__ (tag [Distribucio_1.0.10.1](https://github.com/GovernIB/distribucio/tree/Distribucio_1.0.10.1))
 > - Versió Desenvolupament: __1.1.1__ (branca [dis-dev](https://github.com/GovernIB/distribucio/tree/dis-dev))
 
 ## <a name="desc"></a> Descripció
@@ -22,7 +22,7 @@ DISTRIBUCIO ofereix un servei web per donar d'altra anotacions de registre i que
 
 
 ## <a name="v_estable"></a> Versió estable
-### [1.0.10](https://github.com/GovernIB/distribucio/releases/tag/Distribucio_1.0.10)
+### [1.0.10.1](https://github.com/GovernIB/distribucio/releases/tag/Distribucio_1.0.10.1)
 
 ## <a name="v_jars"></a> Llibreries d'integració i utilitats
 Per projectes amb Java 7:
