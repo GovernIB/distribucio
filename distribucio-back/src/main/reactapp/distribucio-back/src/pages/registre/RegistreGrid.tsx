@@ -6,6 +6,9 @@ import RegistreFilter from "./RegistreFilter.tsx";
 import React from "react";
 import { Icon, Typography } from "@mui/material";
 import {formatDate} from "../../util/dateUtils.ts";
+import IconButton from "@mui/material/IconButton";
+import {useCommentDialog} from "../CommentDialog.tsx";
+import Badge from "@mui/material/Badge";
 
 const RegistreAvisos = ({entity}:any) => {
     const { t } = useTranslation();
@@ -108,12 +111,30 @@ const columns = (t:any) => [
     },
     { field: 'interessatsString', flex: 2, sortable: false },
 ]
-const perspectives = ['DARRER_MOVIMENT']
+const perspectives = ['DARRER_MOVIMENT', 'COMMENT_NUM']
 const sortModel:any = [{ field: 'data', sort: 'desc' }]
 export const RegistreGrid = () => {
     const { t } = useTranslation();
     const [springFilter, setSpringFilter] = React.useState<string>();
     const [namedQueries, setNamedQueries] = React.useState<string[]>([]);
+
+    const { handleOpen, component: dialogComponent } = useCommentDialog();
+
+    const additionalColumns = [
+        ...columns(t),
+        { field: 'numComentaris', flex:1, sortable: false,
+            renderCell: (params:any) =>
+                <>
+                    <IconButton title={t('component.CommentDialog.label')} onClick={() => handleOpen(params.id, params.row.nom)}>
+                        <Badge badgeContent={params.formattedValue} color="primary" showZero>
+                            <Icon>forum</Icon>
+                        </Badge>
+                    </IconButton>
+                </>
+        }
+    ]
+
+
     return (
         <GridPage>
             <CardPage title={t('page.registre.title')}>
@@ -122,7 +143,7 @@ export const RegistreGrid = () => {
                 <StyledMuiGrid
                     // apiRef={apiRef}
                     resourceName="registreResource"
-                    columns={columns(t)}
+                    columns={additionalColumns}
                     filter={springFilter}
                     perspectives={perspectives}
                     namedQueries={namedQueries}
@@ -145,6 +166,7 @@ export const RegistreGrid = () => {
                     paginationActive
                     readOnly
                 />
+                {dialogComponent}
             </CardPage>
         </GridPage>
     )

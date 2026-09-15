@@ -5,7 +5,6 @@ import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.ContingutHelper;
 import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
-import es.caib.distribucio.logic.intf.base.model.FieldOption;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.RegistreNombreAnnexesEnumDto;
@@ -46,6 +45,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     @PostConstruct
     public void init() {
         register(RegistreResource.PERSPECTIVE_DARRER_MOVIMENT_CODE, new DarrerMovimentPerspectiveApplicator());
+        register(ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE, new CommentNumPerspectiveApplicator());
     }
 
     @Override
@@ -270,6 +270,13 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 resource.setDarrerMovimentResource(
                     contingutMovimentResourceService.getOne(entity.getDarrerMoviment().getId(), null));
             }
+        }
+    }
+
+    protected static class CommentNumPerspectiveApplicator implements PerspectiveApplicator<RegistreResourceEntity, RegistreResource> {
+        @Override
+        public void applySingle(String code, RegistreResourceEntity entity, RegistreResource resource) {
+            resource.setNumComentaris(entity.getComentaris().size());
         }
     }
 }

@@ -516,8 +516,12 @@ const translationEs = {
             options: "Opciones",
             all: "Seleccionarlo todo",
             clear: "Limpiar la selección",
+        },
+        CommentDialog: {
+            title: "Comentarios del contenido: {{name}}",
+            label: "Comentarios",
+            envia: "Enviar",
         }
-
     },
 };
 

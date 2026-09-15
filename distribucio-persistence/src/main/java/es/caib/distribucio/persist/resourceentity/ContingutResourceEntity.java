@@ -98,4 +98,11 @@ public abstract class ContingutResourceEntity<R extends Resource<?>> extends Bas
             orphanRemoval = true)
     protected List<ContingutLogResourceEntity> logs = new ArrayList<>();
 
+    @OneToMany(
+            mappedBy = "contingut",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    protected List<ContingutComentariResourceEntity> comentaris = new ArrayList<>();
+
 }

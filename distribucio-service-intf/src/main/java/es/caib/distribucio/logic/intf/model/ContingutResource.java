@@ -42,12 +42,16 @@ import org.springframework.data.annotation.Transient;
                 @ResourceArtifact(
                         type = ResourceArtifactType.FILTER,
                         code = ContingutResource.FILTER_CODE,
-                        formClass = ContingutResource.FormFilter.class)
+                        formClass = ContingutResource.FormFilter.class),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.PERSPECTIVE,
+                        code = ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE),
         }
 )
 public class ContingutResource extends BaseAuditableResource<Long> {
 
 	public static final String FILTER_CODE = "FILTER";
+	public static final String PERSPECTIVE_COMMENT_NUM_CODE = "COMMENT_NUM";
 
 	@NotNull
 	@Size(max = 1024)
@@ -64,6 +68,8 @@ public class ContingutResource extends BaseAuditableResource<Long> {
     @Transient protected ContingutMovimentResource darrerMovimentResource;
 
     @Transient private boolean alerta;
+
+    @Transient private int numComentaris;
 
 	/**
 	 * Breadcrumb dels avantpassats (columna "Bústia" del llistat legacy): de la unitat organitzativa

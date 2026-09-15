@@ -48,6 +48,9 @@ import java.util.Date;
                 @ResourceArtifact(
                         type = ResourceArtifactType.PERSPECTIVE,
                         code = RegistreResource.PERSPECTIVE_DARRER_MOVIMENT_CODE),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.PERSPECTIVE,
+                        code = ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE),
         }
 )
 public class RegistreResource extends ContingutResource {

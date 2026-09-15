@@ -518,6 +518,11 @@ const translationCa = {
             options: "Opcions",
             all: "Selecciona-ho tot",
             clear: "Neteja la selecció",
+        },
+        CommentDialog: {
+            title: "Comentaris del contingut: {{name}}",
+            label: "Comentaris",
+            envia: "Envia",
         }
     },
 };
