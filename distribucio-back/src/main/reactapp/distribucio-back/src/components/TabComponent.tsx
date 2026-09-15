@@ -46,7 +46,8 @@ const TabPanel = (props:any) => {
 
 const TabComponent = (props :any) => {
     const [valueDef, setValueDef] = useState<any>();
-    const { tabs, headerAdditionalData, defaultValue, panelScroll = true, value = valueDef, onChange:setValue = setValueDef, ...other}=props;
+    const { tabs : t, headerAdditionalData, defaultValue, panelScroll = true, value = valueDef, onChange:setValue = setValueDef, ...other}=props;
+    const tabs = t.filter((tab:TabProps)=>!tab.hidden)
 
     const handleChange = (_event :any, newValue :string) : void => {
         if (tabs.some((tab:TabProps)=>tab?.value==newValue)) {
@@ -71,7 +72,7 @@ const TabComponent = (props :any) => {
                 {...other}
                 sx={{px: 1}}
             >
-                {tabs.filter((tab:TabProps)=>!tab.hidden).map((tab:TabProps) => {
+                {tabs.map((tab:TabProps) => {
                     const {title, value: tabValue, label, disabled, showZero = false, content, badge = 0, badgeColor= 'primary', error = false} = tab;
 
                     const errorProps = error ?{

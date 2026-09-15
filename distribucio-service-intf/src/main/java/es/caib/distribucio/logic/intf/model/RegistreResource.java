@@ -51,12 +51,17 @@ import java.util.Date;
                 @ResourceArtifact(
                         type = ResourceArtifactType.PERSPECTIVE,
                         code = ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.REPORT,
+                        code = RegistreResource.REPORT_INFORME_LOGS_CODE,
+                        requiresId = true),
         }
 )
 public class RegistreResource extends ContingutResource {
 
     public static final String FILTER_CODE = "FILTER";
     public static final String PERSPECTIVE_DARRER_MOVIMENT_CODE = "DARRER_MOVIMENT";
+    public static final String REPORT_INFORME_LOGS_CODE = "INFORME_LOGS";
 
     private String registreTipus;
     private String numero;

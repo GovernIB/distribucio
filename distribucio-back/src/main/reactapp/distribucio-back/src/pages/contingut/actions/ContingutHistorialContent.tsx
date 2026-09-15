@@ -21,7 +21,7 @@ export const ContingutHistorialContent: React.FC<ContingutHistorialContentProps>
         {
             value: 'accions',
             label: t('page.contingut.historial.tab.accions'),
-            content: <ContingutLogGrid contingutId={contingutId} />,
+            content: <ContingutLogGrid contingutRow={contingutRow} />,
         },
         {
             value: 'moviments',

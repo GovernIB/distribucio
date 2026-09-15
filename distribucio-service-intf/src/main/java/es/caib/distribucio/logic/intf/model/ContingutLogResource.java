@@ -3,8 +3,10 @@ package es.caib.distribucio.logic.intf.model;
 import java.util.List;
 
 import es.caib.distribucio.logic.intf.base.annotation.ResourceAccessConstraint;
+import es.caib.distribucio.logic.intf.base.annotation.ResourceArtifact;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceConfig;
 import es.caib.distribucio.logic.intf.base.model.BaseAuditableResource;
+import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
@@ -15,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.data.annotation.Transient;
 
 /**
  * Entrada del log d'accions d'un {@link ContingutResource} (pestanya "Accions" de l'historial
@@ -43,9 +46,16 @@ import lombok.experimental.FieldNameConstants;
                         grantedPermissions = { PermissionEnum.READ }
                 )
         },
+        artifacts = {
+                @ResourceArtifact(
+                        type = ResourceArtifactType.PERSPECTIVE,
+                        code = ContingutLogResource.PERSPECTIVE_RESUM_CODE),
+        },
         mappingIgnoredFields = { ContingutLogResource.Fields.params }
 )
 public class ContingutLogResource extends BaseAuditableResource<Long> {
+
+    public static final String PERSPECTIVE_RESUM_CODE = "RESUM";
 
 	protected LogTipusEnumDto tipus;
 
@@ -59,7 +69,7 @@ public class ContingutLogResource extends BaseAuditableResource<Long> {
 	 * {@code ContingutLogResourceServiceImpl.afterConversion} -- mateix algorisme que
 	 * {@code ContingutLogHelper.findLogDetalls} del manteniment legacy.
 	 */
-	protected String objecteNom;
+    @Transient protected String objecteNom;
 
 	protected ResourceReference<ContingutMovimentResource, Long> contingutMoviment;
 	/** Log "pare" quan aquest és una acció secundària (p.ex. una modificació sobre un subobjecte). */
@@ -72,4 +82,5 @@ public class ContingutLogResource extends BaseAuditableResource<Long> {
 	 */
 	protected List<String> params;
 
+    @Transient private String resum;
 }

@@ -227,6 +227,9 @@ const translationEs = {
                     auditoria: "Auditoría",
                 },
                 accio: {
+                    informe: {
+                        label: "Informe",
+                    },
                     veureDetall: "Ver detalles",
                 },
                 detall: {

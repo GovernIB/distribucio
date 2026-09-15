@@ -229,6 +229,9 @@ const translationCa = {
                     auditoria: "Auditoria",
                 },
                 accio: {
+                    informe: {
+                        label: "Informe",
+                    },
                     veureDetall: "Veure detalls",
                 },
                 detall: {

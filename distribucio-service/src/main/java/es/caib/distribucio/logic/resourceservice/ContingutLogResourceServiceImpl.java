@@ -2,6 +2,7 @@ package es.caib.distribucio.logic.resourceservice;
 
 import java.util.stream.Collectors;
 
+import es.caib.distribucio.logic.helper.ContingutLogResourceHelper;
 import org.springframework.stereotype.Service;
 
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
@@ -17,6 +18,8 @@ import es.caib.distribucio.persist.resourcerepository.UsuariResourceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.PostConstruct;
+
 /**
  * Implementació del servei de recurs per a la consulta del log d'accions d'un contingut.
  *
@@ -31,6 +34,12 @@ public class ContingutLogResourceServiceImpl
 
 	private final UsuariResourceRepository usuariResourceRepository;
 	private final ContingutResourceRepository contingutResourceRepository;
+	private final ContingutLogResourceHelper contingutLogResourceHelper;
+
+    @PostConstruct
+    public void init() {
+        register(ContingutLogResource.PERSPECTIVE_RESUM_CODE, new ResumPerspectiveApplicator());
+    }
 
 	/**
 	 * Completa els camps que el mapeig genèric per reflexió no pot resoldre: el nom complet del
@@ -55,6 +64,14 @@ public class ContingutLogResourceServiceImpl
 			resource.setObjecteNom(resoldreObjecteNom(entity.getObjecteTipus(), entity.getObjecteId()));
 		}
 	}
+
+    public class ResumPerspectiveApplicator implements PerspectiveApplicator<ContingutLogResourceEntity, ContingutLogResource> {
+
+        @Override
+        public void applySingle(String code, ContingutLogResourceEntity entity, ContingutLogResource resource) {
+            contingutLogResourceHelper.setLogText(entity, resource);
+        }
+    }
 
 	/**
 	 * Mateix algorisme que {@code ContingutLogHelper.findLogDetalls} del manteniment legacy: per a

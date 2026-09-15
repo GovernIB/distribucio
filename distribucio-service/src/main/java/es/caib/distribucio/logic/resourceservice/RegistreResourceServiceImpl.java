@@ -1,10 +1,16 @@
 package es.caib.distribucio.logic.resourceservice;
 
 import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
+import es.caib.distribucio.logic.base.helper.ObjectMappingHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.ContingutHelper;
+import es.caib.distribucio.logic.helper.ContingutLogResourceHelper;
+import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
+import es.caib.distribucio.logic.intf.base.exception.ReportGenerationException;
+import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
+import es.caib.distribucio.logic.intf.base.model.ReportFileType;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.RegistreNombreAnnexesEnumDto;
@@ -21,13 +27,12 @@ import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.resourceentity.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.ss.usermodel.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.criteria.*;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,11 +46,14 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private final EntitatRepository entitatRepository;
     private final ConfigHelper configHelper;
     private final ContingutMovimentResourceService contingutMovimentResourceService;
+    private final ObjectMappingHelper objectMappingHelper;
+    private final ContingutLogResourceHelper contingutLogResourceHelper;
 
     @PostConstruct
     public void init() {
         register(RegistreResource.PERSPECTIVE_DARRER_MOVIMENT_CODE, new DarrerMovimentPerspectiveApplicator());
         register(ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE, new CommentNumPerspectiveApplicator());
+        register(RegistreResource.REPORT_INFORME_LOGS_CODE, new InformeLogsReportGenerator());
     }
 
     @Override
@@ -277,6 +285,35 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         @Override
         public void applySingle(String code, RegistreResourceEntity entity, RegistreResource resource) {
             resource.setNumComentaris(entity.getComentaris().size());
+        }
+    }
+
+    public class InformeLogsReportGenerator implements ReportGenerator<RegistreResourceEntity, Serializable, ContingutLogResource> {
+        @Override
+        public DownloadableFile generateFile(String code, List<?> data, ReportFileType fileType, OutputStream out) {
+            // TODO: generar informe historico
+            return null;
+        }
+
+        @Override
+        public List<ContingutLogResource> generateData(String code, RegistreResourceEntity entity, Serializable params) throws ReportGenerationException {
+            List<ContingutLogResourceEntity> logEntityList = entity.getLogs();
+            List<ContingutLogResource> logResourceList = logEntityList.stream()
+                    .map(log -> objectMappingHelper.newInstanceMap(log, ContingutLogResource.class))
+                    .collect(Collectors.toList());
+
+            for (int i = 0; i<logEntityList.size(); i++){
+                ContingutLogResourceEntity e = logEntityList.get(i);
+                ContingutLogResource r = logResourceList.get(i);
+
+                contingutLogResourceHelper.setLogText(e, r);
+            }
+
+            return logResourceList;
+        }
+
+        @Override
+        public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
         }
     }
 }

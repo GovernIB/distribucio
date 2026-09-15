@@ -24,6 +24,7 @@ const columns: MuiDataGridColDef[] = [
     { field: 'comentari', flex: 2 },
 ];
 
+const sortModel:any = [{ field: 'createdDate', sort: 'asc' }]
 /** Pestanya "Moviments" de l'historial d'un contingut. */
 export const ContingutMovimentGrid: React.FC<ContingutMovimentGridProps> = ({ contingutId }) => {
     const apiRef = useMuiDataGridApiRef();
@@ -36,6 +37,7 @@ export const ContingutMovimentGrid: React.FC<ContingutMovimentGridProps> = ({ co
             columns={columns}
             readOnly
             filter={builder.eq('contingut.id', contingutId)}
+            sortModel={sortModel}
             paginationActive
             rowHideUpdateButton
             rowHideDeleteButton

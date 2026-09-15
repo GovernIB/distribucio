@@ -9,6 +9,7 @@ import {formatDate} from "../../util/dateUtils.ts";
 import IconButton from "@mui/material/IconButton";
 import {useCommentDialog} from "../CommentDialog.tsx";
 import Badge from "@mui/material/Badge";
+import {useRegistreActions} from "./detail/RegistreActions.tsx";
 
 const RegistreAvisos = ({entity}:any) => {
     const { t } = useTranslation();
@@ -134,6 +135,7 @@ export const RegistreGrid = () => {
         }
     ]
 
+    const {actions, components} = useRegistreActions();
 
     return (
         <GridPage>
@@ -160,13 +162,14 @@ export const RegistreGrid = () => {
                     //     entitat: { id: currentEntitatId }
                     // }}
 
-                    // rowAdditionalActions={actions}
+                    rowAdditionalActions={actions}
                     // toolbarMassiveActions={massiveActions}
                     // selectionActive
                     paginationActive
                     readOnly
                 />
                 {dialogComponent}
+                {components}
             </CardPage>
         </GridPage>
     )
