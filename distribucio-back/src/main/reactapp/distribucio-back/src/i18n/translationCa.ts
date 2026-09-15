@@ -208,14 +208,21 @@ const translationCa = {
         contingut: {
             grid: {
                 title: "Localitzador de continguts",
+                icona: {
+                    bustia: "Bústia",
+                    registre: "Anotació de registre",
+                    unitat: "Unitat organitzativa",
+                    esborrat: "Esborrat",
+                    alerta: "Aquest registre s'ha distribuit amb regles",
+                },
             },
             accio: {
                 historial: {
-                    label: "Historial",
+                    label: "Històric d'accions",
                 },
             },
             historial: {
-                title: "Historial",
+                title: "Històric d'accions de l'element",
                 tab: {
                     accions: "Accions",
                     moviments: "Moviments",

@@ -6,7 +6,6 @@ type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
 /**
  * Accions del menú de cada fila del llistat de continguts: de moment només "Historial"
  * "Detalls" encara no esta migrat -- veure ContingutAdminController legacy
- * "Recuperar" i "Esborrar" de la interfície JSP no estan implementades
  */
 export const useContingutAccions = (
     mostrarHistorial: (id: any, row: any) => void
@@ -15,7 +14,7 @@ export const useContingutAccions = (
     return [
         {
             label: t('page.contingut.accio.historial.label'),
-            icon: 'history',
+            icon: 'format_list_bulleted',
             showInMenu: true,
             onClick: (id: any, row: any) => mostrarHistorial(id, row),
         },

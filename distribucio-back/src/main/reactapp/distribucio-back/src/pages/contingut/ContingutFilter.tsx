@@ -42,7 +42,6 @@ export const ContingutFilter: React.FC<any> = (props) => {
             resourceName="contingutResource"
             code="FILTER"
             springFilterBuilder={springFilterBuilder}
-            defaultData={{ opcionsEsborrat: 'NOMES_NO_ESBORRATS' }}
             {...props}
         >
             <ContingutFilterForm />

@@ -34,23 +34,30 @@ public class ContingutResourceServiceImpl
 
 	/**
 	 * Restringeix totes les consultes (llistat, exportació i lectura d'un sol registre) a l'entitat
-	 * actualment seleccionada per l'usuari -- mateix patró que {@code ServeiResourceServiceImpl}/
-	 * {@code BustiaResourceServiceImpl}. Sense entitat seleccionada (p.ex. DIS_SUPER) no restringeix
-	 * res.
+	 * actualment seleccionada per l'usuari. Sense entitat seleccionada (p.ex. DIS_SUPER) no restringeix res.
+	 * També exclou les bústies arrel (sense pare, que representen la pròpia unitat organitzativa)
 	 */
 	@Override
 	protected Specification<ContingutResourceEntity<ContingutResource>> additionalSpecification(String[] namedQueries) {
+		Specification<ContingutResourceEntity<ContingutResource>> excloureBustiaArrel =
+				(root, query, cb) -> cb.or(
+						cb.isNotNull(root.get("pare")),
+						cb.notEqual(root.type(), BustiaResourceEntity.class));
+
 		Long entitatId = SessioActualUtil.getEntitatId();
 		if (entitatId != null) {
-			return (root, query, cb) -> cb.equal(root.get("entitat").get("id"), entitatId);
+			Specification<ContingutResourceEntity<ContingutResource>> entitatSpec =
+					(root, query, cb) -> cb.equal(root.get("entitat").get("id"), entitatId);
+			return Specification.where(excloureBustiaArrel).and(entitatSpec);
 		}
-		return null;
+		return excloureBustiaArrel;
 	}
 
 	/**
 	 * Completa els camps que el llistat legacy "Contingut" mostra i que no es poden obtenir per
 	 * mapeig genèric per reflexió (veure {@code ContingutHelper.toContingutDto} del manteniment
-	 * legacy): el nom mostrat, el nom complet del remitent i el breadcrumb de la bústia.
+	 * legacy): el nom mostrat, el nom complet del remitent, el breadcrumb de la bústia i si té
+	 * alertes (camp {@code @Transient}, no es mapeja automàticament des de l'entitat).
 	 */
 	@Override
 	protected void afterConversion(ContingutResourceEntity<ContingutResource> entity, ContingutResource resource) {
@@ -64,6 +71,7 @@ public class ContingutResourceServiceImpl
 		}
 
 		resource.setPath(buildPath(entity));
+		resource.setAlerta(!entity.getAlertes().isEmpty());
 	}
 
 	/**

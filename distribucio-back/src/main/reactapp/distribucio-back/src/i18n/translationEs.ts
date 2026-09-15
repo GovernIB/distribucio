@@ -206,14 +206,21 @@ const translationEs = {
         contingut: {
             grid: {
                 title: "Localizador de contenidos",
+                icona: {
+                    bustia: "Buzón",
+                    registre: "Anotación de registro",
+                    unitat: "Unidad organizativa",
+                    esborrat: "Eliminado",
+                    alerta: "Este registro se ha distribuido con reglas",
+                },
             },
             accio: {
                 historial: {
-                    label: "Historial",
+                    label: "Histórico de acciones",
                 },
             },
             historial: {
-                title: "Historial",
+                title: "Histórico de acciones del elemento",
                 tab: {
                     accions: "Acciones",
                     moviments: "Movimientos",
