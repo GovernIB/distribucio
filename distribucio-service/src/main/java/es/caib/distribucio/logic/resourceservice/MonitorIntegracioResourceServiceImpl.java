@@ -1,6 +1,7 @@
 package es.caib.distribucio.logic.resourceservice;
 
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
+import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
@@ -32,6 +33,7 @@ public class MonitorIntegracioResourceServiceImpl
 		implements MonitorIntegracioResourceService {
 
 	private final MonitorIntegracioResourceRepository monitorIntegracioResourceRepository;
+	private final IntegracioHelper integracioHelper;
 
 	@PostConstruct
 	public void init() {
@@ -48,11 +50,13 @@ public class MonitorIntegracioResourceServiceImpl
 	}
 
 	/**
-	 * Compta, per codi d'integració, el nombre d'entrades en estat ERROR que compleixen el filtre
-	 * indicat. Els codis d'integració sense cap error no apareixen al mapa retornat.
+	 * Retorna els codis d'integració a mostrar com a pestanyes ({@link IntegracioHelper#findAll()},
+	 * mateixa font que la pantalla legacy) i, per cadascun, el nombre d'entrades en estat ERROR que
+	 * compleixen el filtre indicat. Els codis d'integració sense cap error no apareixen al mapa
+	 * d'errors.
 	 */
 	private class CountErrorsActionExecutor implements
-			ActionExecutor<MonitorIntegracioResourceEntity, MonitorIntegracioResource.FormFilter, HashMap<String, Integer>> {
+			ActionExecutor<MonitorIntegracioResourceEntity, MonitorIntegracioResource.FormFilter, MonitorIntegracioResource.CountErrorsResult> {
 
 		@Override
 		public void onChange(
@@ -66,7 +70,7 @@ public class MonitorIntegracioResourceServiceImpl
 		}
 
 		@Override
-		public HashMap<String, Integer> exec(
+		public MonitorIntegracioResource.CountErrorsResult exec(
 				String code,
 				MonitorIntegracioResourceEntity entity,
 				MonitorIntegracioResource.FormFilter params) throws ActionExecutionException {
@@ -96,7 +100,7 @@ public class MonitorIntegracioResourceServiceImpl
 					numeroRegistre)) {
 				errors.put((String) resultat[0], ((Long) resultat[1]).intValue());
 			}
-			return errors;
+			return new MonitorIntegracioResource.CountErrorsResult(integracioHelper.findAllCodis(), errors);
 		}
 
 	}

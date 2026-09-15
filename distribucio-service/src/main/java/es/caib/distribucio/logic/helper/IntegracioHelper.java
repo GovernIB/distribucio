@@ -87,6 +87,15 @@ public class IntegracioHelper {
 		return integracions;
 	}
 
+	/** Codis d'integració mostrats al monitor (mateix ordre i subconjunt que {@link #findAll()}). */
+	public List<String> findAllCodis() {
+		List<String> codis = new ArrayList<String>();
+		for (IntegracioDto integracio : findAll()) {
+			codis.add(integracio.getCodi());
+		}
+		return codis;
+	}
+
 	public List<IntegracioDto> findPerDiagnostic() {
 		List<IntegracioDto> integracions = new ArrayList<IntegracioDto>();
 		integracions.add(
