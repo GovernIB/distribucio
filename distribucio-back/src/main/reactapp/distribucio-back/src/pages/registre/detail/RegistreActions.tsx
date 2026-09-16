@@ -2,6 +2,7 @@ import {useTranslation} from "react-i18next";
 import useContingutHistorialDialog from "../../contingut/actions/ContingutHistorialDialog.tsx";
 import {useBaseAppContext, useResourceApiService} from "reactlib";
 import {iniciaDescargaBlob} from "../../../util/downloadUtils.ts";
+import {useAlertes} from "./Alertes.tsx";
 
 export const useActions = (refresh?: () => void) => {
     const { t } = useTranslation();
@@ -35,6 +36,7 @@ export const useRegistreActions = (refresh?: () => void) => {
     const { t } = useTranslation();
 
     const {show: handleHistoric, component: componentHistoric} = useContingutHistorialDialog()
+    const {handleOpen: handleAlertes, component: componentAlertes} = useAlertes();
 
     const actions:any[] = [
         {
@@ -43,10 +45,18 @@ export const useRegistreActions = (refresh?: () => void) => {
             showInMenu: true,
             onClick: handleHistoric,
         },
+        {
+            label: t('page.alerta.label'),
+            icon: 'note_stack',
+            showInMenu: true,
+            onClick: handleAlertes,
+            hidden: (row:any) => !row.alerta,
+        },
     ]
 
     const components = <>
         {componentHistoric}
+        {componentAlertes}
     </>
 
     return {

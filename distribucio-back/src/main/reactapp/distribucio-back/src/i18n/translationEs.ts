@@ -485,6 +485,19 @@ const translationEs = {
                 pendentExecucioMassiva: "Incluida en una acción masiva pendiente de ejecución",
             }
         },
+        alerta: {
+            label: "Listado de alertas",
+            title: "Listado de alertas",
+            accio: {
+                llegida: {
+                    label: "Leída",
+                    ok: "La alerta se ha marcado como leída",
+                    confirm: {
+                        message: "¿Está seguro de que desea marcar la alerta como leída?"
+                    }
+                }
+            }
+        },
     },
     component: {
         Offline: {

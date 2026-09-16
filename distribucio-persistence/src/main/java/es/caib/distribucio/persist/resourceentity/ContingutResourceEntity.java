@@ -83,13 +83,12 @@ public abstract class ContingutResourceEntity<R extends Resource<?>> extends Bas
             foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "contingut_contmov_fk"))
     protected ContingutMovimentResourceEntity darrerMoviment;
 
-    // TODO: revisar si es necesaria versión Resource
     @OneToMany(
             mappedBy = "contingut",
             fetch = FetchType.LAZY,
             orphanRemoval = true)
     @OrderBy("createdDate ASC")
-    protected List<AlertaEntity> alertes = new ArrayList<AlertaEntity>();
+    protected List<AlertaResourceEntity> alertes = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "contingut",

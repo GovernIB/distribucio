@@ -487,6 +487,19 @@ const translationCa = {
                 pendentExecucioMassiva: "Inclosa en una acció massiva pendent d'execució",
             }
         },
+        alerta: {
+            label: "Llistat d'alertes",
+            title: "Llistat d'alertes",
+            accio: {
+                llegida: {
+                    label: "Llegida",
+                    ok: "L'alerta s'ha marcat com a llegida",
+                    confirm: {
+                        message: "Segur que vol marcar l'alerta com a llegida?"
+                    }
+                }
+            }
+        },
     },
     component: {
         Offline: {
