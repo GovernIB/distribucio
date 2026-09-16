@@ -8,7 +8,9 @@ import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.RegistreAnnexFirmaDto;
 import es.caib.distribucio.logic.intf.dto.RegistreNumeroCopiaEnumDto;
 import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
@@ -22,6 +24,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Document (annex) adjunt a una anotació de registre. Anomenat "RegistreAnnexResource" perquè coincideixi
@@ -30,14 +34,12 @@ import java.util.Date;
  * Recurs de només lectura: només es concedeix el permís READ, tot i que el controller extén la classe mutable genèrica.
  * Els annexos es creen com a efecte secundari de l'entrada d'una anotació de registre, no des d'aquesta pantalla.
  * <p>
- * Camps NO inclosos deliberadament (a diferència de la resta, que hi són encara que no s'usin totes
- * de moment -- veure comentaris per camp):
- * <ul>
- *     <li>{@code fitxerContingut} (bytes del document): mai s'ha d'incloure en un recurs de llistat;
- *     quan es faci l'acció de "Descàrrega" s'exposarà per un endpoint/artifact dedicat.</li>
- *     <li>{@code firmes} (llistat complet de firmes amb tots els detalls): es reservarà per a una
- *     futura acció de "detalls de firmes"; aquí només hi ha el resum {@link #signaturaInfo}.</li>
- * </ul>
+ * Camp NO inclòs deliberadament: {@code fitxerContingut} (bytes del document) -- mai s'ha d'incloure
+ * en un recurs de llistat; l'acció de "Descàrrega" ja s'exposa per un artifact dedicat (veure
+ * {@link #REPORT_DESCARREGAR_ORIGINAL_CODE}/{@link #REPORT_DESCARREGAR_IMPRIMIBLE_CODE}).
+ * <p>
+ * {@link #metaDadesMap} i {@link #firmes} només es calculen a {@code getOne} (acció "Detalls de
+ * l'annex"); a la llista només hi ha el resum {@link #signaturaInfo}.
  *
  * @author Límit Tecnologies
  */
@@ -98,13 +100,9 @@ public class RegistreAnnexResource extends BaseResource<Long> {
 	private String fitxerArxiuUuid;
 	private Date dataCaptura;
 	private String localitzacio;
-	/** Codi curt ENI (veure {@code RegistreAnnexOrigenEnum} a l'entitat legacy); conversió a enum pendent. */
 	private String origenCiutadaAdmin;
-	/** Codi curt NTI (veure {@code RegistreAnnexNtiTipusDocumentEnum} a l'entitat legacy); conversió a enum pendent. */
 	private String ntiTipusDocument;
-	/** Codi curt SICRES (veure {@code RegistreAnnexSicresTipusDocumentEnum} a l'entitat legacy); conversió a enum pendent. */
 	private String sicresTipusDocument;
-	/** Codi curt (veure {@code RegistreAnnexElaboracioEstatEnum} a l'entitat legacy); conversió a enum pendent. */
 	private String ntiElaboracioEstat;
 	private String observacions;
 	private Integer firmaMode;
@@ -115,12 +113,19 @@ public class RegistreAnnexResource extends BaseResource<Long> {
 	private String timestamp;
 	/** Pendent: futura acció de detall/validació de firma. */
 	private String validacioOCSP;
-	/** Pendent: necessari per a la futura acció de descàrrega des del gestor documental. */
+	/** Identificador del document al gestor documental; es mostra només si {@link #arxiuEstat} és ESBORRANY. */
 	private String gesdocDocumentId;
+	/**
+	 * Firmes de gestió documental de l'annex (només es mostra si {@link #arxiuEstat} és ESBORRANY).
+	 * Només s'omple a "Detalls de l'annex".
+	 */
+	private List<RegistreAnnexFirmaDto> gesdocFirmes;
 	/** Indicador intern; pendent futura acció de detall de firmes. */
 	private Boolean signaturaDetallsDescarregat;
-	/** Metadades en brut (JSON); pendent futura acció de detalls de l'annex. */
+	/** Metadades en brut (JSON); veure {@link #metaDadesMap} per a la versió ja processada. */
 	private String metaDades;
+	/** Metadades ENI/NTI de l'annex (clau -&gt; valor), extretes de {@link #metaDades}. Només s'omple a "Detalls de l'annex". */
+	private Map<String, String> metaDadesMap;
 	private ValidacioFirmaEnum validacioFirmaEstat;
 	private String validacioFirmaError;
 	private AnnexEstat arxiuEstat;
@@ -146,6 +151,13 @@ public class RegistreAnnexResource extends BaseResource<Long> {
 	/** Resum llegible de la primera firma de l'annex (tipus + perfil). Buit si l'annex no en té cap. */
 	private String signaturaInfo;
 	private Boolean ambFirma;
+	/**
+	 * Llistat complet de firmes amb tots els detalls (bloc "Firmes" de registreAnnex.jsp/
+	 * registreAnnexFirmes.jsp). Només s'omple a "Detalls de l'annex"; a la llista només hi ha el
+	 * resum {@link #signaturaInfo}. No inclou {@code contingut} (bytes de la firma): es reservarà
+	 * per a una futura acció de descàrrega de la firma individual.
+	 */
+	private List<ArxiuFirmaDto> firmes;
 
 	@Getter
 	@Setter

@@ -7,12 +7,13 @@ import StyledMuiGrid from '../../components/StyledMuiGrid';
 import { formatDate } from '../../util/dateUtils';
 import AnnexFilter from './AnnexFilter';
 import useAnnexAccions from './AnnexAccions';
+import useAnnexDetailDialog from './actions/AnnexDetailDialog';
 
 const ESTATS_FIRMA_AMB_ERROR = ['FIRMA_INVALIDA', 'ERROR_VALIDANT'];
 
 const sortModel: any = [{ field: 'dataAnotacio', sort: 'desc' }];
 
-const AnnexArxiuEstatCell: React.FC<{ params: any }> = ({ params }) => {
+export const AnnexArxiuEstatCell: React.FC<{ params: any }> = ({ params }) => {
     const { t } = useTranslation();
     const row = params?.row;
     const estat = row?.arxiuEstat;
@@ -58,7 +59,8 @@ const AnnexGrid: React.FC = () => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
-    const accions = useAnnexAccions();
+    const { show: mostrarDetall, component: detailDialog } = useAnnexDetailDialog();
+    const accions = useAnnexAccions(mostrarDetall);
 
     const columns: MuiDataGridColDef[] = React.useMemo(
         () => [
@@ -111,8 +113,10 @@ const AnnexGrid: React.FC = () => {
                     filter={springFilter}
                     paginationActive
                     sortModel={sortModel}
+                    onRowClick={(params: any) => mostrarDetall(params?.row?.id, params?.row)}
                     rowAdditionalActions={accions}
                 />
+                {detailDialog}
             </CardPage>
         </GridPage>
     );

@@ -1,21 +1,34 @@
 package es.caib.distribucio.logic.resourceservice;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
+import es.caib.distribucio.logic.intf.base.exception.ResourceNotFoundException;
 import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
 import es.caib.distribucio.logic.intf.base.model.ReportFileType;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
+import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDto;
+import es.caib.distribucio.logic.intf.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.FitxerDto;
+import es.caib.distribucio.logic.intf.dto.RegistreAnnexFirmaDto;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
 import es.caib.distribucio.logic.intf.model.RegistreAnnexResource;
+import es.caib.distribucio.logic.intf.registre.RegistreAnnexElaboracioEstatEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreAnnexNtiTipusDocumentEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreAnnexOrigenEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.logic.intf.resourceservice.RegistreAnnexResourceService;
 import es.caib.distribucio.logic.intf.service.ConfigService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
+import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.persist.entity.RegistreAnnexFirmaEntity;
+import es.caib.distribucio.persist.entity.RegistreFirmaDetallEntity;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.persist.resourceentity.RegistreAnnexResourceEntity;
@@ -23,12 +36,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Implementació del servei de recurs per al localitzador d'annexos.
@@ -61,6 +76,103 @@ public class RegistreAnnexResourceServiceImpl
 			return (root, query, cb) -> cb.equal(root.get("registre").get("entitat").get("id"), entitatId);
 		}
 		return null;
+	}
+
+	/**
+	 * Acció "Detalls de l'annex": aquest mètode només s'executa en obrir el detall d'un annex concret.
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public RegistreAnnexResource getOne(Long id, String[] perspectives) throws ResourceNotFoundException {
+		RegistreAnnexResource resource = super.getOne(id, perspectives);
+		RegistreAnnexResourceEntity entity = getEntity(id);
+		resource.setMetaDadesMap(parseMetaDadesMap(id, entity.getMetaDades()));
+		resource.setNtiTipusDocument(enumNameOrRaw(
+				RegistreAnnexNtiTipusDocumentEnum.valorAsEnum(entity.getNtiTipusDocument()),
+				entity.getNtiTipusDocument()));
+		resource.setNtiElaboracioEstat(enumNameOrRaw(
+				RegistreAnnexElaboracioEstatEnum.valorAsEnum(entity.getNtiElaboracioEstat()),
+				entity.getNtiElaboracioEstat()));
+		resource.setSicresTipusDocument(enumNameOrRaw(
+				RegistreAnnexSicresTipusDocumentEnum.valorAsEnum(entity.getSicresTipusDocument()),
+				entity.getSicresTipusDocument()));
+		resource.setOrigenCiutadaAdmin(enumNameOrRaw(
+				RegistreAnnexOrigenEnum.valorAsEnum(entity.getOrigenCiutadaAdmin()),
+				entity.getOrigenCiutadaAdmin()));
+		List<RegistreAnnexFirmaEntity> firmes = registreAnnexFirmaRepository.getRegistreAnnexFirmesSenseDetall(id);
+		resource.setFirmes(toFirmesDto(firmes));
+		if (AnnexEstat.ESBORRANY.equals(entity.getArxiuEstat())) {
+			resource.setGesdocFirmes(toGesdocFirmesDto(firmes));
+		}
+		return resource;
+	}
+
+	private String enumNameOrRaw(Enum<?> enumValue, String raw) {
+		return enumValue != null ? enumValue.name() : raw;
+	}
+
+	/**
+	 * Bloc "Gestió documental"
+	 */
+	private List<RegistreAnnexFirmaDto> toGesdocFirmesDto(List<RegistreAnnexFirmaEntity> firmes) {
+		return firmes.stream().map(firma -> {
+			RegistreAnnexFirmaDto dto = new RegistreAnnexFirmaDto();
+			dto.setTipus(firma.getTipus());
+			dto.setPerfil(firma.getPerfil());
+			dto.setFitxerNom(firma.getFitxerNom());
+			dto.setTipusMime(firma.getTipusMime());
+			dto.setCsvRegulacio(firma.getCsvRegulacio());
+			dto.setAutofirma(firma.isAutofirma());
+			dto.setGesdocFirmaId(firma.getGesdocFirmaId());
+			return dto;
+		}).collect(Collectors.toList());
+	}
+
+	/**
+	 * Bloc "Firmes". No s'omple {@code contingut} (bytes de la firma)
+	 * es reserva per a una futura acció de descàrrega de la firma individual.
+	 */
+	private List<ArxiuFirmaDto> toFirmesDto(List<RegistreAnnexFirmaEntity> firmes) {
+		return firmes.stream().map(firma -> {
+			ArxiuFirmaDto dto = new ArxiuFirmaDto();
+			dto.setTipus(firma.getTipus() != null ? ArxiuConversions.toArxiuFirmaTipus(firma.getTipus()) : null);
+			dto.setPerfil(parseArxiuFirmaPerfil(firma.getPerfil()));
+			dto.setFitxerNom(firma.getFitxerNom());
+			dto.setTipusMime(firma.getTipusMime());
+			dto.setCsvRegulacio(firma.getCsvRegulacio());
+			dto.setAutofirma(firma.isAutofirma());
+			dto.setDetalls(firma.getDetalls().stream().map(this::toFirmaDetallDto).collect(Collectors.toList()));
+			return dto;
+		}).collect(Collectors.toList());
+	}
+
+	private ArxiuFirmaPerfilEnumDto parseArxiuFirmaPerfil(String perfil) {
+		try {
+			return perfil != null ? ArxiuFirmaPerfilEnumDto.valueOf(perfil) : null;
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
+	}
+
+	private ArxiuFirmaDetallDto toFirmaDetallDto(RegistreFirmaDetallEntity detall) {
+		ArxiuFirmaDetallDto dto = new ArxiuFirmaDetallDto();
+		dto.setData(detall.getData());
+		dto.setResponsableNif(detall.getResponsableNif());
+		dto.setResponsableNom(detall.getResponsableNom());
+		dto.setEmissorCertificat(detall.getEmissorCertificat());
+		return dto;
+	}
+
+	private Map<String, String> parseMetaDadesMap(Long id, String metaDadesJson) {
+		if (metaDadesJson == null || metaDadesJson.isEmpty()) {
+			return null;
+		}
+		try {
+			return new ObjectMapper().readValue(metaDadesJson, new TypeReference<Map<String, String>>() {});
+		} catch (Exception e) {
+			log.warn("No s'han pogut llegir les metadades de l'annex (id={})", id, e);
+			return null;
+		}
 	}
 
 	@Override

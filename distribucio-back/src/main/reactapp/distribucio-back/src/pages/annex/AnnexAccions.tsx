@@ -2,22 +2,21 @@ import { useTranslation } from 'react-i18next';
 import { useBaseAppContext, useResourceApiService, type MuiDataGridProps } from 'reactlib';
 import { iniciaDescargaBlob } from '../../util/downloadUtils';
 
-const REPORT_DESCARREGAR_ORIGINAL = 'DESCARREGAR_ORIGINAL';
-const REPORT_DESCARREGAR_IMPRIMIBLE = 'DESCARREGAR_IMPRIMIBLE';
+export const REPORT_DESCARREGAR_ORIGINAL = 'DESCARREGAR_ORIGINAL';
+export const REPORT_DESCARREGAR_IMPRIMIBLE = 'DESCARREGAR_IMPRIMIBLE';
 
-const fitxerExtensio = (row: any): string | undefined => {
+export const fitxerExtensio = (row: any): string | undefined => {
     const nom: string | undefined = row?.fitxerNom;
     return nom?.includes('.') ? nom.substring(nom.lastIndexOf('.') + 1) : undefined;
 };
 
-type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
-
-export const useAnnexAccions = (): AccionsFila => {
+/** Descàrrega d'un annex (original/imprimible); compartit entre el menú de la graella i el diàleg de detalls. */
+export const useDescarregarAnnex = () => {
     const { t } = useTranslation();
     const { temporalMessageShow } = useBaseAppContext();
     const { artifactReport: apiArtifactReport } = useResourceApiService('registreAnnexResource');
 
-    const descarregar = (id: any, code: string) => {
+    return (id: any, code: string) => {
         apiArtifactReport(id, { code, fileType: 'PDF' })
             .then((result: any) => iniciaDescargaBlob(result))
             .catch((error: any) =>
@@ -28,8 +27,21 @@ export const useAnnexAccions = (): AccionsFila => {
                 )
             );
     };
+};
+
+type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
+
+export const useAnnexAccions = (mostrarDetall: (id: any, row: any) => void): AccionsFila => {
+    const { t } = useTranslation();
+    const descarregar = useDescarregarAnnex();
 
     return [
+        {
+            label: t('page.annex.accio.detalls'),
+            icon: 'info',
+            showInMenu: true,
+            onClick: (id: any, row: any) => mostrarDetall(id, row),
+        },
         {
             label: t('page.annex.accio.concsv'),
             icon: 'open_in_new',
