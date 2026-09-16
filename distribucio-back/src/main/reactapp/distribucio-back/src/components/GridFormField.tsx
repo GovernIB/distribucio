@@ -84,7 +84,7 @@ export const GridButtonField = (props: any) => {
 };
 
 const GridFormField: React.FC<GridFormFieldProps> = (props) => {
-    const { size, valueField: vField, additionalOpctions } = props;
+    const { size, valueField: vField, additionalOpctions, hidden } = props;
     const { fields } = useFormContext();
 
     const field = fields?.find?.((item: any) => item?.name === props.name);
@@ -128,6 +128,9 @@ const GridFormField: React.FC<GridFormFieldProps> = (props) => {
                 .catch(reject);
         })
     }
+
+    if (hidden)
+        return <></>
 
     return (
         <Grid size={size}>

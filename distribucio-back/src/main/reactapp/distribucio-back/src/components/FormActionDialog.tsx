@@ -30,6 +30,7 @@ export type FormActionDialogProps = {
     onSuccess?: (result?: any) => void;
     onError?: (error?: any) => void;
     confirm?: boolean;
+    initOnChange?: boolean;
     /** Camps del formulari (GridFormField...). */
     children: React.ReactElement;
 };
@@ -58,6 +59,7 @@ export const FormActionDialog: React.FC<FormActionDialogProps> = (props) => {
         onSuccess,
         onError,
         confirm = false,
+        initOnChange = false,
         children,
     } = props;
     const { temporalMessageShow } = useBaseAppContext();
@@ -75,7 +77,7 @@ export const FormActionDialog: React.FC<FormActionDialogProps> = (props) => {
         undefined, // confirmMessage
         undefined, // formAdditionalData
         undefined, // formI18nKeys
-        false, // formInitOnChangeRequest
+        initOnChange, // formInitOnChangeRequest
         children, // formDialogContent
         undefined, // formDialogLoading
         buttons,

@@ -633,6 +633,7 @@ const translationCa = {
             remitentEmpty: "Remitent buit",
             grid: {
                 avisos: "Avisos",
+                remitent: "Remitent",
             },
             estat: {
                 regla: "L'anotació està pendent de regla sense regla, cal reprocessar-la",
@@ -656,7 +657,18 @@ const translationCa = {
                     default: "Anotació amb error",
                 },
                 pendentExecucioMassiva: "Inclosa en una acció massiva pendent d'execució",
-            }
+            },
+            accio: {
+                classifica: {
+                    label: "Classifica...",
+                    title: "Classificació de l'anotació de registre",
+                    warning: "La classificació d'una anotació de registre pot disparar l'execució de regles, la qual cosa pot provocar que l'anotació desaparegui de la bústia actual.",
+                    ok: {
+                        PROCEDIMENT: "L'anotació de registre '{{numero}}' s'ha classificat correctament dins del procediment '{{sia}}'",
+                        SERVEI: "L'anotació de registre '{{numero}}' s'ha classificat correctament dins del servei '{{sia}}'",
+                    },
+                },
+            },
         },
         alerta: {
             label: "Llistat d'alertes",

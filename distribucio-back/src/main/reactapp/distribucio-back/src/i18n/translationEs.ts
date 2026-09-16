@@ -631,6 +631,7 @@ const translationEs = {
             remitentEmpty: "Remitente vacío",
             grid: {
                 avisos: "Avisos",
+                remitent: "Remitente",
             },
             estat: {
                 regla: "La anotación está pendiente de una regla sin regla, es necesario reprocesarla",
@@ -654,7 +655,18 @@ const translationEs = {
                     default: "Anotación con error",
                 },
                 pendentExecucioMassiva: "Incluida en una acción masiva pendiente de ejecución",
-            }
+            },
+            accio: {
+                classifica: {
+                    label: "Clasificar...",
+                    title: "Clasificación de la anotación de registro",
+                    warning: "La clasificación de una anotación de registro puede desencadenar la ejecución de reglas, lo que puede provocar que la anotación desaparezca del buzón actual.",
+                    ok: {
+                        PROCEDIMENT: "La anotación de registro '{{numero}}' se ha clasificado correctamente dentro del procedimiento '{{sia}}'",
+                        SERVEI: "La anotación de registro '{{numero}}' se ha clasificado correctamente dentro del servicio '{{sia}}'",
+                    },
+                },
+            },
         },
         alerta: {
             label: "Listado de alertas",

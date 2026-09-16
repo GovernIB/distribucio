@@ -1,10 +1,18 @@
 package es.caib.distribucio.logic.resourceservice;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.criteria.Predicate;
 
+import es.caib.distribucio.logic.intf.util.Utils;
+import es.caib.distribucio.persist.resourceentity.BustiaResourceEntity;
+import es.caib.distribucio.persist.resourceentity.ProcedimentResourceEntity;
+import es.caib.distribucio.persist.resourcerepository.BustiaResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.UnitatOrganitzativaResourceRepository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -31,22 +39,57 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 
 	private final ServeiHelper serveiHelper;
 	private final EntitatResourceRepository entitatResourceRepository;
+    private final BustiaResourceRepository bustiaResourceRepository;
+    private final UnitatOrganitzativaResourceRepository unitatOrganitzativaResourceRepository;
 
-	@PostConstruct
+    @PostConstruct
 	public void init() {
 		register(ServeiResource.ACTION_ACTUALITZAR_CODE, new ActualitzarActionExecutor());
 		register(ServeiResource.ACTION_ACTUALITZAR_SERVEI_CODE, new ActualitzarServeiActionExecutor());
 		register(ServeiResource.ACTION_PROGRES_CODE, new ProgresActionExecutor());
 	}
 
-	@Override
-	protected Specification<ServeiResourceEntity> additionalSpecification(String[] namedQueries) {
-		Long entitatId = SessioActualUtil.getEntitatId();
-		if (entitatId != null) {
-			return (root, query, cb) -> cb.equal(root.get("entitat").get("id"), entitatId);
-		}
-		return null;
-	}
+    @Override
+    protected Specification<ServeiResourceEntity> additionalSpecification(String[] namedQueries) {
+        Long entitatActualId = SessioActualUtil.getEntitatId();
+
+        Map<String, String> mapaNamedQueries =  Utils.namedQueriesToMap(namedQueries);
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            /// Entitat
+            if (entitatActualId != null) {
+                predicates.add(cb.equal(root.get("entitat").get("id"), entitatActualId));
+            }
+            /// BUSTIA
+            if (mapaNamedQueries.containsKey("BUSTIA")) {
+                String id = mapaNamedQueries.get("BUSTIA");
+                if (id != null) {
+                    BustiaResourceEntity bustia = bustiaResourceRepository.findById(Long.valueOf(id)).get();
+
+                    List<Long> idsJerarquia = unitatOrganitzativaResourceRepository.findUnitatAndAllDescendentsIds(
+                            bustia.getUnitatOrganitzativa().getId() );
+                    if (idsJerarquia.isEmpty()) {
+                        return cb.disjunction(); // No existe tal unidad, no devolver nada
+                    }
+
+                    int chunkSize = 900;
+                    List<Predicate> orPredicates = new ArrayList<>();
+
+                    for (int i = 0; i < idsJerarquia.size(); i += chunkSize) {
+                        List<Long> chunk = idsJerarquia.subList(i, Math.min(i + chunkSize, idsJerarquia.size()));
+                        orPredicates.add(root.get("unitatOrganitzativa").get("id").in(chunk));
+                    }
+
+                    predicates.add( cb.or(orPredicates.toArray(new Predicate[0])) );
+                } else {
+                    return cb.disjunction();
+                }
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+    }
 
 	@Override
 	protected void afterConversion(ServeiResourceEntity entity, ServeiResource resource) {

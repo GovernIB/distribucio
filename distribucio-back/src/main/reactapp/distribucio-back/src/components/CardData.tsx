@@ -1,5 +1,6 @@
 import {Box, Card, CardContent, CardHeader, Grid, Typography, Icon, IconButton, Collapse, darken} from "@mui/material";
 import React, {useState} from "react";
+import {useDetailContext} from "reactlib";
 
 const iconButton = { p: 0.5, borderRadius: '5px', maxWidth: 'max-content', border: '1px solid grey' }
 
@@ -172,9 +173,8 @@ export const DetailCardContent = (props:DetailCardContentProps) => {
             {...other}
             sx={{
                 p: 1,
-                borderLeft: '1px solid',
-                borderTop: '1px solid',
-                borderRight: size === 12 ? '1px solid' : undefined,
+                border: '1px solid',
+                mt: '-1px',
                 borderColor: other?.sx?.borderColor || 'divider',
                 ...(other?.sx ?? {}),
             }}
@@ -280,4 +280,21 @@ export const ContenidoData = (props:ContenidoDataProps) => {
             </Grid>
         </Grid>
     );
+}
+
+// Only with MuiDetail
+export const DetailField = (props:any) => {
+    const {name, size, inline = false, children} = props;
+    const {data, fields} = useDetailContext()
+    const field = fields?.find?.((item: any) => item?.name === name);
+    const value = field?.options?.[data[name]] ?? data[name];
+
+    return (
+        <DetailCardContent
+            title={props.label ?? (field?.label ?? name)}
+            size={size}
+            titleSize={inline ?4 :12}
+            textSize={inline ?8 :12}
+        >{children || value?.description || value}</DetailCardContent>
+    )
 }

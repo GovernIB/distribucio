@@ -1,10 +1,10 @@
 package es.caib.distribucio.persist.resourceentity;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.model.RegistreInteressatResource;
 import es.caib.distribucio.logic.intf.model.RegistreResource;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatSistraEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
 import es.caib.distribucio.persist.base.entity.ResourceEntity;
 import es.caib.distribucio.persist.entity.*;
 import lombok.Getter;
@@ -36,7 +36,7 @@ import java.util.Set;
 public class RegistreResourceEntity extends ContingutResourceEntity<RegistreResource> implements ResourceEntity<RegistreResource, Long> {
 
     @Column(name = "tipus", length = 1, nullable = false)
-    private String registreTipus;
+    private RegistreTipusEnum registreTipus;
     @Column(name = "numero", length = 255, nullable = false)
     private String numero;
     @Temporal(TemporalType.TIMESTAMP)

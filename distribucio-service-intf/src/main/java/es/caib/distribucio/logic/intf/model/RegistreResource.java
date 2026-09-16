@@ -3,21 +3,26 @@ package es.caib.distribucio.logic.intf.model;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceAccessConstraint;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceArtifact;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceConfig;
+import es.caib.distribucio.logic.intf.base.model.MassiveForm;
 import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
+import es.caib.distribucio.logic.intf.resourcevalidation.RegistreClassificarValid;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
 import es.caib.distribucio.logic.intf.dto.RegistreNombreAnnexesEnumDto;
 import es.caib.distribucio.logic.intf.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.logic.intf.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatSistraEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.annotation.Transient;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -55,6 +60,18 @@ import java.util.Date;
                         type = ResourceArtifactType.REPORT,
                         code = RegistreResource.REPORT_INFORME_LOGS_CODE,
                         requiresId = true),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_CLASSIFICAR_CODE,
+                        formClass = RegistreResource.ClassificarForm.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = { BaseConfig.ROLE_ADMIN },
+                                        grantedPermissions = { PermissionEnum.READ, PermissionEnum.WRITE, PermissionEnum.PERM0 }
+                                )
+                        }
+                ),
         }
 )
 public class RegistreResource extends ContingutResource {
@@ -62,8 +79,9 @@ public class RegistreResource extends ContingutResource {
     public static final String FILTER_CODE = "FILTER";
     public static final String PERSPECTIVE_DARRER_MOVIMENT_CODE = "DARRER_MOVIMENT";
     public static final String REPORT_INFORME_LOGS_CODE = "INFORME_LOGS";
+    public static final String ACTION_CLASSIFICAR_CODE = "CLASSIFICAR";
 
-    private String registreTipus;
+    private RegistreTipusEnum registreTipus;
     private String numero;
     private Date data;
     private String identificador;
@@ -202,6 +220,19 @@ public class RegistreResource extends ContingutResource {
         private ResourceReference<ProcedimentResource, Long> procediment;
         private ResourceReference<ServeiResource, Long> servei;
         private boolean reintents;
+    }
+
+    @Getter
+    @Setter
+    @RegistreClassificarValid
+    @FieldNameConstants
+    public static class ClassificarForm extends MassiveForm {
+        @NotNull
+        private RegistreClassificarTipusEnum tipus = RegistreClassificarTipusEnum.PROCEDIMENT;
+        private ResourceReference<ProcedimentResource, Long> procediment;
+        private ResourceReference<ServeiResource, Long> servei;
+
+        private Long bustiaId;
     }
 
 }

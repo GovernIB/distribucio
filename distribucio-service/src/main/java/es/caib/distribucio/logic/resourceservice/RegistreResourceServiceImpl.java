@@ -6,13 +6,17 @@ import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.ContingutHelper;
 import es.caib.distribucio.logic.helper.ContingutLogResourceHelper;
+import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
 import es.caib.distribucio.logic.intf.base.exception.ReportGenerationException;
 import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
 import es.caib.distribucio.logic.intf.base.model.ReportFileType;
+import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
+import es.caib.distribucio.logic.intf.base.util.I18nUtil;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
 import es.caib.distribucio.logic.intf.dto.RegistreNombreAnnexesEnumDto;
 import es.caib.distribucio.logic.intf.model.*;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexSicresTipusDocumentEnum;
@@ -25,6 +29,9 @@ import es.caib.distribucio.logic.intf.util.Utils;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.resourceentity.*;
+import es.caib.distribucio.persist.resourcerepository.ProcedimentResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.RegistreResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.ServeiResourceRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -48,12 +55,16 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private final ContingutMovimentResourceService contingutMovimentResourceService;
     private final ObjectMappingHelper objectMappingHelper;
     private final ContingutLogResourceHelper contingutLogResourceHelper;
+    private final RegistreResourceRepository registreResourceRepository;
+    private final ProcedimentResourceRepository procedimentResourceRepository;
+    private final ServeiResourceRepository serveiResourceRepository;
 
     @PostConstruct
     public void init() {
         register(RegistreResource.PERSPECTIVE_DARRER_MOVIMENT_CODE, new DarrerMovimentPerspectiveApplicator());
         register(ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE, new CommentNumPerspectiveApplicator());
         register(RegistreResource.REPORT_INFORME_LOGS_CODE, new InformeLogsReportGenerator());
+        register(RegistreResource.ACTION_CLASSIFICAR_CODE, new ClassificarActionExecutor());
     }
 
     @Override
@@ -314,6 +325,92 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
         @Override
         public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
+        }
+    }
+
+    protected class ClassificarActionExecutor implements ActionExecutor<RegistreResourceEntity, RegistreResource.ClassificarForm, HashMap> {
+
+        private final String ERROR_IDS_EMPTY_CODE = "IDS_EMPTY";
+        private final String ERROR_DIFERENT_PARE_CODE = "DIFERENT_PARE";
+
+        private boolean isSameBustia(List<RegistreResourceEntity> entityList) {
+            long busties = entityList.stream().map(e -> e.getPare().getId()).distinct().count();
+            return (busties == 1);
+        }
+
+        @Override
+        public HashMap exec(String code, RegistreResourceEntity entity, RegistreResource.ClassificarForm params) throws ActionExecutionException {
+            if (params.isMassive()) {
+                List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
+                if (this.isSameBustia( registreList )) {
+                    /// TODO: implementar versión massiva
+                } else {
+                    throw new ActionExecutionException(
+                            RegistreResource.class, null, code,
+                            I18nUtil.getInstance().getI18nMessage("bustia.controller.pendent.contingut.classificar.no.mateix.pare.error")
+                    );
+                }
+            } else {
+                Map<String, String> map = new HashMap<>();
+                RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
+                /// TODO: implementar versión individual
+
+                map.put("numero", registre.getNumero());
+                if (RegistreClassificarTipusEnum.PROCEDIMENT.equals( params.getTipus() )) {
+                    map.put("tipus", RegistreClassificarTipusEnum.PROCEDIMENT.name());
+                    map.put("sia", params.getProcediment().getDescription());
+                }
+                if (RegistreClassificarTipusEnum.SERVEI.equals( params.getTipus() )) {
+                    map.put("tipus", RegistreClassificarTipusEnum.SERVEI.name());
+                    map.put("sia", params.getProcediment().getDescription());
+                }
+                return new HashMap<>(map);
+            }
+            return null;
+        }
+
+        @Override
+        public void onChange(Serializable id, RegistreResource.ClassificarForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.ClassificarForm target) {
+            if (fieldName == null) {
+                if (previous.isMassive()) {
+                    if (previous.getIds() != null && !previous.getIds().isEmpty()) {
+                        List<RegistreResourceEntity> entityList = registreResourceRepository.findAllById(previous.getIds());
+                        if (this.isSameBustia(entityList)) {
+                            target.setBustiaId(entityList.get(0).getPare().getId());
+                        } else {
+                            if (!answers.containsKey(ERROR_DIFERENT_PARE_CODE))
+                                throw new AnswerRequiredException(RegistreResource.ClassificarForm.class, ERROR_DIFERENT_PARE_CODE,
+                                        I18nUtil.getInstance().getI18nMessage("bustia.controller.pendent.contingut.classificar.no.mateix.pare.error"));
+                        }
+                    } else {
+                        if (!answers.containsKey(ERROR_IDS_EMPTY_CODE))
+                            throw new AnswerRequiredException(RegistreResource.ClassificarForm.class, ERROR_IDS_EMPTY_CODE,
+                                    I18nUtil.getInstance().getI18nMessage("bustia.controller.pendent.contingut.classificar.seleccio.buida"));
+                    }
+                } else {
+                    Long entitatActualId = SessioActualUtil.getEntitatId();
+                    RegistreResourceEntity registre = registreResourceRepository.findById(previous.getIds().get(0)).get();
+
+                    target.setBustiaId(registre.getPare().getId());
+
+                    if (registre.getProcedimentCodi() != null) {
+                        procedimentResourceRepository.findByEntitatIdAndCodiSia(entitatActualId, registre.getProcedimentCodi())
+                                .ifPresent(procediment -> {
+                                    target.setProcediment(ResourceReference.toResourceReference(
+                                            procediment.getId(), procediment.getCodiSia() + " - " + procediment.getNom()
+                                    ));
+                                });
+                    }
+                    if (registre.getServeiCodi() != null) {
+                        serveiResourceRepository.findByEntitatIdAndCodiSia(entitatActualId, registre.getServeiCodi())
+                                .ifPresent(servei -> {
+                                    target.setServei(ResourceReference.toResourceReference(
+                                            servei.getId(), servei.getCodiSia() + " - " + servei.getNom()
+                                    ));
+                                });
+                    }
+                }
+            }
         }
     }
 }

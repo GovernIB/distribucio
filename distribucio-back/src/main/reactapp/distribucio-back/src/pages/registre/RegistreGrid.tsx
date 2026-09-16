@@ -1,5 +1,5 @@
 import {useTranslation} from "react-i18next";
-import {GridPage} from "reactlib";
+import {GridPage, useMuiDataGridApiRef} from "reactlib";
 import {CardPage} from "../../components/CardData.tsx";
 import StyledMuiGrid from "../../components/StyledMuiGrid.tsx";
 import RegistreFilter from "./RegistreFilter.tsx";
@@ -9,7 +9,7 @@ import {formatDate} from "../../util/dateUtils.ts";
 import IconButton from "@mui/material/IconButton";
 import {useCommentDialog} from "../CommentDialog.tsx";
 import Badge from "@mui/material/Badge";
-import {useRegistreActions} from "./detail/RegistreActions.tsx";
+import {useRegistreActions, useRegistreMassiveActions} from "./detail/RegistreActions.tsx";
 
 const RegistreAvisos = ({entity}:any) => {
     const { t } = useTranslation();
@@ -94,7 +94,7 @@ const columns = (t:any) => [
     { field: 'numero', flex: 2 },
     { field: 'extracte', flex: 2 },
     { field: 'numeroOrigen', flex: 1 },
-    { field: 'oficinaDescripcio', flex: 1.5,
+    { field: 'oficinaDescripcio', headerName: t('page.registre.grid.remitent'), flex: 1.5,
         renderCell: (params:any) => <RegistreRemitent entity={params.row} />
     },
     // { field: 'createdDate', flex: 1 },
@@ -107,7 +107,7 @@ const columns = (t:any) => [
     },
     { field: 'pare', flex: 3,
         renderCell: (params:any) => <>
-            / <Icon>account_tree</Icon> {params.formattedValue} / <Icon>inbox</Icon> {params.row.unitatAdministrativaDescripcio}
+            / <Icon>account_tree</Icon> {params.row.unitatAdministrativaDescripcio} / <Icon>inbox</Icon> {params.formattedValue}
         </>
     },
     { field: 'interessatsString', flex: 2, sortable: false },
@@ -116,6 +116,7 @@ const perspectives = ['DARRER_MOVIMENT', 'COMMENT_NUM']
 const sortModel:any = [{ field: 'data', sort: 'desc' }]
 export const RegistreGrid = () => {
     const { t } = useTranslation();
+    const apiRef = useMuiDataGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
     const [namedQueries, setNamedQueries] = React.useState<string[]>([]);
 
@@ -135,7 +136,12 @@ export const RegistreGrid = () => {
         }
     ]
 
-    const {actions, components} = useRegistreActions();
+    const refresh = () => {
+        apiRef.current?.refresh()
+    }
+
+    const {actions, components} = useRegistreActions(refresh);
+    const {actions: massiveActions, components: massiveComponents} = useRegistreMassiveActions();
 
     return (
         <GridPage>
@@ -143,7 +149,7 @@ export const RegistreGrid = () => {
                 <RegistreFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
 
                 <StyledMuiGrid
-                    // apiRef={apiRef}
+                    apiRef={apiRef}
                     resourceName="registreResource"
                     columns={additionalColumns}
                     filter={springFilter}
@@ -154,22 +160,15 @@ export const RegistreGrid = () => {
                     // filterCount={(num) => num + (namedQueries.length || 0)}
                     // toolbarShowFilterCount
 
-                    // toolbarCreateTitle={t('page.backoffice.accio.new.label')}
-                    // popupEditFormDialogResourceTitle={t('page.backoffice.form.resourceTitle')}
-                    // popupEditActive
-                    // popupEditFormContent={<BackofficeForm/>}
-                    // formAdditionalData={{
-                    //     entitat: { id: currentEntitatId }
-                    // }}
-
                     rowAdditionalActions={actions}
-                    // toolbarMassiveActions={massiveActions}
-                    // selectionActive
+                    toolbarMassiveActions={massiveActions}
+                    selectionActive
                     paginationActive
-                    readOnly
+                    toolbarHideCreate
                 />
                 {dialogComponent}
                 {components}
+                {massiveComponents}
             </CardPage>
         </GridPage>
     )
