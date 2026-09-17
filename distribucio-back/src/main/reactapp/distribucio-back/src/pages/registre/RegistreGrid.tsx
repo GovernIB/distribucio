@@ -165,6 +165,8 @@ export const RegistreGrid = () => {
                     selectionActive
                     paginationActive
                     toolbarHideCreate
+                    rowHideUpdateButton
+                    rowHideDeleteButton
                 />
                 {dialogComponent}
                 {components}

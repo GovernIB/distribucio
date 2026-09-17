@@ -6,6 +6,7 @@ import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.ContingutHelper;
 import es.caib.distribucio.logic.helper.ContingutLogResourceHelper;
+import es.caib.distribucio.logic.helper.EmailHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
@@ -24,6 +25,7 @@ import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.resourceservice.AclEntryResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.ContingutMovimentResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.RegistreResourceService;
+import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.logic.intf.util.Utils;
 import es.caib.distribucio.persist.entity.EntitatEntity;
@@ -35,11 +37,14 @@ import es.caib.distribucio.persist.resourcerepository.ServeiResourceRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.criteria.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,6 +63,9 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private final RegistreResourceRepository registreResourceRepository;
     private final ProcedimentResourceRepository procedimentResourceRepository;
     private final ServeiResourceRepository serveiResourceRepository;
+    private final EmailHelper emailHelper;
+    private final JavaMailSenderImpl mailSender;
+    private final BustiaService bustiaService;
 
     @PostConstruct
     public void init() {
@@ -65,6 +73,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE, new CommentNumPerspectiveApplicator());
         register(RegistreResource.REPORT_INFORME_LOGS_CODE, new InformeLogsReportGenerator());
         register(RegistreResource.ACTION_CLASSIFICAR_CODE, new ClassificarActionExecutor());
+        register(RegistreResource.ACTION_ENVIAR_EMAIL_CODE, new EnviarEmailActionExecutor());
     }
 
     @Override
@@ -411,6 +420,62 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                     }
                 }
             }
+        }
+    }
+    protected class EnviarEmailActionExecutor implements ActionExecutor<RegistreResourceEntity, RegistreResource.EnviarEmailForm, HashMap> {
+
+        @Override
+        public HashMap exec(String code, RegistreResourceEntity entity, RegistreResource.EnviarEmailForm params) throws ActionExecutionException {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
+            String adreces = Arrays.stream(params.getDestinatari()
+                            .replaceAll("\\s*,\\s*|\\s+", ",").split(","))
+                    .distinct()
+                    .collect(Collectors.joining(","));
+
+            if (params.isMassive()) {
+                List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
+                /// TODO: implementar versión massiva
+            } else {
+                RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
+                RegistreResource registreResource = objectMappingHelper.newInstanceMap(registre, RegistreResource.class);
+
+                afterConversion(List.of(registre), List.of(registreResource));
+
+                if (RegistreProcesEstatEnum.ARXIU_PENDENT.equals( registreResource.getProcesEstat() ) && !registreResource.isReintentsEsgotat()) {
+                    throw new ActionExecutionException(
+                            RegistreResource.class,
+                            null, code,
+                            I18nUtil.getInstance().getI18nMessage("bustia.controller.pendent.contingut.enviar.email.validacio.estat")
+                    );
+                }
+
+                try {
+                    /// TODO: revisar versión individual
+                    bustiaService.registreAnotacioEnviarPerEmail(
+                            entitatActualId,
+                            params.getIds().get(0),
+                            adreces,
+                            params.getMotiu(),
+                            false,
+                            authenticationHelper.getCurrentUserRoles()[0]
+                    );
+
+                    Map<String, String> map = new HashMap<>();
+                    map.put("numero", registre.getNumero());
+                    return new HashMap<>(map);
+                } catch (Exception e) {
+                    throw new ActionExecutionException(
+                            RegistreResource.class,
+                            null, code,
+                            "S'ha produit un error al intentar enviar correu: " + e.getMessage()
+                    );
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public void onChange(Serializable id, RegistreResource.EnviarEmailForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.EnviarEmailForm target) {
         }
     }
 }

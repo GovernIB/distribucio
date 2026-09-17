@@ -663,6 +663,15 @@ const translationEs = {
                         SERVEI: "La anotación de registro '{{numero}}' se ha clasificado correctamente dentro del servicio '{{sia}}'",
                     },
                 },
+                email: {
+                    label: "Enviar per correu electrònic...",
+                    title: "Enviar per correu electrònic",
+                    titleMassive: "Enviar per correu electrònic {{num}} anotacions",
+                    ok: "L'anotació \"{{numero}}\" s'ha enviat correctament",
+                    form: {
+                        destinatari: "Introduïu els destinataris separats per coma o espai",
+                    }
+                },
             },
         },
         alerta: {

@@ -6,6 +6,7 @@ import {useAlertes} from "./Alertes.tsx";
 import useClassificar from "../actions/Classificar.tsx";
 import { Divider } from "@mui/material";
 import {useExecucioMassivaGrid} from "../../execucioMassiva/ExecucioMassivaGrid.tsx";
+import useEnviarViaEmail from "../actions/EnviarViaEmail.tsx";
 
 export const useActions = (refresh?: () => void) => {
     const { t } = useTranslation();
@@ -46,6 +47,10 @@ export const useRegistreActions = (refresh?: () => void) => {
         refresh?.()
         temporalMessageShow(null, t(`page.registre.accio.classifica.ok.${result.tipus}`, { numero: result.numero, sia: result.sia }), 'success');
     })
+    const { handleShow: handleEnviarEmail, content: contentEnviarEmail } = useEnviarViaEmail((result:any) => {
+        refresh?.()
+        temporalMessageShow(null, t(`page.registre.accio.email.ok`, {numero: result.numero}), 'success');
+    })
 
     const actions:any[] = [
         {
@@ -73,12 +78,20 @@ export const useRegistreActions = (refresh?: () => void) => {
             showInMenu: true,
             onClick: (id:any) => handleClassificar([id], false),
         },
+        {
+            label: t('page.registre.accio.email.label'),
+            icon: 'inbox',
+            action: 'ENVIAR_EMAIL',
+            showInMenu: true,
+            onClick: (id:any) => handleEnviarEmail([id], false),
+        },
     ]
 
     const components = <>
         {componentHistoric}
         {componentAlertes}
         {contentClassificar}
+        {contentEnviarEmail}
     </>
 
     return {
@@ -96,6 +109,10 @@ export const useRegistreMassiveActions = () => {
         handleEM()
         // temporalMessageShow(null, t('page.registre.accio.classifica.ok'), 'success');
     })
+    const { handleShow: handleEnviarEmail, content: contentEnviarEmail } = useEnviarViaEmail(() => {
+        handleEM()
+        // temporalMessageShow(null, t(`page.registre.accio.email.ok`), 'success');
+    })
 
     const actions:any[] = [
         {
@@ -105,11 +122,19 @@ export const useRegistreMassiveActions = () => {
             showInMenu: true,
             onClick: (ids:any) => handleClassificar(ids, true),
         },
+        {
+            label: t('page.registre.accio.email.label'),
+            icon: 'inbox',
+            action: 'ENVIAR_EMAIL',
+            showInMenu: true,
+            onClick: (ids:any) => handleEnviarEmail(ids, true),
+        },
     ]
 
     const components = <>
         {contentClassificar}
         {componentEM}
+        {contentEnviarEmail}
     </>
 
     return {

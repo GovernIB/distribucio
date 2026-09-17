@@ -7,6 +7,7 @@ import es.caib.distribucio.logic.intf.base.model.MassiveForm;
 import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
+import es.caib.distribucio.logic.intf.resourcevalidation.EmailValid;
 import es.caib.distribucio.logic.intf.resourcevalidation.RegistreClassificarValid;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
@@ -41,8 +42,13 @@ import java.util.Date;
 		accessConstraints = {
                 @ResourceAccessConstraint(
                         type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-                        roles = { BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_USER },
+                        roles = { BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_USER },
                         grantedPermissions = { PermissionEnum.READ }
+                ),
+                @ResourceAccessConstraint(
+                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                        roles = { BaseConfig.ROLE_ADMIN },
+                        grantedPermissions = { PermissionEnum.READ, PermissionEnum.WRITE }
                 )
         },
         artifacts = {
@@ -63,14 +69,12 @@ import java.util.Date;
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = RegistreResource.ACTION_CLASSIFICAR_CODE,
-                        formClass = RegistreResource.ClassificarForm.class,
-                        accessConstraints = {
-                                @ResourceAccessConstraint(
-                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-                                        roles = { BaseConfig.ROLE_ADMIN },
-                                        grantedPermissions = { PermissionEnum.READ, PermissionEnum.WRITE, PermissionEnum.PERM0 }
-                                )
-                        }
+                        formClass = RegistreResource.ClassificarForm.class
+                ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_ENVIAR_EMAIL_CODE,
+                        formClass = RegistreResource.EnviarEmailForm.class
                 ),
         }
 )
@@ -80,6 +84,7 @@ public class RegistreResource extends ContingutResource {
     public static final String PERSPECTIVE_DARRER_MOVIMENT_CODE = "DARRER_MOVIMENT";
     public static final String REPORT_INFORME_LOGS_CODE = "INFORME_LOGS";
     public static final String ACTION_CLASSIFICAR_CODE = "CLASSIFICAR";
+    public static final String ACTION_ENVIAR_EMAIL_CODE = "ENVIAR_EMAIL";
 
     private RegistreTipusEnum registreTipus;
     private String numero;
@@ -233,6 +238,16 @@ public class RegistreResource extends ContingutResource {
         private ResourceReference<ServeiResource, Long> servei;
 
         private Long bustiaId;
+    }
+
+    @Getter
+    @Setter
+    @FieldNameConstants
+    public static class EnviarEmailForm extends MassiveForm {
+        @NotNull
+        @EmailValid
+        private String destinatari;
+        private String motiu;
     }
 
 }
