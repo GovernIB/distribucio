@@ -19,6 +19,7 @@ import org.springframework.data.annotation.Transient;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -48,6 +49,12 @@ import java.util.Date;
                         code = ExecucioMassivaResource.ACTION_CANVI_ESTAT_CODE,
                         requiresId = true,
                         formClass = ExecucioMassivaAccioDto.class),
+                @ResourceArtifact(
+                        // Comprovació de duplicats abans de crear una execució massiva nova
+                        type = ResourceArtifactType.ACTION,
+                        code = ExecucioMassivaResource.ACTION_COMPROVAR_PENDENTS_CODE,
+                        requiresId = false,
+                        formClass = ExecucioMassivaResource.FormComprovarPendents.class),
         }
 )
 public class ExecucioMassivaResource extends BaseAuditableResource<Long> {
@@ -55,6 +62,7 @@ public class ExecucioMassivaResource extends BaseAuditableResource<Long> {
     public static final String FILTER_CODE = "FILTER";
     public static final String REPORT_DOWNLOAD_CODE = "DOWNLOAD";
     public static final String ACTION_CANVI_ESTAT_CODE = "CANVI_ESTAT";
+    public static final String ACTION_COMPROVAR_PENDENTS_CODE = "COMPROVAR_PENDENTS";
 
     private ExecucioMassivaTipusDto tipus;
     private ExecucioMassivaEstatDto estat;
@@ -77,6 +85,12 @@ public class ExecucioMassivaResource extends BaseAuditableResource<Long> {
 //        private ResourceReference<UsuariResource, String> usuari;
         private String usuari;
         private ExecucioMassivaTipusDto tipus;
+    }
+
+    @Getter
+    @Setter
+    public static class FormComprovarPendents implements Serializable {
+        private List<Long> elementIds;
     }
 
 }

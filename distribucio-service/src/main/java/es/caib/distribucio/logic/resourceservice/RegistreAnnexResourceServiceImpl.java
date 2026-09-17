@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
+import es.caib.distribucio.logic.helper.AnnexosAdminHelper;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.RegistreHelper;
+import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.ResourceNotFoundException;
 import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
@@ -17,6 +19,7 @@ import es.caib.distribucio.logic.intf.dto.ArxiuFirmaPerfilEnumDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.FitxerDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexFirmaDto;
+import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
 import es.caib.distribucio.logic.intf.model.RegistreAnnexResource;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexElaboracioEstatEnum;
@@ -43,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -65,12 +69,14 @@ public class RegistreAnnexResourceServiceImpl
 	private final ConfigService configService;
 	private final EntitatRepository entitatRepository;
 	private final AuthenticationHelper authenticationHelper;
+	private final AnnexosAdminHelper annexosAdminHelper;
 
 	@PostConstruct
 	public void init() {
 		register(RegistreAnnexResource.REPORT_DESCARREGAR_ORIGINAL_CODE, new DescarregarReportGenerator(false));
 		register(RegistreAnnexResource.REPORT_DESCARREGAR_IMPRIMIBLE_CODE, new DescarregarReportGenerator(true));
 		register(RegistreAnnexResource.REPORT_DESCARREGAR_FIRMA_CODE, new DescarregarFirmaReportGenerator());
+		register(RegistreAnnexResource.ACTION_GUARDAR_DEFINITIU_CODE, new GuardarDefinitiuActionExecutor());
 	}
 
 	@Override
@@ -275,6 +281,50 @@ public class RegistreAnnexResourceServiceImpl
 
 		@Override
 		public void onChange(Serializable id, RegistreAnnexResource.DescarregarFirmaForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreAnnexResource.DescarregarFirmaForm target) {
+		}
+
+	}
+
+	/**
+	 * Acció "Custòdia": botó "Guardar Definitiu",
+	 * {@code AnnexosAdminController.guardarDefinitiu} -&gt; {@code annexosService.guardarComADefinitiu}).
+	 * Reutilitza {@link AnnexosAdminHelper#guardarComADefinitiu(Long)}.
+	 * <p>
+	 * El front executa l'acció directament sobre la fila. El resultat és un mapa lliure amb {@code ok},
+	 * {@code keyMessage}, {@code annexTitol}, {@code anotacioNumero} i {@code error} (indica
+	 * si hi ha hagut una excepció, per triar el color del missatge al front).
+	 */
+	private class GuardarDefinitiuActionExecutor implements ActionExecutor<RegistreAnnexResourceEntity, Serializable, HashMap<String, Object>> {
+
+		@Override
+		public void onChange(
+				Serializable id,
+				Serializable previous,
+				String fieldName,
+				Object fieldValue,
+				Map<String, AnswerRequiredException.AnswerValue> answers,
+				String[] previousFieldNames,
+				Serializable target) {
+		}
+
+		@Override
+		public HashMap<String, Object> exec(
+				String code,
+				RegistreAnnexResourceEntity entity,
+				Serializable params) throws ActionExecutionException {
+			ResultatAnnexDefinitiuDto resultat = annexosAdminHelper.guardarComADefinitiu(entity.getId());
+			String keyMessage = resultat.getKeyMessage();
+			String keyMessageCurt = keyMessage != null && keyMessage.contains(".")
+					? keyMessage.substring(keyMessage.lastIndexOf('.') + 1)
+					: keyMessage;
+
+			HashMap<String, Object> resposta = new HashMap<>();
+			resposta.put("ok", resultat.isOk());
+			resposta.put("keyMessage", keyMessageCurt);
+			resposta.put("annexTitol", resultat.getAnnexTitol());
+			resposta.put("anotacioNumero", resultat.getAnotacioNumero());
+			resposta.put("error", resultat.getThrowable() != null);
+			return resposta;
 		}
 
 	}

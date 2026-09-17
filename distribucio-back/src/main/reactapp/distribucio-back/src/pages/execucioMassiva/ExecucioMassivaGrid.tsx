@@ -164,7 +164,7 @@ export const useExecucioMassivaGrid = () => {
             t('page.massiva.title'),
             <EMGrid/>,
             [],
-            { maxWidth: 'md', fullWidth: true }
+            { maxWidth: 'xl', fullWidth: true }
         );
     };
 

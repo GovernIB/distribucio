@@ -13,9 +13,14 @@ import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.model.ExecucioMassivaResource;
 import es.caib.distribucio.logic.intf.resourceservice.ExecucioMassivaResourceService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
+import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
 import es.caib.distribucio.persist.resourceentity.ExecucioMassivaContingutResourceEntity;
 import es.caib.distribucio.persist.resourceentity.ExecucioMassivaResourceEntity;
+import es.caib.distribucio.persist.resourceentity.UsuariResourceEntity;
+import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.ExecucioMassivaContingutResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.ExecucioMassivaResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.UsuariResourceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
@@ -30,6 +35,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -41,11 +47,47 @@ public class ExecucioMassivaResourceServiceImpl extends BaseMutableResourceServi
     private final AuthenticationHelper authenticationHelper;
     private final ConfigHelper configHelper;
     private final ExecucioMassivaResourceRepository execucioMassivaResourceRepository;
+    private final ExecucioMassivaContingutResourceRepository execucioMassivaContingutResourceRepository;
+    private final EntitatResourceRepository entitatResourceRepository;
+    private final UsuariResourceRepository usuariResourceRepository;
 
     @PostConstruct
     public void init() {
         register(ExecucioMassivaResource.ACTION_CANVI_ESTAT_CODE, new CanviEstatActionExecutor());
         register(ExecucioMassivaResource.REPORT_DOWNLOAD_CODE, new DownloadReportGenerator());
+        register(ExecucioMassivaResource.ACTION_COMPROVAR_PENDENTS_CODE, new ComprovarPendentsActionExecutor());
+    }
+
+    /**
+     * Autoemplena entitat/usuari/estat/dataCreacio en crear una execució massiva des d'una
+     * pantalla React que "dispara" el mecanisme genèric, igual com fan altres recursos genèrics amb l'entitat de sessió.
+     * Només s'omple si el client no ho ha enviat, per no interferir amb cap altre flux de creació existent.
+     */
+    @Override
+    protected void beforeCreateSave(
+            ExecucioMassivaResourceEntity entity,
+            ExecucioMassivaResource resource,
+            Map<String, AnswerRequiredException.AnswerValue> answers) {
+        if (entity.getEntitat() == null) {
+            Long entitatId = SessioActualUtil.getEntitatId();
+            if (entitatId != null) {
+                EntitatResourceEntity entitat = entitatResourceRepository.getReferenceById(entitatId);
+                entity.setEntitat(entitat);
+            }
+        }
+        if (entity.getUsuari() == null) {
+            String usuariCodi = authenticationHelper.getCurrentUserName();
+            if (usuariCodi != null) {
+                UsuariResourceEntity usuari = usuariResourceRepository.getReferenceById(usuariCodi);
+                entity.setUsuari(usuari);
+            }
+        }
+        if (entity.getEstat() == null) {
+            entity.setEstat(ExecucioMassivaEstatDto.PENDENT);
+        }
+        if (entity.getDataCreacio() == null) {
+            entity.setDataCreacio(new Date());
+        }
     }
 
     @Override
@@ -155,6 +197,30 @@ public class ExecucioMassivaResourceServiceImpl extends BaseMutableResourceServi
         @Override
         public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
 
+        }
+    }
+
+    /**
+     * Comprovació de duplicats abans de crear una execució massiva nova:
+     * Retorna els noms dels elements seleccionats que ja formen part d'una execució massiva PENDENT o PROCESSANT.
+     * Una llista buida vol dir que es pot crear l'execució sense conflicte.
+     */
+    private class ComprovarPendentsActionExecutor
+            implements ActionExecutor<ExecucioMassivaResourceEntity, ExecucioMassivaResource.FormComprovarPendents, ArrayList<String>> {
+
+        @Override
+        public ArrayList<String> exec(String code, ExecucioMassivaResourceEntity entity, ExecucioMassivaResource.FormComprovarPendents params) throws ActionExecutionException {
+            List<Long> elementIds = params.getElementIds();
+            if (elementIds == null || elementIds.isEmpty()) {
+                return new ArrayList<>();
+            }
+            return new ArrayList<>(execucioMassivaContingutResourceRepository.findElementNomByElementIdInAndEstatIn(
+                    elementIds,
+                    List.of(ExecucioMassivaContingutEstatDto.PENDENT, ExecucioMassivaContingutEstatDto.PROCESSANT)));
+        }
+
+        @Override
+        public void onChange(Serializable id, ExecucioMassivaResource.FormComprovarPendents previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, ExecucioMassivaResource.FormComprovarPendents target) {
         }
     }
 }

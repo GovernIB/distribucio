@@ -1,9 +1,13 @@
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useBaseAppContext, useResourceApiService, type MuiDataGridProps } from 'reactlib';
 import { iniciaDescargaBlob } from '../../util/downloadUtils';
 import { ROLE_ADMIN, useDistribucioContext } from '../../components/DistribucioContext';
 import type { MassiveActionProps } from '../../components/MassiveActionSelector';
+import { useExecucioMassivaGrid } from '../execucioMassiva/ExecucioMassivaGrid';
 
+const ACTION_GUARDAR_DEFINITIU = 'GUARDAR_DEFINITIU';
+const ACTION_COMPROVAR_PENDENTS = 'COMPROVAR_PENDENTS';
 export const REPORT_DESCARREGAR_ORIGINAL = 'DESCARREGAR_ORIGINAL';
 export const REPORT_DESCARREGAR_IMPRIMIBLE = 'DESCARREGAR_IMPRIMIBLE';
 export const REPORT_DESCARREGAR_FIRMA = 'DESCARREGAR_FIRMA';
@@ -32,19 +36,41 @@ export const useDescarregarAnnex = () => {
 
 type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
 
-/**
- * Accions del menú per fila (annexosAdminList.jsp: tota la columna d'accions només es mostra si
- * `isRolActualAdministrador`, però aquí només apliquem aquesta restricció a les accions noves
- * ("Detalls de l'anotació" / "Custòdia") -- les ja existents es mantenen visibles també per
- * ROLE_ADMIN_LECTURA fins que es decideixi replicar la restricció completa de la JSP).
- */
-export const useAnnexAccions = (mostrarDetall: (id: any, row: any) => void): AccionsFila => {
+
+export const useAnnexAccions = (mostrarDetall: (id: any, row: any) => void, refresh?: () => void): AccionsFila => {
     const { t } = useTranslation();
     const descarregar = useDescarregarAnnex();
     const { currentRole } = useDistribucioContext();
     const isAdmin = currentRole === ROLE_ADMIN;
+    const { temporalMessageShow } = useBaseAppContext();
+    const { artifactAction } = useResourceApiService('registreAnnexResource');
+
+    const guardarDefinitiu = (id: any) => {
+        artifactAction(id, { code: ACTION_GUARDAR_DEFINITIU })
+            .then((result: any) => {
+                refresh?.();
+                temporalMessageShow(
+                    null,
+                    t(`page.annex.accio.guardarDefinitiu.${result.keyMessage}`, {
+                        titol: result.annexTitol,
+                        numero: result.anotacioNumero,
+                    }),
+                    result.ok ? 'success' : (result.error ? 'error' : 'warning')
+                );
+            })
+            .catch((error: any) =>
+                temporalMessageShow(t('page.annex.accio.error'), error?.description ?? error?.message, 'error')
+            );
+    };
 
     return [
+        {
+            label: t('page.annex.accio.detallsAnotacio'),
+            icon: 'adjust',
+            showInMenu: true,
+            hidden: () => !isAdmin,
+            onClick: () => alert('TODO: Pendent d\'implementar!!'),
+        },
         {
             label: t('page.annex.accio.detalls'),
             icon: 'info',
@@ -73,40 +99,87 @@ export const useAnnexAccions = (mostrarDetall: (id: any, row: any) => void): Acc
             hidden: (row: any) => !row?.potGenerarVersioImprimible,
         },
         {
-            label: t('page.annex.accio.detallsAnotacio'),
-            icon: 'dot_circle',
-            showInMenu: true,
-            hidden: () => !isAdmin,
-            onClick: () => alert('TODO: Pendent d\'implementar!!'),
-        },
-        {
-            label: t('page.annex.accio.guardarDefinitiu'),
+            label: t('page.annex.accio.guardarDefinitiu.label'),
             icon: 'edit_note',
             showInMenu: true,
             hidden: (row: any) => !isAdmin || row?.arxiuEstat === 'DEFINITIU',
-            onClick: () => alert('TODO: Pendent d\'implementar!!'),
+            onClick: (id: any) => guardarDefinitiu(id),
         },
     ];
 };
 
 /**
- * Acció massiva "Custòdia" de la barra d'eines (annexosAdminList.jsp: botó "Guardar com a definitiu
- * (múltiple)" dins el desplegable d'accions massives, només visible si `isRolActualAdministrador`).
+ * Acció massiva "Custòdia" de la barra d'eines.
+ * No reprocessa res: crea una ExecucioMassivaDto de tipus CUSTODIAR amb els annexos seleccionats,
+ * igual que `ExecucioMassivaController.crearExecucioMassivaAnnexos` a la JSP, i delega el seguiment
+ * al diàleg genèric d'Execucions Massives ja migrat.
  */
-export const useAnnexMassiveActions = (): MassiveActionProps[] => {
+export const useAnnexMassiveActions = (): { actions: MassiveActionProps[]; components: ReactNode } => {
     const { t } = useTranslation();
     const { currentRole } = useDistribucioContext();
     const isAdmin = currentRole === ROLE_ADMIN;
+    const { temporalMessageShow } = useBaseAppContext();
+    const { getOne: getAnnex } = useResourceApiService('registreAnnexResource');
+    const { create: crearExecucio, artifactAction: execucioMassivaAction } = useResourceApiService('execucioMassivaResource');
+    const { create: crearContingut } = useResourceApiService('execucioMassivaContingutResource');
+    const { handleOpen: handleExecucioMassiva, component: componentExecucioMassiva } = useExecucioMassivaGrid();
 
-    return [
+    // Si algun dels annexos seleccionats ja forma part d'una execució massiva pendent/en curs, es bloqueja
+    // la creació d'una de nova i es mostren els noms dels elements en conflicte.
+    const custodiarMassiu = (ids: any[]) => {
+        if (!ids?.length) {
+            return;
+        }
+        execucioMassivaAction(undefined, { code: ACTION_COMPROVAR_PENDENTS, data: { elementIds: ids } })
+            .then((elementsPendents: any) => {
+                if (elementsPendents?.length) {
+                    temporalMessageShow(
+                        null,
+                        t('page.annex.accio.guardarDefinitiuMultiple.duplicat', {
+                            elements: elementsPendents.join(', '),
+                        }),
+                        'warning'
+                    );
+                    return;
+                }
+                return Promise.all(ids.map((id) => getAnnex(id)))
+                    .then((annexos: any[]) =>
+                        crearExecucio({ data: { tipus: 'CUSTODIAR' } }).then((execucio: any) =>
+                            Promise.all(
+                                annexos.map((annex) =>
+                                    crearContingut({
+                                        data: {
+                                            elementId: annex.id,
+                                            elementNom: annex.fitxerNom,
+                                            elementTipus: 'ANNEX',
+                                            execucioMassiva: { id: execucio.id },
+                                        },
+                                    })
+                                )
+                            )
+                        )
+                    )
+                    .then(() => handleExecucioMassiva());
+            })
+            .catch((error: any) =>
+                temporalMessageShow(t('page.annex.accio.error'), error?.description ?? error?.message, 'error')
+            );
+    };
+
+    const actions: MassiveActionProps[] = [
         {
-            label: t('page.annex.accio.guardarDefinitiuMultiple'),
+            label: t('page.annex.accio.guardarDefinitiuMultiple.label'),
             icon: 'edit_note',
             showInMenu: true,
             hidden: !isAdmin,
-            onClick: () => alert('TODO: Pendent d\'implementar!!'),
+            onClick: custodiarMassiu,
         },
     ];
+
+    return {
+        actions,
+        components: componentExecucioMassiva,
+    };
 };
 
 export default useAnnexAccions;

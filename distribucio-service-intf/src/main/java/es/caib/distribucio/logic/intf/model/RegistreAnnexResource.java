@@ -91,7 +91,19 @@ import java.util.Map;
 						type = ResourceArtifactType.REPORT,
 						code = RegistreAnnexResource.REPORT_DESCARREGAR_FIRMA_CODE,
 						requiresId = true,
-						formClass = RegistreAnnexResource.DescarregarFirmaForm.class)
+						formClass = RegistreAnnexResource.DescarregarFirmaForm.class),
+				@ResourceArtifact(
+						// "Custòdia": botó "Guardar Definitiu" (AnnexosAdminController.guardarDefinitiu).
+						type = ResourceArtifactType.ACTION,
+						code = RegistreAnnexResource.ACTION_GUARDAR_DEFINITIU_CODE,
+						requiresId = true,
+						accessConstraints = {
+								@ResourceAccessConstraint(
+										type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+										roles = {BaseConfig.ROLE_ADMIN},
+										grantedPermissions = {PermissionEnum.READ, PermissionEnum.WRITE}
+								)
+						})
 		}
 )
 public class RegistreAnnexResource extends BaseResource<Long> {
@@ -100,6 +112,7 @@ public class RegistreAnnexResource extends BaseResource<Long> {
 	public static final String REPORT_DESCARREGAR_ORIGINAL_CODE = "DESCARREGAR_ORIGINAL";
 	public static final String REPORT_DESCARREGAR_IMPRIMIBLE_CODE = "DESCARREGAR_IMPRIMIBLE";
 	public static final String REPORT_DESCARREGAR_FIRMA_CODE = "DESCARREGAR_FIRMA";
+	public static final String ACTION_GUARDAR_DEFINITIU_CODE = "GUARDAR_DEFINITIU";
 
 	private String titol;
 	private String fitxerNom;

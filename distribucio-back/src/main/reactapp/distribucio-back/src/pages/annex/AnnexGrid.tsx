@@ -60,8 +60,11 @@ const AnnexGrid: React.FC = () => {
     const apiRef = useMuiDataGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
     const { show: mostrarDetall, component: detailDialog } = useAnnexDetailDialog();
-    const accions = useAnnexAccions(mostrarDetall);
-    const massiveActions = useAnnexMassiveActions();
+    const refresh = () => {
+        apiRef.current?.refresh();
+    };
+    const accions = useAnnexAccions(mostrarDetall, refresh);
+    const { actions: massiveActions, components: massiveComponents } = useAnnexMassiveActions();
 
     const columns: MuiDataGridColDef[] = React.useMemo(
         () => [
@@ -118,6 +121,7 @@ const AnnexGrid: React.FC = () => {
                     toolbarMassiveActions={massiveActions}
                 />
                 {detailDialog}
+                {massiveComponents}
             </CardPage>
         </GridPage>
     );
