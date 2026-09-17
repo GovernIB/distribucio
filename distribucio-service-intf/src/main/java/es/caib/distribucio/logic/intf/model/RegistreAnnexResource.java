@@ -74,7 +74,7 @@ import java.util.Map;
 										roles = {BaseConfig.ROLE_ADMIN},
 										grantedPermissions = {PermissionEnum.READ}
 								)
-						}),
+							}),
 				@ResourceArtifact(
 						type = ResourceArtifactType.REPORT,
 						code = RegistreAnnexResource.REPORT_DESCARREGAR_IMPRIMIBLE_CODE,
@@ -85,7 +85,7 @@ import java.util.Map;
 										roles = {BaseConfig.ROLE_ADMIN},
 										grantedPermissions = {PermissionEnum.READ}
 								)
-						}),
+							}),
 				@ResourceArtifact(
 						// Descàrrega del fitxer d'una firma individual.
 						type = ResourceArtifactType.REPORT,
@@ -103,6 +103,18 @@ import java.util.Map;
 										roles = {BaseConfig.ROLE_ADMIN},
 										grantedPermissions = {PermissionEnum.READ, PermissionEnum.WRITE}
 								)
+						}),
+				@ResourceArtifact(
+						// "Validar firmes": botó al detall de l'annex (RegistreAdminController.validarFirmesAnnex).
+						type = ResourceArtifactType.ACTION,
+						code = RegistreAnnexResource.ACTION_VALIDAR_FIRMES_CODE,
+						requiresId = true,
+						accessConstraints = {
+								@ResourceAccessConstraint(
+										type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+										roles = {BaseConfig.ROLE_ADMIN},
+										grantedPermissions = {PermissionEnum.READ, PermissionEnum.WRITE}
+								)
 						})
 		}
 )
@@ -113,6 +125,7 @@ public class RegistreAnnexResource extends BaseResource<Long> {
 	public static final String REPORT_DESCARREGAR_IMPRIMIBLE_CODE = "DESCARREGAR_IMPRIMIBLE";
 	public static final String REPORT_DESCARREGAR_FIRMA_CODE = "DESCARREGAR_FIRMA";
 	public static final String ACTION_GUARDAR_DEFINITIU_CODE = "GUARDAR_DEFINITIU";
+	public static final String ACTION_VALIDAR_FIRMES_CODE = "VALIDAR_FIRMES";
 
 	private String titol;
 	private String fitxerNom;

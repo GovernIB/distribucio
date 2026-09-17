@@ -26,6 +26,7 @@ import es.caib.distribucio.logic.intf.registre.RegistreAnnexElaboracioEstatEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexNtiTipusDocumentEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexOrigenEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexSicresTipusDocumentEnum;
+import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
 import es.caib.distribucio.logic.intf.resourceservice.RegistreAnnexResourceService;
 import es.caib.distribucio.logic.intf.service.ConfigService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
@@ -46,6 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +79,7 @@ public class RegistreAnnexResourceServiceImpl
 		register(RegistreAnnexResource.REPORT_DESCARREGAR_IMPRIMIBLE_CODE, new DescarregarReportGenerator(true));
 		register(RegistreAnnexResource.REPORT_DESCARREGAR_FIRMA_CODE, new DescarregarFirmaReportGenerator());
 		register(RegistreAnnexResource.ACTION_GUARDAR_DEFINITIU_CODE, new GuardarDefinitiuActionExecutor());
+		register(RegistreAnnexResource.ACTION_VALIDAR_FIRMES_CODE, new ValidarFirmesActionExecutor());
 	}
 
 	@Override
@@ -325,6 +328,69 @@ public class RegistreAnnexResourceServiceImpl
 			resposta.put("anotacioNumero", resultat.getAnotacioNumero());
 			resposta.put("error", resultat.getThrowable() != null);
 			return resposta;
+		}
+
+	}
+
+	/**
+	 * Acció "Validar firmes" del detall de l'annex.
+	 * Reutilitza {@link RegistreHelper#validaFirmes(RegistreAnnexEntity, List)} i {@link RegistreHelper#custodiarAnnex(Long)}.
+	 * <p>
+	 * Si la validació dona ERROR_VALIDANT o FIRMA_INVALIDA no es custodia; en qualsevol altre cas
+	 * (FIRMA_VALIDA, SENSE_FIRMES o l'infreqüent NO_VALIDAT) es procedeix igualment a custodiar l'annex.
+	 * El resultat és una llista de missatges perquè el front en pugui mostrar un o dos (validació i custòdia).
+	 */
+	private class ValidarFirmesActionExecutor implements ActionExecutor<RegistreAnnexResourceEntity, Serializable, HashMap<String, Object>> {
+
+		@Override
+		public void onChange(
+				Serializable id,
+				Serializable previous,
+				String fieldName,
+				Object fieldValue,
+				Map<String, AnswerRequiredException.AnswerValue> answers,
+				String[] previousFieldNames,
+				Serializable target) {
+		}
+
+		@Override
+		public HashMap<String, Object> exec(
+				String code,
+				RegistreAnnexResourceEntity entity,
+				Serializable params) throws ActionExecutionException {
+			Long entitatActualId = SessioActualUtil.getEntitatId();
+			entitatRepository.findById(entitatActualId)
+					.ifPresent(entitat -> ConfigHelper.setEntitatActualCodi(entitat.getCodi()));
+
+			RegistreAnnexEntity annex = registreAnnexRepository.getReferenceById(entity.getId());
+			ValidacioFirmaEnum validacioFirma = registreHelper.validaFirmes(annex, null);
+
+			List<Map<String, String>> missatges = new ArrayList<>();
+			if (ValidacioFirmaEnum.ERROR_VALIDANT.equals(validacioFirma)) {
+				missatges.add(missatge("error", "errorValidant"));
+			} else if (ValidacioFirmaEnum.FIRMA_INVALIDA.equals(validacioFirma)) {
+				missatges.add(missatge("warning", "noValides"));
+			} else {
+				if (ValidacioFirmaEnum.FIRMA_VALIDA.equals(validacioFirma) || ValidacioFirmaEnum.SENSE_FIRMES.equals(validacioFirma)) {
+					missatges.add(missatge("success", "valides"));
+				}
+				// Igual que RegistreAdminController.validarFirmesAnnex: en qualsevol altre cas (inclòs
+				// NO_VALIDAT) es procedeix igualment a custodiar l'annex.
+				registreHelper.custodiarAnnex(entity.getId());
+				missatges.add(missatge("success", "custodiat"));
+			}
+
+			HashMap<String, Object> resposta = new HashMap<>();
+			resposta.put("validacioFirmaEstat", validacioFirma.name());
+			resposta.put("missatges", missatges);
+			return resposta;
+		}
+
+		private Map<String, String> missatge(String severitat, String key) {
+			Map<String, String> m = new HashMap<>();
+			m.put("severitat", severitat);
+			m.put("key", key);
+			return m;
 		}
 
 	}

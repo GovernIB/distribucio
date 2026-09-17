@@ -282,6 +282,12 @@ const translationEs = {
                     label: 'Custodia',
                     duplicat: 'Ya existe una ejecución masiva pendiente de los elementos seleccionados: {{elements}}',
                 },
+                validarFirmes: {
+                    valides: 'Las firmas del anexo son válidas',
+                    noValides: 'Las firmas no son válidas',
+                    errorValidant: 'Las firmas no se han podido validar',
+                    custodiat: 'Anexo custodiado correctamente',
+                },
                 error: 'No se ha podido ejecutar la acción',
             },
             detall: {
@@ -445,6 +451,7 @@ const translationEs = {
                 },
                 action: {
                     validarFirmes: 'Validar firmas',
+                    validarICustodiar: 'Validar y custodiar',
                     descarregarFirma: 'Descargar firma',
                 },
             },

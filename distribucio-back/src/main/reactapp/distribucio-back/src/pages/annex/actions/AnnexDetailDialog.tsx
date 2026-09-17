@@ -26,9 +26,15 @@ export const useAnnexDetailDialog = () => {
         }
     };
 
-    React.useEffect(() => {
-        if (open && apiIsReady && annexId != null) {
+    const refreshAnnex = () => {
+        if (annexId != null) {
             apiGetOne(annexId).then(setAnnex);
+        }
+    };
+
+    React.useEffect(() => {
+        if (open && apiIsReady) {
+            refreshAnnex();
         }
     }, [open, apiIsReady, annexId]);
 
@@ -42,7 +48,7 @@ export const useAnnexDetailDialog = () => {
             buttonCallback={() => handleClose()}
         >
             <Load value={annex}>
-                <AnnexDetailContent annex={annex} />
+                <AnnexDetailContent annex={annex} onRefresh={refreshAnnex} />
             </Load>
         </MuiDialog>
     );

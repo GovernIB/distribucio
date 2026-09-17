@@ -21,21 +21,18 @@ export const useDescarregarAnnex = () => {
     const { temporalMessageShow } = useBaseAppContext();
     const { artifactReport: apiArtifactReport } = useResourceApiService('registreAnnexResource');
 
-    return (id: any, code: string, data?: any) => {
+    return (id: any, code: string, data?: any, setLoading?: (loading: boolean) => void) => {
+        setLoading?.(true);
         apiArtifactReport(id, { code, fileType: 'PDF', data })
             .then((result: any) => iniciaDescargaBlob(result))
             .catch((error: any) =>
-                temporalMessageShow(
-                    t('page.annex.accio.error'),
-                    error?.description ?? error?.message,
-                    'error'
-                )
-            );
+                temporalMessageShow(t('page.annex.accio.error'), error?.description ?? error?.message, 'error')
+            )
+            .finally(() => setLoading?.(false));
     };
 };
 
 type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
-
 
 export const useAnnexAccions = (mostrarDetall: (id: any, row: any) => void, refresh?: () => void): AccionsFila => {
     const { t } = useTranslation();
@@ -55,7 +52,7 @@ export const useAnnexAccions = (mostrarDetall: (id: any, row: any) => void, refr
                         titol: result.annexTitol,
                         numero: result.anotacioNumero,
                     }),
-                    result.ok ? 'success' : (result.error ? 'error' : 'warning')
+                    result.ok ? 'success' : result.error ? 'error' : 'warning'
                 );
             })
             .catch((error: any) =>
@@ -69,7 +66,7 @@ export const useAnnexAccions = (mostrarDetall: (id: any, row: any) => void, refr
             icon: 'adjust',
             showInMenu: true,
             hidden: () => !isAdmin,
-            onClick: () => alert('TODO: Pendent d\'implementar!!'),
+            onClick: () => alert("TODO: Pendent d'implementar!!"),
         },
         {
             label: t('page.annex.accio.detalls'),
@@ -120,7 +117,8 @@ export const useAnnexMassiveActions = (): { actions: MassiveActionProps[]; compo
     const isAdmin = currentRole === ROLE_ADMIN;
     const { temporalMessageShow } = useBaseAppContext();
     const { getOne: getAnnex } = useResourceApiService('registreAnnexResource');
-    const { create: crearExecucio, artifactAction: execucioMassivaAction } = useResourceApiService('execucioMassivaResource');
+    const { create: crearExecucio, artifactAction: execucioMassivaAction } =
+        useResourceApiService('execucioMassivaResource');
     const { create: crearContingut } = useResourceApiService('execucioMassivaContingutResource');
     const { handleOpen: handleExecucioMassiva, component: componentExecucioMassiva } = useExecucioMassivaGrid();
 

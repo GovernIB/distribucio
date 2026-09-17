@@ -79,7 +79,6 @@ import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
 import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto.ClassificacioResultatEnumDto;
 import es.caib.distribucio.logic.intf.dto.ContingutDto;
 import es.caib.distribucio.logic.intf.dto.DadaDto;
-import es.caib.distribucio.logic.intf.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
 import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.FitxerDto;
@@ -156,8 +155,6 @@ import es.caib.distribucio.persist.repository.RegistreRepository;
 import es.caib.distribucio.persist.repository.ServeiRepository;
 import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.persist.repository.VistaMovimentRepository;
-import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
-import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.pluginsib.arxiu.api.ContingutArxiu;
 import es.caib.pluginsib.arxiu.api.Document;
 import es.caib.pluginsib.arxiu.api.DocumentContingut;
@@ -3005,65 +3002,14 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional
 	@Override
 	public void custodiarAnnex(Long entitatId, Long registreId, Long annexId) {
-
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-
-        RegistreEntity registre = registreRepository.getReferenceById(registreId);
-		RegistreAnnexEntity annex = registreAnnexRepository.getReferenceById(annexId);
-
-		try {
-			logger.debug("Custodiar annex a l'Arxiu (" + "entitatId=" + entitatId + ", " + "registreId=" + registreId + ", annexId=" + annexId + ", usuari=" + auth.getName() + ")");
-
-            DistribucioRegistreAnnex distribucioRegistreAnnex = conversioTipusHelper.convertir(
-                    annex, DistribucioRegistreAnnex.class);
-            DistribucioRegistreAnotacio distribucioRegistreAnotacio =
-                    registreHelper.getDistribucioRegistreAnotacio(registreId);
-
-            DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
-            documentEniRegistrableDto.setNumero(registre.getNumero());
-            documentEniRegistrableDto.setData(registre.getData());
-            documentEniRegistrableDto.setOficinaDescripcio(registre.getOficinaDescripcio());
-            documentEniRegistrableDto.setOficinaCodi(registre.getOficinaCodi());
-
-            registreHelper.crearAnnexInArxiu(
-            		annexId, 
-            		distribucioRegistreAnnex,  
-            		distribucioRegistreAnotacio.getUnitatOrganitzativaCodi(), 
-            		distribucioRegistreAnotacio.getExpedientArxiuUuid(), 
-            		distribucioRegistreAnotacio.getProcedimentCodi());                
-
-			// Actualitza el recompte d'esborranys
-			List<RegistreAnnexEntity> registreAnnex = registreRepository.getDadesRegistreAnnex( registreId);
-			int numEsborrany = 0;
-			for(RegistreAnnexEntity annexList: registreAnnex) {
-				if(annexList.getArxiuEstat()== AnnexEstat.ESBORRANY) {
-					numEsborrany++;
-				}
-			}
-            registre.setAnnexosEstatEsborrany(numEsborrany);
-
-			// Modificar 
-			if (annex.getFitxerArxiuUuid() != null) {
-                pluginHelper.arxiuDocumentSetDefinitiu(annex);
-                annex.setArxiuEstat(AnnexEstat.DEFINITIU);
-                registre.setAnnexosEstatEsborrany(numEsborrany-1);
-                registreRepository.saveAndFlush(registre);
-                registreAnnexRepository.saveAndFlush(annex);
-                entityManager.flush();
-			}
-			// Finalment si està a l'arxiu com a definitiu i no s'han carregat els detalls de la firma els carrega
-			if (annex.getFitxerArxiuUuid() != null 
-					&& AnnexEstat.DEFINITIU.compareTo(annex.getArxiuEstat()) == 0) {
-                registreHelper.loadSignaturaDetallsToDB(annex);
-			}
-		} catch (Exception e) {
-			logger.error("Error no controlat custodiant l'annex amb id:  "+ annexId +" de l'anotació amb id:  "+ registreId + " a l'Arxiu: " + e.getMessage(), e) ;
-		}
+		logger.debug("Custodiar annex a l'Arxiu (" + "entitatId=" + entitatId + ", " + "registreId=" + registreId + ", annexId=" + annexId + ", usuari=" + auth.getName() + ")");
+		registreHelper.custodiarAnnex(annexId);
 	}
 	
 	/** Obté els registres per identificador i data de registre.

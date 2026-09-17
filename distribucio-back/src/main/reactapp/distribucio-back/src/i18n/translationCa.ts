@@ -284,6 +284,12 @@ const translationCa = {
                     label: 'Custòdia',
                     duplicat: 'Ja existeix una execució massiva pendent dels elements seleccionats: {{elements}}',
                 },
+                validarFirmes: {
+                    valides: "Les firmes de l'annex són vàlides",
+                    noValides: 'Les firmes no són vàlides',
+                    errorValidant: "Les firmes no s'han pogut validar",
+                    custodiat: 'Annex custodiat correctament',
+                },
                 error: "No s'ha pogut executar l'acció",
             },
             detall: {
@@ -447,6 +453,7 @@ const translationCa = {
                 },
                 action: {
                     validarFirmes: 'Validar firmes',
+                    validarICustodiar: 'Validar i custodiar',
                     descarregarFirma: 'Descarregar firma',
                 },
             },

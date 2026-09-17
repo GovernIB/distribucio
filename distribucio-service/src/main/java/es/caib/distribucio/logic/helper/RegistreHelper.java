@@ -2520,6 +2520,63 @@ public class RegistreHelper {
 		}
 	}
 
+	/**
+	 * Custodia un annex a l'Arxiu: el crea/actualitza al contenidor ({@link #crearAnnexInArxiu}) i, si ja
+	 * té UUID a l'Arxiu, el marca com a definitiu i en recarrega els detalls de firma.
+	 * <p>
+	 * Extret de l'antic {@code RegistreServiceImpl.custodiarAnnex(Long, Long, Long)} perquè el pugui
+	 * reutilitzar tant el servei antic com el nou {@code RegistreAnnexResourceServiceImpl} (acció
+	 * "Validar firmes").
+	 */
+	@Transactional
+	public void custodiarAnnex(Long annexId) {
+		RegistreAnnexEntity annex = registreAnnexRepository.getReferenceById(annexId);
+		RegistreEntity registre = annex.getRegistre();
+		Long registreId = registre.getId();
+
+		try {
+			DistribucioRegistreAnnex distribucioRegistreAnnex = conversioTipusHelper.convertir(
+					annex, DistribucioRegistreAnnex.class);
+			DistribucioRegistreAnotacio distribucioRegistreAnotacio =
+					this.getDistribucioRegistreAnotacio(registreId);
+
+			this.crearAnnexInArxiu(
+					annexId,
+					distribucioRegistreAnnex,
+					distribucioRegistreAnotacio.getUnitatOrganitzativaCodi(),
+					distribucioRegistreAnotacio.getExpedientArxiuUuid(),
+					distribucioRegistreAnotacio.getProcedimentCodi());
+
+			// Actualitza el recompte d'esborranys
+			List<RegistreAnnexEntity> registreAnnex = registreRepository.getDadesRegistreAnnex(registreId);
+			int numEsborrany = 0;
+			for (RegistreAnnexEntity annexList : registreAnnex) {
+				if (annexList.getArxiuEstat() == AnnexEstat.ESBORRANY) {
+					numEsborrany++;
+				}
+			}
+			registre.setAnnexosEstatEsborrany(numEsborrany);
+
+			// Modificar
+			if (annex.getFitxerArxiuUuid() != null) {
+				pluginHelper.arxiuDocumentSetDefinitiu(annex);
+				annex.setArxiuEstat(AnnexEstat.DEFINITIU);
+				registre.setAnnexosEstatEsborrany(numEsborrany - 1);
+				registreRepository.saveAndFlush(registre);
+				registreAnnexRepository.saveAndFlush(annex);
+				entityManager.flush();
+			}
+			// Finalment si està a l'arxiu com a definitiu i no s'han carregat els detalls de la firma els carrega
+			if (annex.getFitxerArxiuUuid() != null
+					&& AnnexEstat.DEFINITIU.compareTo(annex.getArxiuEstat()) == 0
+					&& !annex.isSignaturaDetallsDescarregat()) {
+				this.loadSignaturaDetallsToDB(annex);
+			}
+		} catch (Exception e) {
+			logger.error("Error no controlat custodiant l'annex amb id:  " + annexId + " de l'anotació amb id:  " + registreId + " a l'Arxiu: " + e.getMessage(), e);
+		}
+	}
+
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateAnotacioEstat(long anotacioId, List<Throwable> exceptionsGuardantAnnexos) {
 		RegistreEntity anotacio = registreRepository.getReferenceById(anotacioId);

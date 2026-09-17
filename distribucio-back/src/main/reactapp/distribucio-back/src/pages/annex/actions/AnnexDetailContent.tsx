@@ -13,7 +13,7 @@ import Link from '@mui/material/Link';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import { formattedFieldValue, useResourceApiService } from 'reactlib';
+import { formattedFieldValue, useBaseAppContext, useResourceApiService } from 'reactlib';
 import { formatDate } from '../../../util/dateUtils';
 import { AnnexArxiuEstatCell } from '../AnnexGrid';
 import {
@@ -79,6 +79,7 @@ const VALIDACIO_FIRMA_ICON: Record<string, { icon: string; color?: 'success' | '
 
 type AnnexDetailContentProps = {
     annex: any;
+    onRefresh?: () => void;
 };
 
 const GestioDocumental: React.FC<{ annex: any }> = ({ annex }) => {
@@ -151,12 +152,31 @@ const GestioDocumental: React.FC<{ annex: any }> = ({ annex }) => {
     );
 };
 
-const ValidacioFirma: React.FC<{ annex: any }> = ({ annex }) => {
+const ACTION_VALIDAR_FIRMES = 'VALIDAR_FIRMES';
+const ValidacioFirma: React.FC<{ annex: any; onRefresh?: () => void }> = ({ annex, onRefresh }) => {
     const { t } = useTranslation();
     const { currentRole } = useDistribucioContext();
     const isAdmin = currentRole === ROLE_ADMIN;
+    const { temporalMessageShow } = useBaseAppContext();
+    const { artifactAction } = useResourceApiService('registreAnnexResource');
+    const [loading, setLoading] = React.useState(false);
 
     const validacioFirmaIcon = annex?.validacioFirmaEstat ? VALIDACIO_FIRMA_ICON[annex.validacioFirmaEstat] : undefined;
+
+    const validarFirmes = () => {
+        setLoading(true);
+        artifactAction(annex.id, { code: ACTION_VALIDAR_FIRMES })
+            .then((result: any) => {
+                onRefresh?.();
+                (result.missatges ?? []).forEach((m: any) =>
+                    temporalMessageShow(null, t(`page.annex.accio.validarFirmes.${m.key}`), m.severitat)
+                );
+            })
+            .catch((error: any) =>
+                temporalMessageShow(t('page.annex.accio.error'), error?.description ?? error?.message, 'error')
+            )
+            .finally(() => setLoading(false));
+    };
 
     return (
         <CampDetall
@@ -165,13 +185,13 @@ const ValidacioFirma: React.FC<{ annex: any }> = ({ annex }) => {
                 <Box
                     sx={{
                         display: 'flex',
+                        flexDirection: 'column',
                         alignItems: 'flex-start',
-                        gap: 0.5,
                         flexWrap: 'nowrap',
                         justifyContent: 'space-between',
                     }}
                 >
-                    <Box sx={{ alignSelf: 'center' }}>
+                    <Box sx={{ alignSelf: 'start' }}>
                         {validacioFirmaIcon && (
                             <Icon fontSize="small" color={validacioFirmaIcon.color} sx={{ mr: 1, fontSize: '16px' }}>
                                 {validacioFirmaIcon.icon}
@@ -185,9 +205,16 @@ const ValidacioFirma: React.FC<{ annex: any }> = ({ annex }) => {
                             size="small"
                             variant="outlined"
                             startIcon={<Icon>sync</Icon>}
-                            onClick={() => alert('TODO: Pendent d\'implementar!!')}
+                            onClick={validarFirmes}
+                            loading={loading}
+                            loadingPosition="start"
+                            sx={{ alignSelf: 'end' }}
                         >
-                            {t('page.annex.detall.action.validarFirmes')}
+                            {t(
+                                annex?.arxiuEstat === 'DEFINITIU'
+                                    ? 'page.annex.detall.action.validarFirmes'
+                                    : 'page.annex.detall.action.validarICustodiar'
+                            )}
                         </Button>
                     )}
                 </Box>
@@ -198,6 +225,9 @@ const ValidacioFirma: React.FC<{ annex: any }> = ({ annex }) => {
 
 const Fitxer: React.FC<{ annex: any }> = ({ annex }) => {
     const { t } = useTranslation();
+    const [loadingImprimible, setLoadingImprimible] = React.useState(false);
+    const [loadingOriginal, setLoadingOriginal] = React.useState(false);
+
     const descarregar = useDescarregarAnnex();
 
     return (
@@ -221,7 +251,11 @@ const Fitxer: React.FC<{ annex: any }> = ({ annex }) => {
                             size="small"
                             variant="outlined"
                             startIcon={<Icon>download</Icon>}
-                            onClick={() => descarregar(annex?.id, REPORT_DESCARREGAR_ORIGINAL)}
+                            loading={loadingOriginal}
+                            loadingPosition="start"
+                            onClick={() =>
+                                descarregar(annex?.id, REPORT_DESCARREGAR_ORIGINAL, undefined, setLoadingOriginal)
+                            }
                         >
                             {t('page.annex.accio.descarregarOriginal')}
                         </Button>
@@ -230,7 +264,16 @@ const Fitxer: React.FC<{ annex: any }> = ({ annex }) => {
                                 size="small"
                                 variant="outlined"
                                 startIcon={<Icon>print</Icon>}
-                                onClick={() => descarregar(annex?.id, REPORT_DESCARREGAR_IMPRIMIBLE)}
+                                loading={loadingImprimible}
+                                loadingPosition="start"
+                                onClick={() =>
+                                    descarregar(
+                                        annex?.id,
+                                        REPORT_DESCARREGAR_IMPRIMIBLE,
+                                        undefined,
+                                        setLoadingImprimible
+                                    )
+                                }
                             >
                                 {t('page.annex.accio.descarregarImprimible')}
                             </Button>
@@ -389,7 +432,7 @@ const Firmes: React.FC<{ annex: any }> = ({ annex }) => {
     );
 };
 
-export const AnnexDetailContent: React.FC<AnnexDetailContentProps> = ({ annex }) => {
+export const AnnexDetailContent: React.FC<AnnexDetailContentProps> = ({ annex, onRefresh }) => {
     const { t } = useTranslation();
     const { currentFields } = useResourceApiService('registreAnnexResource');
 
@@ -479,7 +522,7 @@ export const AnnexDetailContent: React.FC<AnnexDetailContentProps> = ({ annex })
                     />
                 ))}
                 <CampDetall label={t('page.annex.detall.camp.fitxerTipusMime')} value={annex?.fitxerTipusMime} />
-                <ValidacioFirma annex={annex} />
+                <ValidacioFirma annex={annex} onRefresh={onRefresh} />
 
                 <CampDetall
                     label={t('page.annex.detall.camp.arxiuEstat')}
