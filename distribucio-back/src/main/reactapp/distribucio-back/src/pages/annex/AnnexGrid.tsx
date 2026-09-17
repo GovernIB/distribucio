@@ -6,7 +6,7 @@ import { CardPage } from '../../components/CardData';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
 import { formatDate } from '../../util/dateUtils';
 import AnnexFilter from './AnnexFilter';
-import useAnnexAccions from './AnnexAccions';
+import useAnnexAccions, { useAnnexMassiveActions } from './AnnexAccions';
 import useAnnexDetailDialog from './actions/AnnexDetailDialog';
 
 const ESTATS_FIRMA_AMB_ERROR = ['FIRMA_INVALIDA', 'ERROR_VALIDANT'];
@@ -61,12 +61,13 @@ const AnnexGrid: React.FC = () => {
     const [springFilter, setSpringFilter] = React.useState<string>();
     const { show: mostrarDetall, component: detailDialog } = useAnnexDetailDialog();
     const accions = useAnnexAccions(mostrarDetall);
+    const massiveActions = useAnnexMassiveActions();
 
     const columns: MuiDataGridColDef[] = React.useMemo(
         () => [
             {
                 field: 'registreNumero',
-                flex: 1,
+                flex: 1.5,
                 renderCell: (params: any) => {
                     const numero = params?.row?.registreNumero;
                     if (!numero) {
@@ -76,24 +77,23 @@ const AnnexGrid: React.FC = () => {
                     const sufix = copia
                         ? t('page.annex.grid.registre.copia', { num: copia })
                         : t('page.annex.grid.registre.original');
-                    return `${numero} (${sufix})`;
+                    return <span title={`${numero} (${sufix})`}>{`${numero} (${sufix})`}</span>;
                 },
             },
             { field: 'titol', flex: 1.5 },
             {
                 field: 'dataAnotacio',
-                flex: 0.6,
-                valueFormatter: (value: string) =>
-                    value ? formatDate(value, 'DD/MM/YYYY HH:mm:ss') : '',
+                flex: 0.7,
+                valueFormatter: (value: string) => (value ? formatDate(value, 'DD/MM/YYYY HH:mm:ss') : ''),
             },
             { field: 'fitxerNom', flex: 1 },
             {
                 field: 'arxiuEstat',
-                flex: 0.5,
+                flex: 0.7,
                 renderCell: (params: any) => <AnnexArxiuEstatCell params={params} />,
             },
-            { field: 'fitxerTipusMime', flex: 0.5 },
-            { field: 'signaturaInfo', flex: 1, sortable: false },
+            { field: 'fitxerTipusMime', flex: 0.7 },
+            { field: 'signaturaInfo', flex: 0.7, sortable: false },
         ],
         [t]
     );
@@ -103,10 +103,10 @@ const AnnexGrid: React.FC = () => {
             <CardPage title={t('page.annex.grid.title')}>
                 <AnnexFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid
-                    readOnly
                     toolbarHideCreate
                     rowHideUpdateButton
                     rowHideDeleteButton
+                    selectionActive
                     resourceName="registreAnnexResource"
                     apiRef={apiRef}
                     columns={columns}
@@ -115,6 +115,7 @@ const AnnexGrid: React.FC = () => {
                     sortModel={sortModel}
                     onRowClick={(params: any) => mostrarDetall(params?.row?.id, params?.row)}
                     rowAdditionalActions={accions}
+                    toolbarMassiveActions={massiveActions}
                 />
                 {detailDialog}
             </CardPage>

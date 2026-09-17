@@ -264,9 +264,12 @@ const translationCa = {
             },
             accio: {
                 detalls: "Detalls de l'annex",
+                detallsAnotacio: "Detalls de l'anotació",
                 concsv: 'Enllaç al ConCSV',
                 descarregarOriginal: 'Descàrrega original',
                 descarregarImprimible: 'Descàrrega imprimible',
+                guardarDefinitiu: 'Custòdia',
+                guardarDefinitiuMultiple: 'Custòdia',
                 error: "No s'ha pogut executar l'acció",
             },
             detall: {
@@ -427,12 +430,6 @@ const translationCa = {
                     FIRMA_VALIDA: 'Firma vàlida',
                     FIRMA_INVALIDA: 'Firma invàlida',
                     ERROR_VALIDANT: 'Error en la validació',
-                },
-                validarFirmes: {
-                    pendent: "Acció pendent d'implementar",
-                },
-                descarregarFirma: {
-                    pendent: "Acció pendent d'implementar",
                 },
                 action: {
                     validarFirmes: 'Validar firmes',

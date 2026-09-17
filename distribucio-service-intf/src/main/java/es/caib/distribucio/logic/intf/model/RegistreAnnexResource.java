@@ -20,6 +20,7 @@ import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.domain.Sort;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -84,7 +85,13 @@ import java.util.Map;
 										roles = {BaseConfig.ROLE_ADMIN},
 										grantedPermissions = {PermissionEnum.READ}
 								)
-						})
+						}),
+				@ResourceArtifact(
+						// Descàrrega del fitxer d'una firma individual.
+						type = ResourceArtifactType.REPORT,
+						code = RegistreAnnexResource.REPORT_DESCARREGAR_FIRMA_CODE,
+						requiresId = true,
+						formClass = RegistreAnnexResource.DescarregarFirmaForm.class)
 		}
 )
 public class RegistreAnnexResource extends BaseResource<Long> {
@@ -92,6 +99,7 @@ public class RegistreAnnexResource extends BaseResource<Long> {
 	public static final String FILTER_CODE = "FILTER";
 	public static final String REPORT_DESCARREGAR_ORIGINAL_CODE = "DESCARREGAR_ORIGINAL";
 	public static final String REPORT_DESCARREGAR_IMPRIMIBLE_CODE = "DESCARREGAR_IMPRIMIBLE";
+	public static final String REPORT_DESCARREGAR_FIRMA_CODE = "DESCARREGAR_FIRMA";
 
 	private String titol;
 	private String fitxerNom;
@@ -152,12 +160,12 @@ public class RegistreAnnexResource extends BaseResource<Long> {
 	private String signaturaInfo;
 	private Boolean ambFirma;
 	/**
-	 * Llistat complet de firmes amb tots els detalls (bloc "Firmes" de registreAnnex.jsp/
-	 * registreAnnexFirmes.jsp). Només s'omple a "Detalls de l'annex"; a la llista només hi ha el
-	 * resum {@link #signaturaInfo}. No inclou {@code contingut} (bytes de la firma): es reservarà
-	 * per a una futura acció de descàrrega de la firma individual.
+	 * Llistat complet de firmes amb tots els detalls. Només s'omple a "Detalls de l'annex". La descàrrega
+	 * individual es fa amb {@link #REPORT_DESCARREGAR_FIRMA_CODE}, indicant l'índex dins aquest llistat.
 	 */
 	private List<ArxiuFirmaDto> firmes;
+	/** Indica si es pot generar una versió imprimible del document de l'annex. */
+	private Boolean potGenerarVersioImprimible;
 
 	@Getter
 	@Setter
@@ -172,6 +180,13 @@ public class RegistreAnnexResource extends BaseResource<Long> {
 		private ArxiuFirmaTipusEnumDto tipusFirma;
 		private Date dataAnotacioInici = Date.from(LocalDate.now().minusMonths(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
 		private Date dataAnotacioFi;
+	}
+
+	@Getter
+	@Setter
+	public static class DescarregarFirmaForm implements Serializable {
+		@NotNull
+		private Integer firmaIndex;
 	}
 
 }

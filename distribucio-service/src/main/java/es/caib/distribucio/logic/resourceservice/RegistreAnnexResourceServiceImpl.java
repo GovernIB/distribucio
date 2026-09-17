@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.ConfigHelper;
+import es.caib.distribucio.logic.helper.RegistreHelper;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.ResourceNotFoundException;
 import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
@@ -24,13 +25,14 @@ import es.caib.distribucio.logic.intf.registre.RegistreAnnexOrigenEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.logic.intf.resourceservice.RegistreAnnexResourceService;
 import es.caib.distribucio.logic.intf.service.ConfigService;
-import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
+import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexFirmaEntity;
 import es.caib.distribucio.persist.entity.RegistreFirmaDetallEntity;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.RegistreAnnexFirmaRepository;
+import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
 import es.caib.distribucio.persist.resourceentity.RegistreAnnexResourceEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,8 +60,9 @@ public class RegistreAnnexResourceServiceImpl
 		implements RegistreAnnexResourceService {
 
 	private final RegistreAnnexFirmaRepository registreAnnexFirmaRepository;
+	private final RegistreAnnexRepository registreAnnexRepository;
+	private final RegistreHelper registreHelper;
 	private final ConfigService configService;
-	private final RegistreService registreService;
 	private final EntitatRepository entitatRepository;
 	private final AuthenticationHelper authenticationHelper;
 
@@ -67,6 +70,7 @@ public class RegistreAnnexResourceServiceImpl
 	public void init() {
 		register(RegistreAnnexResource.REPORT_DESCARREGAR_ORIGINAL_CODE, new DescarregarReportGenerator(false));
 		register(RegistreAnnexResource.REPORT_DESCARREGAR_IMPRIMIBLE_CODE, new DescarregarReportGenerator(true));
+		register(RegistreAnnexResource.REPORT_DESCARREGAR_FIRMA_CODE, new DescarregarFirmaReportGenerator());
 	}
 
 	@Override
@@ -191,6 +195,8 @@ public class RegistreAnnexResourceServiceImpl
 		} else {
 			resource.setSignaturaInfo("");
 		}
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(entity.getId());
+		resource.setPotGenerarVersioImprimible(registreHelper.potGenerarVersioImprimible(registreAnnexEntity));
 
 		// Enllaç "Veure a CONCSV": només per ROLE_ADMIN i només si l'annex té firma CSV i la URL base de
 		// CONCSV està configurada. No és un artifact (és un camp normal del recurs), per això el
@@ -226,12 +232,49 @@ public class RegistreAnnexResourceServiceImpl
 					.ifPresent(entitat -> ConfigHelper.setEntitatActualCodi(entitat.getCodi()));
 
 			RegistreAnnexResource annex = ((List<RegistreAnnexResource>) data).get(0);
-			FitxerDto fitxer = registreService.getAnnexFitxer(annex.getId(), ambVersioImprimible);
+			FitxerDto fitxer = registreHelper.getAnnexFitxer(annex.getId(), ambVersioImprimible);
 			return new DownloadableFile(fitxer.getNom(), fitxer.getContentType(), fitxer.getContingut());
 		}
 
 		@Override
 		public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
+		}
+
+	}
+
+	/** Dades mínimes que calen a {@link DescarregarFirmaReportGenerator#generateFile} per recuperar el fitxer. */
+	@RequiredArgsConstructor
+	private static class FirmaRef implements Serializable {
+		private final Long annexId;
+		private final int firmaIndex;
+	}
+
+	/**
+	 * Acció "Descarregar firma":
+	 * Descàrrega del fitxer d'una de les firmes de l'annex, per índex.
+	 * Reutilitza {@link RegistreHelper#getAnnexFirmaFitxer(Long, int)}.
+	 */
+	private class DescarregarFirmaReportGenerator
+			implements ReportGenerator<RegistreAnnexResourceEntity, RegistreAnnexResource.DescarregarFirmaForm, FirmaRef> {
+
+		@Override
+		public List<FirmaRef> generateData(String code, RegistreAnnexResourceEntity entity, RegistreAnnexResource.DescarregarFirmaForm params) {
+			return List.of(new FirmaRef(entity.getId(), params.getFirmaIndex()));
+		}
+
+		@Override
+		public DownloadableFile generateFile(String code, List<?> data, ReportFileType fileType, OutputStream out) {
+			Long entitatActualId = SessioActualUtil.getEntitatId();
+			entitatRepository.findById(entitatActualId)
+					.ifPresent(entitat -> ConfigHelper.setEntitatActualCodi(entitat.getCodi()));
+
+			FirmaRef firmaRef = ((List<FirmaRef>) data).get(0);
+			FitxerDto fitxer = registreHelper.getAnnexFirmaFitxer(firmaRef.annexId, firmaRef.firmaIndex);
+			return new DownloadableFile(fitxer.getNom(), fitxer.getContentType(), fitxer.getContingut());
+		}
+
+		@Override
+		public void onChange(Serializable id, RegistreAnnexResource.DescarregarFirmaForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreAnnexResource.DescarregarFirmaForm target) {
 		}
 
 	}

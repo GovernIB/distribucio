@@ -6,6 +6,7 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Icon from '@mui/material/Icon';
 import Tooltip from '@mui/material/Tooltip';
 import Link from '@mui/material/Link';
@@ -19,7 +20,7 @@ import {
     useDescarregarAnnex,
     REPORT_DESCARREGAR_ORIGINAL,
     REPORT_DESCARREGAR_IMPRIMIBLE,
-    fitxerExtensio,
+    REPORT_DESCARREGAR_FIRMA,
 } from '../AnnexAccions';
 import CampDetall from '../../../components/CampDetall';
 import { ROLE_ADMIN, useDistribucioContext } from '../../../components/DistribucioContext';
@@ -152,6 +153,8 @@ const GestioDocumental: React.FC<{ annex: any }> = ({ annex }) => {
 
 const ValidacioFirma: React.FC<{ annex: any }> = ({ annex }) => {
     const { t } = useTranslation();
+    const { currentRole } = useDistribucioContext();
+    const isAdmin = currentRole === ROLE_ADMIN;
 
     const validacioFirmaIcon = annex?.validacioFirmaEstat ? VALIDACIO_FIRMA_ICON[annex.validacioFirmaEstat] : undefined;
 
@@ -177,14 +180,16 @@ const ValidacioFirma: React.FC<{ annex: any }> = ({ annex }) => {
                         {t(`page.annex.detall.validacioFirmaEstat.${annex?.validacioFirmaEstat ?? 'NO_VALIDAT'}`)}
                         {annex?.validacioFirmaError ? `: ${annex.validacioFirmaError}` : ''}
                     </Box>
-                    <Tooltip title={t('page.annex.detall.validarFirmes.pendent')}>
-                        {/* TODO */}
-                        <span>
-                            <Button size="small" variant="outlined" disabled startIcon={<Icon>sync</Icon>}>
-                                {t('page.annex.detall.action.validarFirmes')}
-                            </Button>
-                        </span>
-                    </Tooltip>
+                    {isAdmin && (
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            startIcon={<Icon>sync</Icon>}
+                            onClick={() => alert('TODO: Pendent d\'implementar!!')}
+                        >
+                            {t('page.annex.detall.action.validarFirmes')}
+                        </Button>
+                    )}
                 </Box>
             }
         />
@@ -220,7 +225,7 @@ const Fitxer: React.FC<{ annex: any }> = ({ annex }) => {
                         >
                             {t('page.annex.accio.descarregarOriginal')}
                         </Button>
-                        {fitxerExtensio(annex) === 'csv' && (
+                        {annex?.potGenerarVersioImprimible && (
                             <Button
                                 size="small"
                                 variant="outlined"
@@ -230,14 +235,6 @@ const Fitxer: React.FC<{ annex: any }> = ({ annex }) => {
                                 {t('page.annex.accio.descarregarImprimible')}
                             </Button>
                         )}
-                        <Tooltip title={t('page.annex.detall.descarregarFirma.pendent')}>
-                            {/* TODO */}
-                            <span>
-                                <Button size="small" variant="outlined" disabled startIcon={<Icon>verified</Icon>}>
-                                    {t('page.annex.detall.action.descarregarFirma')}
-                                </Button>
-                            </span>
-                        </Tooltip>
                     </Box>
                 </Box>
             }
@@ -250,15 +247,16 @@ const Firmes: React.FC<{ annex: any }> = ({ annex }) => {
     const { t } = useTranslation();
     const { currentRole } = useDistribucioContext();
     const isAdmin = currentRole === ROLE_ADMIN;
+    const descarregar = useDescarregarAnnex();
 
     if (!annex?.ambFirma) {
         return null;
     }
 
-    const files: { firma: any; detall: any }[] = [];
-    (annex?.firmes ?? []).forEach((firma: any) => {
+    const files: { firma: any; detall: any; firmaIndex: number }[] = [];
+    (annex?.firmes ?? []).forEach((firma: any, firmaIndex: number) => {
         (firma.detalls?.length ? firma.detalls : [undefined]).forEach((detall: any) => {
-            files.push({ firma, detall });
+            files.push({ firma, detall, firmaIndex });
         });
     });
 
@@ -317,7 +315,7 @@ const Firmes: React.FC<{ annex: any }> = ({ annex }) => {
                                         </TableCell>
                                     )}
                                 </TableRow>
-                                {files.map(({ firma, detall }, index) => {
+                                {files.map(({ firma, detall, firmaIndex }, index) => {
                                     const ambFitxer = !['PADES', 'CADES_ATT', 'XADES_ENV', 'XADES_DET'].includes(
                                         firma.tipus
                                     );
@@ -344,7 +342,32 @@ const Firmes: React.FC<{ annex: any }> = ({ annex }) => {
                                                     : t('page.annex.detall.firmes.data.nd')}
                                             </TableCell>
                                             <TableCell>{detall?.emissorCertificat}</TableCell>
-                                            <TableCell>{ambFitxer ? firma.fitxerNom : ''}</TableCell>
+                                            <TableCell>
+                                                {ambFitxer && (
+                                                    <Box
+                                                        sx={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'space-between',
+                                                            gap: 1,
+                                                        }}
+                                                    >
+                                                        <span>{firma.fitxerNom}</span>
+                                                        <Tooltip title={t('page.annex.detall.action.descarregarFirma')}>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() =>
+                                                                    descarregar(annex?.id, REPORT_DESCARREGAR_FIRMA, {
+                                                                        firmaIndex,
+                                                                    })
+                                                                }
+                                                            >
+                                                                <Icon fontSize="small">download</Icon>
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    </Box>
+                                                )}
+                                            </TableCell>
                                             <TableCell>{firma.csvRegulacio}</TableCell>
                                             {isAdmin && (
                                                 <TableCell>

@@ -262,9 +262,12 @@ const translationEs = {
             },
             accio: {
                 detalls: 'Detalles del anexo',
+                detallsAnotacio: 'Detalles de la anotación',
                 concsv: 'Enlace a ConCSV',
                 descarregarOriginal: 'Descarga original',
                 descarregarImprimible: 'Descarga imprimible',
+                guardarDefinitiu: 'Custodia',
+                guardarDefinitiuMultiple: 'Custodia',
                 error: 'No se ha podido ejecutar la acción',
             },
             detall: {
@@ -425,12 +428,6 @@ const translationEs = {
                     FIRMA_VALIDA: 'Firma válida',
                     FIRMA_INVALIDA: 'Firma inválida',
                     ERROR_VALIDANT: 'Error en la validación',
-                },
-                validarFirmes: {
-                    pendent: 'Acción pendiente de implementar',
-                },
-                descarregarFirma: {
-                    pendent: 'Acción pendiente de implementar',
                 },
                 action: {
                     validarFirmes: 'Validar firmas',

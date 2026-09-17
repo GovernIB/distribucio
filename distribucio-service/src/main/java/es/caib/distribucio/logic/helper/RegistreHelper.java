@@ -2700,6 +2700,49 @@ public class RegistreHelper {
 		return firma;
 	}
 
+	/** Descàrrega del fitxer d'una firma individual de l'annex (registreAnnexFirmes.jsp/ContingutController.descarregarFirma). */
+	public FitxerDto getAnnexFirmaFitxer(Long annexId, int indexFirma) {
+		FitxerDto fitxerDto = new FitxerDto();
+
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(annexId);
+		RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(indexFirma);
+		RegistreEntity registre = registreAnnexEntity.getRegistre();
+
+		// if annex is already created in arxiu take firma content from arxiu
+		if (registreAnnexEntity.getFitxerArxiuUuid() != null
+				&& !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()
+				&& firmaEntity != null) {
+
+			es.caib.pluginsib.arxiu.api.Firma firma = this.getFirma(registreAnnexEntity, indexFirma);
+			if (firma != null) {
+				fitxerDto.setNom(firmaEntity.getFitxerNom());
+				fitxerDto.setContentType(firmaEntity.getTipusMime());
+				fitxerDto.setContingut(firma.getContingut());
+				fitxerDto.setTamany(firma.getContingut().length);
+			}
+
+		// if annex is not yet created in arxiu take firma content from gestio documental
+		} else {
+			if (firmaEntity.getGesdocFirmaId() != null) {
+				ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
+				gestioDocumentalHelper.gestioDocumentalGet(
+						firmaEntity.getGesdocFirmaId(),
+						firmaEntity.getFitxerNom(),
+						GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP,
+						streamAnnexFirma,
+						registre.getNumero());
+				byte[] firmaContingut = streamAnnexFirma.toByteArray();
+
+				fitxerDto.setNom(firmaEntity.getFitxerNom());
+				fitxerDto.setContentType(firmaEntity.getTipusMime());
+				fitxerDto.setContingut(firmaContingut);
+				fitxerDto.setTamany(firmaContingut.length);
+			}
+		}
+
+		return fitxerDto;
+	}
+
 	/** Mètode per consultar totes les anotacions pendents d'enviar agrupades per ReglaDto, cal tenir en compte que cada entitat
 	 * pot tenir el seu número màxim de reintents diferent.
 	 * 

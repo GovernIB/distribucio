@@ -1,5 +1,5 @@
-import React, {ReactElement} from "react";
-import {Box, Button, Icon, Menu, MenuItem} from "@mui/material";
+import React, { ReactElement } from 'react';
+import { Box, Button, Icon, Menu, MenuItem } from '@mui/material';
 
 type MenuButtonProps = {
     id: string;
@@ -10,11 +10,11 @@ type MenuButtonProps = {
     menuProps?: any;
     arrowDown?: string;
     arrowUp?: string;
-    hiddenIcon?: boolean,
+    hiddenIcon?: boolean;
     ButtonComponent?: React.ElementType;
-}
+};
 
-const MenuButton = (props:MenuButtonProps) => {
+const MenuButton = (props: MenuButtonProps) => {
     const {
         id,
         hidden,
@@ -36,84 +36,83 @@ const MenuButton = (props:MenuButtonProps) => {
         setAnchorEl(null);
     };
 
-    if (hidden){
-        return <></>
+    if (hidden) {
+        return <></>;
     }
 
-    return(<>
-        <ButtonComponent
-            id={`menu-button-${id}`}
-            aria-controls={'demo-customized-menu'}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            onClick={handleClick}
-
-             {...(!hiddenIcon && ButtonComponent === Button
-                ? { endIcon: <Icon sx={{ m: 0 }}>{open ? arrowUp : arrowDown}</Icon> }
-                : {})
-            }
-            {...buttonProps}
-        >
-            {buttonLabel}
-        </ButtonComponent>
-        <Menu
-            id={`menu-button-${id}`}
-            MenuListProps={{
-                'aria-labelledby': 'demo-customized-button',
-            }}
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-
-            elevation={3}
-            anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-            }}
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-
-            {...menuProps}
-        >
-            <Box>
-                {children}
-            </Box>
-        </Menu>
-    </>)
-}
+    return (
+        <>
+            <ButtonComponent
+                id={`menu-button-${id}`}
+                aria-controls={'demo-customized-menu'}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                onClick={handleClick}
+                {...(!hiddenIcon && ButtonComponent === Button
+                    ? { endIcon: <Icon sx={{ m: 0 }}>{open ? arrowUp : arrowDown}</Icon> }
+                    : {})}
+                {...buttonProps}
+            >
+                {buttonLabel}
+            </ButtonComponent>
+            <Menu
+                id={`menu-button-${id}`}
+                MenuListProps={{
+                    'aria-labelledby': 'demo-customized-button',
+                }}
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                elevation={3}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                {...menuProps}
+            >
+                <Box>{children}</Box>
+            </Menu>
+        </>
+    );
+};
 
 type MenuActionButtonProps = MenuButtonProps & {
     actions: any[];
     entity?: any;
-}
-export const actionToItem = (entity:any, actions:any[]) => {
-    return actions.map((action:any, index:number) =>
-            !(typeof action.hidden === 'function' ? action.hidden(entity) : action.hidden)
-            && (!action?.linkTo && !action?.clickShowUpdateDialog)
-            && <div key={`action-${index}`} title={ typeof action.title == 'function' ?action.title?.(entity) :action.title}>
-                <MenuItem onClick={()=>
-                    entity?.id
-                        ? action?.onClick?.(entity?.id, entity)
-                        : action?.onClick?.(entity)
-                } disabled={typeof action?.disabled === 'function' ? action?.disabled(entity) : action?.disabled}>
-                    {action.icon && <Icon>{action.icon}</Icon>}{action.label}
-                </MenuItem>
-            </div>
-    )
-}
-export const MenuActionButton = (props:MenuActionButtonProps) => {
-    const {
-        entity,
-        actions,
-        children,
-        ...other
-    } = props;
+};
+export const actionToItem = (entity: any, actions: any[]) => {
+    return actions.map(
+        (action: any, index: number) =>
+            !(typeof action.hidden === 'function' ? action.hidden(entity) : action.hidden) &&
+            !action?.linkTo &&
+            !action?.clickShowUpdateDialog && (
+                <div
+                    key={`action-${index}`}
+                    title={typeof action.title == 'function' ? action.title?.(entity) : action.title}
+                >
+                    <MenuItem
+                        onClick={() => (entity?.id ? action?.onClick?.(entity?.id, entity) : action?.onClick?.(entity))}
+                        disabled={typeof action?.disabled === 'function' ? action?.disabled(entity) : action?.disabled}
+                    >
+                        {action.icon && <Icon sx={{ mr: 1 }}>{action.icon}</Icon>}
+                        {action.label}
+                    </MenuItem>
+                </div>
+            )
+    );
+};
+export const MenuActionButton = (props: MenuActionButtonProps) => {
+    const { entity, actions, children, ...other } = props;
 
-    return <MenuButton {...other}>
-        {actionToItem(entity, actions)}
-        {children}
-    </MenuButton>
-}
+    return (
+        <MenuButton {...other}>
+            {actionToItem(entity, actions)}
+            {children}
+        </MenuButton>
+    );
+};
 export default MenuButton;
