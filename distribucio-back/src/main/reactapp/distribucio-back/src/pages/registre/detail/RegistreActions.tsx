@@ -7,6 +7,9 @@ import useClassificar from "../actions/Classificar.tsx";
 import { Divider } from "@mui/material";
 import {useExecucioMassivaGrid} from "../../execucioMassiva/ExecucioMassivaGrid.tsx";
 import useEnviarViaEmail from "../actions/EnviarViaEmail.tsx";
+import useReenviar from "../actions/Reenviar.tsx";
+import useMarcarProcessada from "../actions/MarcarProcessada.tsx";
+import useMarcarPendent from "../actions/MarcarPendent.tsx";
 
 export const useActions = () => {
     const { t } = useTranslation();
@@ -51,6 +54,18 @@ export const useRegistreActions = (refresh?: () => void) => {
         refresh?.()
         temporalMessageShow(null, t(`page.registre.accio.email.ok`, {numero: result.numero}), 'success');
     })
+    const { handleShow: handleReenviar, content: contentReenviar } = useReenviar((result:any) => {
+        refresh?.()
+        temporalMessageShow(null, t(`page.registre.accio.reenviar.ok`, {numero: result.numero}), 'success');
+    })
+    const { handleShow: handleProcessada, content: contentProcessada } = useMarcarProcessada((result:any) => {
+        refresh?.()
+        temporalMessageShow(null, t(`page.registre.accio.marcarProcessada.ok`, {numero: result.numero}), 'success');
+    })
+    const { handleShow: handlePendent, content: contentPendent } = useMarcarPendent((result:any) => {
+        refresh?.()
+        temporalMessageShow(null, t(`page.registre.accio.marcarPendent.ok`, {numero: result.numero}), 'success');
+    })
 
     const actions:any[] = [
         {
@@ -79,11 +94,48 @@ export const useRegistreActions = (refresh?: () => void) => {
             onClick: (id:any) => handleClassificar([id], false),
         },
         {
+            label: <Divider sx={{width: '100%'}} color={"none"}/>,
+            showInMenu: true,
+            disabled: true,
+        },
+        {
             label: t('page.registre.accio.email.label'),
-            icon: 'inbox',
+            icon: 'mail',
             action: 'ENVIAR_EMAIL',
             showInMenu: true,
             onClick: (id:any) => handleEnviarEmail([id], false),
+        },
+        {
+            label: t('page.registre.accio.reenviar.label'),
+            icon: 'send',
+            action: 'REENVIAR',
+            showInMenu: true,
+            onClick: (id:any) => handleReenviar([id], false),
+        },
+        {
+            label: t('page.registre.accio.marcarProcessada.label'),
+            icon: 'check_circle',
+            action: 'MARCAR_PROCESSADA',
+            showInMenu: true,
+            onClick: (id:any) => handleProcessada([id], false),
+            disabled: (row:any) => {
+                return row.pendentExecucioMassiva || !(
+                    row.procesEstat == 'BUSTIA_PENDENT'
+                    || (row.procesEstat == 'BACK_ERROR' && row.reintentsEsgotat)
+                    || (row.procesEstat == 'ARXIU_PENDENT' && row.reintentsEsgotat)
+                    || row.procesEstat == 'BACK_REBUTJADA'
+                )
+            },
+            hidden: (row:any) => !(row.procesEstatSimple == 'PENDENT'),
+        },
+        {
+            label: t('page.registre.accio.marcarPendent.label'),
+            icon: 'undo',
+            action: 'MARCAR_PENDENT',
+            showInMenu: true,
+            onClick: (id:any) => handlePendent([id], false),
+            disabled: (row:any) => row.pendentExecucioMassiva,
+            hidden: (row:any) => !(row.procesEstat == 'BUSTIA_PROCESSADA'),
         },
     ]
 
@@ -92,6 +144,9 @@ export const useRegistreActions = (refresh?: () => void) => {
         {componentAlertes}
         {contentClassificar}
         {contentEnviarEmail}
+        {contentReenviar}
+        {contentProcessada}
+        {contentPendent}
     </>
 
     return {
@@ -113,6 +168,18 @@ export const useRegistreMassiveActions = () => {
         handleEM()
         // temporalMessageShow(null, t(`page.registre.accio.email.ok`), 'success');
     })
+    const { handleShow: handleReenviar, content: contentReenviar } = useReenviar(() => {
+        handleEM()
+        // temporalMessageShow(null, t(`page.registre.accio.reenviar.ok`), 'success');
+    })
+    const { handleShow: handleProcessada, content: contentProcessada } = useMarcarProcessada(() => {
+        handleEM()
+        // temporalMessageShow(null, t(`page.registre.accio.marcarProcessada.ok`), 'success');
+    })
+    const { handleShow: handlePendent, content: contentPendent } = useMarcarPendent(() => {
+        handleEM()
+        // temporalMessageShow(null, t(`page.registre.accio.marcarPendent.ok`), 'success');
+    })
 
     const actions:any[] = [
         {
@@ -124,10 +191,31 @@ export const useRegistreMassiveActions = () => {
         },
         {
             label: t('page.registre.accio.email.label'),
-            icon: 'inbox',
+            icon: 'mail',
             action: 'ENVIAR_EMAIL',
             showInMenu: true,
             onClick: (ids:any) => handleEnviarEmail(ids, true),
+        },
+        {
+            label: t('page.registre.accio.reenviar.label'),
+            icon: 'send',
+            action: 'REENVIAR',
+            showInMenu: true,
+            onClick: (ids:any) => handleReenviar(ids, true),
+        },
+        {
+            label: t('page.registre.accio.marcarProcessada.label'),
+            icon: 'check_circle',
+            action: 'MARCAR_PROCESSADA',
+            showInMenu: true,
+            onClick: (ids:any) => handleProcessada(ids, true),
+        },
+        {
+            label: t('page.registre.accio.marcarPendent.label'),
+            icon: 'undo',
+            action: 'MARCAR_PENDENT',
+            showInMenu: true,
+            onClick: (ids:any) => handlePendent(ids, true),
         },
     ]
 
@@ -135,6 +223,9 @@ export const useRegistreMassiveActions = () => {
         {contentClassificar}
         {componentEM}
         {contentEnviarEmail}
+        {contentReenviar}
+        {contentProcessada}
+        {contentPendent}
     </>
 
     return {

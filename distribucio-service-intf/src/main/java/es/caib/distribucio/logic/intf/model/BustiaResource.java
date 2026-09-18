@@ -15,8 +15,6 @@ import org.springframework.data.annotation.Transient;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Informació d'una bústia.
@@ -50,6 +48,9 @@ import java.util.List;
                         type = ResourceArtifactType.PERSPECTIVE,
                         code = BustiaResource.PERSPECTIVE_PERMISOS_COUNT_CODE),
                 @ResourceArtifact(
+                        type = ResourceArtifactType.PERSPECTIVE,
+                        code = BustiaResource.PERSPECTIVE_FAVORITA_CODE),
+                @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = BustiaResource.ACTION_ACTIVAR_CODE,
                         requiresId = true),
@@ -67,6 +68,11 @@ import java.util.List;
                         requiresId = true,
                         formClass = BustiaResource.MoureAnotacioForm.class),
                 @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = BustiaResource.ACTION_TOOGLE_FAVORITA_CODE,
+                        requiresId = true,
+                        formClass = Boolean.class),
+                @ResourceArtifact(
                         type = ResourceArtifactType.REPORT,
                         code = BustiaResource.REPORT_USUARIS_BUSTIA_CODE,
                         formClass = BustiaResource.UsuariBustiaForm.class),
@@ -76,6 +82,8 @@ public class BustiaResource extends ContingutResource {
 
     public static final String FILTER_CODE = "FILTER";
     public static final String PERSPECTIVE_PERMISOS_COUNT_CODE = "PERMISOS_COUNT";
+    public static final String PERSPECTIVE_FAVORITA_CODE = "FAVORITA";
+    public static final String ACTION_TOOGLE_FAVORITA_CODE = "TOOGLE_FAVORITA";
     public static final String ACTION_ACTIVAR_CODE = "ACTIVAR";
     public static final String ACTION_DESACTIVAR_CODE = "DESACTIVAR";
     public static final String ACTION_PRINCIPAL_CODE = "PRINCIPAL";
@@ -89,6 +97,7 @@ public class BustiaResource extends ContingutResource {
 	private boolean activa = true;
 
     @Transient private Integer permisosCount;
+    @Transient private Boolean favorita;
 
     @Getter
     @Setter

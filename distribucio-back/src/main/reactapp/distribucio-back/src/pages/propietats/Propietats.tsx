@@ -10,10 +10,10 @@ import Box from "@mui/material/Box";
 import {PropietatsProps} from "./PropietatsProps.tsx";
 import {useParams} from "react-router-dom";
 
-const PropietatsQuickFilter: React.FC<{ onChange: (quickFilter: string | undefined) => void }> = (
+export const QuickFilter: React.FC<{ label?:string, onChange: (quickFilter: string | undefined) => void }> = (
     props
 ) => {
-    const { onChange } = props;
+    const { label, onChange } = props;
     // const { t } = useTranslation();
     const [quickFilter, setQuickFilter] = React.useState<string>('');
     const quickFilterDebounced = useDebounce(quickFilter);
@@ -24,7 +24,7 @@ const PropietatsQuickFilter: React.FC<{ onChange: (quickFilter: string | undefin
         <TextField
             value={quickFilter}
             onChange={(event) => setQuickFilter(event.target.value)}
-            // label={t('page.propietats.find')}
+            label={label}
             variant="outlined"
             size="small"
             slotProps={{
@@ -177,7 +177,7 @@ export const Propietats = () => {
         <CardPage title={t('page.config.title') + (entitat ?` - ${entitat?.nom}` :'')}>
             <Grid container spacing={2}>
                 <Grid size={12} sx={{ px: 1 }} display={'flex'} justifyContent={'end'}>
-                    <PropietatsQuickFilter onChange={setQuickFilter} />
+                    <QuickFilter onChange={setQuickFilter} />
                     <Button variant="outlined" size="small" sx={{ borderRadius: '4px' }} onClick={restart}>
                         <Icon>cached</Icon>{t('page.config.accio.restart.label')}
                     </Button>

@@ -68,7 +68,7 @@ public class ContingutResource extends BaseAuditableResource<Long> {
     @Transient protected ContingutMovimentResource darrerMovimentResource;
 
     @Transient private boolean alerta;
-
+    @Transient private boolean pendentExecucioMassiva;
     @Transient private int numComentaris;
 
 	/**

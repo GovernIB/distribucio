@@ -23,9 +23,12 @@ import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.annotation.Transient;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Informació d'una bústia.
@@ -76,6 +79,21 @@ import java.util.Date;
                         code = RegistreResource.ACTION_ENVIAR_EMAIL_CODE,
                         formClass = RegistreResource.EnviarEmailForm.class
                 ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_REENVIAR_CODE,
+                        formClass = RegistreResource.ReenviarForm.class
+                ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_MARCAR_PROCESSADA_CODE,
+                        formClass = RegistreResource.MarcarForm.class
+                ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_MARCAR_PENDENT_CODE,
+                        formClass = RegistreResource.MarcarForm.class
+                ),
         }
 )
 public class RegistreResource extends ContingutResource {
@@ -85,6 +103,9 @@ public class RegistreResource extends ContingutResource {
     public static final String REPORT_INFORME_LOGS_CODE = "INFORME_LOGS";
     public static final String ACTION_CLASSIFICAR_CODE = "CLASSIFICAR";
     public static final String ACTION_ENVIAR_EMAIL_CODE = "ENVIAR_EMAIL";
+    public static final String ACTION_REENVIAR_CODE = "REENVIAR";
+    public static final String ACTION_MARCAR_PROCESSADA_CODE = "MARCAR_PROCESSADA";
+    public static final String ACTION_MARCAR_PENDENT_CODE = "MARCAR_PENDENT";
 
     private RegistreTipusEnum registreTipus;
     private String numero;
@@ -145,6 +166,7 @@ public class RegistreResource extends ContingutResource {
     /** Conté el recompte del número d'annexos en estat esborrany */
     private int annexosEstatEsborrany;
 
+    @Transient private RegistreProcesEstatSimpleEnumDto procesEstatSimple;;
     @Transient private boolean reintentsEsgotat;
     @Transient private int maxReintents;
 
@@ -247,6 +269,26 @@ public class RegistreResource extends ContingutResource {
         @NotNull
         @EmailValid
         private String destinatari;
+        private String motiu;
+    }
+
+    @Getter
+    @Setter
+    @FieldNameConstants
+    public static class ReenviarForm extends MassiveForm {
+        private boolean coneixementActiva = false;
+        private boolean ambCopia;
+        private String comentari;
+
+        private List<Long> busties = new ArrayList<>();
+        private List<Long> coneixement = new ArrayList<>();
+    }
+
+    @Getter
+    @Setter
+    @FieldNameConstants
+    public static class MarcarForm extends MassiveForm {
+        @NotBlank
         private String motiu;
     }
 

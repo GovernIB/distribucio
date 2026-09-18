@@ -569,6 +569,8 @@ const translationEs = {
             grid: {
                 title: "Gestión de buzones",
                 writeAllowed: "Acceso",
+                principal: "Principal",
+                favorit: "Favorito"
             },
             permisos: {
                 readAllowed: "Solo lectura",
@@ -690,7 +692,7 @@ const translationEs = {
             },
             accio: {
                 classifica: {
-                    label: "Clasificar...",
+                    label: "Clasifíca...",
                     title: "Clasificación de la anotación de registro",
                     warning: "La clasificación de una anotación de registro puede desencadenar la ejecución de reglas, lo que puede provocar que la anotación desaparezca del buzón actual.",
                     ok: {
@@ -699,13 +701,31 @@ const translationEs = {
                     },
                 },
                 email: {
-                    label: "Enviar per correu electrònic...",
+                    label: "Envía per correu electrònic...",
                     title: "Enviar per correu electrònic",
                     titleMassive: "Enviar per correu electrònic {{num}} anotacions",
                     ok: "L'anotació \"{{numero}}\" s'ha enviat correctament",
                     form: {
                         destinatari: "Introduïu els destinataris separats per coma o espai",
                     }
+                },
+                reenviar: {
+                    label: "Reenvía...",
+                    title: "Reenviar",
+                    titleMassive: "Reenviar {{num}} anotaciones",
+                    ok: "La anotación \"{{numero}}\" se ha reenviado correctamente",
+                },
+                marcarProcessada: {
+                    label: "Marca como procesada...",
+                    title: "Marcar como procesada",
+                    titleMassive: "Marcar como procesadas {{num}} anotaciones",
+                    ok: "La anotación \"{{numero}}\" se ha marcado como procesada",
+                },
+                marcarPendent: {
+                    label: "Marca como pendiente...",
+                    title: "Marcar como pendiente",
+                    titleMassive: "Marcar como pendientes {{num}} anotaciones",
+                    ok: "La anotación \"{{numero}}\" se ha marcado como pendiente",
                 },
             },
         },
@@ -774,6 +794,22 @@ const translationEs = {
             title: "Comentarios del contenido: {{name}}",
             label: "Comentarios",
             envia: "Enviar",
+        },
+        RegistreSelector:{
+            title: "Anotaciones seleccionadas",
+        },
+        RegistreReenviar: {
+            quickfilter: "Buzón destino",
+            favoritfilter: "Mostrar solo buzones favoritos",
+            busties: "Buzones seleccionados",
+            coneixement: {
+                marcar: "Añadir a conocimiento",
+                desmarcar: "Quitar de conocimiento",
+            },
+            favorit: {
+                marcar: "Añadir a favoritos",
+                desmarcar: "Quitar de favoritos",
+            },
         }
     },
 };

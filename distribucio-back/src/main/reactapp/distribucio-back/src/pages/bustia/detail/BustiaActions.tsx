@@ -29,6 +29,17 @@ export const useActions = (refresh?: () => void) => {
     const perDefecte = (id:any) => action(id, 'PRINCIPAL', t('page.bustia.accio.perDefecte.ok'))
     const activar = (id:any) => action(id, 'ACTIVAR', t('page.bustia.accio.activar.ok'))
     const desactivar = (id:any) => action(id, 'DESACTIVAR', t('page.bustia.accio.desactivar.ok'))
+    const favorite = (id:any, favorite:boolean) => {
+        if (apiIsReady) {
+            apiAction(id, {code: "TOOGLE_FAVORITA", data: favorite})
+                .then(() => {
+                    refresh?.()
+                })
+                .catch((error) => {
+                    temporalMessageShow(null, error?.message, 'error');
+                });
+        }
+    }
 
     const usersBustia = (filter:any, namedQueries:string[]) => {
         if (apiIsReady) {
@@ -49,6 +60,7 @@ export const useActions = (refresh?: () => void) => {
         activar,
         desactivar,
         usersBustia,
+        favorite,
     }
 }
 
