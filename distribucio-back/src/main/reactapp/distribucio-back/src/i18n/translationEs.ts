@@ -215,8 +215,22 @@ const translationEs = {
                 },
             },
             accio: {
+                detalls: {
+                    label: "Detalles",
+                },
                 historial: {
                     label: "Histórico de acciones",
+                },
+            },
+            detall: {
+                title: "Detalle del elemento",
+                camp: {
+                    nom: "Nombre",
+                    entitat: "Entidad",
+                    unitatOrganitzativa: "Unidad organizativa",
+                    activa: "Activa",
+                    perDefecte: "Por defecto",
+                    permisos: "Permisos",
                 },
             },
             historial: {

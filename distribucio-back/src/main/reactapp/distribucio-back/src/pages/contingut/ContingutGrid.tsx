@@ -8,6 +8,7 @@ import { formatDate } from '../../util/dateUtils';
 import ContingutFilter from './ContingutFilter';
 import useContingutAccions from './ContingutAccions';
 import useContingutHistorialDialog from './actions/ContingutHistorialDialog';
+import useContingutDetailDialog from './actions/ContingutDetailDialog';
 
 const ContingutNomCell: React.FC<{ params: any }> = ({ params }) => {
     const { t } = useTranslation();
@@ -124,7 +125,8 @@ export const ContingutGrid: React.FC = () => {
     const apiRef = useMuiDataGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
     const { show: mostrarHistorial, component: historialDialog } = useContingutHistorialDialog();
-    const accions = useContingutAccions(mostrarHistorial);
+    const { show: mostrarDetall, component: detailDialog } = useContingutDetailDialog();
+    const accions = useContingutAccions(mostrarDetall, mostrarHistorial);
 
     return (
         <GridPage>
@@ -144,6 +146,7 @@ export const ContingutGrid: React.FC = () => {
                     sortModel={[{ field: 'createdDate', sort: 'desc' }]}
                 />
                 {historialDialog}
+                {detailDialog}
             </CardPage>
         </GridPage>
     );

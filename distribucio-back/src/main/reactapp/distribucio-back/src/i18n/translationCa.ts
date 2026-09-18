@@ -217,8 +217,22 @@ const translationCa = {
                 },
             },
             accio: {
+                detalls: {
+                    label: "Detalls",
+                },
                 historial: {
                     label: "Històric d'accions",
+                },
+            },
+            detall: {
+                title: "Detall de l'element",
+                camp: {
+                    nom: "Nom",
+                    entitat: "Entitat",
+                    unitatOrganitzativa: "Unitat organitzativa",
+                    activa: "Activa",
+                    perDefecte: "Per defecte",
+                    permisos: "Permisos",
                 },
             },
             historial: {
