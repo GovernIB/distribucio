@@ -8,7 +8,7 @@ import { Divider } from "@mui/material";
 import {useExecucioMassivaGrid} from "../../execucioMassiva/ExecucioMassivaGrid.tsx";
 import useEnviarViaEmail from "../actions/EnviarViaEmail.tsx";
 
-export const useActions = (refresh?: () => void) => {
+export const useActions = () => {
     const { t } = useTranslation();
 
     const {

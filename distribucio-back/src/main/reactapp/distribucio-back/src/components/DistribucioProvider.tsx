@@ -21,40 +21,33 @@ type CurrentSession = Readonly<{
     entitatId?: number;
 }>;
 
+/**
+ * Rol i entitat de treball de la pestanya, sincronitzats amb les altres pestanyes de l'aplicació
+ * (com a la interfície JSP, on viuen a la sessió del servidor i són compartits).
+ *
+ * Només es difonen els canvis que fa l'usuari des dels selectors (`publishSession`). Els passos
+ * d'inicialització de la pestanya (`setSession`) són locals: si es difonguessin, una pestanya que
+ * arrenca (pestanya nova, F5) enviaria `entitatId: undefined` a les altres, que mostrarien la
+ * pantalla de càrrega i desmuntarien tota l'aplicació, i a més els imposaria la seva entitat
+ * inicial.
+ */
 const useBroadcastSession = () => {
 
     const [session, setSessionState] = React.useState<CurrentSession>({});
 
-    const setSession = React.useCallback(
-        (
-            update:
-                | Partial<CurrentSession>
-                | ((previous: CurrentSession) => Partial<CurrentSession>),
-            broadcast = true
-        ) => {
+    /** Canvi local de la pestanya, sense difondre'l. */
+    const setSession = React.useCallback((changes: Partial<CurrentSession>) => {
+        setSessionState((previous) => ({ ...previous, ...changes }));
+    }, []);
 
-            setSessionState(previous => {
-
-                const changes =
-                    typeof update === "function"
-                        ? update(previous)
-                        : update;
-
-                const next = {
-                    ...previous,
-                    ...changes,
-                };
-
-                if (broadcast) {
-                    distribucioChannel.postMessage(next);
-                }
-
-                return next;
-            });
-
-        },
-        []
-    );
+    /**
+     * Canvi fet per l'usuari: s'aplica i es difon a les altres pestanyes. El missatge s'envia
+     * fora de l'updater de l'estat, que ha de ser pur (StrictMode l'executa dues vegades).
+     */
+    const publishSession = React.useCallback((next: CurrentSession) => {
+        setSessionState(next);
+        distribucioChannel.postMessage(next);
+    }, []);
 
     React.useEffect(() => {
 
@@ -62,7 +55,12 @@ const useBroadcastSession = () => {
             if (!data) {
                 return;
             }
-            setSession(data, false);
+            // Si no canvia res es conserva l'objecte anterior perquè React no torni a pintar.
+            setSessionState((previous) =>
+                previous.role === data.role && previous.entitatId === data.entitatId
+                    ? previous
+                    : { role: data.role, entitatId: data.entitatId }
+            );
         };
 
         distribucioChannel.addEventListener("message", listener);
@@ -70,11 +68,12 @@ const useBroadcastSession = () => {
         return () =>
             distribucioChannel.removeEventListener("message", listener);
 
-    }, [setSession]);
+    }, []);
 
     return {
         session,
         setSession,
+        publishSession,
     };
 
 };
@@ -127,12 +126,14 @@ const useCurrentRole = (broadcast: BroadcastSession, currentUser: any) => {
     const [rolesAvailable, setRolesAvailable] = React.useState<string[]>();
     const {
         session,
-        setSession
+        setSession,
+        publishSession
     } = broadcast;
 
     const currentRole = session.role;
 
-    const setCurrentRole = (role?: string) => setSession({role, entitatId: undefined});
+    // Canvi de rol des del selector: es difon a les altres pestanyes.
+    const setCurrentRole = (role?: string) => publishSession({ role, entitatId: undefined });
     const { getValue: roleSessionGetValue, setValue: roleSessionSetValue } = useSessionStorage(currentUserId, 'currentRole');
     React.useEffect(() => {
         // Obté els rols disponibles del token JWT o de __AUTH_ROLES__
@@ -172,7 +173,7 @@ const useCurrentRole = (broadcast: BroadcastSession, currentUser: any) => {
             [roleSessionGetValue() ?? undefined, currentUser.rolActual].find(rolDisponible) ??
             (rolDisponible(ROLE_USER) ? ROLE_USER : rolesAvailable[0]);
         if (rolInicial != null) {
-            setCurrentRole(rolInicial);
+            setSession({ role: rolInicial, entitatId: undefined });
         }
     }, [rolesAvailable, currentRole, currentUser]);
 
@@ -213,12 +214,16 @@ const useCurrentEntitat = (
     const { getValue: sessionSessionGetValue, setValue: sessionSessionSetValue } = useSessionStorage(currentUserId, 'currentSession');
     const {
         session,
-        setSession
+        setSession,
+        publishSession
     } = broadcast;
 
     const currentEntitatId = session.entitatId;
 
-    const setCurrentEntitatId = (id?: number) => setSession({ entitatId: id });
+    // Canvi d'entitat des del selector: es difon a les altres pestanyes.
+    const setCurrentEntitatId = (id?: number) => publishSession({ role: session.role, entitatId: id });
+    // Inicialització de l'entitat de la pestanya: local.
+    const setCurrentEntitatIdLocal = (id?: number) => setSession({ entitatId: id });
 
     React.useEffect(() => {
         if (!apiIsReady || !currentRoleReady || currentRole == null) {
@@ -226,7 +231,7 @@ const useCurrentEntitat = (
         }
         setEntitatsAvailable(undefined);
         setCurrentEntitat(undefined);
-        setCurrentEntitatId(undefined);
+        setCurrentEntitatIdLocal(undefined);
 
         if (currentRole === ROLE_SUPER) {
             setEntitatsAvailable([]);
@@ -251,7 +256,7 @@ const useCurrentEntitat = (
             // Sense comprovar currentEntitatId: l'efecte acaba de posar-lo a undefined i el valor
             // que es veuria des d'aquí seria el del rol anterior, que impediria fixar el nou.
             if (entitatInicial != null) {
-                setCurrentEntitatId(entitatInicial);
+                setCurrentEntitatIdLocal(entitatInicial);
             }
         });
     }, [apiIsReady, currentRoleReady, currentRole]);
