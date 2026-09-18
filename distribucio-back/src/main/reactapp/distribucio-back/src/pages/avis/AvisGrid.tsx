@@ -36,7 +36,7 @@ export const AvisGrid: React.FC = () => {
     const accions = useAvisAccions(refresh);
 
     return (
-        <GridPage>
+        <GridPage autoHeight>
             <CardPage title={t('page.avisos.grid.title')}>
                 <StyledMuiGrid
                     toolbarCreateTitle={t('page.avisos.accio.new')}

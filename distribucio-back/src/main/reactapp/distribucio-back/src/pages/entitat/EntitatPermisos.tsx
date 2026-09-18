@@ -61,7 +61,7 @@ export const EntitatPermisos = () => {
     const { currentEntitatId } = useDistribucioContext();
 
     return (
-        <GridPage>
+        <GridPage autoHeight>
             <CardPage title={t('page.entitats.permis.title')}>
                 <AclPermissionGrid
                     resourceId={currentEntitatId}

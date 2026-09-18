@@ -82,7 +82,7 @@ export const EntitatGrid: React.FC = () => {
     );
 
     return (
-        <GridPage>
+        <GridPage autoHeight>
             <CardPage title={t('page.entitats.grid.title')}>
                 <EntitatFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid

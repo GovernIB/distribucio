@@ -98,8 +98,10 @@ const columns = (t:any) => [
         renderCell: (params:any) => <RegistreRemitent entity={params.row} />
     },
     // { field: 'createdDate', flex: 1 },
-    { field: 'data', flex: 1 },
-    { field: 'procesEstat', flex: 4,
+    // L'amplada mínima és la que necessita la part "dd/mm/aaaa" (76px) més el padding de la cel·la
+    // (2 x 10px): per sota, la data quedava tallada. L'hora passa a la línia de sota.
+    { field: 'data', flex: 1, minWidth: 100 },
+    { field: 'procesEstat', flex: 2,
         renderCell: (params:any) => <RegistreEstat entity={params.row}>{params.formattedValue}</RegistreEstat>
     },
     { field: 'avisos', headerName: t('page.registre.grid.avisos'), flex: 1, sortable: false,
@@ -110,7 +112,7 @@ const columns = (t:any) => [
             / <Icon>account_tree</Icon> {params.row.unitatAdministrativaDescripcio} / <Icon>inbox</Icon> {params.formattedValue}
         </>
     },
-    { field: 'interessatsString', flex: 2, sortable: false },
+    { field: 'interessatsString', flex: 4, sortable: false },
 ]
 const perspectives = ['DARRER_MOVIMENT', 'COMMENT_NUM']
 const sortModel:any = [{ field: 'data', sort: 'desc' }]
@@ -124,7 +126,10 @@ export const RegistreGrid = () => {
 
     const additionalColumns = [
         ...columns(t),
-        { field: 'numComentaris', flex:1, sortable: false,
+        // Amplada fixa (només hi cap el botó amb el comptador) i sense títol a la capçalera. Es fa amb
+        // renderHeader i no buidant headerName perquè el nom continuï sortint a la gestió de columnes.
+        { field: 'numComentaris', width: 60, minWidth: 60, sortable: false,
+            renderHeader: () => null,
             renderCell: (params:any) =>
                 <>
                     <IconButton title={t('component.CommentDialog.label')} onClick={() => handleOpen(params.id, params.row.nom)}>
@@ -144,7 +149,7 @@ export const RegistreGrid = () => {
     const {actions: massiveActions, components: massiveComponents} = useRegistreMassiveActions();
 
     return (
-        <GridPage>
+        <GridPage autoHeight>
             <CardPage title={t('page.registre.title')}>
                 <RegistreFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
 
@@ -161,6 +166,9 @@ export const RegistreGrid = () => {
                     // toolbarShowFilterCount
 
                     rowAdditionalActions={actions}
+                    // reactlib crea la columna del menú d'accions amb 100px fixos i només hi va el
+                    // botó "⋮": s'estreny com a RIPEA (ExpedientGrid) per deixar més espai al text.
+                    rowActionsColumnProps={{ width: 55, minWidth: 55 }}
                     toolbarMassiveActions={massiveActions}
                     selectionActive
                     paginationActive

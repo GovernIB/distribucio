@@ -129,7 +129,7 @@ export const ContingutGrid: React.FC = () => {
     const accions = useContingutAccions(mostrarDetall, mostrarHistorial);
 
     return (
-        <GridPage>
+        <GridPage autoHeight>
             <CardPage title={t('page.contingut.grid.title')}>
                 <ContingutFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid

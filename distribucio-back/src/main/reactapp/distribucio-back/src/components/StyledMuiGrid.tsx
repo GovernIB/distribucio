@@ -20,6 +20,7 @@ import {fromSelectionModel, toSelectionModel} from "../util/selectionModelUtils.
  *  - Defaults pel formulari popup: botons Guardar/Cancel·lar, mida del diàleg,
  *    no tancar en fer clic fora, i no permetre guardar si hi ha errors de validació.
  *  - Mida de pàgina per defecte treta del perfil de l'usuari (numElementsPagina).
+ *  - Files d'alçada variable: el text llarg passa de línia en lloc de quedar tallat.
  *
  * Deliberadament NO s'inclou (pendent de decidir més endavant):
  *  - Accions massives (RIPEA #3).
@@ -132,6 +133,7 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
         popupEditFormDialogOnClose,
         popupEditFormDialogButtons,
         onRowSelectionModelChange,
+        sx,
         ...others
     } = { ...defaultProps, ...props };
 
@@ -221,7 +223,21 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
             }}
         >
             <MuiDataGrid
+                // Files multilínia (com a RIPEA): amb l'alçada 'auto' MUI marca la fila com a
+                // row--dynamicHeight i el seu CSS deixa passar de línia el text de les cel·les, en
+                // lloc de tallar-lo amb el·lipsi. L'autoHeight fa créixer la graella amb el contingut
+                // (fa scroll la pàgina, no la graella), cosa possible perquè la mida de pàgina és
+                // fixa (veure defaultPaginationModel). Van abans d'`others` perquè una pantalla
+                // concreta els pugui sobreescriure.
+                getRowHeight={() => 'auto'}
+                autoHeight
                 {...others}
+                // Amb l'alçada 'auto' la cel·la queda enganxada al text; l'alçada mínima de la fila
+                // (45px) ve del tema. reactlib fa l'spread de l'sx com a objecte: no admet arrays.
+                sx={{
+                    '& .MuiDataGrid-cell': { paddingTop: '5px', paddingBottom: '5px' },
+                    ...sx,
+                }}
                 filter={filter}
                 namedQueries={namedQueries}
                 apiRef={apiRef}

@@ -12,6 +12,7 @@ import { TemaProvider } from './components/TemaProvider';
 import { DistribucioProvider } from './components/DistribucioProvider';
 import { useDistribucioContext } from './components/DistribucioContext';
 import { filtrarEntradesMenu, type MenuEntryAmbPantalla } from './util/pantalles';
+import { icons } from './util/icons';
 import { SessionStorageProvider } from './components/SessionStorageContext';
 import { SseProvider } from './components/SseClient';
 import TitolPagina from './components/TitolPagina';
@@ -73,59 +74,61 @@ const InnerApp: React.FC = () => {
     const { currentRole } = useDistribucioContext();
     // La pantalla de cada entrada determina a quins rols es mostra (veure PANTALLA_ROLS a
     // util/pantalles.ts): el menú i les guardes de ruta surten de la mateixa declaració.
+    // Icones a util/icons.ts. Les entrades de submenú que també ho són a RIPEA (propietats
+    // configurables i integracions) van sense icona, com allà.
     const menuEntries: MenuEntryAmbPantalla[] = [
         {
             id: 'home',
             title: t('app.menu.home'),
             to: 'home',
-            icon: 'home',
+            icon: icons.inici,
             pantalla: 'home',
         },
         {
             id: 'registre',
             title: t('app.menu.registre'),
             to: 'registre',
-            icon: 'home',
+            icon: icons.anotacio,
             pantalla: 'registre',
         },
         {
             id: 'entitats',
             title: t('app.menu.entitats'),
             to: 'entitat',
-            icon: 'account_balance',
+            icon: icons.entitat,
             pantalla: 'entitat',
         },
         {
             id: 'configuracio',
             title: t('app.menu.configuracio'),
-            icon: 'settings',
+            icon: icons.configuracio,
             children: [
                 {
                     id: 'bustia',
                     title: t('app.menu.bustia'),
                     to: 'bustiaAdminOrganigrama',
-                    icon: 'inbox',
+                    icon: icons.bustia,
                     pantalla: 'bustiaAdminOrganigrama'
                 },
                 {
                     id: 'uo',
                     title: t('app.menu.unitatOrganitzativa'),
                     to: 'unitatOrganitzativa',
-                    icon: 'account_tree',
+                    icon: icons.unitatOrganitzativa,
                     pantalla: 'unitatOrganitzativa'
                 },
                 {
                     id: 'backoffice',
                     title: t('page.backoffice.title'),
                     to: 'backoffice',
-                    icon: 'wifi',
+                    icon: icons.backoffice,
                     pantalla: 'backoffice'
                 },
                 {
                     id: 'permis',
                     title: t('page.entitats.permis.title'),
                     to: 'permis',
-                    icon: 'key',
+                    icon: icons.permis,
                     pantalla: 'permis'
                 },
             ],
@@ -133,20 +136,19 @@ const InnerApp: React.FC = () => {
         {
             id: 'configurar',
             title: t('app.menu.configurar'),
-            icon: 'settings',
+            icon: icons.configuracio,
             children: [
                 {
                     id: 'config',
                     title: t('app.menu.config'),
                     to: 'config',
-                    icon: 'display_settings',
                     pantalla: 'config'
                 },
                 {
                     id: 'limitCanviEstat',
                     title: t('app.menu.limitCanviEstat'),
                     to: 'limitCanviEstat',
-                    icon: 'display_settings',
+                    icon: icons.limitCanviEstat,
                     pantalla: 'limitCanviEstat'
                 },
             ],
@@ -155,19 +157,18 @@ const InnerApp: React.FC = () => {
             id: 'avisos',
             title: t('app.menu.avisos'),
             to: 'avis',
-            icon: 'campaign',
+            icon: icons.avis,
             pantalla: 'avis',
         },
         {
             id: 'monitoritzar',
             title: t('app.menu.monitoritzar'),
-            icon: 'monitor_heart',
+            icon: icons.monitoritzacio,
             children: [
                 {
                     id: 'integracio',
                     title: t('app.menu.integracio'),
                     to: 'integracio',
-                    icon: 'sync_alt',
                     pantalla: 'integracio',
                 },
             ],
@@ -175,34 +176,34 @@ const InnerApp: React.FC = () => {
         {
             id: 'consultar',
             title: t('app.menu.consultar'),
-            icon: 'info',
+            icon: icons.consulta,
             children: [
                 {
                     id: 'contingut',
                     title: t('app.menu.contingut'),
                     to: 'contingut',
-                    icon: 'archive',
+                    icon: icons.contingut,
                     pantalla: 'contingut',
                 },
                 {
                     id: 'annex',
                     title: t('app.menu.annex'),
                     to: 'annexosAdmin',
-                    icon: 'attach_file',
+                    icon: icons.annex,
                     pantalla: 'annex',
                 },
                 {
                     id: 'procediment',
                     title: t('app.menu.procediment'),
                     to: 'procediment',
-                    icon: 'rule',
+                    icon: icons.procediment,
                     pantalla: 'procediment',
                 },
                 {
                     id: 'serveis',
                     title: t('app.menu.serveis'),
                     to: 'servei',
-                    icon: 'rule',
+                    icon: icons.servei,
                     pantalla: 'servei',
                 },
                 // { divider: true },
@@ -210,7 +211,7 @@ const InnerApp: React.FC = () => {
                     id: 'massiva',
                     title: t('app.menu.massiva'),
                     to: 'massiva',
-                    icon: 'list',
+                    icon: icons.massiva,
                     pantalla: 'massiva',
                 },
             ],

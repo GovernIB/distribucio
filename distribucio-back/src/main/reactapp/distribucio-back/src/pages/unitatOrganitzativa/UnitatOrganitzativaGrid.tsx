@@ -26,7 +26,7 @@ export const UnitatOrganitzativaGrid = () => {
     const {handleOpen: handleOrgOpen, dialog: organigrama} = useUnitatOrganitzativaOrganigrama()
     const {handleOpen: handleSinc, dialog: dialogSinc} = useSincronitzar()
     return (
-        <GridPage>
+        <GridPage autoHeight>
             <CardPage title={t('page.unitatOrganitzativa.grid.title')}>
                 <UnitatOrganitzativaFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
 

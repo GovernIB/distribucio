@@ -27,7 +27,7 @@ export const ProcedimentGrid: React.FC = () => {
         useProcedimentActualitzarTots(refresh);
 
     return (
-        <GridPage>
+        <GridPage autoHeight>
             <CardPage title={t('page.procediments.grid.title')}>
                 <ProcedimentFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid

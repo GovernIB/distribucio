@@ -146,7 +146,7 @@ export const ExecucioMassivaGrid = () => {
     const { t } = useTranslation();
 
     return (<>
-         <GridPage>
+         <GridPage autoHeight>
              <CardPage title={t('page.massiva.title')}>
                 <EMGrid/>
              </CardPage>

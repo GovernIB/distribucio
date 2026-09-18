@@ -56,7 +56,7 @@ export const IntegracioGrid: React.FC = () => {
     );
 
     return (
-        <GridPage>
+        <GridPage autoHeight>
             <CardPage title={t('page.integracio.grid.title')}>
                 <IntegracioFilter
                     onSpringFilterChange={setFormFilter}
