@@ -692,7 +692,7 @@ const translationEs = {
             },
             accio: {
                 classifica: {
-                    label: "Clasificar...",
+                    label: "Clasifíca...",
                     title: "Clasificación de la anotación de registro",
                     warning: "La clasificación de una anotación de registro puede desencadenar la ejecución de reglas, lo que puede provocar que la anotación desaparezca del buzón actual.",
                     ok: {
@@ -701,7 +701,7 @@ const translationEs = {
                     },
                 },
                 email: {
-                    label: "Enviar per correu electrònic...",
+                    label: "Envía per correu electrònic...",
                     title: "Enviar per correu electrònic",
                     titleMassive: "Enviar per correu electrònic {{num}} anotacions",
                     ok: "L'anotació \"{{numero}}\" s'ha enviat correctament",
@@ -710,10 +710,22 @@ const translationEs = {
                     }
                 },
                 reenviar: {
-                    label: "Reenviar...",
+                    label: "Reenvía...",
                     title: "Reenviar",
                     titleMassive: "Reenviar {{num}} anotaciones",
                     ok: "La anotación \"{{numero}}\" se ha reenviado correctamente",
+                },
+                marcarProcessada: {
+                    label: "Marca como procesada...",
+                    title: "Marcar como procesada",
+                    titleMassive: "Marcar como procesadas {{num}} anotaciones",
+                    ok: "La anotación \"{{numero}}\" se ha marcado como procesada",
+                },
+                marcarPendent: {
+                    label: "Marca como pendiente...",
+                    title: "Marcar como pendiente",
+                    titleMassive: "Marcar como pendientes {{num}} anotaciones",
+                    ok: "La anotación \"{{numero}}\" se ha marcado como pendiente",
                 },
             },
         },

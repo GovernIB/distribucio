@@ -16,8 +16,10 @@ import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.base.util.I18nUtil;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
 import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
 import es.caib.distribucio.logic.intf.dto.RegistreNombreAnnexesEnumDto;
+import es.caib.distribucio.logic.intf.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.logic.intf.model.*;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
@@ -26,10 +28,14 @@ import es.caib.distribucio.logic.intf.resourceservice.ContingutMovimentResourceS
 import es.caib.distribucio.logic.intf.resourceservice.RegistreResourceService;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.logic.intf.service.BustiaService;
+import es.caib.distribucio.logic.intf.service.ContingutService;
+import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.logic.intf.util.Utils;
 import es.caib.distribucio.persist.entity.EntitatEntity;
+import es.caib.distribucio.persist.entity.ExecucioMassivaContingutEntity;
 import es.caib.distribucio.persist.repository.EntitatRepository;
+import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
 import es.caib.distribucio.persist.resourceentity.*;
 import es.caib.distribucio.persist.resourcerepository.ProcedimentResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.RegistreResourceRepository;
@@ -62,6 +68,9 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private final ServeiResourceRepository serveiResourceRepository;
     private final BustiaService bustiaService;
     private final AplicacioService aplicacioService;
+    private final ExecucioMassivaContingutRepository execucioMassivaContingutRepository;
+    private final ContingutService contingutService;
+    private final RegistreService registreService;
 
     @PostConstruct
     public void init() {
@@ -71,6 +80,8 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(RegistreResource.ACTION_CLASSIFICAR_CODE, new ClassificarActionExecutor());
         register(RegistreResource.ACTION_ENVIAR_EMAIL_CODE, new EnviarEmailActionExecutor());
         register(RegistreResource.ACTION_REENVIAR_CODE, new ReenviarActionExecutor());
+        register(RegistreResource.ACTION_MARCAR_PROCESSADA_CODE, new MarcarProcessadaActionExecutor());
+        register(RegistreResource.ACTION_MARCAR_PENDENT_CODE, new MarcarPendentActionExecutor());
     }
 
     @Override
@@ -253,6 +264,23 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                             .collect(Collectors.toList()), "")
             );
         }
+
+        if (RegistreProcesEstatEnum.isPendent(resource.getProcesEstat())) {
+            resource.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PENDENT);
+        } else {
+            resource.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PROCESSAT);
+        }
+
+        ExecucioMassivaContingutEntity execucioMassivaPendent = execucioMassivaContingutRepository.findByElementIdAndEstatIn(
+                resource.getId(),
+                new ArrayList<> (
+                        Arrays.asList(
+                                ExecucioMassivaContingutEstatDto.PENDENT,
+                                ExecucioMassivaContingutEstatDto.PROCESSANT,
+                                ExecucioMassivaContingutEstatDto.PAUSADA)
+                )
+        );
+        resource.setPendentExecucioMassiva(execucioMassivaPendent != null ? true : false);
     }
 
     @Override
@@ -513,6 +541,70 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             if (fieldName == null) {
                 target.setConeixementActiva( this.isConeixementActiva() );
             }
+        }
+    }
+    protected class MarcarProcessadaActionExecutor implements ActionExecutor<RegistreResourceEntity, RegistreResource.MarcarForm, HashMap> {
+
+        @Override
+        public HashMap exec(String code, RegistreResourceEntity entity, RegistreResource.MarcarForm params) throws ActionExecutionException {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
+            if (params.isMassive()) {
+                List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
+                /// TODO: implementar versión massiva
+            } else {
+                RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
+                /// TODO: revisar versión individual
+                contingutService.marcarProcessat(
+                        entitatActualId,
+                        registre.getId(),
+                        "<span class='label label-default'>" +
+                                I18nUtil.getInstance().getI18nMessage(
+                                        "bustia.pendent.accio.marcat.processat") +
+                                "</span> " + params.getMotiu(),
+                        authenticationHelper.getCurrentUserRoles()[0]);
+
+                Map<String, String> map = new HashMap<>();
+                map.put("numero", registre.getNumero());
+                return new HashMap<>(map);
+            }
+            return null;
+        }
+
+        @Override
+        public void onChange(Serializable id, RegistreResource.MarcarForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.MarcarForm target) {
+
+        }
+    }
+    protected class MarcarPendentActionExecutor implements ActionExecutor<RegistreResourceEntity, RegistreResource.MarcarForm, HashMap> {
+
+        @Override
+        public HashMap exec(String code, RegistreResourceEntity entity, RegistreResource.MarcarForm params) throws ActionExecutionException {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
+            if (params.isMassive()) {
+                List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
+                /// TODO: implementar versión massiva
+            } else {
+                RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
+                /// TODO: revisar versión individual
+                registreService.marcarPendent(
+                        entitatActualId,
+                        registre.getId(),
+                        "<span class='label label-default'>" +
+                                I18nUtil.getInstance().getI18nMessage(
+                                        "registre.user.controller.accio.marcat.pendent") +
+                                "</span> " + params.getMotiu(),
+                        authenticationHelper.getCurrentUserRoles()[0]);
+
+                Map<String, String> map = new HashMap<>();
+                map.put("numero", registre.getNumero());
+                return new HashMap<>(map);
+            }
+            return null;
+        }
+
+        @Override
+        public void onChange(Serializable id, RegistreResource.MarcarForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.MarcarForm target) {
+
         }
     }
 }

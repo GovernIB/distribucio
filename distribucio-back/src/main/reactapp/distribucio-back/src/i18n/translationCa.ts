@@ -694,7 +694,7 @@ const translationCa = {
             },
             accio: {
                 classifica: {
-                    label: "Classifica...",
+                    label: "Classifíca...",
                     title: "Classificació de l'anotació de registre",
                     warning: "La classificació d'una anotació de registre pot disparar l'execució de regles, la qual cosa pot provocar que l'anotació desaparegui de la bústia actual.",
                     ok: {
@@ -703,7 +703,7 @@ const translationCa = {
                     },
                 },
                 email: {
-                    label: "Envia via email...",
+                    label: "Envía via email...",
                     title: "Enviar via email",
                     titleMassive: "Enviar via email {{num}} anotacions",
                     ok: "La anotación \"{{numero}}\" se ha enviado correctamente",
@@ -716,6 +716,18 @@ const translationCa = {
                     title: "Reenviar",
                     titleMassive: "Reenviar {{num}} anotacions",
                     ok: "La anotación \"{{numero}}\" se ha reenviat correctamente",
+                },
+                marcarProcessada: {
+                    label: "Marca com a processada...",
+                    title: "Marcar com a processada",
+                    titleMassive: "Marcar com a processades {{num}} anotacions",
+                    ok: "L'anotació \"{{numero}}\" s'ha marcat com a processada",
+                },
+                marcarPendent: {
+                    label: "Marca com a pendent...",
+                    title: "Marcar com a pendent",
+                    titleMassive: "Marcar com a pendents {{num}} anotacions",
+                    ok: "L'anotació \"{{numero}}\" s'ha marcat com a pendent",
                 },
             },
         },

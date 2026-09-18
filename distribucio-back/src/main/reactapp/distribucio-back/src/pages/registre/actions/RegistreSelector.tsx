@@ -4,6 +4,9 @@ import * as builder from '../../../util/springFilterUtils';
 import {toSelectionModel} from "../../../util/selectionModelUtils.ts";
 import Load from "../../../components/Load.tsx";
 import {useTranslation} from "react-i18next";
+import {DetailExpandCard} from "../../../components/CardData.tsx";
+import {Chip, Typography} from "@mui/material";
+import Box from "@mui/material/Box";
 
 const columns = [
     { field: 'numero', flex: 1 },
@@ -21,20 +24,31 @@ export const RegistreSelector = ({disabled = false}:any) => {
     }
 
     return <Load value={data.tempIds && data.massive} noEffect>
-        <StyledMuiGrid
-            resourceName="registreResource"
-            title={t('component.RegistreSelector.title')}
-            columns={columns}
-            filter={builder.inside("id", data.tempIds)}
 
-            rowSelectionModel={ toSelectionModel(data.ids) }
-            onRowSelectionModelChange={setIds}
+        <DetailExpandCard header={<Box display={'flex'} py={1} >
+                              <Chip label={data.ids.length} size={'small'} sx={{ mr:1 }} />
+                              <Typography mt={0.5} variant={'body2'}>
+                                  {t('component.RegistreSelector.title')}
+                              </Typography>
+                          </Box>}
+                          cardProps={{backgroundColor: 'greyBackground'}}
+                          sx={{backgroundColor: 'customBackground', p: 2}}
+        >
+            <StyledMuiGrid
+                resourceName="registreResource"
+                title={t('component.RegistreSelector.title')}
+                columns={columns}
+                filter={builder.inside("id", data.tempIds)}
 
-            toolbarHideRefresh
-            selectionActive={!disabled ?true :undefined}
-            paginationActive
-            autoHeight
-            readOnly
-        />
+                rowSelectionModel={ toSelectionModel(data.ids) }
+                onRowSelectionModelChange={setIds}
+
+                toolbarHide
+                selectionActive={!disabled ?true :undefined}
+                paginationActive
+                autoHeight
+                readOnly
+            />
+        </DetailExpandCard>
     </Load>
 }

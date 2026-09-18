@@ -163,6 +163,7 @@ export const RegistreGrid = () => {
                     rowAdditionalActions={actions}
                     toolbarMassiveActions={massiveActions}
                     selectionActive
+                    isRowSelectable={(params:any) => !params.row.pendentExecucioMassiva}
                     paginationActive
                     toolbarHideCreate
                     rowHideUpdateButton
