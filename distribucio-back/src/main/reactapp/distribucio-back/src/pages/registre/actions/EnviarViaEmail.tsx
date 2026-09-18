@@ -9,7 +9,7 @@ const EnviarViaEmailForm = () => {
     const { t } = useTranslation();
 
     return <Grid container direction={"row"} columnSpacing={1} rowSpacing={1}>
-        <RegistreSelector />
+        <RegistreSelector disabled />
 
         <GridFormField size={12} name="destinatari" type={'textarea'} componentProps={{ helperText: t('page.registre.accio.email.form.destinatari') }}/>
         <GridFormField size={12} name="motiu" type={'textarea'}/>

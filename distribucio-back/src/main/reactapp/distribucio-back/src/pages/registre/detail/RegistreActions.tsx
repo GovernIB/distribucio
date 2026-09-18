@@ -7,6 +7,7 @@ import useClassificar from "../actions/Classificar.tsx";
 import { Divider } from "@mui/material";
 import {useExecucioMassivaGrid} from "../../execucioMassiva/ExecucioMassivaGrid.tsx";
 import useEnviarViaEmail from "../actions/EnviarViaEmail.tsx";
+import useReenviar from "../actions/Reenviar.tsx";
 
 export const useActions = (refresh?: () => void) => {
     const { t } = useTranslation();
@@ -51,6 +52,10 @@ export const useRegistreActions = (refresh?: () => void) => {
         refresh?.()
         temporalMessageShow(null, t(`page.registre.accio.email.ok`, {numero: result.numero}), 'success');
     })
+    const { handleShow: handleReenviar, content: contentReenviar } = useReenviar((result:any) => {
+        refresh?.()
+        temporalMessageShow(null, t(`page.registre.accio.reenviar.ok`, {numero: result.numero}), 'success');
+    })
 
     const actions:any[] = [
         {
@@ -79,11 +84,23 @@ export const useRegistreActions = (refresh?: () => void) => {
             onClick: (id:any) => handleClassificar([id], false),
         },
         {
+            label: <Divider sx={{width: '100%'}} color={"none"}/>,
+            showInMenu: true,
+            disabled: true,
+        },
+        {
             label: t('page.registre.accio.email.label'),
-            icon: 'inbox',
+            icon: 'mail',
             action: 'ENVIAR_EMAIL',
             showInMenu: true,
             onClick: (id:any) => handleEnviarEmail([id], false),
+        },
+        {
+            label: t('page.registre.accio.reenviar.label'),
+            icon: 'send',
+            action: 'REENVIAR',
+            showInMenu: true,
+            onClick: (id:any) => handleReenviar([id], false),
         },
     ]
 
@@ -92,6 +109,7 @@ export const useRegistreActions = (refresh?: () => void) => {
         {componentAlertes}
         {contentClassificar}
         {contentEnviarEmail}
+        {contentReenviar}
     </>
 
     return {
@@ -113,6 +131,10 @@ export const useRegistreMassiveActions = () => {
         handleEM()
         // temporalMessageShow(null, t(`page.registre.accio.email.ok`), 'success');
     })
+    const { handleShow: handleReenviar, content: contentReenviar } = useReenviar(() => {
+        handleEM()
+        // temporalMessageShow(null, t(`page.registre.accio.reenviar.ok`), 'success');
+    })
 
     const actions:any[] = [
         {
@@ -129,12 +151,20 @@ export const useRegistreMassiveActions = () => {
             showInMenu: true,
             onClick: (ids:any) => handleEnviarEmail(ids, true),
         },
+        {
+            label: t('page.registre.accio.reenviar.label'),
+            icon: 'send',
+            action: 'REENVIAR',
+            showInMenu: true,
+            onClick: (ids:any) => handleReenviar(ids, true),
+        },
     ]
 
     const components = <>
         {contentClassificar}
         {componentEM}
         {contentEnviarEmail}
+        {contentReenviar}
     </>
 
     return {

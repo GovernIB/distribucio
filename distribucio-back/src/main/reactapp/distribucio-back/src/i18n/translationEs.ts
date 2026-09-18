@@ -569,6 +569,8 @@ const translationEs = {
             grid: {
                 title: "Gestión de buzones",
                 writeAllowed: "Acceso",
+                principal: "Principal",
+                favorit: "Favorito"
             },
             permisos: {
                 readAllowed: "Solo lectura",
@@ -707,6 +709,12 @@ const translationEs = {
                         destinatari: "Introduïu els destinataris separats per coma o espai",
                     }
                 },
+                reenviar: {
+                    label: "Reenviar...",
+                    title: "Reenviar",
+                    titleMassive: "Reenviar {{num}} anotaciones",
+                    ok: "La anotación \"{{numero}}\" se ha reenviado correctamente",
+                },
             },
         },
         alerta: {
@@ -774,6 +782,22 @@ const translationEs = {
             title: "Comentarios del contenido: {{name}}",
             label: "Comentarios",
             envia: "Enviar",
+        },
+        RegistreSelector:{
+            title: "Anotaciones seleccionadas",
+        },
+        RegistreReenviar: {
+            quickfilter: "Buzón destino",
+            favoritfilter: "Mostrar solo buzones favoritos",
+            busties: "Buzones seleccionados",
+            coneixement: {
+                marcar: "Añadir a conocimiento",
+                desmarcar: "Quitar de conocimiento",
+            },
+            favorit: {
+                marcar: "Añadir a favoritos",
+                desmarcar: "Quitar de favoritos",
+            },
         }
     },
 };

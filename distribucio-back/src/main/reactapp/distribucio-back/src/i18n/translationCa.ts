@@ -571,6 +571,8 @@ const translationCa = {
             grid: {
                 title: "Gestió de bústies",
                 writeAllowed: "Accés",
+                principal: "proncipal",
+                favorit: "Favorit"
             },
             permisos: {
                 readAllowed: "Només lectura",
@@ -709,6 +711,12 @@ const translationCa = {
                         destinatari: "Introduïu els destinataris separats per coma o per espai",
                     }
                 },
+                reenviar: {
+                    label: "Reenvía...",
+                    title: "Reenviar",
+                    titleMassive: "Reenviar {{num}} anotacions",
+                    ok: "La anotación \"{{numero}}\" se ha reenviat correctamente",
+                },
             },
         },
         alerta: {
@@ -776,6 +784,22 @@ const translationCa = {
             title: "Comentaris del contingut: {{name}}",
             label: "Comentaris",
             envia: "Envia",
+        },
+        RegistreSelector:{
+            title: "Anotacions seleccionades",
+        },
+        RegistreReenviar: {
+            quickfilter: "Bústia destí",
+            favoritfilter: "Mostrar només bústies favorites",
+            busties: "Bústies seleccionades",
+            coneixement: {
+                marcar: "Afegir a coneixement",
+                desmarcar: "Llevar de coneixement",
+            },
+            favorit: {
+                marcar: "Afegir a favorits",
+                desmarcar: "Llevar de favorits",
+            },
         }
     },
 };

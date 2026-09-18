@@ -22,8 +22,12 @@ import es.caib.distribucio.persist.entity.AclEntryEntity;
 import es.caib.distribucio.persist.entity.AclSidEntity;
 import es.caib.distribucio.persist.entity.BustiaEntity;
 import es.caib.distribucio.persist.resourceentity.BustiaResourceEntity;
+import es.caib.distribucio.persist.resourceentity.ContingutResourceEntity;
+import es.caib.distribucio.persist.resourceentity.UsuariBustiaFavoritResourceEntity;
+import es.caib.distribucio.persist.resourceentity.UsuariResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.BustiaResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.UnitatOrganitzativaResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.UsuariResourceRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -52,15 +56,18 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
     private final UnitatOrganitzativaResourceRepository unitatOrganitzativaResourceRepository;
     private final BustiaResourceRepository bustiaResourceRepository;
     private final BustiaService bustiaService;
+    private final UsuariResourceRepository usuariResourceRepository;
 
     @PostConstruct
     public void init() {
         register(BustiaResource.PERSPECTIVE_PERMISOS_COUNT_CODE, new PermisosCountPerspectiveApplicator());
+        register(BustiaResource.PERSPECTIVE_FAVORITA_CODE, new FavoritaPerspectiveApplicator());
         ActivaActionExecutor activaActionExecutor = new ActivaActionExecutor();
         register(BustiaResource.ACTION_ACTIVAR_CODE, activaActionExecutor);
         register(BustiaResource.ACTION_DESACTIVAR_CODE, activaActionExecutor);
         register(BustiaResource.ACTION_PRINCIPAL_CODE, new PrincipalActionExecutor());
         register(BustiaResource.ACTION_MOURE_ANOTACIO_CODE, new MoureAnotacioActionExecutor());
+        register(BustiaResource.ACTION_TOOGLE_FAVORITA_CODE, new FavotitaActionExecutor());
         register(BustiaResource.REPORT_USUARIS_BUSTIA_CODE, new UsuarisBustiaReportGenerator());
     }
 
@@ -139,6 +146,17 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
                 predicates.add( cb.or(orPredicates.toArray(new Predicate[0])) );
             }
 
+            if (mapaNamedQueries.containsKey("FAVORITA")) {
+                Subquery<Long> subquery = query.subquery(Long.class);
+                Root<UsuariBustiaFavoritResourceEntity> favoritRoot = subquery.from(UsuariBustiaFavoritResourceEntity.class);
+
+                subquery.select(favoritRoot.get("bustia").get("id"))
+                        .where(cb.equal(favoritRoot.get("usuari").get("id"),
+                                authenticationHelper.getCurrentUserName()));
+
+                predicates.add( root.get("id").in(subquery) );
+            }
+
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 	}
@@ -182,6 +200,28 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
                     Collections.singletonList(resource));
         }
 
+    }
+    private class FavoritaPerspectiveApplicator implements PerspectiveApplicator<BustiaResourceEntity, BustiaResource> {
+
+        @Override
+        public boolean applyMultiple(String code, List<BustiaResourceEntity> entities, List<BustiaResource> resources) {
+            UsuariResourceEntity usuari = usuariResourceRepository.findById(
+                    authenticationHelper.getCurrentUserName()).get();
+
+            List<Long> favoriteId = usuari.getBustiesFavoritas().stream()
+                    .map(ContingutResourceEntity::getId)
+                    .collect(Collectors.toList());
+
+            for (BustiaResource resource : resources) {
+                resource.setFavorita( favoriteId.contains(resource.getId()) );
+            }
+            return true;
+        }
+
+        @Override
+        public void applySingle(String code, BustiaResourceEntity entity, BustiaResource resource) {
+            applyMultiple(code, Collections.singletonList(entity), Collections.singletonList(resource));
+        }
     }
 
     private class ActivaActionExecutor implements ActionExecutor<BustiaResourceEntity, Serializable, Serializable> {
@@ -257,6 +297,33 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
 
         @Override
         public void onChange(Serializable id, BustiaResource.MoureAnotacioForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, BustiaResource.MoureAnotacioForm target) {
+        }
+    }
+    private class FavotitaActionExecutor implements ActionExecutor<BustiaResourceEntity, Boolean, Serializable> {
+
+        @Override
+        public Serializable exec(String code, BustiaResourceEntity entity, Boolean params) throws ActionExecutionException {
+            UsuariResourceEntity usuari = usuariResourceRepository.findById(
+                    authenticationHelper.getCurrentUserName()).get();
+
+            if (Boolean.TRUE.equals(params)) {
+                UsuariBustiaFavoritResourceEntity favorit = new UsuariBustiaFavoritResourceEntity();
+                favorit.setUsuari(usuari);
+                favorit.setBustia(entity);
+
+                usuari.getFavorits().add(favorit);
+            } else {
+                // Buscar y eliminar la entidad intermedia correspondiente
+                usuari.getFavorits().removeIf(fav -> fav.getBustia().getId().equals(entity.getId()));
+            }
+
+            usuariResourceRepository.save(usuari);
+            return null;
+        }
+
+        @Override
+        public void onChange(Serializable id, Boolean previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Boolean target) {
+
         }
     }
     private class UsuarisBustiaReportGenerator implements ReportGenerator<BustiaResourceEntity, BustiaResource.UsuariBustiaForm, BustiaResource> {

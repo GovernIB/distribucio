@@ -1,5 +1,6 @@
 package es.caib.distribucio.persist.resourceentity;
 
+import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.InterficieUsuariEnumDto;
 import es.caib.distribucio.logic.intf.model.MenuEstilEnum;
 import es.caib.distribucio.logic.intf.model.TemaAplicacioEnum;
@@ -9,13 +10,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Entitat de base de dades del recurs {@link UsuariResource}.
@@ -85,4 +85,12 @@ public class UsuariResourceEntity extends BaseResourceEntity<UsuariResource, Str
 	@Version
 	private long version = 0;
 
+    @OneToMany(mappedBy = "usuari", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UsuariBustiaFavoritResourceEntity> favorits = new ArrayList<>();
+
+    public List<BustiaResourceEntity> getBustiesFavoritas() {
+        return this.favorits.stream()
+                .map(UsuariBustiaFavoritResourceEntity::getBustia)
+                .collect(Collectors.toList());
+    }
 }

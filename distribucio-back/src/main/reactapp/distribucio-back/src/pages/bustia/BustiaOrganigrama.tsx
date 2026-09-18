@@ -6,7 +6,6 @@ import {useDistribucioContext} from "../../components/DistribucioContext.ts";
 import {TreeView} from "../../components/TreeView.tsx";
 import {CardPage} from "../../components/CardData.tsx";
 import BustiaFilter from "./BustiaFilter.tsx";
-import * as builder from "../../util/springFilterUtils.ts";
 import {Grid, Icon, IconButton} from "@mui/material";
 import Box from "@mui/material/Box";
 import {BustiaFormDialog, BustiaOrganigramaForm} from "./BustiaForm.tsx";
@@ -17,7 +16,8 @@ import {MenuActionButton} from "../../components/MenuButton.tsx";
 import {useActions, useBustiaActions} from "./detail/BustiaActions.tsx";
 import {ResourceApiError} from "../../../lib/components/ResourceApiProvider.tsx";
 
-export const useOrganigrama = ({filter, namedQueries, onClick, ...other}:any) => {
+export const useOrganigrama = ({quickFilter, filter, namedQueries, perspectives, onClick, ...other}:any) => {
+    const { t } = useTranslation();
     const { currentEntitat } = useDistribucioContext();
     const apiRef = useSimpleTreeViewApiRef();
 
@@ -35,7 +35,7 @@ export const useOrganigrama = ({filter, namedQueries, onClick, ...other}:any) =>
     const {temporalMessageShow} = useBaseAppContext();
 
     const refresh = () => {
-        apiBustiaFind({filter, namedQueries, unpaged: true, sorts: ['codi,asc']})
+        apiBustiaFind({quickFilter, filter, namedQueries, perspectives, unpaged: true, /*sorts: ['codi,asc']*/})
             .then((app) => setBusties(app?.rows))
             .catch((error) => {
                 temporalMessageShow(null, error?.message, 'error');
@@ -46,11 +46,11 @@ export const useOrganigrama = ({filter, namedQueries, onClick, ...other}:any) =>
         if (apiBustiaIsReady) {
             refresh()
         }
-    }, [apiBustiaIsReady, filter, namedQueries]);
+    }, [apiBustiaIsReady, quickFilter, filter, namedQueries]);
 
     useEffect(() => {
         if(apiUnitatIsReady){
-            apiUnitatFind({filter: builder.eq('entitat.id', currentEntitat.id), unpaged: true, sorts: ['nom,asc']})
+            apiUnitatFind({unpaged: true, sorts: ['nom,asc']})
                 .then((app) => setUnitats(app?.rows))
                 .catch((error) => {
                     temporalMessageShow(null, error?.message, 'error');
@@ -74,7 +74,9 @@ export const useOrganigrama = ({filter, namedQueries, onClick, ...other}:any) =>
                     children: (children?.length > 0) ?children :undefined,
                     componentProps: {
                         disableSelection: true
-                    }
+                    },
+                    class: 'unitat',
+                    data: u
                 }
             })
             ?.filter((u:any) => u?.children != undefined)
@@ -86,7 +88,7 @@ export const useOrganigrama = ({filter, namedQueries, onClick, ...other}:any) =>
             ?.map((u:any) => {
                 return {
                     id: u.id,
-                    label: <>{u.nom} {u.perDefecte && <strong>({'principal'})</strong>}</>,
+                    label: <>{u.nom} {u.perDefecte && <strong>({t('page.bustia.grid.principal')})</strong>}</>,
                     icon: 'inbox',
                     onClick: () => onClick?.(u.id, u),
                     componentProps: !u.activa ?{
@@ -94,6 +96,8 @@ export const useOrganigrama = ({filter, namedQueries, onClick, ...other}:any) =>
                             color: 'lightgrey'
                         }
                     } :{},
+                    class: 'bustia',
+                    data: u
                 }
             })
     }
