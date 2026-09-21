@@ -172,7 +172,7 @@ public class RegistreResource extends ContingutResource {
 
 //    private ResourceReference<RegistreAnnexEntity, Long>  justificant;
 //    private List<ResourceReference<RegistreInteressatResource, Long>> interessats = new ArrayList<>();
-    private String interessatsString;
+    @Transient private String interessatsString;
 //    private List<ResourceReference<RegistreAnnexEntity>> annexos = new ArrayList<>();
 //    private ResourceReference<ReglaEntity> regla;
     protected ResourceReference<UsuariResource, String> agafatPer;

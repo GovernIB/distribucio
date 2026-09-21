@@ -6,6 +6,7 @@ import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.ContingutHelper;
 import es.caib.distribucio.logic.helper.ContingutLogResourceHelper;
+import es.caib.distribucio.logic.helper.ExecucioMassivaResourceHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
@@ -16,20 +17,14 @@ import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.base.util.I18nUtil;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
-import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
-import es.caib.distribucio.logic.intf.dto.RegistreNombreAnnexesEnumDto;
-import es.caib.distribucio.logic.intf.dto.RegistreProcesEstatSimpleEnumDto;
+import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.model.*;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.resourceservice.AclEntryResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.ContingutMovimentResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.RegistreResourceService;
-import es.caib.distribucio.logic.intf.service.AplicacioService;
-import es.caib.distribucio.logic.intf.service.BustiaService;
-import es.caib.distribucio.logic.intf.service.ContingutService;
-import es.caib.distribucio.logic.intf.service.RegistreService;
+import es.caib.distribucio.logic.intf.service.*;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.logic.intf.util.Utils;
 import es.caib.distribucio.persist.entity.EntitatEntity;
@@ -71,6 +66,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private final ExecucioMassivaContingutRepository execucioMassivaContingutRepository;
     private final ContingutService contingutService;
     private final RegistreService registreService;
+    private final ExecucioMassivaResourceHelper execucioMassivaResourceHelper;
 
     @PostConstruct
     public void init() {
@@ -280,7 +276,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                                 ExecucioMassivaContingutEstatDto.PAUSADA)
                 )
         );
-        resource.setPendentExecucioMassiva(execucioMassivaPendent != null ? true : false);
+        resource.setPendentExecucioMassiva(execucioMassivaPendent != null);
     }
 
     @Override
@@ -550,7 +546,14 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             Long entitatActualId = SessioActualUtil.getEntitatId();
             if (params.isMassive()) {
                 List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
-                /// TODO: implementar versión massiva
+                /// TODO: revisar versión massiva
+                Map<String, Object> map = new HashMap<>();
+                map.put("motiu", params.getMotiu());
+
+                execucioMassivaResourceHelper.executarAccioMassivaRegistres(
+                        ExecucioMassivaTipusDto.MARCAR_PROCESSAT,
+                        registreList,
+                        map);
             } else {
                 RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
                 /// TODO: revisar versión individual
@@ -582,7 +585,14 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             Long entitatActualId = SessioActualUtil.getEntitatId();
             if (params.isMassive()) {
                 List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
-                /// TODO: implementar versión massiva
+                /// TODO: revisar versión massiva
+                Map<String, Object> map = new HashMap<>();
+                map.put("motiu", params.getMotiu());
+
+                execucioMassivaResourceHelper.executarAccioMassivaRegistres(
+                        ExecucioMassivaTipusDto.MARCAR_PENDENT,
+                        registreList,
+                        map);
             } else {
                 RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
                 /// TODO: revisar versión individual
