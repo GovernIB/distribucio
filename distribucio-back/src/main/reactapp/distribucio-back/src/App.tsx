@@ -92,6 +92,13 @@ const InnerApp: React.FC = () => {
             pantalla: 'registre',
         },
         {
+            id: 'vistaMoviments',
+            title: t('app.menu.vistaMoviments'),
+            to: 'vistaMoviments',
+            icon: icons.vistaMoviments,
+            pantalla: 'vistaMoviments',
+        },
+        {
             id: 'entitats',
             title: t('app.menu.entitats'),
             to: 'entitat',
@@ -142,6 +149,7 @@ const InnerApp: React.FC = () => {
                     id: 'config',
                     title: t('app.menu.config'),
                     to: 'config',
+                    icon: icons.config,
                     pantalla: 'config'
                 },
                 {
@@ -169,6 +177,7 @@ const InnerApp: React.FC = () => {
                     id: 'integracio',
                     title: t('app.menu.integracio'),
                     to: 'integracio',
+                    icon: icons.integracio,
                     pantalla: 'integracio',
                 },
             ],

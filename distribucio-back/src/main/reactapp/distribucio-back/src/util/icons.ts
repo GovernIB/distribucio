@@ -22,7 +22,10 @@ export const icons = {
     bustia: 'inbox',
     unitatOrganitzativa: 'account_tree',
     backoffice: 'wifi',
-    limitCanviEstat: 'display_settings',
+    config: 'display_settings',
+    limitCanviEstat: 'date_range',
     annex: 'attach_file',
     contingut: 'archive',
+    integracio: 'sync_alt',
+    vistaMoviments: 'move_down',
 } as const;

@@ -42,6 +42,7 @@ const translationEs = {
             config: 'Propiedades configurables',
             monitoritzar: 'Monitorizar',
             integracio: 'Integraciones',
+            vistaMoviments: "Vista de movimientos",
         },
         avisos: {
             mostra: 'Muestra el detalle del aviso',
@@ -741,6 +742,29 @@ const translationEs = {
                     }
                 }
             }
+        },
+        vistaMoviments: {
+            title: "Vista de movimientos",
+            grid: {
+                bustiaInactiva: "El buzón está inactivo",
+            },
+            accio: {
+                detalls: {
+                    label: "Detalles",
+                },
+                reenviar: {
+                    label: "Reenviar...",
+                },
+                email: {
+                    label: "Enviar via email...",
+                },
+                descarregarOriginal: {
+                    label: "Descargar original",
+                },
+                descarregarFirma: {
+                    label: "Descargar firmado",
+                },
+            },
         },
     },
     component: {

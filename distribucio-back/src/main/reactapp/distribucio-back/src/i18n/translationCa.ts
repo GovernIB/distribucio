@@ -44,6 +44,7 @@ const translationCa = {
             monitoritzar: 'Monitoritzar',
             integracio: 'Integracions',
             registre: "Anotacions",
+            vistaMoviments: "Vista de moviments",
         },
         avisos: {
             mostra: "Mostra el detall de l'avís",
@@ -743,6 +744,29 @@ const translationCa = {
                     }
                 }
             }
+        },
+        vistaMoviments: {
+            title: "Vista de moviments",
+            grid: {
+                bustiaInactiva: "La bústia està inactiva",
+            },
+            accio: {
+                detalls: {
+                    label: "Detalls",
+                },
+                reenviar: {
+                    label: "Reenviar...",
+                },
+                email: {
+                    label: "Envia via email...",
+                },
+                descarregarOriginal: {
+                    label: "Descarregar original",
+                },
+                descarregarFirma: {
+                    label: "Descarregar signat",
+                },
+            },
         },
     },
     component: {

@@ -29,7 +29,8 @@ export type Pantalla = 'home'
     | 'massiva'
     | 'integracio'
     | 'annex'
-    | 'registre';
+    | 'registre'
+    | 'vistaMoviments';
 
 /**
  * Rols autoritzats per pantalla. És l'única font de veritat del control d'accés de la interfície:
@@ -65,6 +66,7 @@ export const PANTALLA_ROLS: Record<Pantalla, string[]> = {
     integracio: [ROLE_SUPER],
     annex: [ROLE_ADMIN, ROLE_ADMIN_LECTURA],
     registre: [ROLE_ADMIN, ROLE_ADMIN_LECTURA, ROLE_USER],
+    vistaMoviments: [ROLE_USER],
 };
 
 export const isPantallaPermesa = (pantalla: Pantalla, rol?: string): boolean =>

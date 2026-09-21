@@ -320,6 +320,12 @@ public class EjbClientConfig {
 		return getLocalEjbFactoyBean(AlertaResourceService.class);
 	}
 
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean vistaMovimentResourceService() {
+		return getLocalEjbFactoyBean(VistaMovimentResourceService.class);
+	}
+
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {
 		String jndiName = jndiServiceName(serviceClass);
 		log.info("Creating EJB proxy for " + serviceClass.getSimpleName() + " with JNDI name " + jndiName);

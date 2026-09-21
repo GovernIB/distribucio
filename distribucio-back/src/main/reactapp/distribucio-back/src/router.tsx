@@ -22,6 +22,7 @@ import {ExecucioMassivaGrid} from "./pages/execucioMassiva/ExecucioMassivaGrid.t
 import IntegracioGrid from './pages/integracio/IntegracioGrid.tsx';
 import AnnexGrid from './pages/annex/AnnexGrid.tsx';
 import {RegistreGrid} from "./pages/registre/RegistreGrid.tsx";
+import {VistaMovimentsGrid} from "./pages/vistaMoviments/VistaMovimentsGrid.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -231,6 +232,16 @@ export const router = createBrowserRouter(
                             path: 'registre',
                             element: <RegistreGrid/>,
                             handle: { titol: 'page.registre.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="vistaMoviments" />,
+                    children: [
+                        {
+                            path: 'vistaMoviments',
+                            element: <VistaMovimentsGrid/>,
+                            handle: { titol: 'page.vistaMoviments.title' },
                         },
                     ],
                 },
