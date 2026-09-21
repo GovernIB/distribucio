@@ -3,6 +3,7 @@ package es.caib.distribucio.logic.resourceservice;
 import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
+import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.model.ResourceType;
 import es.caib.distribucio.logic.intf.model.VistaMovimentResource;
@@ -10,6 +11,8 @@ import es.caib.distribucio.logic.intf.resourceservice.AclEntryResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.VistaMovimentResourceService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.logic.intf.util.Utils;
+import es.caib.distribucio.persist.entity.ContingutLogEntity;
+import es.caib.distribucio.persist.repository.ContingutLogRepository;
 import es.caib.distribucio.persist.resourceentity.RegistreInteressatResourceEntity;
 import es.caib.distribucio.persist.resourceentity.VistaMovimentResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.RegistreInteressatResourceRepository;
@@ -21,7 +24,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +46,9 @@ public class VistaMovimentResourceServiceImpl
 	private final RegistreInteressatResourceRepository registreInteressatResourceRepository;
 	private final AclEntryResourceService aclEntryResourceService;
 	private final AuthenticationHelper authenticationHelper;
+	private final ContingutLogRepository contingutLogRepository;
+
+	private static final DateTimeFormatter ENVIAMENT_EMAIL_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
 	/**
 	 * Completa camps que no es poden obtenir per mapeig directe de l'entitat:
@@ -56,6 +64,38 @@ public class VistaMovimentResourceServiceImpl
 
 		resource.setBustiaOrigenActiva(entity.getBustiaOrigen() != null && entity.getBustiaOrigen().isActiva());
 		resource.setBustiaDestiActiva(entity.getBustiaDesti() != null && entity.getBustiaDesti().isActiva());
+	}
+
+	/**
+	 * Informa els enviaments per email de les anotacions de la pàgina amb una sola consulta de logs
+	 * (mateix format que la JSP antiga: "dd/MM/yyyy HH:mm:ss destinataris").
+	 */
+	@Override
+	protected void afterConversion(List<VistaMovimentResourceEntity> entities, List<VistaMovimentResource> resources) {
+		super.afterConversion(entities, resources);
+
+		List<Long> registreIds = resources.stream()
+				.filter(VistaMovimentResource::isEnviatPerEmail)
+				.map(VistaMovimentResource::getIdRegistre)
+				.distinct()
+				.collect(Collectors.toList());
+		if (registreIds.isEmpty()) {
+			return;
+		}
+		Map<Long, List<String>> enviamentsPerRegistre = new HashMap<>();
+		for (ContingutLogEntity log : contingutLogRepository.findByContingutIdInAndTipusOrderByCreatedDateAsc(
+				registreIds,
+				LogTipusEnumDto.ENVIAMENT_EMAIL)) {
+			if (log.getCreatedDate().isPresent()) {
+				enviamentsPerRegistre
+						.computeIfAbsent(log.getContingut().getId(), k -> new ArrayList<>())
+						.add(ENVIAMENT_EMAIL_FORMAT.format(log.getCreatedDate().get()) + " " + log.getParam2());
+			}
+		}
+		resources.stream()
+				.filter(VistaMovimentResource::isEnviatPerEmail)
+				.forEach(r -> r.setEnviamentsPerEmail(
+						enviamentsPerRegistre.getOrDefault(r.getIdRegistre(), new ArrayList<>())));
 	}
 
 	@Override

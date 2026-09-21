@@ -1,10 +1,13 @@
 import { useTranslation } from 'react-i18next';
-import { GridPage } from 'reactlib';
+import { GridPage, useMuiDataGridApiRef } from 'reactlib';
 import { CardPage } from '../../components/CardData.tsx';
 import StyledMuiGrid from '../../components/StyledMuiGrid.tsx';
 import { VistaMovimentsFilter } from './VistaMovimentsFilter.tsx';
 import React from 'react';
-import { Icon, Tooltip } from '@mui/material';
+import { Icon, IconButton, Tooltip, Typography } from '@mui/material';
+import { RegistreEstat } from '../../components/RegistreEstat.tsx';
+import { useCommentsColumn } from '../../components/CommentsColumn.tsx';
+import { useProcesEstatLegend } from '../../components/ProcesEstatLegend.tsx';
 import { useVistaMovimentsAccions } from './VistaMovimentsAccions.tsx';
 
 /** Número: icona de llibre (anotació de registre) + número, amb el triangle d'avís si l'anotació té alertes */
@@ -73,6 +76,38 @@ const VistaMovimentsErrorCell = ({ row }: any) => {
     );
 };
 
+/** Estat: icona de sobre amb els enviaments per email (si n'hi ha) i el detall de l'estat (regla o backoffice). */
+const VistaMovimentsEstatCell = ({ row, formattedValue }: any) => {
+    const { t } = useTranslation();
+    const enviaments: string[] = row?.enviamentsPerEmail ?? [];
+    const text =
+        row?.procesEstat === 'BACK_PROCESSADA' && row?.backCodi
+            ? t('component.RegistreEstat.processadaPer')
+            : formattedValue;
+    return (
+        <>
+            {row?.enviatPerEmail && (
+                <Tooltip
+                    title={
+                        <>
+                            <div>{t('page.vistaMoviments.grid.enviatPerEmail')}{enviaments.length > 0 && ':'}</div>
+                            {enviaments.map((enviament, index) => (
+                                <div key={index}>{enviament}</div>
+                            ))}
+                        </>
+                    }>
+                    <Icon fontSize="small" sx={{ verticalAlign: 'text-bottom', mr: 0.5 }}>
+                        mail
+                    </Icon>
+                </Tooltip>
+            )}
+            <RegistreEstat entity={row} showReintents={false}>
+                {text}
+            </RegistreEstat>
+        </>
+    );
+};
+
 const columns = [
     {
         field: 'numero',
@@ -106,24 +141,54 @@ const columns = [
         ),
     },
     { field: 'interessatsString', flex: 2, sortable: false },
-    { field: 'procesEstat', flex: 1.5 },
 ];
 const sortModel: any = [{ field: 'data', sort: 'desc' }];
 
 export const VistaMovimentsGrid = () => {
     const { t } = useTranslation();
+    const apiRef = useMuiDataGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
     const [namedQueries, setNamedQueries] = React.useState<string[]>([]);
 
     const { actions, components } = useVistaMovimentsAccions();
+    const { handleOpen: handleLlegenda, component: llegendaComponent } = useProcesEstatLegend();
+    const { column: commentsColumn, component: commentsComponent } = useCommentsColumn({
+        getId: (row) => row.idRegistre,
+        getName: (row) => row.numero,
+        onClose: () => apiRef.current?.refresh(),
+    });
+
+    // Estat amb la icona de la llegenda a la capçalera; s'ha de definir aquí perquè necessita handleLlegenda
+    const estatColumn = {
+        field: 'procesEstat',
+        flex: 1.5,
+        renderHeader: (params: any) => (
+            <>
+                <Typography variant="body2" sx={{ fontWeight: '500' }}>{params.colDef.headerName}</Typography>
+                <IconButton
+                    size="small"
+                    title={t('component.ProcesEstatLegend.title')}
+                    sx={{ ml: 0.5 }}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleLlegenda();
+                    }}>
+                    <Icon fontSize="small">list</Icon>
+                </IconButton>
+            </>
+        ),
+        renderCell: (params: any) => <VistaMovimentsEstatCell row={params.row} formattedValue={params.formattedValue} />,
+    };
+    const allColumns = [...columns, estatColumn, commentsColumn];
 
     return (
         <GridPage autoHeight>
             <CardPage title={t('page.vistaMoviments.title')}>
                 <VistaMovimentsFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
                 <StyledMuiGrid
+                    apiRef={apiRef}
                     resourceName="vistaMovimentResource"
-                    columns={columns}
+                    columns={allColumns}
                     filter={springFilter}
                     toolbarShowFilterCount
                     namedQueries={namedQueries}
@@ -135,6 +200,8 @@ export const VistaMovimentsGrid = () => {
                     rowHideDeleteButton
                 />
                 {components}
+                {llegendaComponent}
+                {commentsComponent}
             </CardPage>
         </GridPage>
     );

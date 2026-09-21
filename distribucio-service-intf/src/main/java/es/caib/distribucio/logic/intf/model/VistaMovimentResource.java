@@ -15,10 +15,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Sort;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * "Vista de moviments": una fila per cada moviment d'una anotació de registre (una anotació
@@ -78,6 +80,13 @@ public class VistaMovimentResource extends BaseResource<String> {
 	/** Indica si la bústia origen/destí segueix activa, per mostrar l'avís corresponent al llistat. */
 	private boolean bustiaOrigenActiva;
 	private boolean bustiaDestiActiva;
+	/** Nom de la regla que ha processat l'anotació. Es mostra a l'estat REGLA_PENDENT. */
+	private String reglaNom;
+	/** Nombre de comentaris de l'anotació de registre. */
+	private int numComentaris;
+	/** Enviaments per email de l'anotació, amb el format "dd/MM/yyyy HH:mm:ss destinataris". */
+	@Transient
+	private List<String> enviamentsPerEmail;
 
 	private ResourceReference<BustiaResource, Long> bustiaOrigen;
 	private ResourceReference<BustiaResource, Long> bustiaDesti;

@@ -748,6 +748,7 @@ const translationCa = {
         vistaMoviments: {
             title: "Vista de moviments",
             grid: {
+                enviatPerEmail: "Enviat via email",
                 bustiaInactiva: "La bústia està inactiva",
             },
             accio: {
@@ -815,6 +816,55 @@ const translationCa = {
             options: "Opcions",
             all: "Selecciona-ho tot",
             clear: "Neteja la selecció",
+        },
+        RegistreEstat: {
+            processadaPer: "Processada per",
+        },
+        ProcesEstatLegend: {
+            title: "Llegenda dels estats del processament de les anotacions de registre",
+            tanca: "Tanca",
+            estat: {
+                ARXIU_PENDENT: {
+                    label: "Pendent de guardar annexos",
+                    info: "S'ha rebut l'anotació e registre i es troba pendent de guardar els annexos a l'Arxiu. En aquest punt  no es té la informació de les firmes.",
+                },
+                REGLA_PENDENT: {
+                    label: "Pendent de processar regla",
+                    info: "L'anotació està pendent de que es processi la regla que reenvia o processa l'anotació del registre",
+                },
+                BUSTIA_PENDENT: {
+                    label: "Pendent de l'usuari",
+                    info: "L'anotació està pendent del processament per part de l'usuari",
+                },
+                BUSTIA_PROCESSADA: {
+                    label: "Processada a la bústia",
+                    info: "L'anotació ha estat processada per l'usuari",
+                },
+                BACK_PENDENT: {
+                    label: "Pendent de comunicar backoffice",
+                    info: "L'anotació està pendent de comunicar al backoffice de Distribució",
+                },
+                BACK_COMUNICADA: {
+                    label: "Comunicada al backoffice",
+                    info: "L'anotació s'ha comunicat al backoffice i està pendent de que el backoffice la rebi i processi. El canvi d'estat ja depén del backoffice",
+                },
+                BACK_REBUDA: {
+                    label: "Rebuda al backoffice",
+                    info: "L'anotació ha estat rebuda pel backoffice de Distribució",
+                },
+                BACK_PROCESSADA: {
+                    label: "Processada pel backoffice",
+                    info: "L'anotació ha estat processada pel backoffice de Distribució",
+                },
+                BACK_REBUTJADA: {
+                    label: "Rebutjada pel backoffice",
+                    info: "L'anotació ha estat processada i rebutjada pel backoffice de Distribució",
+                },
+                BACK_ERROR: {
+                    label: "Processada al backoffice amb errors",
+                    info: "L'anotació ha estat processada amb error pel backoffice de Distribució",
+                },
+            },
         },
         CommentDialog: {
             title: "Comentaris del contingut: {{name}}",

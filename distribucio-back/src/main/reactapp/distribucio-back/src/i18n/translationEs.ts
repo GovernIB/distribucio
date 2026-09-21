@@ -746,6 +746,7 @@ const translationEs = {
         vistaMoviments: {
             title: "Vista de movimientos",
             grid: {
+                enviatPerEmail: "Enviada vía email",
                 bustiaInactiva: "El buzón está inactivo",
             },
             accio: {
@@ -813,6 +814,55 @@ const translationEs = {
             options: "Opciones",
             all: "Seleccionarlo todo",
             clear: "Limpiar la selección",
+        },
+        RegistreEstat: {
+            processadaPer: "Procesada por",
+        },
+        ProcesEstatLegend: {
+            title: "Leyenda de los estados del proceso de las anotaciones de registro",
+            tanca: "Cerrar",
+            estat: {
+                ARXIU_PENDENT: {
+                    label: "Pendiente de guardar anexos",
+                    info: "Se ha recibido la anotación de registro y se encuentra pendiente de guardar los anexos en el Arxiu. En este punto no se tiene la información de las firmas.",
+                },
+                REGLA_PENDENT: {
+                    label: "Pendiente de procesar regla",
+                    info: "La anotación está pendiente de que se procese la regla que reenvía o procesa la anotación del registro",
+                },
+                BUSTIA_PENDENT: {
+                    label: "Pendiente del usuario",
+                    info: "La anotación está pendiente del procesamiento por parte del usuario",
+                },
+                BUSTIA_PROCESSADA: {
+                    label: "Procesada en el buzón",
+                    info: "La anotación ha sido procesada por el usuario",
+                },
+                BACK_PENDENT: {
+                    label: "Pendiente de comunicar al backoffice",
+                    info: "La anotación está pendiente de comunicar al backoffice de Distribución",
+                },
+                BACK_COMUNICADA: {
+                    label: "Comunicada al backoffice",
+                    info: "La anotación se ha comunicado al backoffice y está pendiente de que el backoffice la reciba y procese. El cambio de estado ya depende del backoffice",
+                },
+                BACK_REBUDA: {
+                    label: "Recibida en el backoffice",
+                    info: "La anotación ha sido recibida por el backoffice de Distribución",
+                },
+                BACK_PROCESSADA: {
+                    label: "Procesada por el backoffice",
+                    info: "La anotación ha sido procesada por el backoffice de Distribución",
+                },
+                BACK_REBUTJADA: {
+                    label: "Rechazada por el backoffice",
+                    info: "La anotación ha sido procesada y rechazada por el backoffice de Distribución",
+                },
+                BACK_ERROR: {
+                    label: "Procesada en el backoffice con errores",
+                    info: "La anotación ha sido procesada con error por el backoffice de Distribución",
+                },
+            },
         },
         CommentDialog: {
             title: "Comentarios del contenido: {{name}}",

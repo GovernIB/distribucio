@@ -4,11 +4,9 @@ import {CardPage} from "../../components/CardData.tsx";
 import StyledMuiGrid from "../../components/StyledMuiGrid.tsx";
 import RegistreFilter from "./RegistreFilter.tsx";
 import React from "react";
-import { Icon, Typography } from "@mui/material";
-import {formatDate} from "../../util/dateUtils.ts";
-import IconButton from "@mui/material/IconButton";
-import {useCommentDialog} from "../CommentDialog.tsx";
-import Badge from "@mui/material/Badge";
+import { Icon } from "@mui/material";
+import {useCommentsColumn} from "../../components/CommentsColumn.tsx";
+import {RegistreEstat} from "../../components/RegistreEstat.tsx";
 import {useRegistreActions, useRegistreMassiveActions} from "./detail/RegistreActions.tsx";
 
 const RegistreAvisos = ({entity}:any) => {
@@ -32,48 +30,6 @@ const RegistreAvisos = ({entity}:any) => {
             : <Icon title={t('page.registre.avisos.procesError.default')} color={'error'}>warning</Icon>
         )}
         {entity.pendentExecucioMassiva && <Icon title={t('page.registre.avisos.pendentExecucioMassiva')} color={'warning'}>schedule</Icon>}
-    </>
-}
-
-const RegistreEstat = ({entity, children}:any) => {
-    const { t } = useTranslation();
-    return <>
-        {children}
-
-        {entity.procesEstat == 'REGLA_PENDENT' &&
-            (entity.regla != null
-                    ?entity.regla.nom
-                    :<Icon title={t('page.registre.estat.regla')} color={'error'}>warning</Icon>
-            )}
-
-        {entity.procesEstat == 'BACK_REBUTJADA' &&
-            entity.backObservacions != '' &&
-            <Icon title={entity.backObservacions} color={'warning'}>error</Icon>
-        }
-
-        <Typography
-            variant={'inherit'}
-            hidden={
-                entity.procesEstat == 'ARXIU_PENDENT'
-                || entity.procesEstat == 'REGLA_PENDENT'
-                || entity.procesEstat == 'BUSTIA_PENDENT'
-                || entity.procesEstat == 'BUSTIA_PROCESSADA'
-            }
-        >&nbsp;<strong>{entity.backCodi}</strong></Typography>
-        <Typography
-            variant={'inherit'}
-            title={t('page.registre.estat.maxReintents', {num: entity.procesIntents, max: entity.maxReintents})}
-            color={entity.reintentsEsgotat ?"error" :"warning"}
-            hidden={
-                entity.procesEstat != 'ARXIU_PENDENT'
-                && entity.procesEstat != 'REGLA_PENDENT'
-                && entity.procesEstat != 'BACK_PENDENT'
-                && entity.procesEstat != 'BACK_ERROR'
-            }
-        >&nbsp;({entity.procesIntents}/{entity.maxReintents})</Typography>
-
-        {entity.backRetryEnviarData && !entity.reintentsEsgotat
-            && <>&nbsp; Proper reintent: {formatDate(entity.backRetryEnviarData)}</>}
     </>
 }
 
@@ -122,23 +78,11 @@ export const RegistreGrid = () => {
     const [springFilter, setSpringFilter] = React.useState<string>();
     const [namedQueries, setNamedQueries] = React.useState<string[]>([]);
 
-    const { handleOpen, component: dialogComponent } = useCommentDialog();
+    const { column: commentsColumn, component: dialogComponent } = useCommentsColumn();
 
     const additionalColumns = [
         ...columns(t),
-        // Amplada fixa (només hi cap el botó amb el comptador) i sense títol a la capçalera. Es fa amb
-        // renderHeader i no buidant headerName perquè el nom continuï sortint a la gestió de columnes.
-        { field: 'numComentaris', width: 60, minWidth: 60, sortable: false,
-            renderHeader: () => null,
-            renderCell: (params:any) =>
-                <>
-                    <IconButton title={t('component.CommentDialog.label')} onClick={() => handleOpen(params.id, params.row.nom)}>
-                        <Badge badgeContent={params.formattedValue} color="primary" showZero>
-                            <Icon>forum</Icon>
-                        </Badge>
-                    </IconButton>
-                </>
-        }
+        commentsColumn,
     ]
 
     const refresh = () => {

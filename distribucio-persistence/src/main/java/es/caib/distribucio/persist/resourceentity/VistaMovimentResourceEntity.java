@@ -54,7 +54,11 @@ import java.util.Date;
 		+ "    dst.id as destiLogic, "
 		+ "    contingut.entitat_id as entitatId, "
 		+ "    (select count(al.id) from " + BaseConfig.DB_PREFIX + "alerta al "
-		+ "        where al.contingut_id = r.id and al.llegida = 0) as alertesPendents "
+		+ "        where al.contingut_id = r.id and al.llegida = 0) as alertesPendents, "
+		+ "    (select rg.nom from " + BaseConfig.DB_PREFIX + "regla rg "
+		+ "        where rg.id = r.regla_id) as reglaNom, "
+		+ "    (select count(cm.id) from " + BaseConfig.DB_PREFIX + "cont_comment cm "
+		+ "        where cm.contingut_id = r.id) as numComentaris "
 		+ "from " + BaseConfig.DB_PREFIX + "registre r "
 		+ "inner join " + BaseConfig.DB_PREFIX + "cont_mov m on m.contingut_id = r.id "
 		+ "inner join " + BaseConfig.DB_PREFIX + "contingut ori on ori.id = m.origen_id "
@@ -129,6 +133,14 @@ public class VistaMovimentResourceEntity extends BaseResourceEntity<VistaMovimen
 	/** Nombre d'alertes no llegides de l'anotació. Determina si el botó "Llistat d'alertes" és visible. */
 	@Column(name = "alertesPendents")
 	private int alertesPendents;
+
+	/** Nom de la regla que ha processat l'anotació (només informat si l'anotació té regla). */
+	@Column(name = "reglaNom")
+	private String reglaNom;
+
+	/** Nombre de comentaris de l'anotació de registre (compartit entre els seus moviments). */
+	@Column(name = "numComentaris")
+	private int numComentaris;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "origen", insertable = false, updatable = false)
