@@ -370,10 +370,33 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
         @Override
         public HashMap exec(String code, RegistreResourceEntity entity, RegistreResource.ClassificarForm params) throws ActionExecutionException {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
+            String codiSia;
+
+            if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(params.getTipus())) {
+                ProcedimentResourceEntity procediment = procedimentResourceRepository.findById(params.getProcediment().getId()).get();
+                codiSia = procediment.getCodiSia();
+            } else {
+                ServeiResourceEntity servei = serveiResourceRepository.findById(params.getServei().getId()).get();
+                codiSia = servei.getCodiSia();
+            }
+
             if (params.isMassive()) {
                 List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
                 if (this.isSameBustia( registreList )) {
-                    /// TODO: implementar versión massiva
+                    /// TODO: revisar versión massiva
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("titol", null);
+                    map.put("tipus", params.getTipus());
+                    map.put("codiProcediment", RegistreClassificarTipusEnum.PROCEDIMENT.equals(params.getTipus())
+                            ?codiSia :null);
+                    map.put("codiServei", RegistreClassificarTipusEnum.SERVEI.equals(params.getTipus())
+                            ?codiSia :null);
+
+                    execucioMassivaResourceHelper.executarAccioMassivaRegistres(
+                            ExecucioMassivaTipusDto.CLASSIFICAR,
+                            registreList,
+                            map);
                 } else {
                     throw new ActionExecutionException(
                             RegistreResource.class, null, code,
@@ -381,9 +404,50 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                     );
                 }
             } else {
-                Map<String, String> map = new HashMap<>();
+                Map<String, Object> map = new HashMap<>();
                 RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
-                /// TODO: implementar versión individual
+                /// TODO: revisar versión individual
+                ClassificacioResultatDto resultat = registreService.classificar(
+                        entitatActualId,
+                        registre.getId(),
+                        params.getTipus().name(),
+                        (RegistreClassificarTipusEnum.PROCEDIMENT.equals(params.getTipus())
+                                ?codiSia :null),
+                        (RegistreClassificarTipusEnum.SERVEI.equals(params.getTipus())
+                                ?codiSia :null),
+                        null);
+
+                Map<String, String> mssg = new HashMap<>();
+                switch (resultat.getResultat()) {
+                    case SENSE_CANVIS:
+                        break;
+                    case REGLA_BUSTIA:
+                    case REGLA_UNITAT:
+                        mssg.put("severity", "info");
+                        mssg.put("text", I18nUtil.getInstance().getI18nMessage(
+                                "bustia.controller.pendent.contingut.classificat.mogut",
+                                resultat.getBustiaNom(),
+                                resultat.getBustiaUnitatOrganitzativa().getDenominacio() ));
+                        break;
+                    case REGLA_BACKOFFICE:
+                        mssg.put("severity", "info");
+                        mssg.put("text", I18nUtil.getInstance().getI18nMessage(
+                                "bustia.controller.pendent.contingut.classificat.backoffice",
+                                resultat.getBackofficeDesti() ));
+                        break;
+                    case REGLA_ERROR:
+                        mssg.put("severity", "warning");
+                        mssg.put("text", I18nUtil.getInstance().getI18nMessage(
+                                "bustia.controller.pendent.contingut.classificat.error" ));
+                        break;
+                    case TITOL_MODIFICAT:
+                        mssg.put("severity", "info");
+                        mssg.put("text", I18nUtil.getInstance().getI18nMessage(
+                                "bustia.controller.pendent.contingut.classificat.titol" ));
+                        break;
+                }
+                if (!mssg.isEmpty())
+                    map.put("message", mssg);
 
                 map.put("numero", registre.getNumero());
                 if (RegistreClassificarTipusEnum.PROCEDIMENT.equals( params.getTipus() )) {
@@ -424,6 +488,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                     target.setBustiaId(registre.getPare().getId());
 
                     if (registre.getProcedimentCodi() != null) {
+                        target.setTipus(RegistreClassificarTipusEnum.PROCEDIMENT);
                         procedimentResourceRepository.findByEntitatIdAndCodiSia(entitatActualId, registre.getProcedimentCodi())
                                 .ifPresent(procediment -> {
                                     target.setProcediment(ResourceReference.toResourceReference(
@@ -432,6 +497,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                                 });
                     }
                     if (registre.getServeiCodi() != null) {
+                        target.setTipus(RegistreClassificarTipusEnum.SERVEI);
                         serveiResourceRepository.findByEntitatIdAndCodiSia(entitatActualId, registre.getServeiCodi())
                                 .ifPresent(servei -> {
                                     target.setServei(ResourceReference.toResourceReference(

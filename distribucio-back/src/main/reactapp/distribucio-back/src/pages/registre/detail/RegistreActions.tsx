@@ -10,6 +10,7 @@ import useEnviarViaEmail from "../actions/EnviarViaEmail.tsx";
 import useReenviar from "../actions/Reenviar.tsx";
 import useMarcarProcessada from "../actions/MarcarProcessada.tsx";
 import useMarcarPendent from "../actions/MarcarPendent.tsx";
+import {useSnackbar} from "notistack";
 
 export const useActions = () => {
     const { t } = useTranslation();
@@ -42,13 +43,16 @@ export const useActions = () => {
 export const useRegistreActions = (refresh?: () => void) => {
     const { t } = useTranslation();
     const {temporalMessageShow} = useBaseAppContext();
+    const { enqueueSnackbar } = useSnackbar();
 
     const {show: handleHistoric, component: componentHistoric} = useContingutHistorialDialog()
     const {handleOpen: handleAlertes, component: componentAlertes} = useAlertes();
     const { handleShow: handleClassificar, content: contentClassificar } = useClassificar((result:any) => {
-        // console.log("result", result)
         refresh?.()
-        temporalMessageShow(null, t(`page.registre.accio.classifica.ok.${result.tipus}`, { numero: result.numero, sia: result.sia }), 'success');
+        if (result.message)
+            enqueueSnackbar(result.message?.text, { variant: result.message?.severity })
+        enqueueSnackbar(t(`page.registre.accio.classifica.ok.${result.tipus}`, { numero: result.numero, sia: result.sia }), { variant: 'success' })
+        // temporalMessageShow(null, t(`page.registre.accio.classifica.ok.${result.tipus}`, { numero: result.numero, sia: result.sia }), 'success');
     })
     const { handleShow: handleEnviarEmail, content: contentEnviarEmail } = useEnviarViaEmail((result:any) => {
         refresh?.()
