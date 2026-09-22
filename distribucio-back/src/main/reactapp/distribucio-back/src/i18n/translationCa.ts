@@ -730,6 +730,11 @@ const translationCa = {
                     titleMassive: "Marcar com a pendents {{num}} anotacions",
                     ok: "L'anotació \"{{numero}}\" s'ha marcat com a pendent",
                 },
+                tornarProcessar: {
+                    label: "Torna a processar...",
+                    title: "Torna a processar",
+                    titleMassive: "Torna a processar {{num}} anotacions",
+                },
             },
         },
         alerta: {

@@ -11,6 +11,7 @@ import useReenviar from "../actions/Reenviar.tsx";
 import useMarcarProcessada from "../actions/MarcarProcessada.tsx";
 import useMarcarPendent from "../actions/MarcarPendent.tsx";
 import {useSnackbar} from "notistack";
+import useTornarProcessar from "../actions/TornarProcessar.tsx";
 
 export const useActions = () => {
     const { t } = useTranslation();
@@ -99,6 +100,7 @@ export const useRegistreActions = (refresh?: () => void) => {
         },
         {
             label: <Divider sx={{width: '100%'}} color={"none"}/>,
+            action: 'CLASSIFICAR',
             showInMenu: true,
             disabled: true,
         },
@@ -184,8 +186,25 @@ export const useRegistreMassiveActions = () => {
         handleEM()
         // temporalMessageShow(null, t(`page.registre.accio.marcarPendent.ok`), 'success');
     })
+    const { handleShow: handleTornarProcessar, content: contentTornarProcessar } = useTornarProcessar(() => {
+        handleEM()
+        // temporalMessageShow(null, t(`page.registre.accio.tornarProcessar.ok`), 'success');
+    })
 
     const actions:any[] = [
+        {
+            label: t('page.registre.accio.tornarProcessar.label'),
+            icon: 'settings',
+            action: 'TORNAR_PROCESSAR',
+            showInMenu: true,
+            onClick: (ids:any) => handleTornarProcessar(ids, true),
+        },
+        {
+            label: <Divider sx={{width: '100%'}} color={"none"}/>,
+            action: 'TORNAR_PROCESSAR',
+            showInMenu: true,
+            disabled: true,
+        },
         {
             label: t('page.registre.accio.classifica.label'),
             icon: 'inbox',
@@ -230,6 +249,7 @@ export const useRegistreMassiveActions = () => {
         {contentReenviar}
         {contentProcessada}
         {contentPendent}
+        {contentTornarProcessar}
     </>
 
     return {

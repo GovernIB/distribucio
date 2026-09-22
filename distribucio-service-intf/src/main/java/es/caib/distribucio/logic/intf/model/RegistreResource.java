@@ -72,27 +72,67 @@ import java.util.*;
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = RegistreResource.ACTION_CLASSIFICAR_CODE,
-                        formClass = RegistreResource.ClassificarForm.class
+                        formClass = RegistreResource.ClassificarForm.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER},
+                                        grantedPermissions = {PermissionEnum.WRITE}
+                                ),
+                        }
                 ),
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = RegistreResource.ACTION_ENVIAR_EMAIL_CODE,
-                        formClass = RegistreResource.EnviarEmailForm.class
+                        formClass = RegistreResource.EnviarEmailForm.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER},
+                                        grantedPermissions = {PermissionEnum.WRITE}
+                                ),
+                        }
                 ),
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = RegistreResource.ACTION_REENVIAR_CODE,
-                        formClass = RegistreResource.ReenviarForm.class
+                        formClass = RegistreResource.ReenviarForm.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER},
+                                        grantedPermissions = {PermissionEnum.WRITE}
+                                ),
+                        }
                 ),
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = RegistreResource.ACTION_MARCAR_PROCESSADA_CODE,
-                        formClass = RegistreResource.MarcarForm.class
+                        formClass = RegistreResource.MarcarForm.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER},
+                                        grantedPermissions = {PermissionEnum.WRITE}
+                                ),
+                        }
                 ),
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = RegistreResource.ACTION_MARCAR_PENDENT_CODE,
-                        formClass = RegistreResource.MarcarForm.class
+                        formClass = RegistreResource.MarcarForm.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER},
+                                        grantedPermissions = {PermissionEnum.WRITE}
+                                ),
+                        }
+                ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_TORNAR_PROCESSAR_CODE,
+                        formClass = RegistreResource.MassiveWarningForm.class
                 ),
         }
 )
@@ -106,6 +146,7 @@ public class RegistreResource extends ContingutResource {
     public static final String ACTION_REENVIAR_CODE = "REENVIAR";
     public static final String ACTION_MARCAR_PROCESSADA_CODE = "MARCAR_PROCESSADA";
     public static final String ACTION_MARCAR_PENDENT_CODE = "MARCAR_PENDENT";
+    public static final String ACTION_TORNAR_PROCESSAR_CODE = "TORNAR_PROCESSAR";
 
     private RegistreTipusEnum registreTipus;
     private String numero;
@@ -275,7 +316,7 @@ public class RegistreResource extends ContingutResource {
     @Getter
     @Setter
     @FieldNameConstants
-    public static class ReenviarForm extends MassiveForm {
+    public static class ReenviarForm extends MassiveWarningForm {
         private boolean bustiaEntitatDisabled = true;
         private boolean favoritaActiva = true;
         private boolean coneixementActiva = true;
@@ -302,6 +343,13 @@ public class RegistreResource extends ContingutResource {
     public static class MarcarForm extends MassiveForm {
         @NotBlank
         private String motiu;
+    }
+
+    @Getter
+    @Setter
+    @FieldNameConstants
+    public static class MassiveWarningForm extends MassiveForm {
+        private Map<Long, String> warning;
     }
 
 }

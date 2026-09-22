@@ -76,7 +76,15 @@ import java.util.List;
                         type = ResourceArtifactType.ACTION,
                         code = BustiaResource.ACTION_TOOGLE_FAVORITA_CODE,
                         requiresId = true,
-                        formClass = Boolean.class),
+                        formClass = Boolean.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = { BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER },
+                                        grantedPermissions = { PermissionEnum.WRITE }
+                                )
+                        }
+                ),
                 @ResourceArtifact(
                         type = ResourceArtifactType.REPORT,
                         code = BustiaResource.REPORT_USUARIS_BUSTIA_CODE,

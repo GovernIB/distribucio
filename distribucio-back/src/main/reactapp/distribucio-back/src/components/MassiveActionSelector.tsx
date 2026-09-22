@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import { Box, Button, ButtonGroup, Chip, Icon, Tooltip, Typography } from '@mui/material';
 import { useResourceApiService } from 'reactlib';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,8 @@ export type MassiveActionProps = {
     label?: string;
     icon?: string;
     showInMenu?: boolean;
+    action?: string;
+    report?: string;
     disabled?: boolean | ((ids: any[]) => void);
     hidden?: boolean | ((ids: any[]) => void);
     onClick?: (ids: any[]) => void;
@@ -27,6 +29,20 @@ type MassiveActionSelectorProps = {
     isRowSelectable?: (row: any) => boolean;
 };
 
+const rowArtifactShowCheck = (
+    action: string | undefined,
+    report: string | undefined,
+    artifacts: any[] | undefined
+) => {
+    if (action != null) {
+        return artifacts?.find((a) => a.type === 'ACTION' && a.code === action) != null;
+    } else if (report != null) {
+        return artifacts?.find((a) => a.type === 'REPORT' && a.code === report) != null;
+    } else {
+        return true;
+    }
+};
+
 const MassiveActionSelector: React.FC<MassiveActionSelectorProps> = (props: MassiveActionSelectorProps) => {
     const {
         resourceName,
@@ -36,12 +52,22 @@ const MassiveActionSelector: React.FC<MassiveActionSelectorProps> = (props: Mass
         setSelectedRows,
         disabledDefSelector,
         hiddenDefSelector,
-        actions,
+        actions: actionProps,
         isRowSelectable,
     } = props;
     const { t } = useTranslation();
 
-    const { isReady: apiIsReady, find: apiFindAll } = useResourceApiService(resourceName);
+    const { isReady: apiIsReady, find: apiFindAll, artifacts: apiArtifacts } = useResourceApiService(resourceName);
+    const [artifacts, setArtifacts] = React.useState<any[]>();
+
+    React.useEffect(() => {
+        if (apiIsReady) {
+            apiArtifacts({})
+                .then((artifacts) => {
+                    setArtifacts(artifacts);
+                })
+        }
+    }, [apiIsReady]);
 
     // Handle selection actions
     const handleSelectAll = () => {
@@ -58,6 +84,23 @@ const MassiveActionSelector: React.FC<MassiveActionSelectorProps> = (props: Mass
     const handleClearSelection = () => {
         setSelectedRows([]);
     };
+
+    const actions = useMemo(() => actionProps
+        .filter((action) => rowArtifactShowCheck(action?.action, action?.report, artifacts) )
+        , [actionProps, artifacts])
+
+    const iconActions = actions
+        .filter((action) => !action?.showInMenu )
+        .map(({ disabled, ...rest }) => ({
+            ...rest,
+            disabled: (row: any) =>
+                (typeof disabled === 'function' ? disabled(row) : !!disabled) || selectedRows?.length === 0,
+        }));
+
+    const menuActions = actions.filter(
+        (action) =>
+            action?.showInMenu && !(typeof action.hidden === 'function' ? action.hidden(selectedRows) : action.hidden)
+    );
 
     /* Selection buttons */
     const buttonActions = [
@@ -77,19 +120,8 @@ const MassiveActionSelector: React.FC<MassiveActionSelectorProps> = (props: Mass
             disabled: disabledDefSelector,
             hidden: hiddenDefSelector,
         },
-        ...actions
-            .filter((action) => !action?.showInMenu)
-            .map(({ disabled, ...rest }) => ({
-                ...rest,
-                disabled: (row: any) =>
-                    (typeof disabled === 'function' ? disabled(row) : !!disabled) || selectedRows?.length === 0,
-            })),
+        ...iconActions,
     ];
-
-    const menuActions = actions.filter(
-        (action) =>
-            action?.showInMenu && !(typeof action.hidden === 'function' ? action.hidden(selectedRows) : action.hidden)
-    );
 
     return (
         <Load value={actions.length > 0 && actions.filter((a) => !a?.hidden).length > 0} noEffect>

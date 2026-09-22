@@ -728,6 +728,11 @@ const translationEs = {
                     titleMassive: "Marcar como pendientes {{num}} anotaciones",
                     ok: "La anotación \"{{numero}}\" se ha marcado como pendiente",
                 },
+                tornarProcessar: {
+                    label: "Volver a procesar...",
+                    title: "Volver a procesar",
+                    titleMassive: "Volver a procesar {{num}} anotaciones",
+                },
             },
         },
         alerta: {

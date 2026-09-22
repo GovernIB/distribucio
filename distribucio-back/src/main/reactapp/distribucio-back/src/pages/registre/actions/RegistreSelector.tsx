@@ -5,17 +5,21 @@ import { toSelectionModel } from '../../../util/selectionModelUtils.ts';
 import Load from '../../../components/Load.tsx';
 import { useTranslation } from 'react-i18next';
 import { DetailExpandCard } from '../../../components/CardData.tsx';
-import { Chip, Typography } from '@mui/material';
-import Box from '@mui/material/Box';
-
-const columns = [
-    { field: 'numero', flex: 1 },
-    { field: 'extracte', flex: 2 },
-];
+import { Chip, Typography, Box, Icon } from '@mui/material';
 
 export const RegistreSelector = ({ disabled = false }: any) => {
     const { t } = useTranslation();
     const { data, apiRef } = useFormContext();
+
+    const columns = [
+        { field: 'numero', flex: 1 },
+        { field: 'extracte', flex: 2,
+            renderCell: (params:any) => <Box display={'flex'} alignItems={'center'}>
+                {params.formattedValue}
+                {data.warning?.[params.id] && <Icon title={data.warning?.[params.id]} color={'warning'}>warning</Icon>}
+            </Box>
+        },
+    ]
 
     const setIds = (ids: string[]) => {
         if (!disabled) {
@@ -27,11 +31,12 @@ export const RegistreSelector = ({ disabled = false }: any) => {
         <Load value={data.tempIds && data.massive} noEffect>
             <DetailExpandCard
                 header={
-                    <Box display={'flex'} py={1}>
+                    <Box display={'flex'} alignItems={'center'} py={1}>
                         <Chip label={data?.ids?.length} size={'small'} sx={{ mr: 1 }} />
                         <Typography mt={0.5} variant={'body2'}>
                             {t('component.RegistreSelector.title')}
                         </Typography>
+                        {data.warning && <Icon title={data.warning?.[0]} color={'warning'}>warning</Icon>}
                     </Box>
                 }
                 cardProps={{ backgroundColor: 'greyBackground' }}
