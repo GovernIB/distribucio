@@ -513,7 +513,7 @@ const translationCa = {
                 errorDescripcio: 'Descripció de l\'error',
                 excepcioMessage: 'Missatge',
                 excepcioStacktrace: 'Traça',
-                copyTooltip: 'Copia la traça al portapapeles',
+                copyTooltip: 'Còpia la traça al portapapers',
             },
         },
         unitatOrganitzativa: {

@@ -2,6 +2,7 @@ package es.caib.distribucio.logic.resourceservice;
 
 import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
+import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
 import es.caib.distribucio.logic.intf.base.model.ReportFileType;
@@ -16,7 +17,6 @@ import es.caib.distribucio.logic.intf.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.resourceservice.AclEntryResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.VistaMovimentResourceService;
-import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
@@ -64,14 +64,21 @@ public class VistaMovimentResourceServiceImpl
 	private final AclEntryResourceService aclEntryResourceService;
 	private final AuthenticationHelper authenticationHelper;
 	private final ContingutLogRepository contingutLogRepository;
+	private final ConfigHelper configHelper;
 	/**
 	 * Pont temporal cap al servei antic per reutilitzar {@link RegistreService#getZipDocumentacio}
 	 * (ContingutController.descarregarZipDocumentacio a la JSP), que genera el ZIP amb un pool de fils, i
 	 * no és un mètode trivial. TODO: s'hauria d'extreure a un helper de {@code logic.helper}.
 	 */
 	private final RegistreService registreService;
+	/**
+	 * Pont temporal cap al servei antic per reutilitzar {@link BustiaService#registreAnotacioEnviarPerEmail}
+	 * i {@link BustiaService#registreReenviar} (BustiaController de la JSP): cap dels dos és trivial
+	 * (construcció d'HTML, resolució de justificants/annexos, detecció de duplicats, comprovacions de
+	 * permisos...), i ja es criden igual des de {@code RegistreResourceServiceImpl}.
+	 * TODO: s'haurien d'extreure a un helper de {@code logic.helper} compartit per totes dues pantalles.
+	 */
 	private final BustiaService bustiaService;
-	private final AplicacioService aplicacioService;
 
 	private static final DateTimeFormatter ENVIAMENT_EMAIL_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
@@ -376,7 +383,7 @@ public class VistaMovimentResourceServiceImpl
 			implements ActionExecutor<VistaMovimentResourceEntity, VistaMovimentResource.ReenviarForm, HashMap<String, String>> {
 
 		private boolean isConeixementActiva() {
-			return Boolean.parseBoolean(aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.enviar.coneixement"));
+			return Boolean.parseBoolean(configHelper.getConfig("es.caib.distribucio.contingut.enviar.coneixement"));
 		}
 
 		@Override
