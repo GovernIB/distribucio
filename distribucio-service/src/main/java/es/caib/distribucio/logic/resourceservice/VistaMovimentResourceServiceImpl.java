@@ -12,6 +12,7 @@ import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.model.ResourceType;
 import es.caib.distribucio.logic.intf.model.VistaMovimentResource;
+import es.caib.distribucio.logic.intf.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.resourceservice.AclEntryResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.VistaMovimentResourceService;
@@ -22,6 +23,8 @@ import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.logic.intf.util.Utils;
 import es.caib.distribucio.persist.entity.ContingutLogEntity;
 import es.caib.distribucio.persist.repository.ContingutLogRepository;
+import es.caib.distribucio.persist.resourceentity.BustiaResourceEntity;
+import es.caib.distribucio.persist.resourceentity.ContingutResourceEntity;
 import es.caib.distribucio.persist.resourceentity.RegistreInteressatResourceEntity;
 import es.caib.distribucio.persist.resourceentity.VistaMovimentResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.RegistreInteressatResourceRepository;
@@ -44,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Implementació del servei de recurs de la "Vista de moviments".
@@ -86,13 +90,72 @@ public class VistaMovimentResourceServiceImpl
 	@Override
 	protected void afterConversion(VistaMovimentResourceEntity entity, VistaMovimentResource resource) {
 		List<RegistreInteressatResourceEntity> interessats = registreInteressatResourceRepository.findByRegistreId(entity.getIdRegistre());
-		resource.setInteressatsString(interessats.stream()
-				.map(RegistreInteressatResourceEntity::getNomComplet)
-				.filter(nom -> nom != null && !nom.isEmpty())
-				.collect(Collectors.joining("<br>")));
+		resource.setInteressatsString(interessatsResum(interessats));
 
 		resource.setBustiaOrigenActiva(entity.getBustiaOrigen() != null && entity.getBustiaOrigen().isActiva());
 		resource.setBustiaDestiActiva(entity.getBustiaDesti() != null && entity.getBustiaDesti().isActiva());
+
+		resource.setBustiaOrigenPath(buildBustiaPath(entity.getBustiaOrigen()));
+		resource.setBustiaDestiPath(buildBustiaPath(entity.getBustiaDesti()));
+	}
+
+	/**
+	 * Breadcrumb complet d'una bústia (unitat organitzativa arrel fins a la pròpia bústia, inclosa),
+	 * mateix algorisme que {@code ContingutResourceServiceImpl.buildPath}/{@code displayNom} (que
+	 * exclou el propi contingut.
+	 */
+	private List<String> buildBustiaPath(BustiaResourceEntity bustia) {
+		if (bustia == null) {
+			return Collections.emptyList();
+		}
+		List<ContingutResourceEntity<?>> ancestors = new ArrayList<>();
+		ContingutResourceEntity<?> current = bustia;
+		while (current != null) {
+			ancestors.add(current);
+			current = current.getPare();
+		}
+		Collections.reverse(ancestors);
+		List<String> path = new ArrayList<>(ancestors.size());
+		for (ContingutResourceEntity<?> ancestor : ancestors) {
+			path.add(displayNomBustiaPath(ancestor));
+		}
+		return path;
+	}
+
+	/** Una bústia arrel (sense pare) es mostra amb la denominació de la unitat organitzativa, no amb el seu propi nom. */
+	private String displayNomBustiaPath(ContingutResourceEntity<?> entity) {
+		if (entity instanceof BustiaResourceEntity) {
+			BustiaResourceEntity bustia = (BustiaResourceEntity) entity;
+			if (bustia.getPare() == null && bustia.getUnitatOrganitzativa() != null) {
+				return bustia.getUnitatOrganitzativa().getDenominacio();
+			}
+		}
+		return entity.getNom();
+	}
+
+	/** Un interessat per línia, amb el seu representant (si en té) entre parèntesis */
+	private String interessatsResum(List<RegistreInteressatResourceEntity> interessats) {
+		List<String> linies = new ArrayList<>();
+		for (RegistreInteressatResourceEntity interessat : interessats) {
+			if (interessat.getRepresentat() != null) {
+				continue;
+			}
+			StringBuilder linia = new StringBuilder("- ").append(nomComplet(interessat));
+			if (interessat.getRepresentant() != null) {
+				linia.append(" (R: ").append(nomComplet(interessat.getRepresentant())).append(")");
+			}
+			linies.add(linia.toString());
+		}
+		return String.join("\n", linies);
+	}
+
+	private String nomComplet(RegistreInteressatResourceEntity persona) {
+		if (persona.getTipus() == RegistreInteressatTipusEnum.PERSONA_FIS) {
+			return Stream.of(persona.getNom(), persona.getLlinatge1(), persona.getLlinatge2())
+					.filter(part -> part != null && !part.isEmpty())
+					.collect(Collectors.joining(" "));
+		}
+		return persona.getRaoSocial();
 	}
 
 	/**

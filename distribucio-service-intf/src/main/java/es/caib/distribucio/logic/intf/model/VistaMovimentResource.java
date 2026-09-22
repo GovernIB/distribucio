@@ -135,6 +135,15 @@ public class VistaMovimentResource extends BaseResource<String> {
 
 	private ResourceReference<BustiaResource, Long> bustiaOrigen;
 	private ResourceReference<BustiaResource, Long> bustiaDesti;
+	/**
+	 * Breadcrumb complet de la bústia origen/destí (unitat organitzativa arrel fins a la pròpia bústia,
+	 * inclosa), calculat manualment a {@code VistaMovimentResourceServiceImpl.afterConversion} igual que
+	 * {@code ContingutResource.path}.
+	 */
+	@Transient
+	private List<String> bustiaOrigenPath;
+	@Transient
+	private List<String> bustiaDestiPath;
 
 	@Getter
 	@Setter
