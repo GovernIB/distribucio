@@ -572,7 +572,7 @@ const translationCa = {
             grid: {
                 title: "Gestió de bústies",
                 writeAllowed: "Accés",
-                principal: "proncipal",
+                principal: "principal",
                 favorit: "Favorit"
             },
             permisos: {
@@ -878,6 +878,11 @@ const translationCa = {
             quickfilter: "Bústia destí",
             favoritfilter: "Mostrar només bústies favorites",
             busties: "Bústies seleccionades",
+            grid: {
+                userCodi: "Codi usuari",
+                userNom: "Nom usuari",
+                empty: "Sense permisos",
+            },
             coneixement: {
                 marcar: "Afegir a coneixement",
                 desmarcar: "Llevar de coneixement",

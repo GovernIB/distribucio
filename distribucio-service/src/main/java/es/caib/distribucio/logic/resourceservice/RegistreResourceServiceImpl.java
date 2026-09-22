@@ -12,6 +12,7 @@ import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
 import es.caib.distribucio.logic.intf.base.exception.ReportGenerationException;
 import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
+import es.caib.distribucio.logic.intf.base.model.FieldOption;
 import es.caib.distribucio.logic.intf.base.model.ReportFileType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
@@ -570,26 +571,61 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         private boolean isConeixementActiva(){
             return Boolean.parseBoolean( aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.enviar.coneixement") );
         }
+        private boolean isFavoritsActiva(){
+            return Boolean.parseBoolean( aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.reenviar.favorits") );
+        }
+        private boolean isPermisosBustiaActiva(){
+            return Boolean.parseBoolean( aplicacioService.propertyFindByNom("es.caib.distribucio.contingut.reenviar.mostrar.permisos") );
+        }
+        private boolean isBustiaEntitatDisabled(){
+            return Boolean.parseBoolean( aplicacioService.propertyFindByNom("es.caib.distribucio.no.permetre.reenviar.bustia.default.entitat") );
+        }
+        private boolean isAssignarAnotacionsActiva(){
+            return Boolean.parseBoolean( aplicacioService.propertyFindByNom("es.caib.distribucio.assignar.anotacions") );
+        }
 
         @Override
         public HashMap exec(String code, RegistreResourceEntity entity, RegistreResource.ReenviarForm params) throws ActionExecutionException {
             Long entitatActualId = SessioActualUtil.getEntitatId();
+            Map<Long, String> destinsUsuari = new HashMap<>();
+
+            if ( this.isAssignarAnotacionsActiva() ) {
+                params.getBusties().stream()
+                        .filter(id -> !params.getConeixement().contains(id))
+                        .forEach(id -> {
+                            if (params.getAssignar().containsKey(id))
+                                destinsUsuari.put(id, params.getAssignar().get(id) + "|" + params.getComentaris().get(id));
+                        });
+            }
+
             if (params.isMassive()) {
                 List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
-                /// TODO: implementar versión massiva
+                /// TODO: revisar versión massiva
+                Map<String, Object> map = new HashMap<>();
+                map.put("isVistaMoviments", false);
+                map.put("destins", params.getBusties());
+                map.put("destinsUsuari", destinsUsuari);
+                map.put("deixarCopia", params.isAmbCopia());
+                map.put("comentari", params.getComentari());
+                if ( this.isConeixementActiva() )
+                    map.put("perConeixement", params.getConeixement());
+
+                execucioMassivaResourceHelper.executarAccioMassivaRegistres(
+                        ExecucioMassivaTipusDto.REENVIAR,
+                        registreList,
+                        map);
             } else {
                 RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
                 /// TODO: revisar versión individual
-//                bustiaService.registreReenviar(
-//                        entitatActualId,
-//                        params.getBusties().toArray(Long[]::new),
-//                        registre.getId(),
-//                        params.isAmbCopia(),
-//                        params.getComentari(),
-//                        params.getConeixement().toArray(Long[]::new),
-////                        params.getDestinsUsuari(),
-//                        new HashMap<>(),
-//                        null);
+                bustiaService.registreReenviar(
+                        entitatActualId,
+                        params.getBusties().toArray(Long[]::new),
+                        registre.getId(),
+                        params.isAmbCopia(),
+                        params.getComentari(),
+                        params.getConeixement().toArray(Long[]::new),
+                        destinsUsuari,
+                        null);
 
                 Map<String, String> map = new HashMap<>();
                 map.put("numero", registre.getNumero());
@@ -599,9 +635,26 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         }
 
         @Override
+        public List<FieldOption> getOptions(String fieldName, Map<String, String[]> requestParameterMap) {
+            if (RegistreResource.ReenviarForm.Fields.user.equals(fieldName)) {
+                if ( this.isAssignarAnotacionsActiva() ) {
+                    return bustiaService.getUsuarisPerBustia(Long.valueOf(requestParameterMap.get("bustiaId")[0])).stream()
+                            .map(u -> new FieldOption(u.getCodi(), u.getNom()))
+                            .collect(Collectors.toList());
+                }
+            }
+            return ActionExecutor.super.getOptions(fieldName, requestParameterMap);
+        }
+
+        @Override
         public void onChange(Serializable id, RegistreResource.ReenviarForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.ReenviarForm target) {
             if (fieldName == null) {
+                /// TODO: implementar logica bustiaEntitatDisabled
+                target.setBustiaEntitatDisabled( this.isBustiaEntitatDisabled() );
+                target.setFavoritaActiva( this.isFavoritsActiva() );
                 target.setConeixementActiva( this.isConeixementActiva() );
+                target.setPermisActiva( this.isPermisosBustiaActiva() );
+                target.setAssignarActiva( this.isAssignarAnotacionsActiva() );
             }
         }
     }

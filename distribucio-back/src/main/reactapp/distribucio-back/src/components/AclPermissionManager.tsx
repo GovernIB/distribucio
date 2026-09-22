@@ -22,24 +22,24 @@ const AclEntryForm: React.FC = () => {
         </Grid>
     </Grid>;
 }
-
+const defaultColumns = [{
+    field: 'subjectType',
+    sortable: false,
+    flex: 2
+}, {
+    field: 'subjectValue',
+    sortable: false,
+    flex: 5
+}, {
+    field: 'readAllowed',
+    sortable: false,
+    flex: 1
+}]
 export const AclPermissionGrid = (
     {
         resourceId,
         resourceType,
-        columns = [{
-            field: 'subjectType',
-            sortable: false,
-            flex: 2
-        }, {
-            field: 'subjectValue',
-            sortable: false,
-            flex: 5
-        }, {
-            field: 'readAllowed',
-            sortable: false,
-            flex: 1
-        }],
+        columns = defaultColumns,
         formContent = <AclEntryForm />,
         additionalData,
         ...other
@@ -72,27 +72,23 @@ export const useAclPermissionManager = (resourceType: string) => useAclCustomPer
 export const useAclCustomPermissionManager = (
     {
         resourceType,
-        columns = [{
-            field: 'subjectType',
-            sortable: false,
-            flex: 2
-        }, {
-            field: 'subjectValue',
-            sortable: false,
-            flex: 5
-        }, {
-            field: 'readAllowed',
-            sortable: false,
-            flex: 1
-        }],
+        columns = defaultColumns,
         formContent = <AclEntryForm />,
         additionalData,
-        onEntryChanged
-    }: {resourceType: string, columns?:MuiDataGridColDef[], formContent?: any, additionalData?: any, onEntryChanged?: (resourceId: any) => void }
+        onEntryChanged,
+        readOnly = false
+    }: {
+        resourceType: string,
+        columns?:MuiDataGridColDef[],
+        formContent?: any,
+        additionalData?: any,
+        onEntryChanged?: (resourceId: any) => void,
+        readOnly?: boolean
+    }
 ) => {
     const { t } = useTranslation();
     const { currentRole } = useDistribucioContext()
-    const gestorReadOnly = !(currentRole == ROLE_SUPER ||  currentRole == ROLE_ADMIN);
+    const gestorReadOnly = readOnly || !(currentRole == ROLE_SUPER ||  currentRole == ROLE_ADMIN);
 
     const dataGridDialogApiRef = React.useRef<MuiDataGridDialogApi | any>({});
     const currentResourceIdRef = React.useRef<any>(undefined);

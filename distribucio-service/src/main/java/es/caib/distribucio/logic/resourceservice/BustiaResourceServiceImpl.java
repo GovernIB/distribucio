@@ -5,9 +5,11 @@ import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.PermisosHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
+import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
 import es.caib.distribucio.logic.intf.base.exception.ReportGenerationException;
 import es.caib.distribucio.logic.intf.base.model.BaseAuditableResource;
 import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
+import es.caib.distribucio.logic.intf.base.model.FieldOption;
 import es.caib.distribucio.logic.intf.base.model.ReportFileType;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.PermisDto;
@@ -21,10 +23,7 @@ import es.caib.distribucio.logic.intf.util.Utils;
 import es.caib.distribucio.persist.entity.AclEntryEntity;
 import es.caib.distribucio.persist.entity.AclSidEntity;
 import es.caib.distribucio.persist.entity.BustiaEntity;
-import es.caib.distribucio.persist.resourceentity.BustiaResourceEntity;
-import es.caib.distribucio.persist.resourceentity.ContingutResourceEntity;
-import es.caib.distribucio.persist.resourceentity.UsuariBustiaFavoritResourceEntity;
-import es.caib.distribucio.persist.resourceentity.UsuariResourceEntity;
+import es.caib.distribucio.persist.resourceentity.*;
 import es.caib.distribucio.persist.resourcerepository.BustiaResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.UnitatOrganitzativaResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.UsuariResourceRepository;
@@ -62,6 +61,7 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
     public void init() {
         register(BustiaResource.PERSPECTIVE_PERMISOS_COUNT_CODE, new PermisosCountPerspectiveApplicator());
         register(BustiaResource.PERSPECTIVE_FAVORITA_CODE, new FavoritaPerspectiveApplicator());
+        register(BustiaResource.PERSPECTIVE_USUARIS_PERMIS_CODE, new UsuarisPermisPerspectiveApplicator());
         ActivaActionExecutor activaActionExecutor = new ActivaActionExecutor();
         register(BustiaResource.ACTION_ACTIVAR_CODE, activaActionExecutor);
         register(BustiaResource.ACTION_DESACTIVAR_CODE, activaActionExecutor);
@@ -223,7 +223,17 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
             applyMultiple(code, Collections.singletonList(entity), Collections.singletonList(resource));
         }
     }
+    private class UsuarisPermisPerspectiveApplicator implements PerspectiveApplicator<BustiaResourceEntity, BustiaResource> {
 
+        @Override
+        public void applySingle(String code, BustiaResourceEntity entity, BustiaResource resource) throws PerspectiveApplicationException {
+            resource.setUsuarisPermis(
+                    bustiaService.getUsuarisPerBustia(entity.getId()).stream()
+                            .map(u -> new FieldOption(u.getCodi(), u.getNom()))
+                            .collect(Collectors.toList())
+            );
+        }
+    }
     private class ActivaActionExecutor implements ActionExecutor<BustiaResourceEntity, Serializable, Serializable> {
 
         @Override

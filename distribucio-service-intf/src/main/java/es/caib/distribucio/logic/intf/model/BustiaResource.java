@@ -3,6 +3,7 @@ package es.caib.distribucio.logic.intf.model;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceAccessConstraint;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceArtifact;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceConfig;
+import es.caib.distribucio.logic.intf.base.model.FieldOption;
 import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
@@ -15,6 +16,7 @@ import org.springframework.data.annotation.Transient;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Informació d'una bústia.
@@ -51,6 +53,9 @@ import java.io.Serializable;
                         type = ResourceArtifactType.PERSPECTIVE,
                         code = BustiaResource.PERSPECTIVE_FAVORITA_CODE),
                 @ResourceArtifact(
+                        type = ResourceArtifactType.PERSPECTIVE,
+                        code = BustiaResource.PERSPECTIVE_USUARIS_PERMIS_CODE),
+                @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = BustiaResource.ACTION_ACTIVAR_CODE,
                         requiresId = true),
@@ -83,6 +88,7 @@ public class BustiaResource extends ContingutResource {
     public static final String FILTER_CODE = "FILTER";
     public static final String PERSPECTIVE_PERMISOS_COUNT_CODE = "PERMISOS_COUNT";
     public static final String PERSPECTIVE_FAVORITA_CODE = "FAVORITA";
+    public static final String PERSPECTIVE_USUARIS_PERMIS_CODE = "USUARIS_PERMIS";
     public static final String ACTION_TOOGLE_FAVORITA_CODE = "TOOGLE_FAVORITA";
     public static final String ACTION_ACTIVAR_CODE = "ACTIVAR";
     public static final String ACTION_DESACTIVAR_CODE = "DESACTIVAR";
@@ -98,6 +104,8 @@ public class BustiaResource extends ContingutResource {
 
     @Transient private Integer permisosCount;
     @Transient private Boolean favorita;
+
+    @Transient private List<FieldOption> usuarisPermis;
 
     @Getter
     @Setter

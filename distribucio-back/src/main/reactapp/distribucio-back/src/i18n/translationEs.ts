@@ -570,7 +570,7 @@ const translationEs = {
             grid: {
                 title: "Gestión de buzones",
                 writeAllowed: "Acceso",
-                principal: "Principal",
+                principal: "principal",
                 favorit: "Favorito"
             },
             permisos: {
@@ -876,6 +876,11 @@ const translationEs = {
             quickfilter: "Buzón destino",
             favoritfilter: "Mostrar solo buzones favoritos",
             busties: "Buzones seleccionados",
+            grid: {
+                userCodi: "Código de usuario",
+                userNom: "Nombre de usuario",
+                empty: "Sin permisos",
+            },
             coneixement: {
                 marcar: "Añadir a conocimiento",
                 desmarcar: "Quitar de conocimiento",

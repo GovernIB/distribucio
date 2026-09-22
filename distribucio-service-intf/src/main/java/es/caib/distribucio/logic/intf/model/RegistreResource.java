@@ -3,6 +3,7 @@ package es.caib.distribucio.logic.intf.model;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceAccessConstraint;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceArtifact;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceConfig;
+import es.caib.distribucio.logic.intf.base.annotation.ResourceField;
 import es.caib.distribucio.logic.intf.base.model.MassiveForm;
 import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
@@ -24,11 +25,10 @@ import lombok.experimental.FieldNameConstants;
 import org.springframework.data.annotation.Transient;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Informació d'una bústia.
@@ -276,10 +276,22 @@ public class RegistreResource extends ContingutResource {
     @Setter
     @FieldNameConstants
     public static class ReenviarForm extends MassiveForm {
-        private boolean coneixementActiva = false;
+        private boolean bustiaEntitatDisabled = true;
+        private boolean favoritaActiva = true;
+        private boolean coneixementActiva = true;
+        private boolean permisActiva = true;
+        private boolean assignarActiva = true;
+
+        @ResourceField(enumType = true)
+        private String user;
+        private Map<Long, String> assignar = new HashMap<>();
+        private Map<Long, String> comentaris = new HashMap<>();
+
+        @NotNull
         private boolean ambCopia;
         private String comentari;
 
+        @NotNull @NotEmpty
         private List<Long> busties = new ArrayList<>();
         private List<Long> coneixement = new ArrayList<>();
     }
