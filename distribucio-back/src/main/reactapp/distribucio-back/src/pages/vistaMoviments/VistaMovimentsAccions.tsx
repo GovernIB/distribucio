@@ -5,7 +5,6 @@ import { useAlertes } from '../registre/detail/Alertes.tsx';
 import useEnviarViaEmail from './actions/EnviarEmail.tsx';
 import useDescarregarZip from './actions/Descarregar.tsx';
 import useReenviar from './actions/Reenviar.tsx';
-import { Divider } from '@mui/material';
 
 const REPORT_DESCARREGAR_ZIP_ORIGINAL = 'DESCARREGAR_ZIP_ORIGINAL';
 const REPORT_DESCARREGAR_ZIP_CAI = 'DESCARREGAR_ZIP_CAI';

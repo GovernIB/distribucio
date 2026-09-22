@@ -1,11 +1,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { GridPage, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
+import { useGridApiRef } from '@mui/x-data-grid-pro';
 import { CardPage } from '../../components/CardData';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
 import AvisFormContent from './AvisFormContent';
 import { formatDate } from '../../util/dateUtils';
-import useAvisAccions from './AvisAccions';
+import useAvisAccions, { useAvisMassiveAccions } from './AvisAccions';
+import { EMPTY_SELECTION_MODEL } from '../../util/selectionModelUtils';
 
 // Les capçaleres no es declaren aquí: el MuiDataGrid les omple amb l'etiqueta que el backend
 // publica per a cada camp (el `_prompt` del HAL-FORMS, veure distribucio-back-rest-messages).
@@ -32,8 +34,16 @@ const columns: MuiDataGridColDef[] = [
 export const AvisGrid: React.FC = () => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
+    const datagridApiRef = useGridApiRef();
     const refresh = () => apiRef.current?.refresh?.();
     const accions = useAvisAccions(refresh);
+    // Refresca la graella i neteja la selecció (després de qualsevol acció massiva)
+    const refreshAfterMassiveAction = () => {
+        apiRef.current?.refresh?.();
+        datagridApiRef.current?.setRowSelectionModel?.(EMPTY_SELECTION_MODEL);
+    };
+    const { actions: massiveActions, components: massiveComponents } =
+        useAvisMassiveAccions(refreshAfterMassiveAction);
 
     return (
         <GridPage autoHeight>
@@ -42,6 +52,7 @@ export const AvisGrid: React.FC = () => {
                     toolbarCreateTitle={t('page.avisos.accio.new')}
                     resourceName="avisResource"
                     apiRef={apiRef}
+                    datagridApiRef={datagridApiRef}
                     toolbarShowQuickFilter
                     columns={columns}
                     paginationActive
@@ -59,7 +70,10 @@ export const AvisGrid: React.FC = () => {
                     rowHideUpdateButton
                     rowHideDeleteButton
                     rowAdditionalActions={accions}
+                    toolbarMassiveActions={massiveActions}
+                    selectionActive
                 />
+                {massiveComponents}
             </CardPage>
         </GridPage>
     );
