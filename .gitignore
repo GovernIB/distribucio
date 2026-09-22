@@ -8,3 +8,4 @@ target/
 /docker-compose.yml
 /.idea/
 /CLAUDE.md
+/distribucio_credentials.json
