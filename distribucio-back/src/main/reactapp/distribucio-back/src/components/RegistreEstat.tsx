@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icon, Typography } from '@mui/material';
+import { Box, Icon, Typography } from '@mui/material';
 import { formatDate } from '../util/dateUtils.ts';
 
 type RegistreEstatProps = {
@@ -20,59 +20,56 @@ export const RegistreEstat: React.FC<RegistreEstatProps> = ({ entity, children, 
     const { t } = useTranslation();
     // RegistreResource informa `regla` (no arriba mai) i VistaMovimentResource informa `reglaNom`
     const reglaNom = entity.reglaNom ?? entity.regla?.nom;
+    const estat = entity.procesEstat;
+    const senseCodi = ['ARXIU_PENDENT', 'REGLA_PENDENT', 'BUSTIA_PENDENT', 'BUSTIA_PROCESSADA'].includes(estat);
+    const ambReintents = ['ARXIU_PENDENT', 'REGLA_PENDENT', 'BACK_PENDENT', 'BACK_ERROR'].includes(estat);
+    const liniaNova = { flexBasis: '100%' };
+
     return (
-        <>
-            {children}
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', columnGap: 0.5, minWidth: 0 }}>
+            <span>{children}</span>
 
-            {entity.procesEstat == 'REGLA_PENDENT' &&
-                (reglaNom != null ? (
-                    reglaNom
-                ) : (
-                    <Icon title={t('page.registre.estat.regla')} color={'error'}>
-                        warning
-                    </Icon>
-                ))}
-
-            {entity.procesEstat == 'BACK_REBUTJADA' && entity.backObservacions != '' && (
-                <Icon title={entity.backObservacions} color={'warning'}>
+            {estat == 'BACK_REBUTJADA' && !!entity.backObservacions && (
+                <Icon title={entity.backObservacions} color={'warning'} fontSize={'small'}>
                     error
                 </Icon>
             )}
 
-            <Typography
-                variant={'inherit'}
-                hidden={
-                    entity.procesEstat == 'ARXIU_PENDENT' ||
-                    entity.procesEstat == 'REGLA_PENDENT' ||
-                    entity.procesEstat == 'BUSTIA_PENDENT' ||
-                    entity.procesEstat == 'BUSTIA_PROCESSADA'
-                }>
-                &nbsp;<strong>{entity.backCodi}</strong>
-            </Typography>
-            {showReintents && (
-                <>
-                    <Typography
-                        variant={'inherit'}
-                        title={t('page.registre.estat.maxReintents', {
-                            num: entity.procesIntents,
-                            max: entity.maxReintents,
-                        })}
-                        color={entity.reintentsEsgotat ? 'error' : 'warning'}
-                        hidden={
-                            entity.procesEstat != 'ARXIU_PENDENT' &&
-                            entity.procesEstat != 'REGLA_PENDENT' &&
-                            entity.procesEstat != 'BACK_PENDENT' &&
-                            entity.procesEstat != 'BACK_ERROR'
-                        }>
-                        &nbsp;({entity.procesIntents}/{entity.maxReintents})
-                    </Typography>
-
-                    {entity.backRetryEnviarData && !entity.reintentsEsgotat && (
-                        <>&nbsp; Proper reintent: {formatDate(entity.backRetryEnviarData)}</>
-                    )}
-                </>
+            {showReintents && ambReintents && (
+                <Typography
+                    variant={'inherit'}
+                    title={t('page.registre.estat.maxReintents', {
+                        num: entity.procesIntents,
+                        max: entity.maxReintents,
+                    })}
+                    color={entity.reintentsEsgotat ? 'error' : 'warning'}
+                >
+                    ({entity.procesIntents}/{entity.maxReintents})
+                </Typography>
             )}
-        </>
+
+            {estat == 'REGLA_PENDENT' && (
+                <Box sx={liniaNova}>
+                    {reglaNom != null ? (
+                        reglaNom
+                    ) : (
+                        <Icon title={t('page.registre.estat.regla')} color={'error'} fontSize={'small'}>
+                            warning
+                        </Icon>
+                    )}
+                </Box>
+            )}
+
+            {!senseCodi && !!entity.backCodi && (
+                <Box sx={liniaNova}>
+                    <Typography variant="overline">{entity.backCodi}</Typography>
+                </Box>
+            )}
+
+            {showReintents && estat == 'BACK_PENDENT' && entity.backRetryEnviarData && !entity.reintentsEsgotat && (
+                <Box sx={liniaNova}>Proper reintent: {formatDate(entity.backRetryEnviarData)}</Box>
+            )}
+        </Box>
     );
 };
 

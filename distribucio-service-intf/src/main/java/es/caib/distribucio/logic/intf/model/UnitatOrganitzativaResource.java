@@ -32,6 +32,13 @@ import java.util.Date;
 						type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
 						roles = { BaseConfig.ROLE_SUPER, BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA },
 						grantedPermissions = { PermissionEnum.READ }
+				),
+				@ResourceAccessConstraint(
+						// Només lectura: l'arbre d'unitats/bústies del diàleg "Reenviar" de la Vista de
+						// moviments el necessita per construir la jerarquia.
+						type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+						roles = { BaseConfig.ROLE_USER },
+						grantedPermissions = { PermissionEnum.READ }
 				)
 		},
 		artifacts = {

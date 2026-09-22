@@ -250,7 +250,10 @@ const Organig = ({quickFilter, favoriteSearch}:any) => {
     </>
 }
 
-const ReenviarForm = () => {
+/**
+ * `hideAmbCopia`: la Vista de moviments reenvia sense mostrar el camp "Deixar còpia" (sempre activat, forçat pel backend).
+ */
+export const ReenviarForm = ({ hideAmbCopia }: { hideAmbCopia?: boolean } = {}) => {
     const { t } = useTranslation();
     const [quickFilter, setQuickFilter] = React.useState<string>();
     const [favoriteSearch, setFavoriteSearch] = React.useState<boolean>(false);
@@ -270,7 +273,7 @@ const ReenviarForm = () => {
 
         <Grid container size={6} direction={"column"} columnSpacing={1} rowSpacing={1}>
             <Grid size={12}><BustiaGrid/></Grid>
-            <GridFormField size={12} name="ambCopia" type={'checkbox'}/>
+            {!hideAmbCopia && <GridFormField size={12} name="ambCopia" type={'checkbox'}/>}
             <GridFormField size={12} name="comentari" type={'textarea'}/>
         </Grid>
     </Grid>

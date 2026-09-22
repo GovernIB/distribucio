@@ -754,16 +754,25 @@ const translationEs = {
                     label: "Detalles",
                 },
                 reenviar: {
-                    label: "Reenviar...",
+                    label: "Reenvía...",
+                    title: "Reenvía",
+                    titleMassive: "Reenvía {{num}} movimientos",
+                    ok: "El movimiento \"{{numero}}\" se ha reenviado correctamente",
+                    okMassiu: "Se han reenviado {{count}} de {{total}} movimientos correctamente",
+                    okMassiuAmbErrors: "Se han reenviado {{count}} de {{total}} movimientos correctamente. Errores: {{errors}}",
                 },
                 email: {
-                    label: "Enviar via email...",
+                    label: "Envía vía email...",
+                    titleMassive: "Envía vía email {{num}} movimientos",
+                    ok: "El movimiento \"{{numero}}\" se ha enviado correctamente",
+                    okMassiu: "Se han enviado {{count}} de {{total}} movimientos correctamente",
+                    okMassiuAmbErrors: "Se han enviado {{count}} de {{total}} movimientos correctamente. Errores: {{errors}}",
                 },
                 descarregarOriginal: {
-                    label: "Descargar original",
+                    label: "Versión original de justificante y anexos",
                 },
-                descarregarFirma: {
-                    label: "Descargar firmado",
+                descarregarCai: {
+                    label: "Copia auténtica imprimible",
                 },
             },
         },

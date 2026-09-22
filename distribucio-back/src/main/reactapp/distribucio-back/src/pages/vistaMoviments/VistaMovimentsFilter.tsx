@@ -17,7 +17,7 @@ const VistaMovimentsFilterForm: React.FC = () => {
                 <>
                     <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="numero" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="titol" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 1 }} name="estat" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 1.1 }} name="estat" />
                     <GridFormField size={{ xs: 10, sm: 5, md: 2 }} name="bustiaOrigen" filter={filtreBustiaOrigen} />
                     <GridButtonField
                         icon={'inbox'}

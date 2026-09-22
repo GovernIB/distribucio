@@ -756,16 +756,25 @@ const translationCa = {
                     label: "Detalls",
                 },
                 reenviar: {
-                    label: "Reenviar...",
+                    label: "Reenvia...",
+                    title: "Reenvia",
+                    titleMassive: "Reenvia {{num}} moviments",
+                    ok: "El moviment \"{{numero}}\" s'ha reenviat correctament",
+                    okMassiu: "S'han reenviat {{count}} de {{total}} moviments correctament",
+                    okMassiuAmbErrors: "S'han reenviat {{count}} de {{total}} moviments correctament. Errors: {{errors}}",
                 },
                 email: {
                     label: "Envia via email...",
+                    titleMassive: "Envia via email {{num}} moviments",
+                    ok: "El moviment \"{{numero}}\" s'ha enviat correctament",
+                    okMassiu: "S'han enviat {{count}} de {{total}} moviments correctament",
+                    okMassiuAmbErrors: "S'han enviat {{count}} de {{total}} moviments correctament. Errors: {{errors}}",
                 },
                 descarregarOriginal: {
-                    label: "Descarregar original",
+                    label: "Versió original de justificant i annexos",
                 },
-                descarregarFirma: {
-                    label: "Descarregar signat",
+                descarregarCai: {
+                    label: "Còpia autèntica imprimible",
                 },
             },
         },

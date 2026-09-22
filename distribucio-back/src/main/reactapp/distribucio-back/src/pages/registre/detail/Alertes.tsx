@@ -95,7 +95,8 @@ const Alertes = ({id}:any) => {
     </>
 }
 
-export const useAlertes = () => {
+/** onClose s'executa en tancar el modal (per refrescar el llistat des d'on s'ha obert) */
+export const useAlertes = (onClose?: () => void) => {
     const { t } = useBaseAppContext();
     const [dialogShow, dialogComponent] = useMuiContentDialog();
 
@@ -106,6 +107,9 @@ export const useAlertes = () => {
             <Alertes id={id} />,
             [],
             { maxWidth: 'md', fullWidth: true }
+        ).then(
+            () => onClose?.(),
+            () => onClose?.()
         );
     };
 

@@ -8,7 +8,9 @@ import { Icon, IconButton, Tooltip, Typography } from '@mui/material';
 import { RegistreEstat } from '../../components/RegistreEstat.tsx';
 import { useCommentsColumn } from '../../components/CommentsColumn.tsx';
 import { useProcesEstatLegend } from '../../components/ProcesEstatLegend.tsx';
-import { useVistaMovimentsAccions } from './VistaMovimentsAccions.tsx';
+import { useVistaMovimentsAccions, useVistaMovimentsMassiveAccions } from './VistaMovimentsAccions.tsx';
+import { useGridApiRef } from '@mui/x-data-grid-pro';
+import { EMPTY_SELECTION_MODEL } from '../../util/selectionModelUtils.ts';
 
 /** Número: icona de llibre (anotació de registre) + número, amb el triangle d'avís si l'anotació té alertes */
 const VistaMovimentsNumeroCell = ({ row }: any) => {
@@ -147,10 +149,17 @@ const sortModel: any = [{ field: 'data', sort: 'desc' }];
 export const VistaMovimentsGrid = () => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
+    const datagridApiRef = useGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
     const [namedQueries, setNamedQueries] = React.useState<string[]>([]);
 
-    const { actions, components } = useVistaMovimentsAccions();
+    const { actions, components } = useVistaMovimentsAccions(() => apiRef.current?.refresh());
+    // Refresca la graella i neteja la selecció (després de qualsevol acció massiva)
+    const refreshAfterMassiveAction = () => {
+        apiRef.current?.refresh();
+        datagridApiRef.current?.setRowSelectionModel?.(EMPTY_SELECTION_MODEL);
+    };
+    const { actions: massiveActions, components: massiveComponents } = useVistaMovimentsMassiveAccions(refreshAfterMassiveAction);
     const { handleOpen: handleLlegenda, component: llegendaComponent } = useProcesEstatLegend();
     const { column: commentsColumn, component: commentsComponent } = useCommentsColumn({
         getId: (row) => row.idRegistre,
@@ -187,6 +196,7 @@ export const VistaMovimentsGrid = () => {
                 <VistaMovimentsFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
                 <StyledMuiGrid
                     apiRef={apiRef}
+                    datagridApiRef={datagridApiRef}
                     resourceName="vistaMovimentResource"
                     columns={allColumns}
                     filter={springFilter}
@@ -194,12 +204,15 @@ export const VistaMovimentsGrid = () => {
                     namedQueries={namedQueries}
                     sortModel={sortModel}
                     rowAdditionalActions={actions}
+                    toolbarMassiveActions={massiveActions}
+                    selectionActive
                     paginationActive
                     toolbarHideCreate
                     rowHideUpdateButton
                     rowHideDeleteButton
                 />
                 {components}
+                {massiveComponents}
                 {llegendaComponent}
                 {commentsComponent}
             </CardPage>

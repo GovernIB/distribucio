@@ -28,12 +28,13 @@ import java.util.Date;
  * <p>
  * No hi ha cap taula física que mapejar (una fila combina una anotació amb un dels seus moviments
  * a {@code dis_cont_mov}), per això es mapeja amb un {@code @Subselect} de Hibernate. 
- * L'id és la combinació {@code <idRegistre>_<idContingutDesti>}.
+ * L'id és la combinació {@code <idRegistre>_<idContingutDesti>_<idMoviment>}
+ * (l'id del moviment el fa únic quan una anotació arriba més d'una vegada a la mateixa bústia destí).
  *
  * @author Límit Tecnologies
  */
 @Entity
-@Subselect("select concat(r.id, concat('_', dst.id)) as id, "
+@Subselect("select concat(r.id, concat('_', concat(dst.id, concat('_', m.id)))) as id, "
 		+ "    r.id as idRegistre, "
 		+ "    m.id as movimentId, "
 		+ "    r.numero as numero, "
