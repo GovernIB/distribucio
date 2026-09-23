@@ -516,6 +516,17 @@ const translationCa = {
                 excepcioStacktrace: 'Traça',
                 copyTooltip: 'Còpia la traça al portapapers',
             },
+            diagnostic: {
+                boto: 'Diagnòstic',
+                title: 'Diagnòstic de les integracions',
+                entitat: 'Entitat',
+                entitatAjuda: "Els plugins es proven amb la configuració d'aquesta entitat",
+                executant: 'Executant la prova...',
+                executa: 'Torna a executar la prova',
+                executaTotes: 'Torna a executar-les totes',
+                mostraTraca: 'Mostra la traça',
+                amagaTraca: 'Amaga la traça',
+            },
         },
         unitatOrganitzativa: {
             grid: {

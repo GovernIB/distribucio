@@ -2,12 +2,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { GridPage, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
 import { CardPage } from '../../components/CardData';
-import StyledMuiGrid from '../../components/StyledMuiGrid';
+import StyledMuiGrid, { ToolbarButton } from '../../components/StyledMuiGrid';
 import { formatDate } from '../../util/dateUtils';
 import * as builder from '../../util/springFilterUtils';
 import IntegracioFilter from './IntegracioFilter';
 import { useIntegracioTabs } from './IntegracioTabs';
 import useIntegracioDetail from './IntegracioDetail';
+import useIntegracioDiagnostic from './IntegracioDiagnostic';
 import { IntegracioEstat } from './IntegracioEstat';
 import { GridSortModel } from '@mui/x-data-grid-pro';
 
@@ -48,6 +49,11 @@ export const IntegracioGrid: React.FC = () => {
     const [filterData, setFilterData] = React.useState<any>();
     const { value: tab, tabElement, refreshCounts } = useIntegracioTabs(filterData);
     const { show: mostrarDetall, component: detailDialog } = useIntegracioDetail();
+    const {
+        apiIsReady: diagnosticIsReady,
+        show: mostrarDiagnostic,
+        component: diagnosticDialog,
+    } = useIntegracioDiagnostic();
 
     // El codi de la pestanya seleccionada s'afegeix com un filtre més (codi és un camp normal del recurs)
     const filter = React.useMemo(
@@ -56,7 +62,7 @@ export const IntegracioGrid: React.FC = () => {
     );
 
     return (
-        <GridPage autoHeight>
+        <GridPage>
             <CardPage title={t('page.integracio.grid.title')}>
                 <IntegracioFilter
                     onSpringFilterChange={setFormFilter}
@@ -84,9 +90,24 @@ export const IntegracioGrid: React.FC = () => {
                             onClick: (id: any, row: any) => mostrarDetall(id, row),
                         },
                     ]}
-                    toolbarElementsWithPositions={[{ position: 0, element: tabElement }]}
+                    toolbarElementsWithPositions={[
+                        { position: 0, element: tabElement },
+                        {
+                            position: 2,
+                            element: (
+                                <ToolbarButton
+                                    icon="monitor_heart"
+                                    onClick={mostrarDiagnostic}
+                                    disabled={!diagnosticIsReady}
+                                >
+                                    {t('page.integracio.diagnostic.boto')}
+                                </ToolbarButton>
+                            ),
+                        },
+                    ]}
                 />
                 {detailDialog}
+                {diagnosticDialog}
             </CardPage>
         </GridPage>
     );

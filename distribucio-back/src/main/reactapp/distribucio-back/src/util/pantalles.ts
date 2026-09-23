@@ -75,11 +75,18 @@ export const isPantallaPermesa = (pantalla: Pantalla, rol?: string): boolean =>
     rol != null && PANTALLA_ROLS[pantalla].includes(rol);
 
 /**
- * Pantalla d'inici per rol. Avui cap rol no en té una de pròpia (tots poden entrar a /home), però
- * és el punt on afegir-la quan n'hi hagi -- l'equivalent del HomeRedirect de RIPEA. La ruta que
- * s'hi indiqui ha d'estar autoritzada per al rol a PANTALLA_ROLS.
+ * Pantalla d'inici per rol -- l'equivalent del HomeRedirect de RIPEA. Reprodueix la redirecció de
+ * l'arrel de la interfície JSP (DistribucioController.get): DIS_SUPER va a "integracio",
+ * DIS_ADMIN i DIS_ADMIN_LECTURA a "registreAdmin" i "tothom" a "registreUser", que a REACT són
+ * la mateixa pantalla "registre". La ruta que s'hi indiqui ha d'estar autoritzada per al rol a
+ * PANTALLA_ROLS; un rol sense entrada va a RUTA_INICIAL_DEFECTE.
  */
-const RUTA_INICIAL_PER_ROL: Partial<Record<string, string>> = {};
+const RUTA_INICIAL_PER_ROL: Partial<Record<string, string>> = {
+    [ROLE_SUPER]: '/integracio',
+    [ROLE_ADMIN]: '/registre',
+    [ROLE_ADMIN_LECTURA]: '/registre',
+    [ROLE_USER]: '/registre',
+};
 
 export const RUTA_INICIAL_DEFECTE = '/home';
 

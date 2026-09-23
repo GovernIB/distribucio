@@ -54,6 +54,7 @@ export const BustiaContingutDetailContent: React.FC<BustiaContingutDetailContent
                                     toolbarHideCreate
                                     rowHideUpdateButton
                                     rowHideDeleteButton
+                                    autoHeight
                                     toolbarHideQuickFilter
                                     height="300px"
                                     density="compact"

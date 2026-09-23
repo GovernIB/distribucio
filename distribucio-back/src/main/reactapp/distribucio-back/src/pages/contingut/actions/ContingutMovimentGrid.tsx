@@ -41,6 +41,7 @@ export const ContingutMovimentGrid: React.FC<ContingutMovimentGridProps> = ({ co
             paginationActive
             rowHideUpdateButton
             rowHideDeleteButton
+            autoHeight
         />
     );
 };

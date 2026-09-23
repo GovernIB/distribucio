@@ -125,7 +125,7 @@ export const ReglaGrid: React.FC = () => {
     const columns = getColumns(t);
 
     return (
-        <GridPage autoHeight>
+        <GridPage>
             <CardPage title={t('page.regla.grid.title')}>
                 <ReglaFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid

@@ -21,6 +21,7 @@ import {fromSelectionModel, toSelectionModel} from "../util/selectionModelUtils.
  *    no tancar en fer clic fora, i no permetre guardar si hi ha errors de validació.
  *  - Mida de pàgina per defecte treta del perfil de l'usuari (numElementsPagina).
  *  - Files d'alçada variable: el text llarg passa de línia en lloc de quedar tallat.
+ *  - Scroll dins la graella (no a la pàgina); les graelles incrustades passen autoHeight.
  *
  * Deliberadament NO s'inclou (pendent de decidir més endavant):
  *  - Accions massives (RIPEA #3).
@@ -74,6 +75,12 @@ const OPCIONS_PAGINACIO = [10, 20, 50, 100, 250];
  * la interfície JSP aplica per defecte a les seves taules (iDisplayLength de dataTable.tag).
  */
 const NUM_ELEMENTS_PAGINA_DEFECTE = 10;
+
+/**
+ * Alçada mínima de la graella (barra d'eines inclosa) quan fa scroll ella mateixa. Si la finestra és
+ * tan baixa que no hi cap, deixa de reduir-se i torna a fer scroll la pàgina.
+ */
+const ALCADA_MINIMA_GRAELLA = '200px';
 
 type FilterCount = number | ((num: number) => number);
 
@@ -133,6 +140,7 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
         popupEditFormDialogOnClose,
         popupEditFormDialogButtons,
         onRowSelectionModelChange,
+        autoHeight = false,
         sx,
         ...others
     } = { ...defaultProps, ...props };
@@ -214,7 +222,12 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
-                height: '100%',
+                // Sense autoHeight la graella ocupa l'alçada que deixen lliure els elements germans
+                // (filtre, capçalera de la targeta) i fa scroll ella mateixa. Cal que la pàgina
+                // usi <GridPage> sense autoHeight, que és qui fixa l'alçada disponible (100vh).
+                ...(autoHeight
+                    ? { height: '100%' }
+                    : { flex: '1 1 0', minHeight: ALCADA_MINIMA_GRAELLA }),
                 // El filtre ràpid de la barra d'eines és un TextField "small" de 37px i quedava
                 // més alt que la resta de controls de la barra (32px). S'iguala des d'aquí perquè
                 // el crea reactlib i no admet ni props ni estils des de fora.
@@ -225,13 +238,14 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
             <MuiDataGrid
                 // Files multilínia (com a RIPEA): amb l'alçada 'auto' MUI marca la fila com a
                 // row--dynamicHeight i el seu CSS deixa passar de línia el text de les cel·les, en
-                // lloc de tallar-lo amb el·lipsi. L'autoHeight fa créixer la graella amb el contingut
-                // (fa scroll la pàgina, no la graella), cosa possible perquè la mida de pàgina és
-                // fixa (veure defaultPaginationModel). Van abans d'`others` perquè una pantalla
-                // concreta els pugui sobreescriure.
+                // lloc de tallar-lo amb el·lipsi. Va abans d'`others` perquè una pantalla concreta
+                // el pugui sobreescriure.
                 getRowHeight={() => 'auto'}
-                autoHeight
                 {...others}
+                // Per defecte la graella fa scroll ella mateixa (capçalera, filtre i paginació
+                // queden fixos). Les graelles que no són el contingut principal de la pàgina
+                // (diàlegs, pestanyes, detalls) passen autoHeight i creixen amb el contingut.
+                autoHeight={autoHeight}
                 // Amb l'alçada 'auto' la cel·la queda enganxada al text; l'alçada mínima de la fila
                 // (45px) ve del tema. reactlib fa l'spread de l'sx com a objecte: no admet arrays.
                 sx={{

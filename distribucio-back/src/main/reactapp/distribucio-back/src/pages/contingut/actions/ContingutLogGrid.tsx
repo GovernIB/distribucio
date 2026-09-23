@@ -57,6 +57,7 @@ export const ContingutLogGrid: React.FC<ContingutLogGridProps> = ({ contingutRow
             popupEditFormContent={<ContingutLogDetallContent row />}
             paginationActive
             rowHideDeleteButton
+            autoHeight
 
             toolbarElementsWithPositions={contingut.tipus == 'REGISTRE' ?[
                 {

@@ -1,15 +1,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { alpha } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import Icon from '@mui/material/Icon';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
-import { MuiDialog, useBaseAppContext, useCloseDialogButtons } from 'reactlib';
+import { MuiDialog, useCloseDialogButtons } from 'reactlib';
 import { formatDate } from '../../util/dateUtils';
 import { IntegracioEstat } from './IntegracioEstat';
+import { IntegracioStacktrace } from './IntegracioStacktrace';
 
 type DetailFieldSpec = {
     label: string;
@@ -32,7 +30,6 @@ export const useIntegracioDetail = () => {
     const closeButtons = useCloseDialogButtons();
     const [open, setOpen] = React.useState(false);
     const [row, setRow] = React.useState<any>();
-    const { temporalMessageShow } = useBaseAppContext();
 
     const handleOpen = (_id: any, r: any) => {
         setRow(r);
@@ -42,13 +39,6 @@ export const useIntegracioDetail = () => {
     const handleClose = (reason?: string) => {
         if (reason !== 'backdropClick') {
             setOpen(false);
-        }
-    };
-
-    const copyStacktrace = () => {
-        if (row?.excepcioStacktrace) {
-            navigator.clipboard?.writeText(row.excepcioStacktrace);
-            temporalMessageShow(null, t('common.copiat'), 'success');
         }
     };
 
@@ -140,52 +130,7 @@ export const useIntegracioDetail = () => {
                             ]}
                         />
                         {row?.excepcioStacktrace && (
-                            <Stack>
-                                <Stack
-                                    direction="row"
-                                    alignItems="center"
-                                    spacing={1}
-                                    justifyContent="space-between"
-                                >
-                                    <Typography variant="subtitle2">
-                                        {t('page.integracio.detail.excepcioStacktrace')}
-                                    </Typography>
-                                    <IconButton
-                                        size="small"
-                                        onClick={copyStacktrace}
-                                        title={t('page.integracio.detail.copyTooltip')}
-                                    >
-                                        <Icon fontSize="small">content_copy</Icon>
-                                    </IconButton>
-                                </Stack>
-                                <Box
-                                    sx={(theme) => ({
-                                        width: '100%',
-                                        height: 300,
-                                        overflow: 'auto',
-                                        borderRadius: 1,
-                                        border: '1px solid',
-                                        borderColor: alpha(theme.palette.error.main, 0.3),
-                                        backgroundColor: alpha(theme.palette.error.main, 0.06),
-                                    })}
-                                >
-                                    <Typography
-                                        variant="body2"
-                                        component="pre"
-                                        sx={{
-                                            m: 0,
-                                            p: 1,
-                                            width: 'max-content',
-                                            minWidth: '100%',
-                                            whiteSpace: 'pre',
-                                            color: 'error.dark',
-                                            fontFamily: 'monospace',
-                                        }}
-                                    >
-                                        {row.excepcioStacktrace}
-                                    </Typography>
-                                </Box>
-                            </Stack>
+                            <IntegracioStacktrace stacktrace={row.excepcioStacktrace} />
                         )}
                     </>
                 )}

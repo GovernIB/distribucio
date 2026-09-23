@@ -514,6 +514,17 @@ const translationEs = {
                 excepcioStacktrace: 'Traza',
                 copyTooltip: 'Copia la traza al portapapeles',
             },
+            diagnostic: {
+                boto: 'Diagnóstico',
+                title: 'Diagnóstico de las integraciones',
+                entitat: 'Entidad',
+                entitatAjuda: 'Los plugins se prueban con la configuración de esta entidad',
+                executant: 'Ejecutando la prueba...',
+                executa: 'Vuelve a ejecutar la prueba',
+                executaTotes: 'Vuelve a ejecutarlas todas',
+                mostraTraca: 'Muestra la traza',
+                amagaTraca: 'Oculta la traza',
+            },
         },
         unitatOrganitzativa: {
             grid: {

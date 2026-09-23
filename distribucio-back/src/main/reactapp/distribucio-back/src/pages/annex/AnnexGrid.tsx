@@ -102,7 +102,7 @@ const AnnexGrid: React.FC = () => {
     );
 
     return (
-        <GridPage autoHeight>
+        <GridPage>
             <CardPage title={t('page.annex.grid.title')}>
                 <AnnexFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid

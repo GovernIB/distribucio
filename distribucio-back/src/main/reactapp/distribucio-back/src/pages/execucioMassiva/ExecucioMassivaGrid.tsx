@@ -135,7 +135,6 @@ const EMGrid = () => {
 
             paginationActive
             readOnly
-            autoHeight
         />
         {component}
         {components}
@@ -146,7 +145,7 @@ export const ExecucioMassivaGrid = () => {
     const { t } = useTranslation();
 
     return (<>
-         <GridPage autoHeight>
+         <GridPage>
              <CardPage title={t('page.massiva.title')}>
                 <EMGrid/>
              </CardPage>

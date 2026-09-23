@@ -82,7 +82,7 @@ export const BustiaGrid = () => {
     });
 
     return (
-        <GridPage autoHeight>
+        <GridPage>
             <CardPage title={t('page.bustia.grid.title')}>
                 <BustiaFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
 

@@ -21,7 +21,7 @@ export const LimitCanviEstatGrid: React.FC = () => {
     const accions = useLimitCanviEstatAccions();
 
     return (
-        <GridPage autoHeight>
+        <GridPage>
             <CardPage title={t('page.limitCanviEstat.grid.title')}>
                 <StyledMuiGrid
                     toolbarCreateTitle={t('page.limitCanviEstat.accio.new')}

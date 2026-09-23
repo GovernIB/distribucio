@@ -229,7 +229,7 @@ export const VistaMovimentsGrid = () => {
     const allColumns = [...columns, estatColumn, commentsColumn];
 
     return (
-        <GridPage autoHeight>
+        <GridPage>
             <CardPage title={t('page.vistaMoviments.title')}>
                 <VistaMovimentsFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
                 <StyledMuiGrid

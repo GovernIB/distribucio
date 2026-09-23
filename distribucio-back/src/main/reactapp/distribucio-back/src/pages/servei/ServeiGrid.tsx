@@ -27,7 +27,7 @@ export const ServeiGrid: React.FC = () => {
         useServeiActualitzarTots(refresh);
 
     return (
-        <GridPage autoHeight>
+        <GridPage>
             <CardPage title={t('page.serveis.grid.title')}>
                 <ServeiFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid

@@ -65,6 +65,29 @@ import java.util.Map;
 										roles = {BaseConfig.ROLE_SUPER},
 										grantedPermissions = {PermissionEnum.READ}
 								)
+						}),
+				@ResourceArtifact(
+						type = ResourceArtifactType.ACTION,
+						code = MonitorIntegracioResource.ACTION_INTEGRACIONS_DIAGNOSTIC_CODE,
+						requiresId = false,
+						accessConstraints = {
+								@ResourceAccessConstraint(
+										type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+										roles = {BaseConfig.ROLE_SUPER},
+										grantedPermissions = {PermissionEnum.READ}
+								)
+						}),
+				@ResourceArtifact(
+						type = ResourceArtifactType.ACTION,
+						code = MonitorIntegracioResource.ACTION_DIAGNOSTIC_CODE,
+						formClass = MonitorIntegracioResource.DiagnosticForm.class,
+						requiresId = false,
+						accessConstraints = {
+								@ResourceAccessConstraint(
+										type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+										roles = {BaseConfig.ROLE_SUPER},
+										grantedPermissions = {PermissionEnum.READ}
+								)
 						})
 		}
 )
@@ -72,6 +95,8 @@ public class MonitorIntegracioResource implements Resource<Long> {
 
 	public static final String FILTER_CODE = "FILTER";
 	public static final String ACTION_COUNT_ERRORS_CODE = "COUNT_ERRORS";
+	public static final String ACTION_INTEGRACIONS_DIAGNOSTIC_CODE = "INTEGRACIONS_DIAGNOSTIC";
+	public static final String ACTION_DIAGNOSTIC_CODE = "DIAGNOSTIC";
 
 	private Long id;
 	private String codi;
@@ -130,6 +155,60 @@ public class MonitorIntegracioResource implements Resource<Long> {
 
 		private List<String> codis;
 		private Map<String, Integer> errors;
+
+	}
+
+	/**
+	 * Resposta de l'acció {@link #ACTION_INTEGRACIONS_DIAGNOSTIC_CODE}: els codis de les integracions
+	 * a diagnosticar, les entitats amb què es poden provar i l'entitat seleccionada per defecte (la
+	 * mateixa que tindria l'usuari com a entitat actual a la interfície JSP).
+	 */
+	@Getter
+	@Setter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class IntegracionsDiagnosticResult implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		private List<String> codis;
+		private List<ResourceReference<EntitatResource, Long>> entitats;
+		private Long entitatPerDefecteId;
+
+	}
+
+	/**
+	 * Paràmetres de l'acció {@link #ACTION_DIAGNOSTIC_CODE}: el codi de la integració a diagnosticar,
+	 * un dels retornats per l'acció {@link #ACTION_INTEGRACIONS_DIAGNOSTIC_CODE}, i l'entitat amb
+	 * la configuració de la qual s'instancien els plugins.
+	 */
+	@Getter
+	@Setter
+	public static class DiagnosticForm implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		private String codiIntegracio;
+		private Long entitatId;
+
+	}
+
+	/**
+	 * Resposta de l'acció {@link #ACTION_DIAGNOSTIC_CODE}: el mateix contingut que retorna la pantalla
+	 * JSP ({@code IntegracioDiagnosticDto}) més la traça de l'excepció si la prova ha fallat.
+	 */
+	@Getter
+	@Setter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class DiagnosticResult implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		private boolean correcte;
+		private String prova;
+		private String errMsg;
+		private String excepcioStacktrace;
 
 	}
 

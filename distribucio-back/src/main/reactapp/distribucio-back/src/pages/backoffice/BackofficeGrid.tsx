@@ -46,7 +46,7 @@ export const BackofficeGrid = () => {
     const {actions: massiveActions, components: massiveComponents} = useBackofficeMassiveActions(refresh);
 
     return (
-        <GridPage autoHeight>
+        <GridPage>
             <CardPage title={t('page.backoffice.title')}>
                 <BackofficeFilter onSpringFilterChange={setSpringFilter} />
 

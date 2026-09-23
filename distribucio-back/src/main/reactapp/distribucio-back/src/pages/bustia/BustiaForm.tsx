@@ -53,6 +53,7 @@ export const BustiaOrganigramaForm = ({entity, ...other}:any) => {
                 title={t('component.AclPermissionManager.title')}
                 columns={useBustiaPermisosColumns()}
                 formContent={<BustiaPermisosForm/>}
+                autoHeight
             />
         </MuiForm>
     );

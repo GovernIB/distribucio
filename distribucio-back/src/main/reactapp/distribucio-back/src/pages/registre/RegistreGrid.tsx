@@ -93,7 +93,7 @@ export const RegistreGrid = () => {
     const {actions: massiveActions, components: massiveComponents} = useRegistreMassiveActions();
 
     return (
-        <GridPage autoHeight>
+        <GridPage>
             <CardPage title={t('page.registre.title')}>
                 <RegistreFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
 
