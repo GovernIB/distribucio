@@ -52,8 +52,8 @@ const springFilterBuilder = (data: any) =>
         builder.eq('unitatOrganitzativaFiltre.id', data?.unitat?.id),
         builder.eq('bustiaFiltre.id', data?.bustia?.id),
         data?.activa && builder.equals('activa', true, data.activa === 'ACTIVES'),
-        builder.eq('presencial', data?.presencial),
-        builder.eq('tipus', data?.tipus),
+        builder.eq('presencial', data?.presencial ? `'${data.presencial}'` : undefined),
+        builder.eq('tipus', data?.tipus ? `'${data.tipus}'` : undefined),
         builder.eq('unitatDesti.id', data?.unitatDesti?.id),
         builder.eq('bustiaDesti.id', data?.bustiaDesti?.id),
         builder.eq('backofficeDesti.id', data?.backoffice?.id)

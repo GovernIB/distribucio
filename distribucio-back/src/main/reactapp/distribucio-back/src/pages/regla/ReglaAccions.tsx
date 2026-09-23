@@ -1,10 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useBaseAppContext, useResourceApiService, type MuiDataGridProps } from 'reactlib';
+import { useBaseAppContext, useConfirmDialogButtons, useResourceApiService, type MuiDataGridProps } from 'reactlib';
 import type { MassiveActionProps } from '../../components/MassiveActionSelector';
 
 const ACCIO_ACTIVAR = 'ACTIVAR';
 const ACCIO_DESACTIVAR = 'DESACTIVAR';
+const ACCIO_MASSIVA = 'ACCIO_MASSIVA';
 
 type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
 
@@ -88,31 +89,66 @@ export const useReglaAccions = (refresh: () => void): AccionsFila => {
     ];
 };
 
-/** Accions massives del manteniment de regles: totes pendents de desenvolupar (incloent Esborrar). */
-export const useReglaMassiveAccions = (): {
+/** Accions massives del manteniment de regles: activar/desactivar/esborrar sobre les regles seleccionades. */
+export const useReglaMassiveAccions = (
+    refresh: () => void
+): {
     actions: MassiveActionProps[];
     components: React.ReactElement;
 } => {
     const { t } = useTranslation();
+    const { temporalMessageShow, messageDialogShow, t: tLib } = useBaseAppContext();
+    const confirmDialogButtons = useConfirmDialogButtons().reverse();
+    const { isReady: apiIsReady, artifactAction: apiArtifactAction } = useResourceApiService('reglaResource');
+
+    const executarAccioMassiva = (ids: any[], accio: string, clauMissatgeOk: string) => {
+        if (!apiIsReady) {
+            return;
+        }
+        apiArtifactAction(undefined, { code: ACCIO_MASSIVA, data: { accio, ids } })
+            .then(() => {
+                refresh();
+                temporalMessageShow(null, t(clauMissatgeOk), 'success');
+            })
+            .catch((error: any) =>
+                temporalMessageShow(t('page.regla.accio.error'), error?.description ?? error?.message, 'error')
+            );
+    };
+
+    const esborrarMassiu = (ids: any[]) => {
+        messageDialogShow(
+            tLib('datacommon.delete.multiple.label'),
+            tLib('datacommon.delete.multiple.confirm', { count: ids.length }),
+            confirmDialogButtons,
+            { maxWidth: 'sm', fullWidth: true }
+        ).then((value: any) => {
+            if (value) {
+                executarAccioMassiva(ids, 'eliminar', 'page.regla.accio.esborrarMassiuOk');
+            }
+        });
+    };
 
     const actions: MassiveActionProps[] = [
         {
             label: t('page.regla.accio.activar'),
             icon: 'check',
             showInMenu: true,
-            onClick: accioPendent(t('page.regla.accio.activar')),
+            action: ACCIO_MASSIVA,
+            onClick: (ids: any[]) => executarAccioMassiva(ids, 'activar', 'page.regla.accio.activarMassiuOk'),
         },
         {
             label: t('page.regla.accio.desactivar'),
             icon: 'close',
             showInMenu: true,
-            onClick: accioPendent(t('page.regla.accio.desactivar')),
+            action: ACCIO_MASSIVA,
+            onClick: (ids: any[]) => executarAccioMassiva(ids, 'desactivar', 'page.regla.accio.desactivarMassiuOk'),
         },
         {
             label: t('page.regla.accio.esborrarMassiu'),
             icon: 'delete',
             showInMenu: true,
-            onClick: accioPendent(t('page.regla.accio.esborrarMassiu')),
+            action: ACCIO_MASSIVA,
+            onClick: esborrarMassiu,
         },
     ];
 

@@ -120,7 +120,7 @@ export const ReglaGrid: React.FC = () => {
 
     const refresh = () => apiRef.current?.refresh?.();
     const accions = useReglaAccions(refresh);
-    const { actions: massiveActions, components: massiveComponents } = useReglaMassiveAccions();
+    const { actions: massiveActions, components: massiveComponents } = useReglaMassiveAccions(refresh);
 
     const columns = getColumns(t);
 
