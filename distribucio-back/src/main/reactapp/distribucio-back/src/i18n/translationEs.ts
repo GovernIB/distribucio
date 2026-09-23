@@ -43,6 +43,7 @@ const translationEs = {
             monitoritzar: 'Monitorizar',
             integracio: 'Integraciones',
             vistaMoviments: "Vista de movimientos",
+            regla: "Reglas",
         },
         avisos: {
             mostra: 'Muestra el detalle del aviso',
@@ -565,6 +566,53 @@ const translationEs = {
                 crearOk: "El nuevo límite de cambio de estado se ha creado correctamente",
                 modificarOk: "El límite de cambio de estado se ha modificado correctamente",
                 esborrarOk: "El límite de cambio de estado se ha borrado correctamente",
+            },
+        },
+        regla: {
+            grid: {
+                title: 'Reglas',
+                unitatObsoleta: 'La unidad organizativa de filtro ha quedado obsoleta',
+                columna: {
+                    destinacio: 'Destino',
+                    aturar: 'Parar',
+                    icona: {
+                        bustia: 'Buzón',
+                        backoffice: 'BackOffice',
+                        unitat: 'Unidad',
+                    },
+                },
+            },
+            form: {
+                resourceTitle: 'regla',
+                legend: {
+                    filtre: 'Filtro',
+                    accio: 'Acción',
+                },
+                camp: {
+                    procedimentCodiFiltre: {
+                        info: 'Introduzca los códigos SIA de procedimiento separados por espacio',
+                    },
+                    serveiCodiFiltre: {
+                        info: 'Introduzca los códigos SIA de servicio separados por espacio',
+                    },
+                },
+            },
+            accio: {
+                new: 'Nueva regla',
+                modificar: 'Modifica',
+                esborrar: 'Borra',
+                aplicarManualment: 'Aplica manualmente',
+                amunt: 'Arriba',
+                avall: 'Abajo',
+                activar: 'Activa',
+                desactivar: 'Desactiva',
+                esborrarMassiu: 'Borra',
+                crearOk: 'La regla se ha creado correctamente',
+                modificarOk: 'La regla se ha modificado correctamente',
+                esborrarOk: 'La regla se ha borrado correctamente',
+                activarOk: 'La regla se ha activado correctamente',
+                desactivarOk: 'La regla se ha desactivado correctamente',
+                error: 'Se ha producido un error ejecutando la acción',
             },
         },
         bustia: {

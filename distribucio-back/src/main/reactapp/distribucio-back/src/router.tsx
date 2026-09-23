@@ -23,6 +23,7 @@ import IntegracioGrid from './pages/integracio/IntegracioGrid.tsx';
 import AnnexGrid from './pages/annex/AnnexGrid.tsx';
 import {RegistreGrid} from "./pages/registre/RegistreGrid.tsx";
 import {VistaMovimentsGrid} from "./pages/vistaMoviments/VistaMovimentsGrid.tsx";
+import ReglaGrid from './pages/regla/ReglaGrid.tsx';
 
 export const router = createBrowserRouter(
     [
@@ -127,6 +128,16 @@ export const router = createBrowserRouter(
                             path: 'limitCanviEstat',
                             element: <LimitCanviEstatGrid />,
                             handle: { titol: 'page.limitCanviEstat.grid.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="regla" />,
+                    children: [
+                        {
+                            path: 'regla',
+                            element: <ReglaGrid />,
+                            handle: { titol: 'page.regla.grid.title' },
                         },
                     ],
                 },

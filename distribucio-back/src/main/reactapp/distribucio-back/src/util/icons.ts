@@ -28,4 +28,5 @@ export const icons = {
     contingut: 'archive',
     integracio: 'sync_alt',
     vistaMoviments: 'move_down',
+    regla: 'rule',
 } as const;

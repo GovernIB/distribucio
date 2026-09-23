@@ -244,6 +244,12 @@ public class EjbClientConfig {
 
 	@Bean
 	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean reglaResourceService() {
+		return getLocalEjbFactoyBean(ReglaResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean contingutResourceService() {
 		return getLocalEjbFactoyBean(ContingutResourceService.class);
 	}

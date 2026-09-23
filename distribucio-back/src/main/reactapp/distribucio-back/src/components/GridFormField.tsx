@@ -1,16 +1,30 @@
 import React from 'react';
-import { Box, Breakpoint, Button, Grid, GridSize, Icon, useMediaQuery, useTheme } from '@mui/material';
-import {FormField, FormFieldProps, useFormContext, useResourceApiContext} from 'reactlib';
+import {
+    Box,
+    Breakpoint,
+    Button,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
+    Grid,
+    GridSize,
+    Icon,
+    Radio,
+    RadioGroup,
+    useMediaQuery,
+    useTheme,
+} from '@mui/material';
+import { FormField, FormFieldProps, useFormContext, useResourceApiContext } from 'reactlib';
 import Load from './Load';
-import {FormFieldRefOptionsResponse} from "../../lib/components/mui/form/FormFieldReference.tsx";
-import {GridSortModel} from "@mui/x-data-grid-pro";
+import { FormFieldRefOptionsResponse } from '../../lib/components/mui/form/FormFieldReference.tsx';
+import { GridSortModel } from '@mui/x-data-grid-pro';
 
 type ResponsiveStyleValue<T> = T | Array<T | null> | { [key in Breakpoint]?: T | null };
 
 type GridFormFieldProps = FormFieldProps & {
     size: ResponsiveStyleValue<GridSize>;
     sortModel?: GridSortModel;
-    additionalOpctions?: (q:string) => any[];
+    additionalOpctions?: (q: string) => any[];
 };
 
 /**
@@ -83,6 +97,71 @@ export const GridButtonField = (props: any) => {
     );
 };
 
+/**
+ * Igual que {@link GridFormField} però amb aparença de grup de `Radio` en lloc de `Select`:
+ * mateixa lògica d'obtenció d'opcions i d'escriptura del valor al formulari, sense passar per `FormField`.
+ */
+export const GridRadioButtonField = (props: any) => {
+    const { name, label, size, row, hidden, disabled } = props;
+    const { data, apiRef, fields } = useFormContext();
+    const { requestHref } = useResourceApiContext();
+    const [dataSourceOptions, setDataSourceOptions] = React.useState<any[]>();
+
+    const field = fields?.find?.((item: any) => item?.name === name);
+    const value = data?.[name];
+    const fieldLabel = label ?? field?.label ?? name;
+
+    React.useEffect(() => {
+        if (field?.dataSource != null) {
+            const dataSource = field.dataSource;
+            requestHref(dataSource.href, { page: 'UNPAGED' }).then((state) => {
+                setDataSourceOptions(
+                    state.getEmbedded().map((e) => ({
+                        value: e.data[dataSource.valueField],
+                        description: e.data[dataSource.labelField],
+                    }))
+                );
+            });
+        }
+    }, [field, requestHref]);
+
+    const options =
+        field?.options != null
+            ? Object.entries(field.options).map(([optionValue, description]) => ({
+                  value: optionValue,
+                  description,
+              }))
+            : (dataSourceOptions ?? []);
+
+    if (hidden) return <></>;
+
+    return (
+        <Load value={apiRef} noEffect>
+            <Grid size={size}>
+                <FormControl disabled={disabled} required={field?.required}>
+                    <FormLabel id={`${name}-label`}>{fieldLabel}</FormLabel>
+                    <RadioGroup
+                        aria-labelledby={`${name}-label`}
+                        name={name}
+                        row={row}
+                        value={value ?? ''}
+                        onChange={(e) => apiRef?.current?.setFieldValue?.(name, e.target.value || null)}
+                    >
+                        {options.map((o: any) => (
+                            <FormControlLabel
+                                key={o.value}
+                                value={o.value}
+                                control={<Radio />}
+                                label={o.description ?? o.value}
+                            />
+                        ))}
+                    </RadioGroup>
+                </FormControl>
+            </Grid>
+        </Load>
+    );
+};
+
 const GridFormField: React.FC<GridFormFieldProps> = (props) => {
     const { size, valueField: vField, additionalOpctions, hidden } = props;
     const { fields } = useFormContext();
@@ -90,16 +169,14 @@ const GridFormField: React.FC<GridFormFieldProps> = (props) => {
     const field = fields?.find?.((item: any) => item?.name === props.name);
 
     const { requestHref } = useResourceApiContext();
-    const optionsRequest = (q:any) => {
+    const optionsRequest = (q: any) => {
         const dataSource = field.dataSource;
         const valueField = vField || dataSource.valueField;
         const labelField = dataSource.labelField;
-        const pageArgs = props.optionsUnpaged
-            ? { page: 'UNPAGED' }
-            : { page: 0, size: props.optionsPageSize };
+        const pageArgs = props.optionsUnpaged ? { page: 'UNPAGED' } : { page: 0, size: props.optionsPageSize };
         const sorts =
             props.sortModel && props.sortModel?.length
-                ? props.sortModel?.map((sm:any) => sm.field + ',' + sm.sort)
+                ? props.sortModel?.map((sm: any) => sm.field + ',' + sm.sort)
                 : undefined;
         const templateData = {
             quickFilter: q,
@@ -117,8 +194,7 @@ const GridFormField: React.FC<GridFormFieldProps> = (props) => {
                         id: e.data[valueField],
                         description: e.data[labelField],
                     }));
-                    if (additionalOpctions)
-                        options.push(...(additionalOpctions?.(q) || []))
+                    if (additionalOpctions) options.push(...(additionalOpctions?.(q) || []));
                     const response = {
                         options,
                         page: state.data.page,
@@ -126,11 +202,10 @@ const GridFormField: React.FC<GridFormFieldProps> = (props) => {
                     resolve(response);
                 })
                 .catch(reject);
-        })
-    }
+        });
+    };
 
-    if (hidden)
-        return <></>
+    if (hidden) return <></>;
 
     return (
         <Grid size={size}>

@@ -45,6 +45,7 @@ const translationCa = {
             integracio: 'Integracions',
             registre: "Anotacions",
             vistaMoviments: "Vista de moviments",
+            regla: "Regles",
         },
         avisos: {
             mostra: "Mostra el detall de l'avís",
@@ -567,6 +568,53 @@ const translationCa = {
                 crearOk: "El nou limit de canvi d'estat s'ha creat correctament",
                 modificarOk: "El limit de canvi d'estat s'ha modificat correctament",
                 esborrarOk: "El limit de canvi d'estat s'ha esborrat correctament",
+            },
+        },
+        regla: {
+            grid: {
+                title: 'Regles',
+                unitatObsoleta: 'La unitat organitzativa de filtre ha quedat obsoleta',
+                columna: {
+                    destinacio: 'Destinació',
+                    aturar: 'Aturar',
+                    icona: {
+                        bustia: 'Bústia',
+                        backoffice: 'BackOffice',
+                        unitat: 'Unitat',
+                    },
+                },
+            },
+            form: {
+                resourceTitle: 'regla',
+                legend: {
+                    filtre: 'Filtre',
+                    accio: 'Acció',
+                },
+                camp: {
+                    procedimentCodiFiltre: {
+                        info: 'Introduïu els codis SIA de procediment separats per espai',
+                    },
+                    serveiCodiFiltre: {
+                        info: 'Introduïu els codis SIA de servei separats per espai',
+                    },
+                },
+            },
+            accio: {
+                new: 'Nova regla',
+                modificar: 'Modifica',
+                esborrar: 'Esborra',
+                aplicarManualment: 'Aplica manualment',
+                amunt: 'Amunt',
+                avall: 'Avall',
+                activar: 'Activa',
+                desactivar: 'Desactiva',
+                esborrarMassiu: 'Esborra',
+                crearOk: 'La regla s\'ha creat correctament',
+                modificarOk: 'La regla s\'ha modificat correctament',
+                esborrarOk: 'La regla s\'ha esborrat correctament',
+                activarOk: 'La regla s\'ha activat correctament',
+                desactivarOk: 'La regla s\'ha desactivat correctament',
+                error: "S'ha produït un error executant l'acció",
             },
         },
         bustia: {

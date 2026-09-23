@@ -125,6 +125,13 @@ const InnerApp: React.FC = () => {
                     pantalla: 'unitatOrganitzativa'
                 },
                 {
+                    id: 'regla',
+                    title: t('app.menu.regla'),
+                    to: 'regla',
+                    icon: icons.regla,
+                    pantalla: 'regla'
+                },
+                {
                     id: 'backoffice',
                     title: t('page.backoffice.title'),
                     to: 'backoffice',
