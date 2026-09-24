@@ -14,6 +14,7 @@ import { CombinedIcon, GridButton, GridButtonField } from './GridFormField';
  *   <li>els botons "Netejar" / "Filtrar" en mode `buttonControlled` (amb Intro també filtra),</li>
  *   <li>la persistència de les dades del filtre a la sessió del navegador,</li>
  *   <li>l'auto-cerca inicial en recuperar les dades de sessió o `defaultData`,</li>
+ *   <li>l'avís `onReady` quan l'estat inicial del filtre ja és conegut,</li>
  *   <li>el botó de cerca avançada opcional,</li>
  *   <li>el layout Grid dels camps i l'estil `styledFilter`.</li>
  * </ul>
@@ -82,6 +83,13 @@ const StyledMuiFilter = (props: any) => {
         // mana sempre el que hi hagi desat.
         defaultData,
         sessionKey = code != null ? filterSessionKey(props.resourceName, code) : undefined,
+        // Es crida una sola vegada, quan el filtre ja té l'estat inicial: les dades desades a la
+        // sessió, la cerca automàtica amb els valors per defecte del backend (que arriben de
+        // manera asíncrona) o, si no n'hi ha cap, el filtre buit. La graella l'ha d'esperar abans
+        // de fer la primera consulta: si no, en consulta primer sense filtre i després amb cada
+        // pas del filtre, i base-react apaga l'indicador de càrrega amb la primera resposta
+        // (descartada) i mostra "no hi ha dades" fins que arriba la bona.
+        onReady,
         advancedSearch = false,
         buttonIconOnlyBreakpoint = 'lg',
         ...other
@@ -110,6 +118,14 @@ const StyledMuiFilter = (props: any) => {
 
     const { value: filterData, save: saveFilterData } = useSession(sessionKey);
 
+    const llestRef = useRef(false);
+    const marcarLlest = () => {
+        if (!llestRef.current) {
+            llestRef.current = true;
+            onReady?.();
+        }
+    };
+
     // El guardat es fa aquí (i no a cercar()) perquè onSpringFilterChange és l'únic punt
     // pel qual passen totes les aplicacions reals del filtre: el botó "Filtrar", la tecla
     // Intro (filterOnFieldEnterKeyPressed, que dispara filter() dins de lib sense passar
@@ -120,11 +136,13 @@ const StyledMuiFilter = (props: any) => {
             saveFilterData(apiRef?.current?.getData?.());
         }
         onSpringFilterChange?.(springFilter);
+        marcarLlest();
     };
 
     useEffect(() => {
         if (!!sessionKey && filterData && onSpringFilterChange && springFilterBuilder) {
             onSpringFilterChange(springFilterBuilder(filterData));
+            marcarLlest();
         }
     }, []);
 
@@ -151,6 +169,12 @@ const StyledMuiFilter = (props: any) => {
                     // així que el branch d'auto-cerca no s'activa i cal re-aplicar el filtre
                     // buit aquí. Amb camps per defecte no s'hi entra -> sense doble cerca.
                     cercar();
+                } else {
+                    // La primera notificació arriba amb les dades inicials del formulari. Si no
+                    // dispara cap cerca (no hi ha dades per defecte), el filtre inicial és el
+                    // buit. Quan sí que en dispara, el filtre de base-react l'aplica després d'una
+                    // validació asíncrona, i és handleSpringFilterChange qui el dona per llest.
+                    marcarLlest();
                 }
                 netejarPendingRef.current = false;
                 externalOnDataChange?.(data);

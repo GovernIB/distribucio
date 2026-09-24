@@ -71,12 +71,23 @@ const columns = (t:any) => [
     { field: 'interessatsString', flex: 4, sortable: false },
 ]
 const perspectives = ['DARRER_MOVIMENT', 'COMMENT_NUM']
+// Referència estable: mentre el filtre no està a punt la graella no ha de veure cap canvi.
+const SENSE_NAMED_QUERIES: string[] = []
 const sortModel:any = [{ field: 'data', sort: 'desc' }]
 export const RegistreGrid = () => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
     const [namedQueries, setNamedQueries] = React.useState<string[]>([]);
+    // La primera vegada que s'obre la pantalla, el filtre obté els valors per defecte del backend
+    // (estat pendent, bústies inactives...) de manera asíncrona. Fins que no els té, la graella
+    // mostra la cortina de càrrega i no consulta res. Quan ja els té, se'n munta una instància
+    // nova (key) que arrenca amb el filtre definitiu i fa una sola consulta. No n'hi ha prou amb
+    // activar la consulta a la mateixa instància: la graella de base-react copia el filtre a un
+    // estat intern amb un efecte, i consultaria primer sense filtre i després amb cada pas; a més
+    // apaga la cortina amb la primera resposta, encara que la descarti, i mostraria "no hi ha
+    // dades" fins que arribés la bona.
+    const [filtreLlest, setFiltreLlest] = React.useState(false);
 
     const { column: commentsColumn, component: dialogComponent } = useCommentsColumn();
 
@@ -95,15 +106,22 @@ export const RegistreGrid = () => {
     return (
         <GridPage>
             <CardPage title={t('page.registre.title')}>
-                <RegistreFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
+                <RegistreFilter
+                    onSpringFilterChange={setSpringFilter}
+                    onNamedQueriesChange={setNamedQueries}
+                    onReady={() => setFiltreLlest(true)}
+                />
 
                 <StyledMuiGrid
+                    key={filtreLlest ? 'llest' : 'esperant-filtre'}
                     apiRef={apiRef}
                     resourceName="registreResource"
                     columns={additionalColumns}
-                    filter={springFilter}
+                    filter={filtreLlest ? springFilter : undefined}
                     perspectives={perspectives}
-                    namedQueries={namedQueries}
+                    namedQueries={filtreLlest ? namedQueries : SENSE_NAMED_QUERIES}
+                    autoFindDisabled={!filtreLlest}
+                    loading={!filtreLlest ? true : undefined}
                     sortModel={sortModel}
 
                     // filterCount={(num) => num + (namedQueries.length || 0)}

@@ -9,6 +9,7 @@ import com.opensymphony.module.sitemesh.filter.PageFilter;
 import es.caib.distribucio.back.base.config.BaseWebMvcConfig;
 import es.caib.distribucio.back.interceptor.*;
 import es.caib.distribucio.logic.intf.base.util.RequestSessionUtil;
+import es.caib.distribucio.logic.intf.base.util.ThreadLocalUtil;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.model.UserSession;
 import es.caib.distribucio.logic.intf.resourceservice.UsuariResourceService;
@@ -236,9 +237,15 @@ public class WebMvcConfig extends BaseWebMvcConfig {
 	@Bean
 	public HandlerInterceptor userSessionInterceptor() {
 
+		// La sessió de la petició (l'entitat de la capçalera X-App-Session) es guarda en un
+		// ThreadLocal (RequestSessionUtil). Els fils del servidor es reutilitzen, així que s'ha de
+		// buidar sempre: si no, una petició sense la capçalera (el rol DIS_SUPER no l'envia mai,
+		// ni tampoc sessioUsuari, l'SSE o la interfície JSP) heretaria l'entitat de la darrera
+		// petició que havia servit el mateix fil, encara que fos d'un altre usuari.
 		return new AsyncHandlerInterceptor() {
 			@Override
 			public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws JsonProcessingException {
+				ThreadLocalUtil.clear();
 				String json = request.getHeader(userSessionHttpHeader);
 				if (json != null) {
 					var parsedJson = objectMapper.readValue(json, java.util.Map.class);
@@ -247,6 +254,16 @@ public class WebMvcConfig extends BaseWebMvcConfig {
 					RequestSessionUtil.setRequestSession(new UserSession(entitatLong));
 				}
 				return true;
+			}
+			@Override
+			public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+				ThreadLocalUtil.clear();
+			}
+			@Override
+			public void afterConcurrentHandlingStarted(HttpServletRequest request, HttpServletResponse response, Object handler) {
+				// Petició asíncrona (p. ex. la subscripció SSE): el fil torna al pool abans que
+				// la petició acabi i afterCompletion no s'hi crida.
+				ThreadLocalUtil.clear();
 			}
 		};
 	}
