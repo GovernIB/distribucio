@@ -6,6 +6,9 @@ import type { MassiveActionProps } from '../../components/MassiveActionSelector'
 const ACCIO_ACTIVAR = 'ACTIVAR';
 const ACCIO_DESACTIVAR = 'DESACTIVAR';
 const ACCIO_MASSIVA = 'ACCIO_MASSIVA';
+const ACCIO_AMUNT = 'AMUNT';
+const ACCIO_AVALL = 'AVALL';
+const ACCIO_MOURE = 'MOURE';
 
 type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
 
@@ -55,13 +58,17 @@ export const useReglaAccions = (refresh: () => void): AccionsFila => {
             label: t('page.regla.accio.amunt'),
             icon: 'arrow_upward',
             showInMenu: true,
-            onClick: accioPendent(t('page.regla.accio.amunt')),
+            action: ACCIO_AMUNT,
+            hidden: (row: any) => row?.ordre === 0,
+            onClick: (id: any) => executarAccio(id, ACCIO_AMUNT, 'page.regla.accio.amuntAvallOk'),
         },
         {
             label: t('page.regla.accio.avall'),
             icon: 'arrow_downward',
             showInMenu: true,
-            onClick: accioPendent(t('page.regla.accio.avall')),
+            action: ACCIO_AVALL,
+            hidden: (row: any) => row?.ordre === (row?.totalRegles ?? 1) - 1,
+            onClick: (id: any) => executarAccio(id, ACCIO_AVALL, 'page.regla.accio.amuntAvallOk'),
         },
         {
             label: t('page.regla.accio.activar'),
@@ -153,6 +160,34 @@ export const useReglaMassiveAccions = (
     ];
 
     return { actions, components: <></> };
+};
+
+/**
+ * Handler de `onRowOrderChange` de la graella (drag&drop de files): tradueix l'`targetIndex` (relatiu a
+ * la pàgina visible) a una posició absoluta i crida l'acció `MOURE`. `datagridApiRef` es fa servir només
+ * per llegir la pàgina/mida de pàgina actuals en el moment de mollar la fila.
+ */
+export const useReglaRowOrderChange = (refresh: () => void, datagridApiRef: any) => {
+    const { t } = useTranslation();
+    const { temporalMessageShow } = useBaseAppContext();
+    const { isReady: apiIsReady, artifactAction: apiArtifactAction } = useResourceApiService('reglaResource');
+
+    return (params: { row: any; targetIndex: number }) => {
+        if (!apiIsReady) {
+            refresh();
+            return;
+        }
+        const paginationModel = datagridApiRef.current?.state?.pagination?.paginationModel;
+        const page = paginationModel?.page ?? 0;
+        const pageSize = paginationModel?.pageSize ?? 0;
+        const posicio = page * pageSize + params.targetIndex;
+        apiArtifactAction(params.row.id, { code: ACCIO_MOURE, data: { posicio } })
+            .then(() => refresh())
+            .catch((error: any) => {
+                temporalMessageShow(t('page.regla.accio.error'), error?.description ?? error?.message, 'error');
+                refresh();
+            });
+    };
 };
 
 export default useReglaAccions;

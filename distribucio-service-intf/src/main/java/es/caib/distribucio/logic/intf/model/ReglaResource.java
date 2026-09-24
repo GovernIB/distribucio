@@ -4,7 +4,7 @@ import es.caib.distribucio.logic.intf.base.annotation.ResourceAccessConstraint;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceArtifact;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceConfig;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceField;
-import es.caib.distribucio.logic.intf.base.model.Resource;
+import es.caib.distribucio.logic.intf.base.model.BaseAuditableResource;
 import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
@@ -29,9 +29,10 @@ import java.util.List;
 /**
  * Informació d'una regla per a la distribució automàtica d'anotacions de registre.
  * <p>
- * CRUD bàsic, filtres i llistat. Les accions específiques (activar/desactivar/aplicar manualment/amunt/avall)
- * i l'acció massiva es declaren aquí perquè el frontend en pugui pintar els components,
- * però encara no tenen cap {@code ActionExecutor} registrat a {@code ReglaResourceServiceImpl}.
+ * CRUD bàsic, filtres i llistat. Activar/Desactivar, l'acció massiva i Amunt/Avall/Moure (reordenació)
+ * tenen {@code ActionExecutor} registrat a {@code ReglaResourceServiceImpl}. Aplicar manualment es
+ * declara aquí perquè el frontend en pugui pintar el component, però encara no té cap
+ * {@code ActionExecutor} registrat.
  *
  * @author Límit Tecnologies
  */
@@ -88,6 +89,12 @@ import java.util.List;
                         type = ResourceArtifactType.ACTION,
                         code = ReglaResource.ACTION_AVALL_CODE,
                         requiresId = true),
+                // Reordenació per drag&drop del llistat: mou la regla a una posició absoluta concreta.
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = ReglaResource.ACTION_MOURE_CODE,
+                        requiresId = true,
+                        formClass = ReglaResource.FormMoure.class),
                 // Acció massiva equivalent a enableMultiple/disableMultiple/deleteMultiple.
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
@@ -96,17 +103,16 @@ import java.util.List;
                         formClass = ReglaResource.FormAccioMassiva.class)
         }
 )
-public class ReglaResource implements Resource<Long> {
+public class ReglaResource extends BaseAuditableResource<Long> {
 
     public static final String ACTION_ACTIVAR_CODE = "ACTIVAR";
     public static final String ACTION_DESACTIVAR_CODE = "DESACTIVAR";
     public static final String ACTION_APLICAR_MANUALMENT_CODE = "APLICAR_MANUALMENT";
     public static final String ACTION_AMUNT_CODE = "AMUNT";
     public static final String ACTION_AVALL_CODE = "AVALL";
+    public static final String ACTION_MOURE_CODE = "MOURE";
     public static final String ACTION_ACCIO_MASSIVA_CODE = "ACCIO_MASSIVA";
     public static final String FILTER_CODE = "FILTER";
-
-    private Long id;
 
     @NotNull
     @Size(max = 256)
@@ -151,13 +157,12 @@ public class ReglaResource implements Resource<Long> {
     // Només lectura: no forma part del formulari, es calcula a la creació (veure ReglaResourceServiceImpl).
     private int ordre;
 
+    // Només lectura: nombre total de regles de l'entitat, perquè el frontend pugui amagar "Amunt" a la
+    // primera i "Avall" a l'última sense haver de conèixer l'ordre de la resta de files.
+    private int totalRegles;
+
     // No visible al formulari: s'assigna sola a partir de l'entitat actual de la sessió.
     private ResourceReference<EntitatResource, Long> entitat;
-
-    @Override
-    public Long getId() {
-        return id;
-    }
 
     /**
      * Formulari de l'acció massiva per activar, desactivar o eliminar múltiples regles. Equival a
@@ -174,6 +179,20 @@ public class ReglaResource implements Resource<Long> {
         private String accio; // "activar", "desactivar", "eliminar"
         @NotNull
         private List<Long> ids;
+    }
+
+    /**
+     * Formulari de l'acció de reordenació per drag&drop del llistat, equivalent al paràmetre
+     * <code>posicio</code> de {@code ReglaController.move}/{@code ReglaService.moveTo}.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @FieldNameConstants
+    public static class FormMoure implements Serializable {
+        private static final long serialVersionUID = 1L;
+        @NotNull
+        private Integer posicio;
     }
 
     /**

@@ -18,6 +18,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
+import java.util.function.BiConsumer;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -591,6 +593,40 @@ public class ReglaHelper {
 	
 	private boolean isPermesSobreescriureAnotacions() {
 		return configHelper.getAsBoolean("es.caib.distribucio.sobreescriure.anotacions.duplicades");
+	}
+
+	/**
+	 * Recalcula l'ordre d'una llista de regles (ja ordenada per <code>ordre</code> ascendent) en moure'n
+	 * una a una nova posició. Reutilitzat tant per {@link es.caib.distribucio.logic.service.ReglaServiceImpl}
+	 * (interfície antiga JSF) com pels {@code ActionExecutor} d'{@code AMUNT}/{@code AVALL}/{@code MOURE}
+	 * de {@code ReglaResourceServiceImpl} (interfície nova React), ja que l'entitat legacy
+	 * <code>ReglaEntity</code> i la nova <code>ReglaResourceEntity</code> mapegen la mateixa taula amb
+	 * classes JPA diferents.
+	 * <p>
+	 * <code>posicioDesti</code> es limita a <code>[0, elements.size() - 1]</code>: la implementació
+	 * original no ho feia i un valor fora de rang provocava una {@code IndexOutOfBoundsException}.
+	 *
+	 * @param elements llista de totes les regles de l'entitat, ordenades per <code>ordre</code> ascendent.
+	 * @param element la regla que es mou (ha de ser una instància present a <code>elements</code>).
+	 * @param posicioDesti posició nova (0-based) dins de <code>elements</code>.
+	 * @param ordreSetter setter de l'entitat concreta (p. ex. <code>ReglaEntity::updateOrdre</code> o
+	 *            <code>ReglaResourceEntity::setOrdre</code>) usat per reassignar l'<code>ordre</code>.
+	 */
+	public static <T> void canviPosicio(
+			List<T> elements,
+			T element,
+			int posicioDesti,
+			BiConsumer<T, Integer> ordreSetter) {
+		int posicioActual = elements.indexOf(element);
+		int posicioValida = Math.max(0, Math.min(elements.size() - 1, posicioDesti));
+		if (posicioValida != posicioActual) {
+			elements.remove(element);
+			elements.add(posicioValida, element);
+			int i = 0;
+			for (T e : elements) {
+				ordreSetter.accept(e, i++);
+			}
+		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaHelper.class);

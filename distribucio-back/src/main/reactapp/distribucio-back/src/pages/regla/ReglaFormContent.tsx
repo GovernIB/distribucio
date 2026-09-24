@@ -2,9 +2,11 @@ import React from 'react';
 import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
 import { useTranslation } from 'react-i18next';
 import GridFormField, { GridRadioButtonField } from '../../components/GridFormField';
 import { useFormContext } from 'reactlib';
+import { formatDate } from '../../util/dateUtils';
 
 /** Capçalera de secció ("Filtre"/"Acció") */
 const SectionDivider: React.FC<{ label: string }> = ({ label }) => (
@@ -31,7 +33,7 @@ export const ReglaFormContent: React.FC = () => {
             {data?.tipus !== 'BACKOFFICE' && <GridFormField size={6} name="bustiaFiltre" />}
 
             <Grid container spacing={2} size={12}>
-                <GridRadioButtonField size={2.5} name="tipusSia"  />
+                <GridRadioButtonField size={2.5} name="tipusSia" />
                 {data?.tipusSia === 'PROCEDIMENT' && (
                     <GridFormField
                         size={9.5}
@@ -58,11 +60,31 @@ export const ReglaFormContent: React.FC = () => {
             <SectionDivider label={t('page.regla.form.legend.accio')} />
 
             <GridFormField size={4} name="tipus" />
-            {data?.tipus === 'BUSTIA' && <GridFormField size={8} name="bustiaDesti" />}
-            {data?.tipus === 'BACKOFFICE' && <GridFormField size={8} name="backofficeDesti" />}
-            {data?.tipus === 'UNITAT' && <GridFormField size={8} name="unitatDesti" />}
+            {data?.tipus === 'BUSTIA' && <GridFormField size={8} name="bustiaDesti" required />}
+            {data?.tipus === 'BACKOFFICE' && <GridFormField size={8} name="backofficeDesti" required />}
+            {data?.tipus === 'UNITAT' && <GridFormField size={8} name="unitatDesti" required />}
 
             <GridFormField size={12} name="aturarAvaluacio" />
+
+            {data?.id && (
+                <Grid size={12}>
+                    <Alert severity="info" sx={{ alignItems: 'center' }}>
+                        {t('page.regla.form.auditoria.creat', {
+                            data: formatDate(data.createdDate),
+                            usuari: data.createdByFullName,
+                        })}
+                        {data?.lastModifiedBy && (
+                            <span>
+                                &nbsp;&nbsp;
+                                {t('page.regla.form.auditoria.modificat', {
+                                    data: formatDate(data.lastModifiedDate),
+                                    usuari: data.lastModifiedByFullName,
+                                })}
+                            </span>
+                        )}
+                    </Alert>
+                </Grid>
+            )}
         </Grid>
     );
 };

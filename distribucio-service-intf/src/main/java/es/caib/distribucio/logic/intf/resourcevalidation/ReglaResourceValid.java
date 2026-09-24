@@ -12,8 +12,8 @@ import java.lang.annotation.Target;
  * regles de tipus BACKOFFICE) i el destí obligatori segons el tipus de regla.
  * <p>
  * Equivalent simplificat de l'antic {@code es.caib.distribucio.back.validation.Regla}: no inclou les
- * comprovacions creuades contra altres regles (unicitat de codis SIA, unicitat nom+tipus+assumpte), que
- * queden pendents per quan es migri l'acció de guardar de debò.
+ * comprovacions creuades contra altres regles (unicitat de codis SIA, unicitat nom+tipus+assumpte), que es
+ * fan a {@code ReglaResourceServiceImpl} (beforeCreateEntity/beforeUpdateEntity) perquè requereixen la BBDD.
  *
  * @author Límit Tecnologies
  */

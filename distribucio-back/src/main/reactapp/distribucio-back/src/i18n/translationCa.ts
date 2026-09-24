@@ -615,6 +615,10 @@ const translationCa = {
                         info: 'Introduïu els codis SIA de servei separats per espai',
                     },
                 },
+                auditoria: {
+                    creat: 'Creat el {{data}} per {{usuari}}.',
+                    modificat: 'Modificat el {{data}} per {{usuari}}.',
+                },
             },
             accio: {
                 new: 'Nova regla',
@@ -631,6 +635,7 @@ const translationCa = {
                 esborrarOk: 'La regla s\'ha esborrat correctament',
                 activarOk: 'La regla s\'ha activat correctament',
                 desactivarOk: 'La regla s\'ha desactivat correctament',
+                amuntAvallOk: "La regla s'ha mogut correctament",
                 activarMassiuOk: "Les regles seleccionades s'han activat correctament",
                 desactivarMassiuOk: "Les regles seleccionades s'han desactivat correctament",
                 esborrarMassiuOk: "Les regles seleccionades s'han esborrat correctament",
