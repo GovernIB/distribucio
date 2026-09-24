@@ -42,6 +42,13 @@ type SseState = {
 
 const SSE_STATE_INICIAL: SseState = { connected: false, avisos: [] };
 
+/** Usuari, rol i entitat d'una subscripció. */
+type SubscripcioSse = {
+    usuariCodi?: string;
+    rol?: string;
+    entitatId?: number;
+};
+
 const SseContext = React.createContext<SseState>(SSE_STATE_INICIAL);
 
 /** Estat de la connexió SSE i esdeveniments rebuts. */
@@ -73,14 +80,33 @@ const getSubscribeUrl = (apiUrl: string, usuariCodi: string, rol?: string, entit
 export const SseProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     const { apiUrl } = useResourceApiContext();
     const { comprovarSessio } = useSessioUsuari();
-    const { currentUser, currentRole, currentEntitatId } = useDistribucioContext();
+    const { isReady, currentUser, currentRole, currentEntitatId } = useDistribucioContext();
     const [state, setState] = React.useState<SseState>(SSE_STATE_INICIAL);
-    const usuariCodi = currentUser?.id;
+    const [subscripcio, setSubscripcio] = React.useState<SubscripcioSse>();
 
+    // Usuari, rol i entitat amb què s'ha d'estar subscrit. Només es prenen quan el context està a
+    // punt, que és quan el rol i l'entitat són definitius: mentre canvien (arrencada, canvi des
+    // del selector) o mentre l'índex de l'API es torna a carregar, isReady és fals i la
+    // subscripció oberta es manté. Així només es reconnecta si canvia de debò algun dels tres.
     React.useEffect(() => {
-        if (usuariCodi == null) {
+        if (!isReady) {
             return;
         }
+        const usuariCodi: string | undefined = currentUser?.id;
+        setSubscripcio((previous) =>
+            previous?.usuariCodi === usuariCodi &&
+            previous?.rol === currentRole &&
+            previous?.entitatId === currentEntitatId
+                ? previous
+                : { usuariCodi, rol: currentRole, entitatId: currentEntitatId }
+        );
+    }, [isReady, currentUser?.id, currentRole, currentEntitatId]);
+
+    React.useEffect(() => {
+        if (subscripcio?.usuariCodi == null) {
+            return;
+        }
+        const { usuariCodi, rol, entitatId } = subscripcio;
         let eventSource: EventSource | null = null;
         let reconnectTimeout: ReturnType<typeof setTimeout> | undefined;
         // Evita que una reconnexió ja programada s'executi després de desmuntar el component o
@@ -97,7 +123,7 @@ export const SseProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
             // La petició s'autentica amb la galeta de la sessió de servidor (veure
             // DistribucioAuthProvider); "include" fa que s'enviï també quan el front no és al
             // mateix origen que el backend (`npm run dev`).
-            eventSource = new EventSource(getSubscribeUrl(apiUrl, usuariCodi, currentRole, currentEntitatId), {
+            eventSource = new EventSource(getSubscribeUrl(apiUrl, usuariCodi, rol, entitatId), {
                 fetch: (input, init) => fetch(input, { ...init, credentials: 'include' }),
             });
 
@@ -145,7 +171,7 @@ export const SseProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
             eventSource = null;
             setState(SSE_STATE_INICIAL);
         };
-    }, [apiUrl, usuariCodi, currentRole, currentEntitatId, comprovarSessio]);
+    }, [apiUrl, subscripcio, comprovarSessio]);
 
     return <SseContext.Provider value={state}>{children}</SseContext.Provider>;
 };

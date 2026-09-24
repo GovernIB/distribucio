@@ -12,6 +12,7 @@ import {
     ROLE_USER,
 } from './DistribucioContext';
 import { useSessioUsuari } from './DistribucioAuthProvider';
+import { SseProvider } from './SseClient';
 
 const ALLOWED_ROLES = [ROLE_SUPER, ROLE_ADMIN, ROLE_ADMIN_LECTURA, ROLE_USER].reverse();
 
@@ -189,7 +190,12 @@ const useCurrentEntitat = (
 
     const { httpHeaders: apiHttpHeaders, setHttpHeaders: apiSetHttpHeaders } = useResourceApiContext();
     const {isReady: apiIsReady, find: apiFind, getOne: apiGetOne} = useResourceApiService('entitatResource');
-    const [entitatsAvailable, setEntitatsAvailable] = React.useState<any[]>();
+    // Les entitats es guarden amb el rol per al qual s'han carregat. En canviar de rol, la llista
+    // de l'anterior es conserva fins que l'efecte que la recarrega s'executa; sense aquesta
+    // comprovació hi havia un render amb el rol nou, la llista vella i cap entitat que es donava
+    // per bo, i l'aplicació (i l'SSE) s'arrencaven un instant sense entitat.
+    const [entitatsCarregades, setEntitatsCarregades] = React.useState<{ rol: string; entitats: any[] }>();
+    const entitatsAvailable = entitatsCarregades?.rol === currentRole ? entitatsCarregades?.entitats : undefined;
     const [currentEntitatLoading, setCurrentEntitatLoading] = React.useState<boolean>();
     const [currentEntitat, setCurrentEntitat] = React.useState<any>();
     const { getValue: sessionSessionGetValue, setValue: sessionSessionSetValue } = useSessionStorage(currentUserId, 'currentSession');
@@ -210,17 +216,17 @@ const useCurrentEntitat = (
         if (!apiIsReady || !currentRoleReady || currentRole == null) {
             return;
         }
-        setEntitatsAvailable(undefined);
+        setEntitatsCarregades(undefined);
         setCurrentEntitat(undefined);
         setCurrentEntitatIdLocal(undefined);
 
         if (currentRole === ROLE_SUPER) {
-            setEntitatsAvailable([]);
+            setEntitatsCarregades({ rol: currentRole, entitats: [] });
             return;
         }
         apiFind({ unpaged: true }).then((response) => {
             const entitatsAvailable = response.rows;
-            setEntitatsAvailable(entitatsAvailable);
+            setEntitatsCarregades({ rol: currentRole, entitats: entitatsAvailable });
 
             // Entitat de treball inicial, per aquest ordre: la de la pestanya actual
             // (sessionStorage), l'entitat per defecte del perfil (dis_usuari.entitat_defecte_id) i
@@ -334,7 +340,11 @@ export const DistribucioProvider: React.FC<React.PropsWithChildren> = ({ childre
     };
     return (
         <DistribucioContext.Provider value={contextValue}>
-            {isReady ? children : <DistribucioProviderLoading />}
+            {/* L'SSE va per fora de la pantalla de càrrega: en arrencar, l'índex de l'API es torna
+                a carregar (capçalera del rol, idioma) i isReady passa uns instants a fals, cosa que
+                desmunta els fills. Si l'SSE hi fos a dins, cada vegada es tancaria i es tornaria
+                a obrir la subscripció. */}
+            <SseProvider>{isReady ? children : <DistribucioProviderLoading />}</SseProvider>
         </DistribucioContext.Provider>
     );
 };

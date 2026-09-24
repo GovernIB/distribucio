@@ -15,7 +15,6 @@ import { useDistribucioContext } from './components/DistribucioContext';
 import { filtrarEntradesMenu, type MenuEntryAmbPantalla } from './util/pantalles';
 import { icons } from './util/icons';
 import { SessionStorageProvider } from './components/SessionStorageContext';
-import { SseProvider } from './components/SseClient';
 import TitolPagina from './components/TitolPagina';
 import {SnackbarProvider} from "notistack";
 
@@ -295,12 +294,10 @@ export const App = () => {
                     <DistribucioProvider>
                         <UserPreferencesProvider>
                             <SessionStorageProvider>
-                                {/* Dins de DistribucioProvider: la subscripció d'esdeveniments
-                                    va lligada a l'usuari, el rol i l'entitat actuals, i es
-                                    refà quan en canvia qualsevol. */}
-                                <SseProvider>
-                                    <InnerApp />
-                                </SseProvider>
+                                {/* La subscripció d'esdeveniments (SseProvider) la posa
+                                    DistribucioProvider, per fora de la seva pantalla de
+                                    càrrega. */}
+                                <InnerApp />
                             </SessionStorageProvider>
                         </UserPreferencesProvider>
                     </DistribucioProvider>
