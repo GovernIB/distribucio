@@ -25,6 +25,7 @@ import { TemaAplicacio, MenuEstil } from '../theme';
 import { useDistribucioContext } from './DistribucioContext';
 import { desarTemaCache, useSetTemaAplicacio } from './TemaProvider';
 import GridFormField from './GridFormField';
+import { normalitzaIdioma } from '../util/idioma';
 
 const selectorLabelSx = {
     display: 'block',
@@ -68,15 +69,6 @@ export type UserPreferences = {
     /** Mida de pàgina per defecte de tots els llistats (veure StyledMuiGrid). */
     numElementsPagina?: number;
 };
-
-/**
- * El perfil desa l'idioma com el nom de la constant d'IdiomaEnumDto ("CA"/"ES") i pot arribar
- * en minúscules de l'alta automàtica d'usuaris, mentre que i18next i la capçalera
- * Accept-Language volen el codi de dues lletres en minúscules. Sense normalitzar, "ES" i "es"
- * (o "es-ES") es considerarien idiomes diferents i es rellançarien consultes sense necessitat.
- */
-const normalitzaIdioma = (idioma?: string): string | undefined =>
-    idioma != null && idioma.length > 0 ? idioma.substring(0, 2).toLowerCase() : undefined;
 
 const preferenciesDesades = (usuari: any): UserPreferences => ({
     idioma: normalitzaIdioma(usuari?.idioma),

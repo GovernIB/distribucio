@@ -13,6 +13,7 @@ import {
 } from './DistribucioContext';
 import { useSessioUsuari } from './DistribucioAuthProvider';
 import { SseProvider } from './SseClient';
+import { idiomaAplicacio } from '../util/idioma';
 
 const ALLOWED_ROLES = [ROLE_SUPER, ROLE_ADMIN, ROLE_ADMIN_LECTURA, ROLE_USER].reverse();
 
@@ -304,11 +305,34 @@ const DistribucioProviderLoading: React.FC = () => {
     );
 };
 
+/**
+ * Aplica a l'API (Accept-Language) l'idioma del perfil de l'usuari tan bon punt se'l coneix, i diu
+ * si ja hi és aplicat.
+ *
+ * BaseApp també el passa a base-react, però des de dins de l'aplicació, un cop pintada. Si fos
+ * aquell el primer a aplicar-lo, l'índex de l'API es tornaria a carregar amb l'aplicació ja
+ * muntada, i l'aplicació es desmuntaria i es tornaria a muntar (si es veia o no depenia de la
+ * velocitat del servidor). Aplicant-lo aquí i esperant-lo abans de donar-se per llest, quan
+ * base-react el posa ja té el mateix valor i no recarrega res.
+ */
+const useIdiomaApi = (currentUser: { idioma?: string } | undefined) => {
+
+    const { currentLanguage: apiCurrentLanguage, setCurrentLanguage: apiSetCurrentLanguage } = useResourceApiContext();
+    const idioma = currentUser != null ? idiomaAplicacio(currentUser.idioma) : undefined;
+    React.useEffect(() => {
+        if (idioma != null && idioma !== apiCurrentLanguage) {
+            apiSetCurrentLanguage(idioma);
+        }
+    }, [idioma]);
+    return idioma != null && idioma === apiCurrentLanguage;
+};
+
 export const DistribucioProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 
     const { offline: apiOffline } = useResourceApiContext();
     const broadcast = useBroadcastSession();
     const { currentUser, setCurrentUser } = useCurrentUser();
+    const idiomaApiReady = useIdiomaApi(currentUser);
     const { currentUserId, currentRole, currentRoleReady, rolesAvailable, setCurrentRole } = useCurrentRole(broadcast, currentUser);
     const {
         currentEntitatId,
@@ -324,7 +348,7 @@ export const DistribucioProvider: React.FC<React.PropsWithChildren> = ({ childre
         currentRole,
         currentRoleReady
     );
-    const isReady = apiOffline || (currentRoleReady && currentEntitatReady && currentUser != null);
+    const isReady = apiOffline || (currentRoleReady && currentEntitatReady && currentUser != null && idiomaApiReady);
     const contextValue = {
         isReady,
         currentUser,

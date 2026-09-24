@@ -25,6 +25,7 @@ import { EntitatSelector, RolSelector, getRolBadgeIcon } from './EntitatRolSelec
 import { InterficieClassicaButton } from './InterficieClassica';
 import { useDistribucioContext } from './DistribucioContext';
 import { MenuEstil } from '../theme';
+import { idiomaAplicacio } from '../util/idioma';
 
 export type BaseAppProps = React.PropsWithChildren & {
     code: string;
@@ -182,10 +183,11 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
     };
     const formDialogApiRef = useMuiFormDialogApiRef();
     const { currentRole: rolActual } = useDistribucioContext();
-    // L'idioma surt del perfil de l'usuari (dis_usuari.idioma), que DistribucioProvider ja té
-    // carregat abans de pintar res. i18n.language -- el que detecta el navegador -- només fa de
-    // recurs si el perfil no en duu cap. Fer-ho aquí, i no des del diàleg de perfil, és el que
-    // evita que obrir el perfil canviï l'idioma i recarregui la pantalla.
+    // L'idioma surt del perfil de l'usuari (dis_usuari.idioma) i, si no en té, del navegador. Es
+    // calcula amb idiomaAplicacio, la mateixa funció amb què DistribucioProvider ja l'ha aplicat a
+    // l'API abans de pintar res: així base-react no el torna a canviar i no recarrega l'índex.
+    // Fer-ho aquí, i no des del diàleg de perfil, és el que evita que obrir el perfil canviï
+    // l'idioma i recarregui la pantalla.
     const { idioma } = useUserPreferences();
     return (
         <Box sx={menuColorSetSx}>
@@ -220,7 +222,7 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
             // sobrevivia a la recàrrega i el perfil l'havia de desfer després, amb el refresc
             // corresponent. La preferència desada a la base de dades és l'única font.
             i18nUseTranslation={useTranslation}
-            i18nCurrentLanguage={idioma ?? i18n.language}
+            i18nCurrentLanguage={idiomaAplicacio(idioma)}
             i18nHandleLanguageChange={i18nHandleLanguageChange}
             i18nAddResourceBundleCallback={i18nAddResourceBundleCallback}
             routerGoBack={goBack}
