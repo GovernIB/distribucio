@@ -69,6 +69,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     @PostConstruct
     public void init() {
         register(RegistreResource.PERSPECTIVE_DARRER_MOVIMENT_CODE, new DarrerMovimentPerspectiveApplicator());
+        register(RegistreResource.PERSPECTIVE_ARXIU_DETALL_CODE, new ArxiuDetallPerspectiveApplicator());
         register(ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE, new CommentNumPerspectiveApplicator());
         register(RegistreResource.REPORT_INFORME_LOGS_CODE, new InformeLogsReportGenerator());
         register(RegistreResource.ACTION_CLASSIFICAR_CODE, new ClassificarActionExecutor());
@@ -245,6 +246,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
     @Override
     protected void afterConversion(RegistreResourceEntity entity, RegistreResource resource) {
+        Long entitatActualId = SessioActualUtil.getEntitatId();
         if (entity.getAlertes() != null && !entity.getAlertes().isEmpty()) {
             resource.setAlerta(
                     entity.getAlertes().stream()
@@ -264,6 +266,38 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             resource.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PENDENT);
         } else {
             resource.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PROCESSAT);
+        }
+
+        if (resource.getProcedimentCodi() != null) {
+            procedimentResourceRepository.findByEntitatIdAndCodiSia(entitatActualId, resource.getProcedimentCodi())
+                    .ifPresentOrElse(
+                            (procediment) -> {
+                                resource.setProcediment(ResourceReference.toResourceReference(
+                                        procediment.getId(), procediment.getCodiSia() + " - " + procediment.getNom()));
+                            },
+                            () -> {
+                                resource.setProcediment(ResourceReference.toResourceReference(
+                                        -1L, resource.getProcedimentCodi() + " - " +
+                                                I18nUtil.getInstance().getI18nMessage("registre.detalls.camp.procediment.no.trobat", resource.getProcedimentCodi())
+                                ));
+                            }
+                    );
+        }
+
+        if (resource.getServeiCodi() != null) {
+            serveiResourceRepository.findByEntitatIdAndCodiSia(entitatActualId, resource.getServeiCodi())
+                    .ifPresentOrElse(
+                            (servei) -> {
+                                resource.setServei(ResourceReference.toResourceReference(
+                                        servei.getId(), servei.getCodiSia() + " - " + servei.getNom()));
+                            },
+                            () -> {
+                                resource.setProcediment(ResourceReference.toResourceReference(
+                                        -1L, resource.getProcedimentCodi() + " - " +
+                                                I18nUtil.getInstance().getI18nMessage("registre.detalls.camp.servei.no.trobat", resource.getProcedimentCodi())
+                                ));
+                            }
+                    );
         }
 
         ExecucioMassivaContingutEntity execucioMassivaPendent = execucioMassivaContingutRepository.findByElementIdAndEstatIn(
@@ -318,6 +352,18 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 resource.setDarrerMovimentResource(
                     contingutMovimentResourceService.getOne(entity.getDarrerMoviment().getId(), null));
             }
+        }
+    }
+
+    private class ArxiuDetallPerspectiveApplicator implements PerspectiveApplicator<RegistreResourceEntity, RegistreResource> {
+
+        @Override
+        public void applySingle(String code, RegistreResourceEntity entity, RegistreResource resource) throws PerspectiveApplicationException {
+            try {
+                ConfigHelper.setEntitatActualCodi(entity.getEntitatCodi());
+                ArxiuDetallDto arxiuDetall = registreService.getArxiuDetall(entity.getId());
+                resource.setArxiuDetall( arxiuDetall );
+            } catch (Exception ignore) {}
         }
     }
 

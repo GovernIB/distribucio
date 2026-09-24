@@ -9,6 +9,7 @@ import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.RegistreHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
+import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
 import es.caib.distribucio.logic.intf.base.exception.ResourceNotFoundException;
 import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
 import es.caib.distribucio.logic.intf.base.model.ReportFileType;
@@ -22,6 +23,7 @@ import es.caib.distribucio.logic.intf.dto.RegistreAnnexFirmaDto;
 import es.caib.distribucio.logic.intf.dto.ResultatAnnexDefinitiuDto;
 import es.caib.distribucio.logic.intf.helper.ArxiuConversions;
 import es.caib.distribucio.logic.intf.model.RegistreAnnexResource;
+import es.caib.distribucio.logic.intf.model.RegistreResource;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexElaboracioEstatEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexNtiTipusDocumentEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexOrigenEnum;
@@ -38,6 +40,7 @@ import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.RegistreAnnexFirmaRepository;
 import es.caib.distribucio.persist.repository.RegistreAnnexRepository;
 import es.caib.distribucio.persist.resourceentity.RegistreAnnexResourceEntity;
+import es.caib.distribucio.persist.resourceentity.RegistreResourceEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -75,6 +78,7 @@ public class RegistreAnnexResourceServiceImpl
 
 	@PostConstruct
 	public void init() {
+		register(RegistreAnnexResource.PERSPECTIVE_FIRMES_CODE, new FirmesPerspectiveApplicator());
 		register(RegistreAnnexResource.REPORT_DESCARREGAR_ORIGINAL_CODE, new DescarregarReportGenerator(false));
 		register(RegistreAnnexResource.REPORT_DESCARREGAR_IMPRIMIBLE_CODE, new DescarregarReportGenerator(true));
 		register(RegistreAnnexResource.REPORT_DESCARREGAR_FIRMA_CODE, new DescarregarFirmaReportGenerator());
@@ -100,28 +104,13 @@ public class RegistreAnnexResourceServiceImpl
 		RegistreAnnexResource resource = super.getOne(id, perspectives);
 		RegistreAnnexResourceEntity entity = getEntity(id);
 		resource.setMetaDadesMap(parseMetaDadesMap(id, entity.getMetaDades()));
-		resource.setNtiTipusDocument(enumNameOrRaw(
-				RegistreAnnexNtiTipusDocumentEnum.valorAsEnum(entity.getNtiTipusDocument()),
-				entity.getNtiTipusDocument()));
-		resource.setNtiElaboracioEstat(enumNameOrRaw(
-				RegistreAnnexElaboracioEstatEnum.valorAsEnum(entity.getNtiElaboracioEstat()),
-				entity.getNtiElaboracioEstat()));
-		resource.setSicresTipusDocument(enumNameOrRaw(
-				RegistreAnnexSicresTipusDocumentEnum.valorAsEnum(entity.getSicresTipusDocument()),
-				entity.getSicresTipusDocument()));
-		resource.setOrigenCiutadaAdmin(enumNameOrRaw(
-				RegistreAnnexOrigenEnum.valorAsEnum(entity.getOrigenCiutadaAdmin()),
-				entity.getOrigenCiutadaAdmin()));
+
 		List<RegistreAnnexFirmaEntity> firmes = registreAnnexFirmaRepository.getRegistreAnnexFirmesSenseDetall(id);
 		resource.setFirmes(toFirmesDto(firmes));
 		if (AnnexEstat.ESBORRANY.equals(entity.getArxiuEstat())) {
 			resource.setGesdocFirmes(toGesdocFirmesDto(firmes));
 		}
 		return resource;
-	}
-
-	private String enumNameOrRaw(Enum<?> enumValue, String raw) {
-		return enumValue != null ? enumValue.name() : raw;
 	}
 
 	/**
@@ -217,6 +206,15 @@ public class RegistreAnnexResourceServiceImpl
 			resource.setConcsvUrl(concsvBaseUrl + "/view.xhtml?hash=" + entity.getFirmaCsv());
 		}
 	}
+
+    private class FirmesPerspectiveApplicator implements PerspectiveApplicator<RegistreAnnexResourceEntity, RegistreAnnexResource> {
+
+        @Override
+        public void applySingle(String code, RegistreAnnexResourceEntity entity, RegistreAnnexResource resource) throws PerspectiveApplicationException {
+            List<RegistreAnnexFirmaEntity> firmes = registreAnnexFirmaRepository.getRegistreAnnexFirmesSenseDetall(entity.getId());
+            resource.setFirmes(toFirmesDto(firmes));
+        }
+    }
 
 	/**
 	 * Accions "Descarregar original" / "Descarregar imprimible" (annexosAdminList.jsp:

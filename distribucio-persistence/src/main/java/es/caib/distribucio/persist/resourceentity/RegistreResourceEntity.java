@@ -157,7 +157,7 @@ public class RegistreResourceEntity extends ContingutResourceEntity<RegistreReso
     @JoinColumn(
             name = "justificant_id",
             foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "registre_justificant_fk"))
-    private RegistreAnnexEntity justificant;
+    private RegistreAnnexResourceEntity justificant;
 
     @OneToMany(
             mappedBy = "registre",

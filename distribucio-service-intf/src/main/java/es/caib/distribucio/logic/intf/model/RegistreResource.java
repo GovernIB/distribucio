@@ -8,13 +8,10 @@ import es.caib.distribucio.logic.intf.base.model.MassiveForm;
 import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
+import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.resourcevalidation.EmailValid;
 import es.caib.distribucio.logic.intf.resourcevalidation.RegistreClassificarValid;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
-import es.caib.distribucio.logic.intf.dto.RegistreNombreAnnexesEnumDto;
-import es.caib.distribucio.logic.intf.dto.RegistreProcesEstatSimpleEnumDto;
-import es.caib.distribucio.logic.intf.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatSistraEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
@@ -49,6 +46,11 @@ import java.util.*;
                         grantedPermissions = { PermissionEnum.READ }
                 ),
                 @ResourceAccessConstraint(
+                        type = ResourceAccessConstraint.ResourceAccessConstraintType.CUSTOM,
+                        roles = { BaseConfig.ROLE_USER },
+                        grantedPermissions = {PermissionEnum.WRITE}
+                ),
+                @ResourceAccessConstraint(
                         type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
                         roles = { BaseConfig.ROLE_ADMIN },
                         grantedPermissions = { PermissionEnum.READ, PermissionEnum.WRITE }
@@ -62,6 +64,9 @@ import java.util.*;
                 @ResourceArtifact(
                         type = ResourceArtifactType.PERSPECTIVE,
                         code = RegistreResource.PERSPECTIVE_DARRER_MOVIMENT_CODE),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.PERSPECTIVE,
+                        code = RegistreResource.PERSPECTIVE_ARXIU_DETALL_CODE),
                 @ResourceArtifact(
                         type = ResourceArtifactType.PERSPECTIVE,
                         code = ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE),
@@ -140,6 +145,7 @@ public class RegistreResource extends ContingutResource {
 
     public static final String FILTER_CODE = "FILTER";
     public static final String PERSPECTIVE_DARRER_MOVIMENT_CODE = "DARRER_MOVIMENT";
+    public static final String PERSPECTIVE_ARXIU_DETALL_CODE = "ARXIU_DETALL";
     public static final String REPORT_INFORME_LOGS_CODE = "INFORME_LOGS";
     public static final String ACTION_CLASSIFICAR_CODE = "CLASSIFICAR";
     public static final String ACTION_ENVIAR_EMAIL_CODE = "ENVIAR_EMAIL";
@@ -210,8 +216,12 @@ public class RegistreResource extends ContingutResource {
     @Transient private RegistreProcesEstatSimpleEnumDto procesEstatSimple;;
     @Transient private boolean reintentsEsgotat;
     @Transient private int maxReintents;
+    @Transient private ArxiuDetallDto arxiuDetall;
 
-//    private ResourceReference<RegistreAnnexEntity, Long>  justificant;
+    @Transient private ResourceReference<ProcedimentResource, Long> procediment;
+    @Transient private ResourceReference<ServeiResource, Long> servei;
+
+    private ResourceReference<RegistreAnnexResource, Long>  justificant;
 //    private List<ResourceReference<RegistreInteressatResource, Long>> interessats = new ArrayList<>();
     @Transient private String interessatsString;
 //    private List<ResourceReference<RegistreAnnexEntity>> annexos = new ArrayList<>();

@@ -6,6 +6,9 @@ import es.caib.distribucio.logic.intf.base.model.BaseAuditableResource;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.registre.RegistreInteressatCanalEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreInteressatDocumentTipusEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreInteressatTipusEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,8 +41,8 @@ public class RegistreInteressatResource extends BaseAuditableResource<Long> {
 
     public static final String FILTER_CODE = "FILTER";
 
-    private String tipus;
-    private String documentTipus;
+    private RegistreInteressatTipusEnum tipus;
+    private RegistreInteressatDocumentTipusEnum documentTipus;
     private String documentNum;
     private String nom;
     private String llinatge1;
@@ -56,7 +59,7 @@ public class RegistreInteressatResource extends BaseAuditableResource<Long> {
     private String email;
     private String telefon;
     private String emailHabilitat;
-    private String canalPreferent;
+    private RegistreInteressatCanalEnum canalPreferent;
     private String observacions;
     private String codiDire;
 

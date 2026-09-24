@@ -12,7 +12,7 @@ import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDto;
 import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexFirmaDto;
 import es.caib.distribucio.logic.intf.dto.RegistreNumeroCopiaEnumDto;
-import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.logic.intf.registre.*;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,7 +55,7 @@ import java.util.Map;
 		accessConstraints = {
 				@ResourceAccessConstraint(
 						type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-						roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA},
+						roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_USER},
 						grantedPermissions = {PermissionEnum.READ}
 				)
 		},
@@ -64,6 +64,9 @@ import java.util.Map;
 						type = ResourceArtifactType.FILTER,
 						code = RegistreAnnexResource.FILTER_CODE,
 						formClass = RegistreAnnexResource.FormFilter.class),
+				@ResourceArtifact(
+						type = ResourceArtifactType.PERSPECTIVE,
+						code = RegistreAnnexResource.PERSPECTIVE_FIRMES_CODE),
 				@ResourceArtifact(
 						type = ResourceArtifactType.REPORT,
 						code = RegistreAnnexResource.REPORT_DESCARREGAR_ORIGINAL_CODE,
@@ -121,6 +124,7 @@ import java.util.Map;
 public class RegistreAnnexResource extends BaseResource<Long> {
 
 	public static final String FILTER_CODE = "FILTER";
+    public static final String PERSPECTIVE_FIRMES_CODE = "FIRMES";
 	public static final String REPORT_DESCARREGAR_ORIGINAL_CODE = "DESCARREGAR_ORIGINAL";
 	public static final String REPORT_DESCARREGAR_IMPRIMIBLE_CODE = "DESCARREGAR_IMPRIMIBLE";
 	public static final String REPORT_DESCARREGAR_FIRMA_CODE = "DESCARREGAR_FIRMA";
@@ -134,10 +138,10 @@ public class RegistreAnnexResource extends BaseResource<Long> {
 	private String fitxerArxiuUuid;
 	private Date dataCaptura;
 	private String localitzacio;
-	private String origenCiutadaAdmin;
-	private String ntiTipusDocument;
-	private String sicresTipusDocument;
-	private String ntiElaboracioEstat;
+	private RegistreAnnexOrigenEnum origenCiutadaAdmin;
+	private RegistreAnnexNtiTipusDocumentEnum ntiTipusDocument;
+	private RegistreAnnexSicresTipusDocumentEnum sicresTipusDocument;
+	private RegistreAnnexElaboracioEstatEnum ntiElaboracioEstat;
 	private String observacions;
 	private Integer firmaMode;
 	private String firmaCsv;

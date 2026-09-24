@@ -1,7 +1,7 @@
 import { Box, Button, Icon, Tooltip, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { FilterCountChip } from './FilterCountChip'; // TODO: corregir ruta d'import segons projecte
-import { MuiDataGrid, MuiDataGridProps, useMuiDataGridApiRef } from 'reactlib';
+import {MuiDataGrid, MuiDataGridProps, useMuiDataGridApiRef, useResourceApiService} from 'reactlib';
 import {useGridApiRef as useMuiDatagridApiRef} from "@mui/x-data-grid-pro";
 import { useUserPreferences } from './UserProfile';
 import MassiveActionSelector, {MassiveActionProps} from "./MassiveActionSelector.tsx";
@@ -145,6 +145,11 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
         ...others
     } = { ...defaultProps, ...props };
 
+    const {
+        currentActions: apiCurrentActions,
+    } = useResourceApiService(props.resourceName);
+    const isCreateLinkPresent = apiCurrentActions?.['create'] != null;
+
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
 
     const refresh = () => {
@@ -211,7 +216,7 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
                     {toolbarCreateTitle}
                 </ToolbarButton>
             ),
-            hidden: toolbarHideCreate || others?.readOnly,
+            hidden: !isCreateLinkPresent || toolbarHideCreate || others?.readOnly,
         },
         ...(toolbarElementsWithPositions ?? []),
     ].filter((e: any) => !e?.hidden);

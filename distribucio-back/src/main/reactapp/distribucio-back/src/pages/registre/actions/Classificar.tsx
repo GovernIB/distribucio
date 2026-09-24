@@ -1,9 +1,8 @@
 import {Grid} from "@mui/material";
-import {useDetailContext, useFormContext, useMuiFormDialogApiRef} from "reactlib";
+import {useDetailContext, useFormContext, useMuiFormDialogApiRef, MuiDetail} from "reactlib";
 import {useTranslation} from "react-i18next";
 import GridFormField from "../../../components/GridFormField.tsx";
 import FormActionDialog from "../../../components/FormActionDialog.tsx";
-import MuiDetail from "../../../../lib/components/mui/detail/MuiDetail.tsx";
 import {DetailField, DetailExpandCard} from "../../../components/CardData.tsx";
 import Alert from "@mui/material/Alert";
 import {formatDate} from "../../../util/dateUtils.ts";

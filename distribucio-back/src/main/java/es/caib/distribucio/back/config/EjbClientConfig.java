@@ -332,6 +332,24 @@ public class EjbClientConfig {
 		return getLocalEjbFactoyBean(VistaMovimentResourceService.class);
 	}
 
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean registreInteressatResourceService() {
+		return getLocalEjbFactoyBean(RegistreInteressatResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean dadaResourceService() {
+		return getLocalEjbFactoyBean(DadaResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean metaDadaResourceService() {
+		return getLocalEjbFactoyBean(MetaDadaResourceService.class);
+	}
+
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {
 		String jndiName = jndiServiceName(serviceClass);
 		log.info("Creating EJB proxy for " + serviceClass.getSimpleName() + " with JNDI name " + jndiName);

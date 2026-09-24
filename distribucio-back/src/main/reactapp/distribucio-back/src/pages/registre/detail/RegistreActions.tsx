@@ -12,6 +12,7 @@ import useMarcarProcessada from "../actions/MarcarProcessada.tsx";
 import useMarcarPendent from "../actions/MarcarPendent.tsx";
 import {useSnackbar} from "notistack";
 import useTornarProcessar from "../actions/TornarProcessar.tsx";
+import {useRegistreDetail} from "./RegistreDetail.tsx";
 
 export const useActions = () => {
     const { t } = useTranslation();
@@ -46,6 +47,7 @@ export const useRegistreActions = (refresh?: () => void) => {
     const {temporalMessageShow} = useBaseAppContext();
     const { enqueueSnackbar } = useSnackbar();
 
+    const {handleOpen: handleDetail, dialog: dialogDetail} = useRegistreDetail()
     const {show: handleHistoric, component: componentHistoric} = useContingutHistorialDialog()
     const {handleOpen: handleAlertes, component: componentAlertes} = useAlertes();
     const { handleShow: handleClassificar, content: contentClassificar } = useClassificar((result:any) => {
@@ -73,6 +75,12 @@ export const useRegistreActions = (refresh?: () => void) => {
     })
 
     const actions:any[] = [
+        {
+            label: t('page.contingut.accio.detalls.label'),
+            icon: 'info',
+            showInMenu: true,
+            onClick: handleDetail,
+        },
         {
             label: t('page.contingut.accio.historial.label'),
             icon: 'list',
@@ -146,6 +154,7 @@ export const useRegistreActions = (refresh?: () => void) => {
     ]
 
     const components = <>
+        {dialogDetail}
         {componentHistoric}
         {componentAlertes}
         {contentClassificar}

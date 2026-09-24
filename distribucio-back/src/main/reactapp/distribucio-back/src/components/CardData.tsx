@@ -139,7 +139,7 @@ export const DetailExpandCard = (props: DetailCardProps) => {
                             <IconButton
                                 onClick={handleExpandClick}
                             >
-                                <Icon>{e?'expand_more':'expand_less'}</Icon>
+                                <Icon>{e?'expand_less':'expand_more'}</Icon>
                             </IconButton>
                         </>)}
                         {header}
@@ -288,17 +288,19 @@ export const ContenidoData = (props:ContenidoDataProps) => {
 
 // Only with MuiDetail
 export const DetailField = (props:any) => {
-    const {name, size, inline = false, children} = props;
+    const {name, size, inline = false, children, formatterValue, ...other} = props;
     const {data, fields} = useDetailContext()
     const field = fields?.find?.((item: any) => item?.name === name);
     const value = field?.options?.[data[name]] ?? data[name];
 
+    const v = value?.description || value
     return (
         <DetailCardContent
             title={props.label ?? (field?.label ?? name)}
             size={size}
             titleSize={inline ?4 :12}
             textSize={inline ?8 :12}
-        >{children || value?.description || value}</DetailCardContent>
+            {...other}
+        >{children || formatterValue?.(v, data) || v}</DetailCardContent>
     )
 }

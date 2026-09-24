@@ -22,6 +22,10 @@ const translationEs = {
         advancedSearchOpen: 'Abrir la búsqueda avanzada',
         advancedSearchClose: 'Cerrar la búsqueda avanzada',
         copiat: 'Copiado correctamente',
+        boolean: {
+            true: "Si",
+            false: "No",
+        }
     },
     app: {
         loading: 'Iniciando DISTRIBUCIO',
@@ -228,6 +232,7 @@ const translationEs = {
             accio: {
                 detalls: {
                     label: "Detalles",
+                    title: "Detalles del contenido",
                 },
                 historial: {
                     label: "Histórico de acciones",
@@ -343,6 +348,8 @@ const translationEs = {
                         nif: 'NIF',
                         data: 'Fecha',
                         emissor: 'Emisor',
+                        fitxerNom: 'Fichero',
+                        csvRegulacio: 'CSV regulación',
                     },
                     data: {
                         nd: 'N/D',
@@ -740,9 +747,28 @@ const translationEs = {
         registre: {
             title: "Anotaciones de registro",
             remitentEmpty: "Remitente vacío",
+            arxiu: {
+                identificador: "Identificador del archivo",
+                nom: "Nombre",
+                serieDocumental: "Serie documental",
+                eniVersio: "Versión",
+                eniIdentificador: "Identificador",
+                eniOrgans: "Órganos",
+                eniDataObertura: "Fecha de apertura",
+                eniClassificacio: "Clasificación",
+                eniEstat: "Estado",
+            },
             grid: {
                 avisos: "Avisos",
                 remitent: "Remitente",
+                isCopia: "Registro actual",
+                backProcesData: "Fecha de procesamiento",
+                backRebutjData: "Fecha de rechazo",
+                backErrorData: "Fecha del error",
+                darrerMoviment: {
+                    createdDate: "Fecha de puesta en buzón",
+                    createdBy: "Procesada por",
+                },
             },
             estat: {
                 regla: "La anotación está pendiente de una regla sin regla, es necesario reprocesarla",
@@ -979,7 +1005,27 @@ const translationEs = {
                 marcar: "Añadir a favoritos",
                 desmarcar: "Quitar de favoritos",
             },
-        }
+        },
+        RegistreDetail: {
+            titles: {
+                representant: "Representante",
+                original: "Original",
+                justificant: "Justificante",
+                obligatori: "Datos obligatorios",
+                opcional: "Datos opcionales",
+                seguiment: "Datos de seguimiento",
+            },
+            tabs: {
+                resum: "Resumen",
+                info: "Información de registro",
+                interessats: "Interesados",
+                annexos: "Anexos",
+                arxiu: "Info. del archivo",
+                procesBack: "Procesamiento del backoffice",
+                dades: "Datos",
+                copia: "Copias",
+            }
+        },
     },
 };
 

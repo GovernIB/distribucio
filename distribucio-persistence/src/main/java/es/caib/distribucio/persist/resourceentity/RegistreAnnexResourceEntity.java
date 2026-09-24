@@ -2,29 +2,19 @@ package es.caib.distribucio.persist.resourceentity;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.model.RegistreAnnexResource;
-import es.caib.distribucio.logic.intf.registre.ValidacioFirmaEnum;
+import es.caib.distribucio.logic.intf.registre.*;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnnexEstat;
 import es.caib.distribucio.persist.base.entity.BaseResourceEntity;
+import es.caib.distribucio.persist.converter.RegistreAnnexElaboracioEstatConverter;
+import es.caib.distribucio.persist.converter.RegistreAnnexNtiTipusDocumentConverter;
+import es.caib.distribucio.persist.converter.RegistreAnnexOrigenConverter;
+import es.caib.distribucio.persist.converter.RegistreAnnexSicresTipusDocumentConverter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Formula;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ForeignKey;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -76,13 +66,17 @@ public class RegistreAnnexResourceEntity extends BaseResourceEntity<RegistreAnne
 	@Column(name = "localitzacio", length = 80)
 	private String localitzacio;
 	@Column(name = "origen_ciuadm", length = 1, nullable = false)
-	private String origenCiutadaAdmin;
+    @Convert(converter = RegistreAnnexOrigenConverter.class)
+	private RegistreAnnexOrigenEnum origenCiutadaAdmin;
 	@Column(name = "nti_tipus_doc", length = 4, nullable = false)
-	private String ntiTipusDocument;
+    @Convert(converter = RegistreAnnexNtiTipusDocumentConverter.class)
+	private RegistreAnnexNtiTipusDocumentEnum ntiTipusDocument;
 	@Column(name = "sicres_tipus_doc", length = 2)
-	private String sicresTipusDocument;
+    @Convert(converter = RegistreAnnexSicresTipusDocumentConverter.class)
+	private RegistreAnnexSicresTipusDocumentEnum sicresTipusDocument;
 	@Column(name = "nti_elaboracio_estat", length = 4)
-	private String ntiElaboracioEstat;
+    @Convert(converter = RegistreAnnexElaboracioEstatConverter.class)
+	private RegistreAnnexElaboracioEstatEnum ntiElaboracioEstat;
 	@Column(name = "observacions", length = 50)
 	private String observacions;
 	@Column(name = "firma_mode")

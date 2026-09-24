@@ -1,4 +1,5 @@
-import {Box, Tab, Tabs} from "@mui/material";
+import {Box, Tab} from "@mui/material";
+import Tabs, { tabsClasses } from '@mui/material/Tabs';
 import {useEffect, useState} from "react";
 import {StyledBadge} from "./StyledBadge.tsx";
 import Load from "./Load.tsx";
@@ -70,7 +71,12 @@ const TabComponent = (props :any) => {
                 value={value}
                 onChange={handleChange}
                 {...other}
-                sx={{px: 1}}
+                sx={{
+                    px: 1,
+                    [`& .${tabsClasses.scrollButtons}`]: {
+                        '&.Mui-disabled': { opacity: 0.3 },
+                    },
+                }}
             >
                 {tabs.map((tab:TabProps) => {
                     const {title, value: tabValue, label, disabled, showZero = false, content, badge = 0, badgeColor= 'primary', error = false} = tab;

@@ -47,7 +47,7 @@ export const Detail: React.FC<DetailProps> = (props) => {
     const dataGetValue = (callback: (state: any) => any) => callback(data);
     const getInitialData = React.useCallback(
         async (id: any): Promise<any> => {
-            return await apiGetOne(id, { data: { perspectives } });
+            return await apiGetOne(id, { perspectives });
         },
         [apiGetOne, perspectives]
     );

@@ -2,8 +2,13 @@ package es.caib.distribucio.persist.resourceentity;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.model.RegistreInteressatResource;
+import es.caib.distribucio.logic.intf.registre.RegistreInteressatCanalEnum;
+import es.caib.distribucio.logic.intf.registre.RegistreInteressatDocumentTipusEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.persist.base.entity.BaseAuditableEntity;
+import es.caib.distribucio.persist.converter.RegistreInteressatCanalConverter;
+import es.caib.distribucio.persist.converter.RegistreInteressatDocumentTipusConverter;
+import es.caib.distribucio.persist.converter.RegistreInteressatTipusConverter;
 import es.caib.distribucio.persist.entity.RegistreInteressatEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,9 +39,11 @@ public class RegistreInteressatResourceEntity extends BaseAuditableEntity<Regist
     private Long id;
 
     @Column(name = "tipus", length = 19, nullable = false)
-    private String tipus;
+    @Convert(converter = RegistreInteressatTipusConverter.class)
+    private RegistreInteressatTipusEnum tipus;
     @Column(name = "doc_tipus", length = 1)
-    private String documentTipus;
+    @Convert(converter = RegistreInteressatDocumentTipusConverter.class)
+    private RegistreInteressatDocumentTipusEnum documentTipus;
     @Column(name = "doc_num", length = 17)
     private String documentNum;
     @Column(name = "nom", length = 255)
@@ -70,7 +77,8 @@ public class RegistreInteressatResourceEntity extends BaseAuditableEntity<Regist
     @Column(name = "email_hab", length = 160)
     private String emailHabilitat;
     @Column(name = "canal_pref", length = 2)
-    private String canalPreferent;
+    @Convert(converter = RegistreInteressatCanalConverter.class)
+    private RegistreInteressatCanalEnum canalPreferent;
     @Column(name = "observacions", length = 160)
     private String observacions;
     @Column(name = "codi_dire", length = 20)
@@ -95,10 +103,6 @@ public class RegistreInteressatResourceEntity extends BaseAuditableEntity<Regist
             name = "representat_id",
             foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "reginter_representat_fk"))
     protected RegistreInteressatResourceEntity representat;
-
-    public RegistreInteressatTipusEnum getTipus() {
-        return RegistreInteressatTipusEnum.valorAsEnum(tipus);
-    }
 
     @Transient private String nomComplet;
     public String getNomComplet() {
