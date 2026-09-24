@@ -54,6 +54,16 @@ import java.util.Locale;
 @DependsOn("ejbClientConfig")
 public class WebMvcConfig extends BaseWebMvcConfig {
 
+	/**
+	 * Orígens des d'on es pot cridar l'API amb credencials: el servidor de desenvolupament de Vite
+	 * ({@code npm run dev}) i el mateix backend. {@code SessioUsuariController} també els fa servir
+	 * per a decidir a quines URL pot tornar després d'iniciar la sessió.
+	 */
+	public static final String[] ORIGENS_CORS = new String[] {
+			"http://localhost:5173",
+			"http://localhost:8080"
+	};
+
 
 	@Value("${" + BaseConfig.PROP_USER_SESSION_HTTP_HEADER + ":X-App-Session}")
 	private String userSessionHttpHeader;
@@ -181,7 +191,7 @@ public class WebMvcConfig extends BaseWebMvcConfig {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**").
-				allowedOrigins("http://localhost:5173", "http://localhost:8080").
+				allowedOrigins(ORIGENS_CORS).
 				allowCredentials(true).
 				allowedHeaders("*").
 				allowedMethods("*");

@@ -3,15 +3,15 @@ import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useAuthContext, useResourceApiContext, useResourceApiService } from 'reactlib';
+import { useResourceApiContext, useResourceApiService } from 'reactlib';
 import {
     DistribucioContext,
-    ROLE_PREFIX,
     ROLE_SUPER,
     ROLE_ADMIN,
     ROLE_ADMIN_LECTURA,
     ROLE_USER,
 } from './DistribucioContext';
+import { useSessioUsuari } from './DistribucioAuthProvider';
 
 const ALLOWED_ROLES = [ROLE_SUPER, ROLE_ADMIN, ROLE_ADMIN_LECTURA, ROLE_USER].reverse();
 
@@ -80,13 +80,6 @@ const useBroadcastSession = () => {
 
 type BroadcastSession = ReturnType<typeof useBroadcastSession>;
 
-const decodeJwt = (token: string) => {
-
-    const payload = token.split('.')[1];
-    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
-    return JSON.parse(atob(base64));
-};
-
 const useSessionStorage = (...keyParts: any[]) => {
 
     const key = keyParts.map((p) => (typeof p === 'object' && p !== null ? JSON.stringify(p) : String(p))).join('|');
@@ -120,7 +113,7 @@ const useCurrentUser = () => {
 
 const useCurrentRole = (broadcast: BroadcastSession, currentUser: any) => {
 
-    const {isReady: authIsReady, getUserId: authGetUserId, getToken: authGetToken,} = useAuthContext();
+    const { usuari: sessioUsuari } = useSessioUsuari();
     const { httpHeaders: apiHttpHeaders, setHttpHeaders: apiSetHttpHeaders } = useResourceApiContext();
     const [currentUserId, setCurrentUserId] = React.useState<string>();
     const [rolesAvailable, setRolesAvailable] = React.useState<string[]>();
@@ -136,29 +129,17 @@ const useCurrentRole = (broadcast: BroadcastSession, currentUser: any) => {
     const setCurrentRole = (role?: string) => publishSession({ role, entitatId: undefined });
     const { getValue: roleSessionGetValue, setValue: roleSessionSetValue } = useSessionStorage(currentUserId, 'currentRole');
     React.useEffect(() => {
-        // Obté els rols disponibles del token JWT o de __AUTH_ROLES__
-        if (!authIsReady) {
+        // Els rols surten de la sessió de servidor (SessioUsuariController), no d'un token: la
+        // interfície no en gestiona cap (veure DistribucioAuthProvider). ROLE_USER s'hi afegeix
+        // sempre: "tothom" no és un rol de Keycloak sinó el rol base que el backend concedeix a
+        // tot usuari autenticat (veure WebSecurityConfig.filterAllowedGrantedAuthorities), igual
+        // que a RIPEA.
+        if (sessioUsuari == null) {
             return;
         }
-        const userId = authGetUserId();
-        setCurrentUserId(userId);
-        const token = authGetToken();
-        if (token == null) {
-            return;
-        }
-        const tokenDecoded = decodeJwt(token);
-        // Els rols vénen del token (mode OIDC) o de __AUTH_ROLES__ (mode contenidor, on el token
-        // no duu realm_access), i sempre s'hi afegeix ROLE_USER: "tothom" no és un rol de Keycloak
-        // sinó el rol base que el backend concedeix a tot usuari autenticat (veure
-        // WebSecurityConfig.filterAllowedGrantedAuthorities), igual que a RIPEA.
-        const rolsIdp: string[] =
-            tokenDecoded.realm_access != null
-                ? tokenDecoded.realm_access?.roles?.filter(
-                      (r: string) => r === ROLE_USER || r.startsWith(ROLE_PREFIX)
-                  ) ?? []
-                : (window as any).__AUTH_ROLES__ ?? [];
-        setRolesAvailable(ALLOWED_ROLES.filter((a) => a === ROLE_USER || rolsIdp.includes(a)));
-    }, [authIsReady]);
+        setCurrentUserId(sessioUsuari.codi);
+        setRolesAvailable(ALLOWED_ROLES.filter((a) => a === ROLE_USER || sessioUsuari.rols.includes(a)));
+    }, [sessioUsuari]);
 
     React.useEffect(() => {
         // Rol inicial, per aquest ordre: el de la pestanya actual (sessionStorage), el darrer rol

@@ -1,7 +1,8 @@
 import React from 'react';
 import { EventSource } from 'eventsource';
-import { useAuthContext, useResourceApiContext } from 'reactlib';
+import { useResourceApiContext } from 'reactlib';
 import { useDistribucioContext } from './DistribucioContext';
+import { useSessioUsuari } from './DistribucioAuthProvider';
 
 /**
  * Client dels esdeveniments SSE (Server-Sent Events) que envia el servidor.
@@ -71,11 +72,7 @@ const getSubscribeUrl = (apiUrl: string, usuariCodi: string, rol?: string, entit
 
 export const SseProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     const { apiUrl } = useResourceApiContext();
-    const {
-        isAuthenticated: authIsAuthenticated,
-        bearerTokenActive: authBearerTokenActive,
-        getToken: authGetToken,
-    } = useAuthContext();
+    const { comprovarSessio } = useSessioUsuari();
     const { currentUser, currentRole, currentEntitatId } = useDistribucioContext();
     const [state, setState] = React.useState<SseState>(SSE_STATE_INICIAL);
     const usuariCodi = currentUser?.id;
@@ -97,24 +94,11 @@ export const SseProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
                 return;
             }
             eventSource?.close();
-            // No es fa servir l'EventSource natiu del navegador: aquell no deixa posar capçaleres,
-            // i amb el front servit des d'un origen diferent del backend (`npm run dev` amb OIDC)
-            // l'autenticació viatja al Bearer i no a la galeta de sessió. Amb aquesta
-            // implementació la petició es fa amb un fetch propi, que admet totes dues coses. La
-            // condició per a posar-hi el Bearer és la mateixa que fa servir base-react per a les
-            // crides a l'API (veure ResourceApiProvider.refreshKettingClient).
+            // La petició s'autentica amb la galeta de la sessió de servidor (veure
+            // DistribucioAuthProvider); "include" fa que s'enviï també quan el front no és al
+            // mateix origen que el backend (`npm run dev`).
             eventSource = new EventSource(getSubscribeUrl(apiUrl, usuariCodi, currentRole, currentEntitatId), {
-                fetch: (input, init) => {
-                    const token = authGetToken();
-                    const bearer = authIsAuthenticated && authBearerTokenActive && token != null;
-                    return fetch(input, {
-                        ...init,
-                        credentials: 'include',
-                        headers: bearer
-                            ? { ...init?.headers, Authorization: `Bearer ${token}` }
-                            : init?.headers,
-                    });
-                },
+                fetch: (input, init) => fetch(input, { ...init, credentials: 'include' }),
             });
 
             eventSource.addEventListener(EVENT_USER_CONNECT, () => {
@@ -134,6 +118,9 @@ export const SseProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
                 setState((previous) => ({ ...previous, connected: false }));
                 eventSource?.close();
                 eventSource = null;
+                // Si la connexió ha caigut perquè la sessió ha caducat, reconnectar no serviria de
+                // res: DistribucioAuthProvider la torna a iniciar recarregant la pàgina.
+                comprovarSessio();
                 if (!cancelled) {
                     reconnectTimeout = setTimeout(connect, RECONNECT_DELAY_MS);
                 }
@@ -158,7 +145,7 @@ export const SseProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
             eventSource = null;
             setState(SSE_STATE_INICIAL);
         };
-    }, [apiUrl, usuariCodi, currentRole, currentEntitatId]);
+    }, [apiUrl, usuariCodi, currentRole, currentEntitatId, comprovarSessio]);
 
     return <SseContext.Provider value={state}>{children}</SseContext.Provider>;
 };

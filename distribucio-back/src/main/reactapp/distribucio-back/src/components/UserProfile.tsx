@@ -317,7 +317,17 @@ const useOpcions = (href?: string, hrefParams?: any): OptionItem[] => {
             return;
         }
         requestHref(apiUrl + href, hrefParams)
-            .then((state) => setOptions((state.data as OptionItem[]) ?? []))
+            .then((state) => {
+                // Ketting tria com interpretar la resposta pel content-type: si no arriba JSON
+                // (p. ex. una pàgina HTML després d'una redirecció) `data` és un text, i passar-lo
+                // al desplegable faria caure tota l'aplicació en fer-ne el `map`.
+                if (Array.isArray(state.data)) {
+                    setOptions(state.data as OptionItem[]);
+                } else {
+                    console.warn(`Resposta inesperada a les opcions de '${href}'`, state.data);
+                    setOptions([]);
+                }
+            })
             .catch(() => setOptions([]));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [apiUrl, href, hrefParamsKey]);

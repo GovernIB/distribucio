@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Outlet } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import { envVar, OidcAuthProvider, ContainerAuthProvider, ResourceApiProvider } from 'reactlib';
+import { envVar, ResourceApiProvider } from 'reactlib';
 import { BaseApp } from './components/BaseApp';
 import DrassanaFooter from './components/DrassanaFooter';
 import goibLogoLight from './assets/goib_logo_light.svg';
@@ -10,6 +10,7 @@ import distribucioLogo from './assets/DIR_DRA_COL.svg';
 import { UserPreferencesProvider, useUserPreferences } from './components/UserProfile';
 import { TemaProvider } from './components/TemaProvider';
 import { DistribucioProvider } from './components/DistribucioProvider';
+import { DistribucioAuthProvider } from './components/DistribucioAuthProvider';
 import { useDistribucioContext } from './components/DistribucioContext';
 import { filtrarEntradesMenu, type MenuEntryAmbPantalla } from './util/pantalles';
 import { icons } from './util/icons';
@@ -23,17 +24,8 @@ export const envVars = {
     VITE_API_PUBLIC_URL: import.meta.env.VITE_API_PUBLIC_URL,
     VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
     VITE_API_SUFFIX: import.meta.env.VITE_API_SUFFIX,
-    VITE_AUTH_URL: import.meta.env.VITE_AUTH_URL,
-    VITE_AUTH_REALM: import.meta.env.VITE_AUTH_REALM,
-    VITE_AUTH_CLIENTID: import.meta.env.VITE_AUTH_CLIENTID,
     VITE_APP_VERSION: import.meta.env.VITE_APP_VERSION,
 };
-
-const getAuthConfig = () => ({
-    url: envVar('VITE_AUTH_URL', envVars),
-    realm: envVar('VITE_AUTH_REALM', envVars),
-    clientId: envVar('VITE_AUTH_CLIENTID', envVars),
-});
 
 export const getEnvApiUrl = () => {
     const envApiPublicUrl = envVar('VITE_API_PUBLIC_URL', envVars);
@@ -52,11 +44,6 @@ export const getEnvApiUrl = () => {
     }
 };
 
-// El SPA reutilitza per defecte la sessió que ja gestiona Spring Security (ContainerAuthProvider,
-// same-origin). Només es fa servir OIDC client-side si es configura explícitament VITE_AUTH_URL
-// (p.ex. per executar el front en un origen separat del backend).
-const isAuthUrlPresent = envVar('VITE_AUTH_URL', envVars) != null;
-const AuthProvider = isAuthUrlPresent ? OidcAuthProvider : ContainerAuthProvider;
 const version = import.meta.env.VITE_APP_VERSION ?? '0.0.0';
 
 // Mides de la capçalera. MENU_WIDTH és l'amplada del menú lateral obert (el valor per defecte
@@ -290,15 +277,12 @@ const InnerApp: React.FC = () => {
 };
 
 export const App = () => {
-    const authConfig = getAuthConfig();
+    const apiUrl = getEnvApiUrl();
+    // Autenticació amb la sessió de servidor, sense token al navegador (veure
+    // DistribucioAuthProvider).
     return (
-        <AuthProvider
-            appBaseUrl={import.meta.env.BASE_URL}
-            logoutUrl={import.meta.env.BASE_URL}
-            config={authConfig}
-            mandatory
-        >
-            <ResourceApiProvider apiUrl={getEnvApiUrl()}>
+        <DistribucioAuthProvider apiUrl={apiUrl}>
+            <ResourceApiProvider apiUrl={apiUrl}>
                 {/* TemaProvider va per fora de tot, també de la pantalla de càrrega de
                     DistribucioProvider: arrenca amb l'últim tema conegut de l'usuari perquè no hi
                     hagi parpelleig mentre no arriba el perfil.
@@ -323,7 +307,7 @@ export const App = () => {
                     </SnackbarProvider>
                 </TemaProvider>
             </ResourceApiProvider>
-        </AuthProvider>
+        </DistribucioAuthProvider>
     );
 };
 

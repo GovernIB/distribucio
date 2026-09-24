@@ -25,6 +25,12 @@ const translationEs = {
     },
     app: {
         loading: 'Iniciando DISTRIBUCIO',
+        sessio: {
+            caducada: 'La sesión ha caducado. Vuelve a iniciar la sesión para continuar.',
+            iniciar: 'Inicia la sesión',
+            error: 'No se ha podido obtener la sesión del usuario.',
+            tornarAProvar: 'Vuelve a intentarlo',
+        },
         menu: {
             home: 'Inicio',
             entitats: 'Entidades',

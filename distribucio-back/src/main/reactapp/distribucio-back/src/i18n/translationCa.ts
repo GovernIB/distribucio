@@ -25,6 +25,12 @@ const translationCa = {
     },
     app: {
         loading: 'Iniciant DISTRIBUCIO',
+        sessio: {
+            caducada: 'La sessió ha caducat. Torna a iniciar la sessió per continuar.',
+            iniciar: 'Inicia la sessió',
+            error: "No s'ha pogut obtenir la sessió de l'usuari.",
+            tornarAProvar: 'Torna-ho a provar',
+        },
         menu: {
             home: 'Inici',
             entitats: 'Entitats',

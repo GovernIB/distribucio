@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 // Vite prepon `base` a qualsevol src/href arrel-relatiu que trobi a l'index.html. Els
-// endpoints del backend que hi referenciem (sysenv, manifest, authToken, authRoles) viuen
+// endpoints del backend que hi referenciem (sysenv, manifest) viuen
 // sota el context path de l'aplicació, no sota el base path del SPA -- desfem aquest prefix
 // només per a ells, un cop Vite ja ha aplicat la seva pròpia transformació de l'HTML.
 const fixBackendEndpointsBase = (): Plugin => {
@@ -97,14 +97,12 @@ export default defineConfig(({ mode }) => {
             },
             // Permet obrir http://localhost:5173/distribucioback/reactapp directament (sense passar
             // per DevProxyController/backend a :8080): Vite reenvia server-side (sense CORS, ja
-            // que el navegador només parla amb :5173) els endpoints de configuració/auth i l'API
+            // que el navegador només parla amb :5173) els endpoints de configuració i l'API
             // cap al backend real. La cookie de sessió (domini "localhost", sense "port") s'envia
             // igual si ja t'havies autenticat prèviament contra el backend en el mateix navegador.
             // `/distribucioback/manifest` NO es reenvia: el serveix el plugin devManifest.
             proxy: {
                 '/distribucioback/sysenv': { target: backendUrl, changeOrigin: true },
-                '/distribucioback/authToken': { target: backendUrl, changeOrigin: true },
-                '/distribucioback/authRoles': { target: backendUrl, changeOrigin: true },
                 '/distribucioback/api': { target: backendUrl, changeOrigin: true },
             },
         },

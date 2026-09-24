@@ -65,7 +65,10 @@ export const TemaProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     return (
         <TemaContext.Provider value={setTema}>
             <ThemeProvider theme={theme}>
-                <CssBaseline />
+                {/* enableColorScheme declara el color-scheme del tema (clar/fosc) al document: així
+                    els controls natius del navegador, com les barres de desplaçament, segueixen el
+                    tema en lloc de sortir sempre clars. */}
+                <CssBaseline enableColorScheme />
                 {children}
             </ThemeProvider>
         </TemaContext.Provider>
