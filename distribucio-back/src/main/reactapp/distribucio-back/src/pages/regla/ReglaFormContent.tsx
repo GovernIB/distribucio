@@ -60,9 +60,9 @@ export const ReglaFormContent: React.FC = () => {
             <SectionDivider label={t('page.regla.form.legend.accio')} />
 
             <GridFormField size={4} name="tipus" />
-            {data?.tipus === 'BUSTIA' && <GridFormField size={8} name="bustiaDesti" />}
-            {data?.tipus === 'BACKOFFICE' && <GridFormField size={8} name="backofficeDesti" />}
-            {data?.tipus === 'UNITAT' && <GridFormField size={8} name="unitatDesti" />}
+            {data?.tipus === 'BUSTIA' && <GridFormField size={8} name="bustiaDesti" required />}
+            {data?.tipus === 'BACKOFFICE' && <GridFormField size={8} name="backofficeDesti" required />}
+            {data?.tipus === 'UNITAT' && <GridFormField size={8} name="unitatDesti" required />}
 
             <GridFormField size={12} name="aturarAvaluacio" />
 

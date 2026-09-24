@@ -3,6 +3,10 @@ package es.caib.distribucio.logic.intf.resourcevalidation;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.logic.intf.model.ReglaResource;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -11,7 +15,14 @@ import javax.validation.ConstraintValidatorContext;
  *
  * @author Límit Tecnologies
  */
+@RequiredArgsConstructor
 public class ReglaResourceValidValidator implements ConstraintValidator<ReglaResourceValid, ReglaResource> {
+
+    private final MessageSource messageSource;
+
+    private String i18n(String code) {
+        return messageSource.getMessage(code, null, LocaleContextHolder.getLocale());
+    }
 
     private void addViolation(ConstraintValidatorContext context, String field, String message) {
         context.buildConstraintViolationWithTemplate(message)
@@ -20,7 +31,7 @@ public class ReglaResourceValidValidator implements ConstraintValidator<ReglaRes
     }
 
     private void notNullViolation(ConstraintValidatorContext context, String field) {
-        addViolation(context, field, "{javax.validation.constraints.NotNull.message}");
+        addViolation(context, field, i18n("NotNull"));
     }
 
     private boolean isBlank(String value) {
@@ -67,7 +78,7 @@ public class ReglaResourceValidValidator implements ConstraintValidator<ReglaRes
 
         // Només un dels dos codis (procediment o servei), mai els dos alhora.
         if (!isBlank(resource.getProcedimentCodiFiltre()) && !isBlank(resource.getServeiCodiFiltre())) {
-            String message = "Només es pot informar el codi de procediment o el de servei, no els dos alhora";
+            String message = i18n("regla.validacio.codis.procediment.servei");
             addViolation(context, ReglaResource.Fields.procedimentCodiFiltre, message);
             addViolation(context, ReglaResource.Fields.serveiCodiFiltre, message);
             valid = false;

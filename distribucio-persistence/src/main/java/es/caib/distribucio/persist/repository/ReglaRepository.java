@@ -38,6 +38,22 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 	
 	List<ReglaEntity> findByEntitatOrderByOrdreAsc(EntitatEntity entitat);
 
+	/** Compta les regles de l'entitat amb exactament el mateix nom (sense distingir majúscules ni espais als
+	 * extrems), tipus i codi d'assumpte, excloent la regla amb l'id indicat (-1 per no excloure'n cap). */
+	@Query(	"select count(r) from ReglaEntity r " +
+			"where r.entitat.id = :entitatId " +
+			"and lower(trim(r.nom)) = lower(:nom) " +
+			"and r.tipus = :tipus " +
+			"and ((:assumpteBuit = true and r.assumpteCodiFiltre is null) or (:assumpteBuit = false and r.assumpteCodiFiltre = :assumpte)) " +
+			"and r.id <> :excloureId")
+	long countByNomTipusAssumpte(
+			@Param("entitatId") Long entitatId,
+			@Param("nom") String nom,
+			@Param("tipus") ReglaTipusEnumDto tipus,
+			@Param("assumpteBuit") boolean assumpteBuit,
+			@Param("assumpte") String assumpte,
+			@Param("excloureId") Long excloureId);
+
 	@Query(	"from " +
 			"    ReglaEntity reg " +
 			"where " +

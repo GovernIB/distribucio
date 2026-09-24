@@ -26,6 +26,7 @@ import es.caib.distribucio.logic.helper.EntityComprovarHelper;
 import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.ReglaHelper;
+import es.caib.distribucio.logic.helper.ReglaValidacioHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper.SubsistemesEnum;
 import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
@@ -73,6 +74,8 @@ public class ReglaServiceImpl implements ReglaService {
 	private BackofficeRepository backofficeRepository;
 	@Resource
 	private ReglaHelper reglaHelper;
+	@Resource
+	private ReglaValidacioHelper reglaValidacioHelper;
 	@Resource
 	private BustiaHelper bustiaHelper;
 	@Resource
@@ -713,64 +716,12 @@ public class ReglaServiceImpl implements ReglaService {
 
     @Transactional(readOnly = true)
     public List<ReglaMatchDto> findReglesByCodisSiaAndTramits(List<String> sias, List<String> tramits) {
-        if (sias == null || sias.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<ReglaEntity> resultats = new ArrayList<>();
-        for (String sia: sias) {
-            if (tramits != null && !tramits.isEmpty()) {
-                for (String tramit : tramits) {
-                    resultats.addAll(reglaRepository.findReglaByCodiSiaAndTramit(sia, false, tramit));
-                }
-            } else {
-                resultats.addAll(reglaRepository.findReglaByCodiSiaAndTramit(sia, true, null));
-            }
-        }
-
         List<ReglaMatchDto> result = new ArrayList<>();
-        Set<String> alreadyAdded = new HashSet<>();
-
-        for (ReglaEntity regla : resultats) {
-            ReglaDto reglaDto = conversioTipusHelper.convertir(regla, ReglaDto.class);
-
-            List<String> procesimentsRegla = regla.getProcedimentCodiFiltre() != null
-                    ? Arrays.asList(regla.getProcedimentCodiFiltre().split("\\s+"))
-                    : Collections.emptyList();
-
-            List<String> serveisRegla = regla.getServeiCodiFiltre() != null
-                    ? Arrays.asList(regla.getServeiCodiFiltre().split("\\s+"))
-                    : Collections.emptyList();
-
-            List<String> siasRegla = new ArrayList<>();
-            siasRegla.addAll(procesimentsRegla);
-            siasRegla.addAll(serveisRegla);
-
-            List<String> tramitsRegla = regla.getTramitCodiFiltre() != null
-                    ? Arrays.asList(regla.getTramitCodiFiltre().split("\\s+"))
-                    : Collections.emptyList();
-
-            for (String sia : sias) {
-                if (!siasRegla.contains(sia)) {
-                    continue;
-                }
-
-                if (regla.getTramitCodiFiltre() == null) {
-                    String key = regla.getId() + "|" + sia + "|null";
-                    if (alreadyAdded.add(key)) {
-                        result.add(new ReglaMatchDto(reglaDto, sia, null));
-                    }
-                } else {
-                    for (String tramit : tramits) {
-                        if (tramitsRegla.contains(tramit)) {
-                            String key = regla.getId() + "|" + sia + "|" + tramit;
-                            if (alreadyAdded.add(key)) {
-                                result.add(new ReglaMatchDto(reglaDto, sia, tramit));
-                            }
-                        }
-                    }
-                }
-            }
+        for (ReglaValidacioHelper.Match match : reglaValidacioHelper.findReglesByCodisSiaAndTramits(sias, tramits)) {
+            result.add(new ReglaMatchDto(
+                    conversioTipusHelper.convertir(match.getRegla(), ReglaDto.class),
+                    match.getSia(),
+                    match.getTramit()));
         }
         return result;
     }
