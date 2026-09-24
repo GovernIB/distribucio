@@ -7,7 +7,7 @@ import { CardPage } from '../../components/CardData';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
 import { ReglaFilter } from './ReglaFilter';
 import ReglaFormContent from './ReglaFormContent';
-import { useReglaAccions, useReglaMassiveAccions } from './ReglaAccions';
+import { useReglaAccions, useReglaMassiveAccions, useReglaRowOrderChange } from './ReglaAccions';
 
 /** Nom: mostra un avís si la unitat organitzativa de filtre ha quedat obsoleta (reglaList.jsp: nomTemplate). */
 const ReglaNomCell = ({ row }: any) => {
@@ -110,7 +110,7 @@ const getColumns = (t: (key: string) => string): MuiDataGridColDef[] => [
     },
 ];
 
-const sortModel: any = [{ field: 'ordre', sort: 'asc' }];
+const fixedSortModel: any = [{ field: 'ordre', sort: 'asc' }];
 
 export const ReglaGrid: React.FC = () => {
     const { t } = useTranslation();
@@ -121,6 +121,7 @@ export const ReglaGrid: React.FC = () => {
     const refresh = () => apiRef.current?.refresh?.();
     const accions = useReglaAccions(refresh);
     const { actions: massiveActions, components: massiveComponents } = useReglaMassiveAccions(refresh);
+    const handleRowOrderChange = useReglaRowOrderChange(refresh, datagridApiRef);
 
     const columns = getColumns(t);
 
@@ -137,7 +138,9 @@ export const ReglaGrid: React.FC = () => {
                     filter={springFilter}
                     toolbarShowFilterCount
                     paginationActive
-                    sortModel={sortModel}
+                    fixedSortModel={fixedSortModel}
+                    rowReordering
+                    onRowOrderChange={handleRowOrderChange}
                     popupEditActive
                     popupEditFormContent={<ReglaFormContent />}
                     popupEditFormDialogResourceTitle={t('page.regla.form.resourceTitle')}

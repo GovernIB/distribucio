@@ -885,16 +885,11 @@ public class ReglaServiceImpl implements ReglaService {
 			int posicio) {
 		List<ReglaEntity> regles = reglaRepository.findByEntitatOrderByOrdreAsc(
 				regla.getEntitat());
-		
-		if (posicio != regles.indexOf(regla)) {
-			regles.remove(regla);
-			regles.add(posicio, regla);
-			int i = 0;
-			for (ReglaEntity r : regles) {
-				r.updateOrdre(i++);
-			}
-		}
-
+		ReglaHelper.canviPosicio(
+				regles,
+				regla,
+				posicio,
+				ReglaEntity::updateOrdre);
 	}
 
 	private ReglaDto toReglaDto(ReglaEntity regla) {

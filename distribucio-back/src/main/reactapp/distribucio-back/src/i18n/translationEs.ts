@@ -607,6 +607,10 @@ const translationEs = {
                         info: 'Introduzca los códigos SIA de servicio separados por espacio',
                     },
                 },
+                auditoria: {
+                    creat: 'Creado el {{data}} por {{usuari}}.',
+                    modificat: 'Modificado el {{data}} por {{usuari}}.',
+                },
             },
             accio: {
                 new: 'Nueva regla',
@@ -623,6 +627,7 @@ const translationEs = {
                 esborrarOk: 'La regla se ha borrado correctamente',
                 activarOk: 'La regla se ha activado correctamente',
                 desactivarOk: 'La regla se ha desactivado correctamente',
+                amuntAvallOk: 'La regla se ha movido correctamente',
                 activarMassiuOk: 'Las reglas seleccionadas se han activado correctamente',
                 desactivarMassiuOk: 'Las reglas seleccionadas se han desactivado correctamente',
                 esborrarMassiuOk: 'Las reglas seleccionadas se han borrado correctamente',

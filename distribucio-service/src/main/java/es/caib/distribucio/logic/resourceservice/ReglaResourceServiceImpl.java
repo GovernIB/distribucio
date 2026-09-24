@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
+import es.caib.distribucio.logic.helper.ReglaHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.ResourceNotDeletedException;
@@ -26,8 +27,10 @@ import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.repository.RegistreRepository;
 import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
 import es.caib.distribucio.persist.resourceentity.ReglaResourceEntity;
+import es.caib.distribucio.persist.resourceentity.UsuariResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.ReglaResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.UsuariResourceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,6 +53,7 @@ public class ReglaResourceServiceImpl
     private final ReglaResourceRepository reglaResourceRepository;
     private final EntitatResourceRepository entitatResourceRepository;
     private final RegistreRepository registreRepository;
+    private final UsuariResourceRepository usuariResourceRepository;
 
     @PostConstruct
     public void init() {
@@ -59,6 +63,10 @@ public class ReglaResourceServiceImpl
         register(ReglaResource.ACTION_ACTIVAR_CODE, activaActionExecutor);
         register(ReglaResource.ACTION_DESACTIVAR_CODE, activaActionExecutor);
         register(ReglaResource.ACTION_ACCIO_MASSIVA_CODE, new AccioMassivaActionExecutor());
+        AmuntAvallActionExecutor amuntAvallActionExecutor = new AmuntAvallActionExecutor();
+        register(ReglaResource.ACTION_AMUNT_CODE, amuntAvallActionExecutor);
+        register(ReglaResource.ACTION_AVALL_CODE, amuntAvallActionExecutor);
+        register(ReglaResource.ACTION_MOURE_CODE, new MoureActionExecutor());
     }
 
     /** Només es veuen les regles de l'entitat actual. */
@@ -76,13 +84,27 @@ public class ReglaResourceServiceImpl
 
     /**
      * Estat de la unitat organitzativa de filtre, perquè el llistat pugui pintar l'avís d'obsoleta
-     * sense necessitat de consultar-la a part.
+     * sense necessitat de consultar-la a part; i nom complet (codiAndNom) de qui ha creat/modificat
+     * la regla, per al bloc d'auditoria del formulari .
      */
     @Override
     protected void afterConversion(ReglaResourceEntity entity, ReglaResource resource) {
         if (entity.getUnitatOrganitzativaFiltre() != null) {
             resource.setUnitatOrganitzativaFiltreEstat(entity.getUnitatOrganitzativaFiltre().getEstat());
         }
+        resource.setCreatedByFullName(codiAndNom(entity.getCreatedBy()));
+        resource.setLastModifiedByFullName(codiAndNom(entity.getLastModifiedBy()));
+        if (entity.getEntitat() != null) {
+            resource.setTotalRegles(reglaResourceRepository.countByEntitat(entity.getEntitat()));
+        }
+    }
+
+    private String codiAndNom(String usuariCodi) {
+        if (usuariCodi == null) {
+            return null;
+        }
+        UsuariResourceEntity usuari = usuariResourceRepository.findById(usuariCodi).orElse(null);
+        return usuari != null && usuari.getNom() != null ? usuari.getNom() + " (" + usuari.getId() + ")" : usuariCodi;
     }
 
     /**
@@ -213,6 +235,51 @@ public class ReglaResourceServiceImpl
                 Map<String, AnswerRequiredException.AnswerValue> answers,
                 String[] previousFieldNames,
                 ReglaResource.FormAccioMassiva target) {
+        }
+    }
+
+    /** Mou la regla una posició amunt o avall */
+    private class AmuntAvallActionExecutor implements ActionExecutor<ReglaResourceEntity, Serializable, Serializable> {
+        @Override
+        public Serializable exec(String code, ReglaResourceEntity entity, Serializable params) throws ActionExecutionException {
+            int delta = ReglaResource.ACTION_AMUNT_CODE.equals(code) ? -1 : 1;
+            List<ReglaResourceEntity> regles = reglaResourceRepository.findByEntitatOrderByOrdreAsc(entity.getEntitat());
+            ReglaHelper.canviPosicio(regles, entity, entity.getOrdre() + delta, ReglaResourceEntity::setOrdre);
+            reglaResourceRepository.saveAll(regles);
+            return null;
+        }
+
+        @Override
+        public void onChange(
+                Serializable id,
+                Serializable previous,
+                String fieldName,
+                Object fieldValue,
+                Map<String, AnswerRequiredException.AnswerValue> answers,
+                String[] previousFieldNames,
+                Serializable target) {
+        }
+    }
+
+    /** Mou la regla a una posició absoluta concreta, usat per la reordenació per drag&drop del llistat. */
+    private class MoureActionExecutor implements ActionExecutor<ReglaResourceEntity, ReglaResource.FormMoure, Serializable> {
+        @Override
+        public Serializable exec(String code, ReglaResourceEntity entity, ReglaResource.FormMoure params) throws ActionExecutionException {
+            List<ReglaResourceEntity> regles = reglaResourceRepository.findByEntitatOrderByOrdreAsc(entity.getEntitat());
+            ReglaHelper.canviPosicio(regles, entity, params.getPosicio(), ReglaResourceEntity::setOrdre);
+            reglaResourceRepository.saveAll(regles);
+            return null;
+        }
+
+        @Override
+        public void onChange(
+                Serializable id,
+                ReglaResource.FormMoure previous,
+                String fieldName,
+                Object fieldValue,
+                Map<String, AnswerRequiredException.AnswerValue> answers,
+                String[] previousFieldNames,
+                ReglaResource.FormMoure target) {
         }
     }
 
