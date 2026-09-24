@@ -8,11 +8,13 @@ import StyledMuiGrid from '../../components/StyledMuiGrid';
 import { ReglaFilter } from './ReglaFilter';
 import ReglaFormContent from './ReglaFormContent';
 import { useReglaAccions, useReglaMassiveAccions, useReglaRowOrderChange } from './ReglaAccions';
+import { useAplicarManualment } from './ReglaAplicarManualment';
 
 /** Nom: mostra un avís si la unitat organitzativa de filtre ha quedat obsoleta (reglaList.jsp: nomTemplate). */
 const ReglaNomCell = ({ row }: any) => {
     const { t } = useTranslation();
     const obsoleta = row?.unitatOrganitzativaFiltre != null && row?.unitatOrganitzativaFiltreEstat !== 'V';
+    
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <span>{row?.nom}</span>
@@ -30,8 +32,11 @@ const ReglaNomCell = ({ row }: any) => {
 /** Unitat organitzativa de filtre: mateix avís d'obsolescència que la columna Nom. */
 const ReglaUnitatFiltreCell = ({ row }: any) => {
     const { t } = useTranslation();
+
     if (!row?.unitatOrganitzativaFiltre) return null;
+
     const obsoleta = row.unitatOrganitzativaFiltreEstat !== 'V';
+
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <span>{row.unitatOrganitzativaFiltre?.description}</span>
@@ -67,6 +72,7 @@ const ReglaDestinacioCell = ({ row }: any) => {
     } else {
         return null;
     }
+
     return (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', width: '100%', rowGap: 0.25 }}>
             <span>{nom}</span>
@@ -119,7 +125,9 @@ export const ReglaGrid: React.FC = () => {
     const [springFilter, setSpringFilter] = React.useState<string>();
 
     const refresh = () => apiRef.current?.refresh?.();
-    const accions = useReglaAccions(refresh);
+    const { handleShow: handleAplicarManualment, component: aplicarManualmentComponent } =
+        useAplicarManualment(refresh);
+    const accions = useReglaAccions(refresh, handleAplicarManualment);
     const { actions: massiveActions, components: massiveComponents } = useReglaMassiveAccions(refresh);
     const handleRowOrderChange = useReglaRowOrderChange(refresh, datagridApiRef);
 
@@ -157,6 +165,7 @@ export const ReglaGrid: React.FC = () => {
                     selectionActive
                 />
                 {massiveComponents}
+                {aplicarManualmentComponent}
             </CardPage>
         </GridPage>
     );

@@ -645,6 +645,19 @@ const translationEs = {
                 desactivarMassiuOk: 'Las reglas seleccionadas se han desactivado correctamente',
                 esborrarMassiuOk: 'Las reglas seleccionadas se han borrado correctamente',
                 error: 'Se ha producido un error ejecutando la acción',
+                aplicarManualmentOk: 'La regla se ha asignado correctamente a {{count}} anotaciones que se procesarán en segundo plano',
+            },
+            aplicar: {
+                title: 'Aplica manualmente',
+                confirm:
+                    'Con esta acción se asignará la regla a las anotaciones que coincidan con el filtro para que se procesen en segundo plano. ¿Desea continuar?',
+                columna: {
+                    numero: 'Número',
+                    titol: 'Título',
+                    data: 'Fecha',
+                    unitatOrganitzativa: 'Unidad organizativa',
+                    bustia: 'Buzón',
+                },
             },
         },
         bustia: {

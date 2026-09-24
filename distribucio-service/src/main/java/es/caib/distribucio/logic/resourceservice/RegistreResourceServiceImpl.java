@@ -7,6 +7,7 @@ import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.ContingutHelper;
 import es.caib.distribucio.logic.helper.ContingutLogResourceHelper;
 import es.caib.distribucio.logic.helper.ExecucioMassivaResourceHelper;
+import es.caib.distribucio.logic.helper.ReglaHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
@@ -27,8 +28,11 @@ import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.logic.intf.util.Utils;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.ExecucioMassivaContingutEntity;
+import es.caib.distribucio.persist.entity.RegistreEntity;
+import es.caib.distribucio.persist.entity.ReglaEntity;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
+import es.caib.distribucio.persist.repository.ReglaRepository;
 import es.caib.distribucio.persist.resourceentity.*;
 import es.caib.distribucio.persist.resourcerepository.ProcedimentResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.RegistreResourceRepository;
@@ -65,6 +69,8 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private final ContingutService contingutService;
     private final RegistreService registreService;
     private final ExecucioMassivaResourceHelper execucioMassivaResourceHelper;
+    private final ReglaHelper reglaHelper;
+    private final ReglaRepository reglaRepository;
 
     @PostConstruct
     public void init() {
@@ -122,6 +128,23 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             if (mapaNamedQueries.containsKey("UNITAT_ORGANITZATIVA")) {
                 Long unitatOrganitzativaId = Long.valueOf(mapaNamedQueries.get("UNITAT_ORGANITZATIVA"));
                 predicates.add( cb.equal(pareBustia.get("unitatOrganitzativa").get("id"), unitatOrganitzativaId) );
+            }
+            /// APLICABLES_REGLA
+            if (mapaNamedQueries.containsKey("APLICABLES_REGLA")) {
+                // Només administració
+                if (isUser) {
+                    return cb.disjunction();
+                }
+                List<Long> aplicablesIds = findIdsAplicablesRegla(entitatActualId, Long.valueOf(mapaNamedQueries.get("APLICABLES_REGLA")));
+                if (aplicablesIds.isEmpty()) {
+                    return cb.disjunction();
+                }
+                int chunkSize = 900;
+                List<Predicate> orPredicates = new ArrayList<>();
+                for (int i = 0; i < aplicablesIds.size(); i += chunkSize) {
+                    orPredicates.add(root.get("id").in(aplicablesIds.subList(i, Math.min(i + chunkSize, aplicablesIds.size()))));
+                }
+                predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
             }
             /// INACTIVES
             if (!mapaNamedQueries.containsKey("INACTIVES")) {
@@ -243,6 +266,27 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 	}
+
+    /**
+     * Ids de les anotacions que compleixen el filtre de la regla. 
+     * Buit si la regla no existeix o no és de l'entitat actual.
+     */
+    private List<Long> findIdsAplicablesRegla(Long entitatActualId, Long reglaId) {
+        if (entitatActualId == null) {
+            return Collections.emptyList();
+        }
+        ReglaEntity regla = reglaRepository.findById(reglaId).orElse(null);
+        if (regla == null || regla.getEntitat() == null || !entitatActualId.equals(regla.getEntitat().getId())) {
+            return Collections.emptyList();
+        }
+        EntitatEntity entitat = entitatRepository.findById(entitatActualId).orElse(null);
+        if (entitat == null) {
+            return Collections.emptyList();
+        }
+        return reglaHelper.findRegistresAplicables(entitat, regla).stream().
+                map(RegistreEntity::getId).
+                collect(Collectors.toList());
+    }
 
     @Override
     protected void afterConversion(RegistreResourceEntity entity, RegistreResource resource) {

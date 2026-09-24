@@ -29,10 +29,8 @@ import java.util.List;
 /**
  * Informació d'una regla per a la distribució automàtica d'anotacions de registre.
  * <p>
- * CRUD bàsic, filtres i llistat. Activar/Desactivar, l'acció massiva i Amunt/Avall/Moure (reordenació)
- * tenen {@code ActionExecutor} registrat a {@code ReglaResourceServiceImpl}. Aplicar manualment es
- * declara aquí perquè el frontend en pugui pintar el component, però encara no té cap
- * {@code ActionExecutor} registrat.
+ * CRUD bàsic, filtres i llistat. Totes les accions (Activar/Desactivar, acció massiva, Amunt/Avall/Moure
+ * i Aplicar manualment) tenen {@code ActionExecutor} registrat a {@code ReglaResourceServiceImpl}.
  *
  * @author Límit Tecnologies
  */
@@ -65,10 +63,8 @@ import java.util.List;
                         type = ResourceArtifactType.FILTER,
                         code = ReglaResource.FILTER_CODE,
                         formClass = ReglaResource.FormFilter.class),
-                // Accions de fila equivalents a regla/{id}/enable, disable, aplicarPreview, up i down de
-                // la interfície JSP (ReglaController). Encara sense ActionExecutor registrat: en aquesta
-                // fase el frontend les intercepta abans de cridar l'API (mostra un avís de "pendent
-                // d'implementar" en lloc de trucar-les).
+                // Accions de fila equivalents a regla/{id}/enable, disable, aplicar, up i down de la
+                // interfície JSP (ReglaController).
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = ReglaResource.ACTION_ACTIVAR_CODE,
@@ -80,7 +76,14 @@ import java.util.List;
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = ReglaResource.ACTION_APLICAR_MANUALMENT_CODE,
-                        requiresId = true),
+                        requiresId = true,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = { BaseConfig.ROLE_ADMIN },
+                                        grantedPermissions = { PermissionEnum.WRITE }
+                                )
+                        }),
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = ReglaResource.ACTION_AMUNT_CODE,

@@ -647,6 +647,19 @@ const translationCa = {
                 desactivarMassiuOk: "Les regles seleccionades s'han desactivat correctament",
                 esborrarMassiuOk: "Les regles seleccionades s'han esborrat correctament",
                 error: "S'ha produït un error executant l'acció",
+                aplicarManualmentOk: "La regla s'ha assignat correctament a {{count}} anotacions que es processaran en segon pla",
+            },
+            aplicar: {
+                title: 'Aplica manualment',
+                confirm:
+                    "Amb aquesta acció s'assignarà la regla a les anotacions que coincideixin amb el filtre per a que es processin en segon pla. Voleu continuar?",
+                columna: {
+                    numero: 'Número',
+                    titol: 'Títol',
+                    data: 'Data',
+                    unitatOrganitzativa: 'Unitat organitzativa',
+                    bustia: 'Bústia',
+                },
             },
         },
         bustia: {

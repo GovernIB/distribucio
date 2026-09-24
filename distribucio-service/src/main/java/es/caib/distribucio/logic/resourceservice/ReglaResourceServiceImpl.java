@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import es.caib.distribucio.logic.helper.ReglaValidacioHelper;
 import es.caib.distribucio.logic.intf.base.exception.ResourceNotCreatedException;
 import es.caib.distribucio.logic.intf.base.exception.ResourceNotUpdatedException;
 import es.caib.distribucio.logic.helper.ReglaHelper;
+import es.caib.distribucio.logic.intf.base.util.I18nUtil;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.ResourceNotDeletedException;
@@ -28,8 +30,12 @@ import es.caib.distribucio.logic.intf.model.ReglaResource;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.resourceservice.ReglaResourceService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
+import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
+import es.caib.distribucio.persist.entity.ReglaEntity;
+import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.RegistreRepository;
+import es.caib.distribucio.persist.repository.ReglaRepository;
 import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
 import es.caib.distribucio.persist.resourceentity.ReglaResourceEntity;
 import es.caib.distribucio.persist.resourceentity.UsuariResourceEntity;
@@ -42,9 +48,8 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Implementació del recurs de regles.
  * <p>
- * Les accions ACTIVAR/DESACTIVAR i ACCIO_MASSIVA ja tenen {@code ActionExecutor} registrat. La resta
- * d'accions declarades a {@link ReglaResource} (APLICAR_MANUALMENT, AMUNT, AVALL) encara no s'han
- * desenvolupat: si s'invoquessin, el motor genèric respon amb un {@code ArtifactNotFoundException}.
+ * Totes les accions declarades a {@link ReglaResource} (ACTIVAR/DESACTIVAR, ACCIO_MASSIVA, AMUNT/AVALL/MOURE i
+ * APLICAR_MANUALMENT) tenen el seu {@code ActionExecutor} registrat.
  *
  * @author Límit Tecnologies
  */
@@ -60,6 +65,9 @@ public class ReglaResourceServiceImpl
     private final ReglaValidacioHelper reglaValidacioHelper;
     private final RegistreRepository registreRepository;
     private final UsuariResourceRepository usuariResourceRepository;
+    private final ReglaHelper reglaHelper;
+    private final ReglaRepository reglaRepository;
+    private final EntitatRepository entitatRepository;
 
     @PostConstruct
     public void init() {
@@ -73,6 +81,7 @@ public class ReglaResourceServiceImpl
         register(ReglaResource.ACTION_AMUNT_CODE, amuntAvallActionExecutor);
         register(ReglaResource.ACTION_AVALL_CODE, amuntAvallActionExecutor);
         register(ReglaResource.ACTION_MOURE_CODE, new MoureActionExecutor());
+        register(ReglaResource.ACTION_APLICAR_MANUALMENT_CODE, new AplicarManualmentActionExecutor());
     }
 
     /** Només es veuen les regles de l'entitat actual. */
@@ -311,6 +320,50 @@ public class ReglaResourceServiceImpl
                 Map<String, AnswerRequiredException.AnswerValue> answers,
                 String[] previousFieldNames,
                 ReglaResource.FormMoure target) {
+        }
+    }
+
+    /**
+     * Aplicar manualment: assigna la regla a les anotacions pendents de bústia que compleixen el seu filtre
+     * (les deixa en REGLA_PENDENT) perquè la tasca en segon pla les processi. No mou res immediatament.
+     * La consulta de les anotacions afectades és la mateixa que fa servir la previsualització (ReglaHelper).
+     */
+    private class AplicarManualmentActionExecutor implements ActionExecutor<ReglaResourceEntity, Serializable, HashMap> {
+        @Override
+        public HashMap exec(String code, ReglaResourceEntity entity, Serializable params) throws ActionExecutionException {
+            if (!entity.isActiva()) {
+                throw new ActionExecutionException(
+                        ReglaResource.class,
+                        entity.getId(),
+                        code,
+                        I18nUtil.getInstance().getI18nMessage("regla.controller.aplicada.errorInactiva"));
+            }
+            try {
+                EntitatEntity entitat = entitatRepository.getReferenceById(entity.getEntitat().getId());
+                ReglaEntity regla = reglaRepository.getReferenceById(entity.getId());
+                List<String> numeros = reglaHelper.aplicarManualment(entitat, regla);
+                HashMap<String, Object> resultat = new HashMap<>();
+                resultat.put("count", numeros.size());
+                return resultat;
+            } catch (Exception e) {
+                throw new ActionExecutionException(
+                        ReglaResource.class,
+                        entity.getId(),
+                        code,
+                        e.getMessage(),
+                        e);
+            }
+        }
+
+        @Override
+        public void onChange(
+                Serializable id,
+                Serializable previous,
+                String fieldName,
+                Object fieldValue,
+                Map<String, AnswerRequiredException.AnswerValue> answers,
+                String[] previousFieldNames,
+                Serializable target) {
         }
     }
 

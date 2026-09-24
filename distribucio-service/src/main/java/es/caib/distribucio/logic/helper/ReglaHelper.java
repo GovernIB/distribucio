@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +44,7 @@ import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
+import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.ReglaRepository;
 
 /**
@@ -55,6 +57,8 @@ public class ReglaHelper {
 
 	@Autowired
 	private ReglaRepository reglaRepository;
+	@Autowired
+	private BustiaRepository bustiaRepository;
 	@Autowired
 	private ContingutHelper contingutHelper;
 	@Autowired
@@ -171,6 +175,76 @@ public class ReglaHelper {
 		cipher.init(Cipher.ENCRYPT_MODE, skey);
 		crypted = cipher.doFinal(input.getBytes());
 		return new String(Base64.getEncoder().encode(crypted));
+	}
+
+	/** Anotacions pendents de bústia (sense regla assignada) que compleixen el filtre de la regla, és a dir, a les quals
+	 * "Aplicar manualment" pot assignar-la. Compartit per la previsualització i per l'aplicació real perquè coincideixin.
+	 * <p>
+	 * Es manté el comportament històric de la consulta: una regla sense codi de procediment ni de servei no troba
+	 * cap anotació (s'usa el placeholder "-") i el filtre de tràmit s'ignora.
+	 */
+	public List<RegistreEntity> findRegistresAplicables(
+			EntitatEntity entitat,
+			ReglaEntity regla) {
+		List<String> codisProcediments;
+		if (regla.getProcedimentCodiFiltre() != null && !regla.getProcedimentCodiFiltre().trim().isEmpty()) {
+			codisProcediments = Arrays.asList(regla.getProcedimentCodiFiltre().split(" "));
+		} else {
+			codisProcediments = new ArrayList<>();
+			codisProcediments.add("-");
+		}
+		List<String> codisServei = new ArrayList<>();
+		if (regla.getServeiCodiFiltre() != null && !regla.getServeiCodiFiltre().trim().isEmpty()) {
+			codisServei.addAll(Arrays.asList(regla.getServeiCodiFiltre().split(" ")));
+		} else {
+			codisServei.add("-");
+		}
+		List<Long> bustiesUnitatOrganitzativaIds = new ArrayList<>();
+		if (regla.getUnitatOrganitzativaFiltre() != null) {
+			for (BustiaEntity bustia : bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNotNull(
+					entitat,
+					regla.getUnitatOrganitzativaFiltre())) {
+				bustiesUnitatOrganitzativaIds.add(bustia.getId());
+			}
+		}
+		if (bustiesUnitatOrganitzativaIds.isEmpty()) {
+			bustiesUnitatOrganitzativaIds.add(0L);
+		}
+		Boolean registrePresencial = null;
+		if (regla.getPresencial() != null) {
+			registrePresencial = ReglaPresencialEnumDto.SI.equals(regla.getPresencial());
+		}
+		return reglaRepository.findRegistres(
+				entitat,
+				regla.getUnitatOrganitzativaFiltre() == null,
+				bustiesUnitatOrganitzativaIds,
+				registrePresencial == null,
+				registrePresencial != null ? registrePresencial.booleanValue() : false,
+				regla.getBustiaFiltre() == null,
+				regla.getBustiaFiltre() != null ? regla.getBustiaFiltre().getId() : 0L,
+				codisProcediments,
+				codisServei,
+				regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(),
+				regla.getAssumpteCodiFiltre() != null && !regla.getAssumpteCodiFiltre().trim().isEmpty() ?
+						regla.getAssumpteCodiFiltre() : "-");
+	}
+
+	/** 
+	 * Assigna la regla a les anotacions que compleixen el seu filtre perquè es processin en segon pla.
+	 *
+	 * @return Números de les anotacions afectades.
+	 */
+	public List<String> aplicarManualment(
+			EntitatEntity entitat,
+			ReglaEntity regla) {
+		List<String> numerosRegistres = new ArrayList<>();
+		for (RegistreEntity registre : findRegistresAplicables(entitat, regla)) {
+			// S'assigna la regla per a que es processi en segon pla
+			registre.updateRegla(regla);
+			numerosRegistres.add(registre.getNumero());
+			logger.debug("Regla " + regla.getId() + " \"" + regla.getNom() + "\" aplicada manualment a l'anotació " + registre.getNumero());
+		}
+		return numerosRegistres;
 	}
 
 	public Exception aplicarControlantException(

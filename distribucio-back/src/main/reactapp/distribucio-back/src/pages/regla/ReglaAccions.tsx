@@ -9,19 +9,11 @@ const ACCIO_MASSIVA = 'ACCIO_MASSIVA';
 const ACCIO_AMUNT = 'AMUNT';
 const ACCIO_AVALL = 'AVALL';
 const ACCIO_MOURE = 'MOURE';
+const ACCIO_APLICAR_MANUALMENT = 'APLICAR_MANUALMENT';
 
 type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
 
-/**
- * Mostra un avís que l'acció encara no s'ha desenvolupat, en lloc de trucar l'API. Substitueix el
- * `ActionExecutor` real fins que es migri la lògica de cada acció .
- */
-const accioPendent = (label: string) => () => {
-    alert(`TODO: pendent d'implementar -> ${label}`);
-};
-
-/** Menú d'accions de fila del manteniment de regles. Modificar, Esborrar, Activar i Desactivar són reals. */
-export const useReglaAccions = (refresh: () => void): AccionsFila => {
+export const useReglaAccions = (refresh: () => void, aplicarManualment: (id: any) => void): AccionsFila => {
     const { t } = useTranslation();
     const { temporalMessageShow } = useBaseAppContext();
     const { isReady: apiIsReady, artifactAction: apiArtifactAction } = useResourceApiService('reglaResource');
@@ -52,7 +44,9 @@ export const useReglaAccions = (refresh: () => void): AccionsFila => {
             label: t('page.regla.accio.aplicarManualment'),
             icon: 'settings',
             showInMenu: true,
-            onClick: accioPendent(t('page.regla.accio.aplicarManualment')),
+            action: ACCIO_APLICAR_MANUALMENT,
+            disabled: (row: any) => !row?.activa,
+            onClick: (id: any) => aplicarManualment(id),
         },
         {
             label: t('page.regla.accio.amunt'),

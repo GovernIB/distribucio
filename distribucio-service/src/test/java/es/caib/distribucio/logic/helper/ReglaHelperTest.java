@@ -5,6 +5,7 @@ import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
 import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.persist.entity.*;
+import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.ReglaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ class ReglaHelperTest {
 
     @Mock private ConfigHelper configHelper;
     @Mock private ReglaRepository reglaRepository;
+    @Mock private BustiaRepository bustiaRepository;
     @Mock private BustiaHelper bustiaHelper;
 
     @InjectMocks
@@ -155,5 +157,78 @@ class ReglaHelperTest {
         assertEquals("Bustia", simulatAccions.get(0).getParam());
         assertEquals(10L, dto.getUnitatId());
         assertEquals(20L, dto.getBustiaId());
+    }
+
+    // ---------- Aplicar manualment ----------
+
+    @Test
+    void testFindRegistresAplicables_senseFiltres_usaPlaceholders() {
+        // Given: regla sense cap filtre (ni SIA, ni unitat, ni bústia, ni assumpte, ni presencial)
+        ReglaEntity regla = new ReglaEntity();
+        List<RegistreEntity> esperats = new ArrayList<>();
+        when(reglaRepository.findRegistres(
+                eq(entitatActual),
+                eq(true),
+                eq(List.of(0L)),
+                eq(true),
+                eq(false),
+                eq(true),
+                eq(0L),
+                eq(List.of("-")),
+                eq(List.of("-")),
+                eq(true),
+                eq("-"))).thenReturn(esperats);
+
+        // When
+        List<RegistreEntity> resultat = reglaHelper.findRegistresAplicables(entitatActual, regla);
+
+        // Then: comportament històric, una regla sense procediment ni servei no troba res (placeholder "-")
+        assertSame(esperats, resultat);
+    }
+
+    @Test
+    void testFindRegistresAplicables_codisSeparatsPerEspai() {
+        // Given
+        ReglaEntity regla = new ReglaEntity();
+        ReflectionTestUtils.setField(regla, "procedimentCodiFiltre", "111 222");
+        ReflectionTestUtils.setField(regla, "serveiCodiFiltre", "333");
+        ReflectionTestUtils.setField(regla, "assumpteCodiFiltre", "ASS");
+        ReflectionTestUtils.setField(regla, "presencial", ReglaPresencialEnumDto.SI);
+        List<RegistreEntity> esperats = new ArrayList<>();
+        when(reglaRepository.findRegistres(
+                eq(entitatActual),
+                eq(true),
+                eq(List.of(0L)),
+                eq(false),
+                eq(true),
+                eq(true),
+                eq(0L),
+                eq(List.of("111", "222")),
+                eq(List.of("333")),
+                eq(false),
+                eq("ASS"))).thenReturn(esperats);
+
+        // When / Then
+        assertSame(esperats, reglaHelper.findRegistresAplicables(entitatActual, regla));
+    }
+
+    @Test
+    void testAplicarManualment_assignaLaReglaIRetornaNumeros() {
+        // Given
+        ReglaEntity regla = new ReglaEntity();
+        RegistreEntity r1 = mock(RegistreEntity.class);
+        RegistreEntity r2 = mock(RegistreEntity.class);
+        when(r1.getNumero()).thenReturn("N1");
+        when(r2.getNumero()).thenReturn("N2");
+        when(reglaRepository.findRegistres(any(), anyBoolean(), any(), anyBoolean(), anyBoolean(), anyBoolean(), any(), any(), any(), anyBoolean(), any())).
+                thenReturn(List.of(r1, r2));
+
+        // When
+        List<String> numeros = reglaHelper.aplicarManualment(entitatActual, regla);
+
+        // Then
+        assertEquals(List.of("N1", "N2"), numeros);
+        verify(r1).updateRegla(regla);
+        verify(r2).updateRegla(regla);
     }
 }
