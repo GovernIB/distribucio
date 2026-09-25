@@ -32,11 +32,10 @@ import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
+import es.caib.distribucio.persist.repository.MetaDadaRepository;
 import es.caib.distribucio.persist.repository.ReglaRepository;
 import es.caib.distribucio.persist.resourceentity.*;
-import es.caib.distribucio.persist.resourcerepository.ProcedimentResourceRepository;
-import es.caib.distribucio.persist.resourcerepository.RegistreResourceRepository;
-import es.caib.distribucio.persist.resourcerepository.ServeiResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
@@ -45,7 +44,11 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.persistence.criteria.*;
 import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,6 +74,8 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private final ExecucioMassivaResourceHelper execucioMassivaResourceHelper;
     private final ReglaHelper reglaHelper;
     private final ReglaRepository reglaRepository;
+    private final DadaResourceRepository dadaResourceRepository;
+    private final MetaDadaResourceRepository metaDadaResourceRepository;
 
     @PostConstruct
     public void init() {
@@ -84,6 +89,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(RegistreResource.ACTION_MARCAR_PROCESSADA_CODE, new MarcarProcessadaActionExecutor());
         register(RegistreResource.ACTION_MARCAR_PENDENT_CODE, new MarcarPendentActionExecutor());
         register(RegistreResource.ACTION_TORNAR_PROCESSAR_CODE, new TornarProcessarActionExecutor());
+        register(RegistreResource.ACTION_UPDATE_DADES_CODE, new UpdateDadesActionExecutor());
     }
 
     @Override
@@ -890,6 +896,111 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         public void onChange(Serializable id, RegistreResource.MassiveWarningForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.MassiveWarningForm target) {
             if (fieldName == null) {
                 target.setWarning( getAdvertencies(previous.getIds()) );
+            }
+        }
+    }
+    protected class UpdateDadesActionExecutor implements ActionExecutor<RegistreResourceEntity, RegistreResource.DadaForm, Serializable> {
+
+        private String formatarValor(Object value) {
+            if (value == null || value.toString().isBlank()) {
+                return null;
+            }
+
+            String str = value.toString().trim();
+
+            if (str.matches("\\d{4}-\\d{2}-\\d{2}.*")) {
+                try {
+                    LocalDate date = LocalDate.parse(str.substring(0, 10));
+                    return date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                } catch (DateTimeParseException e) {
+                    return str;
+                }
+            }
+
+            return str;
+        }
+
+        @Override
+        public Serializable exec(String code, RegistreResourceEntity entity, RegistreResource.DadaForm params) throws ActionExecutionException {
+            Map<Long, MetaDadaResourceEntity> metaDadesMap = metaDadaResourceRepository
+                    .findAllById(params.getDades().keySet())
+                    .stream()
+                    .collect(Collectors.toMap(MetaDadaResourceEntity::getId, Function.identity()));
+
+            Set<Long> metadadesInexistents = new HashSet<>(params.getDades().keySet());
+            metadadesInexistents.removeAll(metaDadesMap.keySet());
+            if (!metadadesInexistents.isEmpty()) {
+                throw new ActionExecutionException(
+                        RegistreResource.class,
+                        entity.getId(),
+                        code,
+                        "Metadades no trobades: " + metadadesInexistents);
+            }
+
+            List<DadaResourceEntity> dades = new ArrayList<>();
+            for (Map.Entry<Long, List<Object>> entry : params.getDades().entrySet()) {
+                Long metaDadaId = entry.getKey();
+                MetaDadaResourceEntity metaDada = metaDadesMap.get(metaDadaId);
+
+                int ordre = 0;
+                for (Object value : entry.getValue()) {
+                    if (value == null || value.toString().isBlank()) {
+                        continue;
+                    }
+
+                    DadaResourceEntity dada = new DadaResourceEntity();
+                    dada.setRegistre(entity);
+                    dada.setMetaDada(metaDada);
+
+                    switch (dada.getMetaDada().getTipus()) {
+                        case DATA:
+                            dada.setValor( formatarValor(value) );
+                            break;
+                        default:
+                            dada.setValor(value.toString());
+                            break;
+                    }
+
+                    dada.setOrdre(ordre++);
+                    dades.add(dada);
+                }
+            }
+
+            entity.getDades().clear();
+            registreResourceRepository.saveAndFlush(entity);
+            entity.getDades().addAll(dades);
+
+            return null;
+        }
+
+        @Override
+        public List<FieldOption> getOptions(String fieldName, Map<String, String[]> requestParameterMap) {
+            /// TODO
+            return ActionExecutor.super.getOptions(fieldName, requestParameterMap);
+        }
+
+        @Override
+        public void onChange(Serializable id, RegistreResource.DadaForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.DadaForm target) {
+            if (fieldName == null) {
+                Map<Long, List<Object>> map = dadaResourceRepository.findByRegistreId((Long) id).stream()
+                        .collect(Collectors.groupingBy(
+                                dada -> dada.getMetaDada().getId(),
+                                Collectors.mapping(
+                                        dada -> {
+                                            switch (dada.getMetaDada().getTipus()) {
+                                                case DATA:
+                                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                                                    return LocalDate.parse(dada.getValor(), formatter);
+                                                case BOOLEA:
+                                                    return Boolean.valueOf(dada.getValor());
+                                                default:
+                                                    return dada.getValor();
+                                            }
+                                        },
+                                        Collectors.toList()
+                                )
+                        ));
+                target.setDades(map);
             }
         }
     }

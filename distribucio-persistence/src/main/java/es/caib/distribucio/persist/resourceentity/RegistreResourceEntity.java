@@ -149,8 +149,8 @@ public class RegistreResourceEntity extends ContingutResourceEntity<RegistreReso
     @Column(name = "annexos_estat_esborrany")
     private int annexosEstatEsborrany;
 
-    @OneToMany(mappedBy = "registre", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    protected Set<DadaEntity> dades;
+    @OneToMany(mappedBy = "registre", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
+    protected List<DadaResourceEntity> dades;
 
 
     @ManyToOne(optional = true, fetch = FetchType.LAZY)

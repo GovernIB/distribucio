@@ -13,6 +13,7 @@ import {useTranslation} from "react-i18next";
 import {ErrorArea} from "../../../components/ErrorArea.tsx";
 import {useConfig} from "../../../components/ConfigProvider.tsx";
 import useVisualitzar from "../../annex/actions/AnnexVisualitzar.tsx";
+import {MetaDadesForm} from "./MetaDadesForm.tsx";
 
 const AnnexTab = ({entity}:any) => {
     const { isReady: apiIsReady, find: apiFind } = useResourceApiService('registreAnnexResource');
@@ -228,48 +229,6 @@ const ProcessBack = ({entity}:any) => {
     </Grid>
 }
 
-// const dadesColumns = [
-//     { field: 'valor', flex: 1 },
-// ]
-const metaDadesColumns = [
-    { field: 'nom', flex: 1 },
-]
-const metaDadesSortModel:any = [{ field: 'id', sort: 'asc' }]
-// L'entitat només la necessita el panell de detall comentat: quan es reactivi, cal tornar a
-// desestructurar-la ({entity}:any) i descomentar dadesColumns.
-const MetaDadesGrid = (_props:any) => {
-    return (<>
-        <StyledMuiGrid
-            resourceName={'metaDadaResource'}
-            columns={metaDadesColumns}
-            sortModel={metaDadesSortModel}
-
-            // getDetailPanelHeight={() => 'auto'}
-            // getDetailPanelContent={(params) => (
-            //     <Grid container columnSpacing={1} rowSpacing={1} p={1}>
-            //         <StyledMuiGrid
-            //             resourceName={'dadaResource'}
-            //             columns={dadesColumns}
-            //
-            //             filter={builder.and(
-            //                 builder.eq('registre.id', `'${entity.id}'`),
-            //                 builder.eq('metaDada.id', `'${params.id}'`),
-            //             )}
-            //             sortModel={metaDadesSortModel}
-            //
-            //             toolbarHideRefresh
-            //             autoHeight
-            //         />
-            //     </Grid>
-            // )}
-
-            toolbarHide
-            autoHeight
-            readOnly
-        />
-    </>)
-}
-
 const copiesColumns = (t:any, id:any) => [
     { field: 'numero', flex: 1 },
     { field: 'darrerMovimentResource.createdDate', flex: 1, headerName: t('page.registre.grid.darrerMoviment.createdDate'),
@@ -477,7 +436,7 @@ const RegistreDetail = () => {
         {
             value: "dades",
             label: t('component.RegistreDetail.tabs.dades'),
-            content: <MetaDadesGrid entity={data}/>,
+            content: <MetaDadesForm entity={data}/>,
             hidden: !metadadesActives,
         },
         {

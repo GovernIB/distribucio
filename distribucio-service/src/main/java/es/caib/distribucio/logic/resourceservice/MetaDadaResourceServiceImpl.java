@@ -36,6 +36,8 @@ public class MetaDadaResourceServiceImpl extends BaseMutableResourceService<Meta
                 predicates.add(cb.equal(root.get("entitat").get("id"), entitatActualId));
             }
 
+            predicates.add(cb.isTrue(root.get("activa")));
+
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }

@@ -139,6 +139,12 @@ import java.util.*;
                         code = RegistreResource.ACTION_TORNAR_PROCESSAR_CODE,
                         formClass = RegistreResource.MassiveWarningForm.class
                 ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_UPDATE_DADES_CODE,
+                        requiresId = true,
+                        formClass = RegistreResource.DadaForm.class
+                ),
         }
 )
 public class RegistreResource extends ContingutResource {
@@ -153,6 +159,7 @@ public class RegistreResource extends ContingutResource {
     public static final String ACTION_MARCAR_PROCESSADA_CODE = "MARCAR_PROCESSADA";
     public static final String ACTION_MARCAR_PENDENT_CODE = "MARCAR_PENDENT";
     public static final String ACTION_TORNAR_PROCESSAR_CODE = "TORNAR_PROCESSAR";
+    public static final String ACTION_UPDATE_DADES_CODE = "UPDATE_DADES";
 
     private RegistreTipusEnum registreTipus;
     private String numero;
@@ -227,7 +234,7 @@ public class RegistreResource extends ContingutResource {
 //    private List<ResourceReference<RegistreAnnexEntity>> annexos = new ArrayList<>();
 //    private ResourceReference<ReglaEntity> regla;
     protected ResourceReference<UsuariResource, String> agafatPer;
-//    protected Set<ResourceReference<DadaEntity>> dades;
+//    protected Set<ResourceReference<DadaResourceEntity, String>> dades;
 
     private String unitatAdministrativaCodi;
     private String unitatAdministrativaDescripcio;
@@ -360,6 +367,16 @@ public class RegistreResource extends ContingutResource {
     @FieldNameConstants
     public static class MassiveWarningForm extends MassiveForm {
         private Map<Long, String> warning;
+    }
+
+    @Getter
+    @Setter
+    @FieldNameConstants
+    public static class DadaForm implements Serializable {
+        private Map<Long, List<Object>> dades;
+
+        @ResourceField(enumType = true)
+        private String domini;
     }
 
 }
