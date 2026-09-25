@@ -228,14 +228,16 @@ const ProcessBack = ({entity}:any) => {
     </Grid>
 }
 
-const dadesColumns = [
-    { field: 'valor', flex: 1 },
-]
+// const dadesColumns = [
+//     { field: 'valor', flex: 1 },
+// ]
 const metaDadesColumns = [
     { field: 'nom', flex: 1 },
 ]
 const metaDadesSortModel:any = [{ field: 'id', sort: 'asc' }]
-const MetaDadesGrid = ({entity}:any) => {
+// L'entitat només la necessita el panell de detall comentat: quan es reactivi, cal tornar a
+// desestructurar-la ({entity}:any) i descomentar dadesColumns.
+const MetaDadesGrid = (_props:any) => {
     return (<>
         <StyledMuiGrid
             resourceName={'metaDadaResource'}
