@@ -4,11 +4,12 @@ import { GridPage, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
 import { useGridApiRef } from '@mui/x-data-grid-pro';
 import { Box, Chip, Icon, Tooltip } from '@mui/material';
 import { CardPage } from '../../components/CardData';
-import StyledMuiGrid from '../../components/StyledMuiGrid';
+import StyledMuiGrid, { ToolbarButton } from '../../components/StyledMuiGrid';
 import { ReglaFilter } from './ReglaFilter';
 import ReglaFormContent from './ReglaFormContent';
 import { useReglaAccions, useReglaMassiveAccions, useReglaRowOrderChange } from './ReglaAccions';
 import { useAplicarManualment } from './ReglaAplicarManualment';
+import { useReglaSimulador } from './ReglaSimulador';
 
 /** Nom: mostra un avís si la unitat organitzativa de filtre ha quedat obsoleta (reglaList.jsp: nomTemplate). */
 const ReglaNomCell = ({ row }: any) => {
@@ -127,6 +128,11 @@ export const ReglaGrid: React.FC = () => {
     const refresh = () => apiRef.current?.refresh?.();
     const { handleShow: handleAplicarManualment, component: aplicarManualmentComponent } =
         useAplicarManualment(refresh);
+    const {
+        handleShow: handleSimular,
+        disponible: simularDisponible,
+        component: simuladorComponent,
+    } = useReglaSimulador();
     const accions = useReglaAccions(refresh, handleAplicarManualment);
     const { actions: massiveActions, components: massiveComponents } = useReglaMassiveAccions(refresh);
     const handleRowOrderChange = useReglaRowOrderChange(refresh, datagridApiRef);
@@ -145,6 +151,21 @@ export const ReglaGrid: React.FC = () => {
                     columns={columns}
                     filter={springFilter}
                     toolbarShowFilterCount
+                    toolbarElementsWithPositions={[
+                        {
+                            position: 2,
+                            element: (
+                                <ToolbarButton
+                                    icon="settings"
+                                    variant="contained"
+                                    hidden={!simularDisponible}
+                                    onClick={handleSimular}
+                                >
+                                    {t('page.regla.accio.simular')}
+                                </ToolbarButton>
+                            ),
+                        },
+                    ]}
                     paginationActive
                     fixedSortModel={fixedSortModel}
                     rowReordering
@@ -166,6 +187,7 @@ export const ReglaGrid: React.FC = () => {
                 />
                 {massiveComponents}
                 {aplicarManualmentComponent}
+                {simuladorComponent}
             </CardPage>
         </GridPage>
     );

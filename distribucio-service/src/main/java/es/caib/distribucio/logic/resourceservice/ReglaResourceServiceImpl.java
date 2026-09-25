@@ -25,6 +25,7 @@ import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.ResourceNotDeletedException;
 import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
+import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.logic.intf.model.ReglaResource;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
@@ -49,7 +50,7 @@ import lombok.extern.slf4j.Slf4j;
  * Implementació del recurs de regles.
  * <p>
  * Totes les accions declarades a {@link ReglaResource} (ACTIVAR/DESACTIVAR, ACCIO_MASSIVA, AMUNT/AVALL/MOURE i
- * APLICAR_MANUALMENT) tenen el seu {@code ActionExecutor} registrat.
+ * APLICAR_MANUALMENT i SIMULAR) tenen el seu {@code ActionExecutor} registrat.
  *
  * @author Límit Tecnologies
  */
@@ -82,6 +83,7 @@ public class ReglaResourceServiceImpl
         register(ReglaResource.ACTION_AVALL_CODE, amuntAvallActionExecutor);
         register(ReglaResource.ACTION_MOURE_CODE, new MoureActionExecutor());
         register(ReglaResource.ACTION_APLICAR_MANUALMENT_CODE, new AplicarManualmentActionExecutor());
+        register(ReglaResource.ACTION_SIMULAR_CODE, new SimularActionExecutor());
     }
 
     /** Només es veuen les regles de l'entitat actual. */
@@ -364,6 +366,59 @@ public class ReglaResourceServiceImpl
                 Map<String, AnswerRequiredException.AnswerValue> answers,
                 String[] previousFieldNames,
                 Serializable target) {
+        }
+    }
+
+    /**
+     * Simulador de regles: calcula, sense modificar cap dada, què passaria amb una anotació hipotètica.
+     * Es simula sempre contra l'entitat de la sessió.
+     */
+    private class SimularActionExecutor
+            implements ActionExecutor<ReglaResourceEntity, ReglaResource.FormSimular, ArrayList<ReglaResource.SimulacioAccio>> {
+        @Override
+        public ArrayList<ReglaResource.SimulacioAccio> exec(
+                String code,
+                ReglaResourceEntity entity,
+                ReglaResource.FormSimular params) throws ActionExecutionException {
+            try {
+                EntitatEntity entitat = entitatRepository.getReferenceById(SessioActualUtil.getEntitatId());
+                RegistreSimulatDto dto = new RegistreSimulatDto();
+                dto.setUnitatId(params.getUnitat().getId());
+                dto.setBustiaId(params.getBustia() != null ? params.getBustia().getId() : null);
+                dto.setProcedimentCodi(params.getProcedimentCodi());
+                dto.setServeiCodi(params.getServeiCodi());
+                dto.setTramitCodi(params.getTramitCodi());
+                dto.setAssumpteCodi(params.getAssumpteCodi());
+                dto.setPresencial(params.getPresencial());
+                return reglaHelper.simular(entitat, dto).stream().
+                        map(accio -> new ReglaResource.SimulacioAccio(
+                                accio.getAccion(),
+                                accio.getParam(),
+                                accio.getReglaNom())).
+                        collect(Collectors.toCollection(ArrayList::new));
+            } catch (Exception e) {
+                throw new ActionExecutionException(
+                        ReglaResource.class,
+                        null,
+                        code,
+                        e.getMessage(),
+                        e);
+            }
+        }
+
+        @Override
+        public void onChange(
+                Serializable id,
+                ReglaResource.FormSimular previous,
+                String fieldName,
+                Object fieldValue,
+                Map<String, AnswerRequiredException.AnswerValue> answers,
+                String[] previousFieldNames,
+                ReglaResource.FormSimular target) {
+            // Onchange inicial (en obrir el formulari): informa de la propietat "avaluar totes les regles".
+            if (fieldName == null) {
+                target.setAvaluarTotes(reglaHelper.isAvaluarTotesLesRegles());
+            }
         }
     }
 

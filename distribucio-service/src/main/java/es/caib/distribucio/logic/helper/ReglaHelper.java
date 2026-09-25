@@ -35,6 +35,8 @@ import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
 import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.logic.intf.exception.AplicarReglaException;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.logic.intf.exception.ScheduledTaskException;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.persist.entity.BustiaEntity;
@@ -44,8 +46,10 @@ import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
+import es.caib.distribucio.persist.entity.UnitatOrganitzativaEntity;
 import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.ReglaRepository;
+import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 
 /**
  * Mètodes comuns per a aplicar regles.
@@ -59,6 +63,8 @@ public class ReglaHelper {
 	private ReglaRepository reglaRepository;
 	@Autowired
 	private BustiaRepository bustiaRepository;
+	@Autowired
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	@Autowired
 	private ContingutHelper contingutHelper;
 	@Autowired
@@ -350,15 +356,89 @@ public class ReglaHelper {
 		return isPerConeixement;
 	}
 
+	/**
+	 * Indica si s'han d'avaluar totes les regles (cadena per ordre) o només la primera coincident.
+	 * <p>
+	 * Font única per a l'execució real ({@link #aplicar}) i per a la simulació, perquè el simulador mostri
+	 * sempre la mateixa cadena de regles que s'executarà de veritat. L'execució real avalua sempre totes
+	 * les regles; la propietat es.caib.distribucio.tasca.aplicar.regles.avaluar.totes ja no s'hi consulta.
+	 */
+	public boolean isAvaluarTotesLesRegles() {
+		return true;
+	}
+
+	/**
+	 * Simula l'aplicació de les regles a una anotació hipotètica, sense modificar cap dada.
+	 *
+	 * @param entitat entitat sobre la qual es simula (la unitat i la bústia n'han de ser).
+	 * @param dto dades de l'anotació simulada (no es modifica).
+	 * @return les accions que es farien, en ordre.
+	 */
+	public List<RegistreSimulatAccionDto> simular(
+			EntitatEntity entitat,
+			RegistreSimulatDto dto) {
+		// El bucle de simulació modifica unitat i bústia: es treballa amb una còpia.
+		RegistreSimulatDto simulat = new RegistreSimulatDto();
+		simulat.setUnitatId(dto.getUnitatId());
+		simulat.setBustiaId(dto.getBustiaId());
+		simulat.setAssumpteCodi(dto.getAssumpteCodi());
+		simulat.setProcedimentCodi(dto.getProcedimentCodi());
+		simulat.setServeiCodi(dto.getServeiCodi());
+		simulat.setTramitCodi(dto.getTramitCodi());
+		simulat.setPresencial(dto.getPresencial());
+
+		UnitatOrganitzativaEntity unitat = unitatOrganitzativaRepository.findById(simulat.getUnitatId()).orElse(null);
+		if (unitat == null) {
+			throw new NotFoundException(simulat.getUnitatId(), UnitatOrganitzativaEntity.class);
+		}
+		if (!Objects.equals(unitat.getCodiDir3Entitat(), entitat.getCodiDir3())) {
+			throw new ValidationException(
+					simulat.getUnitatId(),
+					UnitatOrganitzativaEntity.class,
+					"La unitat organitzativa no pertany a l'entitat actual");
+		}
+		List<RegistreSimulatAccionDto> simulatAccions = new ArrayList<>();
+		BustiaEntity bustiaDesti;
+		if (simulat.getBustiaId() == null) {
+			bustiaDesti = bustiaHelper.findBustiaDesti(entitat, unitat.getCodi());
+			simulatAccions.add(new RegistreSimulatAccionDto(
+					RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE,
+					bustiaDesti.getNom(),
+					null));
+		} else {
+			bustiaDesti = bustiaRepository.findById(simulat.getBustiaId()).orElse(null);
+			if (bustiaDesti == null) {
+				throw new NotFoundException(simulat.getBustiaId(), BustiaEntity.class);
+			}
+			if (bustiaDesti.getEntitat() == null || !Objects.equals(bustiaDesti.getEntitat().getId(), entitat.getId())) {
+				throw new ValidationException(
+						simulat.getBustiaId(),
+						BustiaEntity.class,
+						"La bústia no pertany a l'entitat actual");
+			}
+		}
+		Boolean presencial = null;
+		if (simulat.getPresencial() != null) {
+			presencial = ReglaPresencialEnumDto.SI.equals(simulat.getPresencial());
+		}
+		simulat.setUnitatId(unitat.getId());
+		simulat.setBustiaId(bustiaDesti.getId());
+		aplicarSimulation(
+				entitat,
+				simulat,
+				new ArrayList<ReglaEntity>(),
+				simulatAccions,
+				presencial);
+		return simulatAccions;
+	}
+
 	public void aplicarSimulation(
 			EntitatEntity entitatEntity,
 			RegistreSimulatDto registreSimulatDto,
 			List<ReglaEntity> reglasApplied,
 			List<RegistreSimulatAccionDto> simulatAccions, 
 			Boolean presencial) {
-		// Consulta la  propietat per avaluar totes les regles o només la 1a coincident com fins ara
-		boolean avaluarTotesLesRegles = 
-				configHelper.getAsBoolean("es.caib.distribucio.tasca.aplicar.regles.avaluar.totes", false);
+		boolean avaluarTotesLesRegles = isAvaluarTotesLesRegles();
 
 		ReglaEntity reglaToApply = null;
 		boolean reglaAplicada = false;
@@ -458,7 +538,7 @@ public class ReglaHelper {
 	public void aplicar(
 			RegistreEntity registre,
 			List<ReglaEntity> reglesApplied) {
-		boolean avaluarTotesLesRegles = true;
+		boolean avaluarTotesLesRegles = isAvaluarTotesLesRegles();
 		boolean reglaAplicada = false;
 		boolean reglaBackoffice = false;
 		boolean reglaJaAplicada = false;

@@ -693,38 +693,11 @@ public class ReglaServiceImpl implements ReglaService {
 				+ "codiAssumpte=" + registreSimulatDto.getAssumpteCodi() + ")");
 		
 		
-		List<RegistreSimulatAccionDto> simulatAccions = new ArrayList<>();
-		
+		// L'entitat es dedueix de la unitat, com sempre; la resta de la lògica és a ReglaHelper.simular
 		UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatOrganitzativaRepository.getReferenceById(
 				registreSimulatDto.getUnitatId());
-		
 		EntitatEntity entitatEntity = entitatRepository.findByCodiDir3(unitatOrganitzativaEntity.getCodiDir3Entitat());
-		
-		BustiaEntity bustiaDesti = null;
-		if (registreSimulatDto.getBustiaId() == null) {
-			bustiaDesti = bustiaHelper.findBustiaDesti(
-					entitatEntity,
-					unitatOrganitzativaEntity.getCodi());
-			simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE, bustiaDesti.getNom(), null));
-
-		} else { 
-			bustiaDesti = bustiaRepository.findById(registreSimulatDto.getBustiaId()).orElse(null);
-		}
-		Boolean presencial = null;
-		if (registreSimulatDto.getPresencial() != null) {
-			presencial = registreSimulatDto.getPresencial().equals(ReglaPresencialEnumDto.SI) ? true : false;
-		}
-		registreSimulatDto.setUnitatId(unitatOrganitzativaEntity.getId());
-		registreSimulatDto.setBustiaId(bustiaDesti.getId());
-		
-		reglaHelper.aplicarSimulation(
-				entitatEntity,
-				registreSimulatDto,
-				new ArrayList<ReglaEntity>(),
-				simulatAccions, 
-				presencial);
-		
-		return simulatAccions;
+		return reglaHelper.simular(entitatEntity, registreSimulatDto);
 	}
 	
 	

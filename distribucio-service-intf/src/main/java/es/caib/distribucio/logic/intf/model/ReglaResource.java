@@ -10,11 +10,13 @@ import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
+import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaFiltreActivaEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganizzativaEstatEnumDto;
 import es.caib.distribucio.logic.intf.resourcevalidation.ReglaResourceValid;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,8 +31,8 @@ import java.util.List;
 /**
  * Informació d'una regla per a la distribució automàtica d'anotacions de registre.
  * <p>
- * CRUD bàsic, filtres i llistat. Totes les accions (Activar/Desactivar, acció massiva, Amunt/Avall/Moure
- * i Aplicar manualment) tenen {@code ActionExecutor} registrat a {@code ReglaResourceServiceImpl}.
+ * CRUD bàsic, filtres i llistat. Totes les accions (Activar/Desactivar, acció massiva, Amunt/Avall/Moure,
+ * Aplicar manualment i Simular) tenen {@code ActionExecutor} registrat a {@code ReglaResourceServiceImpl}.
  *
  * @author Límit Tecnologies
  */
@@ -98,6 +100,18 @@ import java.util.List;
                         code = ReglaResource.ACTION_MOURE_CODE,
                         requiresId = true,
                         formClass = ReglaResource.FormMoure.class),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = ReglaResource.ACTION_SIMULAR_CODE,
+                        requiresId = false,
+                        formClass = ReglaResource.FormSimular.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = { BaseConfig.ROLE_ADMIN },
+                                        grantedPermissions = { PermissionEnum.WRITE }
+                                )
+                        }),
                 // Acció massiva equivalent a enableMultiple/disableMultiple/deleteMultiple.
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
@@ -114,6 +128,7 @@ public class ReglaResource extends BaseAuditableResource<Long> {
     public static final String ACTION_AMUNT_CODE = "AMUNT";
     public static final String ACTION_AVALL_CODE = "AVALL";
     public static final String ACTION_MOURE_CODE = "MOURE";
+    public static final String ACTION_SIMULAR_CODE = "SIMULAR";
     public static final String ACTION_ACCIO_MASSIVA_CODE = "ACCIO_MASSIVA";
     public static final String FILTER_CODE = "FILTER";
 
@@ -196,6 +211,39 @@ public class ReglaResource extends BaseAuditableResource<Long> {
         private static final long serialVersionUID = 1L;
         @NotNull
         private Integer posicio;
+    }
+
+    /** Formulari del simulador de regles. */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @FieldNameConstants
+    public static class FormSimular implements Serializable {
+        private static final long serialVersionUID = 1L;
+        @NotNull
+        private ResourceReference<UnitatOrganitzativaResource, Long> unitat;
+        private ResourceReference<BustiaResource, Long> bustia;
+        @Size(max = 64)
+        private String procedimentCodi;
+        private String serveiCodi;
+        private String tramitCodi;
+        @Size(max = 16)
+        private String assumpteCodi;
+        private ReglaPresencialEnumDto presencial;
+        // Només informatiu: valor de la propietat "avaluar totes les regles", l'omple l'onChange inicial.
+        private boolean avaluarTotes;
+    }
+
+    /** Acció que faria la simulació (una fila del resultat). */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SimulacioAccio implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private RegistreSimulatAccionEnumDto accio;
+        private String param;
+        private String reglaNom;
     }
 
     /**

@@ -25,6 +25,8 @@ type GridFormFieldProps = FormFieldProps & {
     size: ResponsiveStyleValue<GridSize>;
     sortModel?: GridSortModel;
     additionalOpctions?: (q: string) => any[];
+    /** Camps de cada recurs de les opcions que s'afegeixen a `option.data` (p. ex. per a un `renderOption` propi). */
+    optionDataFields?: string[];
 };
 
 /**
@@ -163,6 +165,7 @@ export const GridRadioButtonField = (props: any) => {
 };
 
 const GridFormField: React.FC<GridFormFieldProps> = (props) => {
+    const { optionDataFields, ...fieldProps } = props;
     const { size, valueField: vField, additionalOpctions, hidden } = props;
     const { fields } = useFormContext();
 
@@ -193,6 +196,9 @@ const GridFormField: React.FC<GridFormFieldProps> = (props) => {
                     const options = state.getEmbedded().map((e) => ({
                         id: e.data[valueField],
                         description: e.data[labelField],
+                        ...(optionDataFields
+                            ? { data: Object.fromEntries(optionDataFields.map((f) => [f, e.data[f]])) }
+                            : {}),
                     }));
                     if (additionalOpctions) options.push(...(additionalOpctions?.(q) || []));
                     const response = {
@@ -209,7 +215,7 @@ const GridFormField: React.FC<GridFormFieldProps> = (props) => {
 
     return (
         <Grid size={size}>
-            <FormField optionsRequest={optionsRequest} {...props} />
+            <FormField optionsRequest={optionsRequest} {...fieldProps} />
         </Grid>
     );
 };

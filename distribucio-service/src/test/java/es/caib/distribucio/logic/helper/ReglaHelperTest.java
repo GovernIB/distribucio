@@ -1,7 +1,11 @@
 package es.caib.distribucio.logic.helper;
 
 import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionDto;
+import es.caib.distribucio.logic.intf.dto.RegistreSimulatAccionEnumDto;
 import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import es.caib.distribucio.logic.intf.exception.ValidationException;
+import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.persist.entity.*;
@@ -20,6 +24,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class ReglaHelperTest {
@@ -28,6 +33,7 @@ class ReglaHelperTest {
     @Mock private ReglaRepository reglaRepository;
     @Mock private BustiaRepository bustiaRepository;
     @Mock private BustiaHelper bustiaHelper;
+    @Mock private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 
     @InjectMocks
     private ReglaHelper reglaHelper;
@@ -65,7 +71,6 @@ class ReglaHelperTest {
         backoffice.setNom("Backoffice");
         ReflectionTestUtils.setField(regla, "backofficeDesti", backoffice);
 
-        when(configHelper.getAsBoolean(eq("es.caib.distribucio.tasca.aplicar.regles.avaluar.totes"), anyBoolean())).thenReturn(true);
 
         // When
         reglaHelper.aplicarSimulation(
@@ -99,7 +104,6 @@ class ReglaHelperTest {
 
         BustiaEntity bustia = BustiaEntity.getBuilder(entitatActual, "Bustia", unitat.getCodi(), unitat, null).build();
 
-        when(configHelper.getAsBoolean(eq("es.caib.distribucio.tasca.aplicar.regles.avaluar.totes"), anyBoolean())).thenReturn(true);
         when(bustiaHelper.findBustiaDesti(eq(entitatActual), eq(unitat.getCodi()))).thenReturn(bustia);
 
         // When
@@ -138,7 +142,6 @@ class ReglaHelperTest {
         ReflectionTestUtils.setField(bustia, "id", 20L);
         ReflectionTestUtils.setField(regla, "bustiaDesti", bustia);
 
-        when(configHelper.getAsBoolean(eq("es.caib.distribucio.tasca.aplicar.regles.avaluar.totes"), anyBoolean())).thenReturn(true);
 
         // When
         reglaHelper.aplicarSimulation(
@@ -157,6 +160,111 @@ class ReglaHelperTest {
         assertEquals("Bustia", simulatAccions.get(0).getParam());
         assertEquals(10L, dto.getUnitatId());
         assertEquals(20L, dto.getBustiaId());
+    }
+
+    // ---------- Simular (orquestració) ----------
+
+    private UnitatOrganitzativaEntity unitatSimulacio(String codiDir3Entitat) {
+        UnitatOrganitzativaEntity unitat = UnitatOrganitzativaEntity.getBuilder("U1", "Unitat").build();
+        ReflectionTestUtils.setField(unitat, "id", 10L);
+        unitat.setCodiDir3Entitat(codiDir3Entitat);
+        return unitat;
+    }
+
+    private BustiaEntity bustiaSimulacio(UnitatOrganitzativaEntity unitat, Long id) {
+        BustiaEntity bustia = BustiaEntity.getBuilder(entitatActual, "Bustia", unitat.getCodi(), unitat, null).build();
+        ReflectionTestUtils.setField(bustia, "id", id);
+        return bustia;
+    }
+
+    private void entitatSimulacio() {
+        ReflectionTestUtils.setField(entitatActual, "id", 1L);
+        ReflectionTestUtils.setField(entitatActual, "codiDir3", "E1");
+    }
+
+    @Test
+    void testSimular_senseBustia_primeraAccioEsBustiaPerDefecte() {
+        entitatSimulacio();
+        UnitatOrganitzativaEntity unitat = unitatSimulacio("E1");
+        BustiaEntity bustia = bustiaSimulacio(unitat, 20L);
+        when(unitatOrganitzativaRepository.findById(10L)).thenReturn(Optional.of(unitat));
+        when(bustiaHelper.findBustiaDesti(entitatActual, "U1")).thenReturn(bustia);
+        when(configHelper.getAsBoolean(anyString(), anyBoolean())).thenReturn(true);
+        RegistreSimulatDto entrada = new RegistreSimulatDto();
+        entrada.setUnitatId(10L);
+
+        List<RegistreSimulatAccionDto> accions = reglaHelper.simular(entitatActual, entrada);
+
+        assertFalse(accions.isEmpty());
+        assertEquals(RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE, accions.get(0).getAccion());
+        assertEquals("Bustia", accions.get(0).getParam());
+        assertNull(accions.get(0).getReglaNom());
+    }
+
+    @Test
+    void testSimular_bustiaInexistent_llancaNotFound() {
+        entitatSimulacio();
+        UnitatOrganitzativaEntity unitat = unitatSimulacio("E1");
+        when(unitatOrganitzativaRepository.findById(10L)).thenReturn(Optional.of(unitat));
+        when(bustiaRepository.findById(99L)).thenReturn(Optional.empty());
+        RegistreSimulatDto entrada = new RegistreSimulatDto();
+        entrada.setUnitatId(10L);
+        entrada.setBustiaId(99L);
+
+        assertThrows(NotFoundException.class, () -> reglaHelper.simular(entitatActual, entrada));
+    }
+
+    @Test
+    void testSimular_unitatDAltraEntitat_llancaValidation() {
+        entitatSimulacio();
+        UnitatOrganitzativaEntity unitat = unitatSimulacio("ALTRA");
+        when(unitatOrganitzativaRepository.findById(10L)).thenReturn(Optional.of(unitat));
+        RegistreSimulatDto entrada = new RegistreSimulatDto();
+        entrada.setUnitatId(10L);
+
+        assertThrows(ValidationException.class, () -> reglaHelper.simular(entitatActual, entrada));
+    }
+
+    @Test
+    void testSimular_presencialSiIntentaRegles_iNoMutaLEntrada() {
+        entitatSimulacio();
+        UnitatOrganitzativaEntity unitat = unitatSimulacio("E1");
+        BustiaEntity bustia = bustiaSimulacio(unitat, 20L);
+        when(unitatOrganitzativaRepository.findById(10L)).thenReturn(Optional.of(unitat));
+        when(bustiaRepository.findById(20L)).thenReturn(Optional.of(bustia));
+        when(configHelper.getAsBoolean(anyString(), anyBoolean())).thenReturn(true);
+        RegistreSimulatDto entrada = new RegistreSimulatDto();
+        entrada.setUnitatId(10L);
+        entrada.setBustiaId(20L);
+        entrada.setPresencial(ReglaPresencialEnumDto.SI);
+
+        List<RegistreSimulatAccionDto> accions = reglaHelper.simular(entitatActual, entrada);
+
+        // Cap regla aplicable i bústia informada: no hi ha cap acció.
+        assertTrue(accions.isEmpty());
+        verify(reglaRepository).findAplicables(
+                eq(entitatActual), eq(10L), eq(20L), eq(""), eq(""), eq(""), eq(""), eq(false), eq(ReglaPresencialEnumDto.SI));
+        // El DTO rebut no queda modificat.
+        assertEquals(10L, entrada.getUnitatId());
+        assertEquals(20L, entrada.getBustiaId());
+    }
+
+    @Test
+    void testSimular_sensePresencial_noFiltraPerPresencial() {
+        entitatSimulacio();
+        UnitatOrganitzativaEntity unitat = unitatSimulacio("E1");
+        BustiaEntity bustia = bustiaSimulacio(unitat, 20L);
+        when(unitatOrganitzativaRepository.findById(10L)).thenReturn(Optional.of(unitat));
+        when(bustiaRepository.findById(20L)).thenReturn(Optional.of(bustia));
+        when(configHelper.getAsBoolean(anyString(), anyBoolean())).thenReturn(true);
+        RegistreSimulatDto entrada = new RegistreSimulatDto();
+        entrada.setUnitatId(10L);
+        entrada.setBustiaId(20L);
+
+        reglaHelper.simular(entitatActual, entrada);
+
+        verify(reglaRepository).findAplicables(
+                eq(entitatActual), eq(10L), eq(20L), eq(""), eq(""), eq(""), eq(""), eq(true), isNull());
     }
 
     // ---------- Aplicar manualment ----------

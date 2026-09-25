@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import { useTranslation } from 'react-i18next';
 import GridFormField, { GridRadioButtonField } from '../../components/GridFormField';
+import GridUnitatField from '../../components/GridUnitatField';
 import { useFormContext } from 'reactlib';
 import { formatDate } from '../../util/dateUtils';
 
@@ -29,7 +30,11 @@ export const ReglaFormContent: React.FC = () => {
 
             <SectionDivider label={t('page.regla.form.legend.filtre')} />
 
-            <GridFormField size={6} name="unitatOrganitzativaFiltre" />
+            <GridUnitatField
+                size={6}
+                name="unitatOrganitzativaFiltre"
+                estatPerDefecte={data?.unitatOrganitzativaFiltreEstat}
+            />
             {data?.tipus !== 'BACKOFFICE' && <GridFormField size={6} name="bustiaFiltre" />}
 
             <Grid container spacing={2} size={12}>

@@ -595,6 +595,7 @@ const translationCa = {
             },
         },
         regla: {
+            unitatObsoleta: 'La unitat està obsoleta',
             grid: {
                 title: 'Regles',
                 unitatObsoleta: 'La unitat organitzativa de filtre ha quedat obsoleta',
@@ -632,6 +633,7 @@ const translationCa = {
                 modificar: 'Modifica',
                 esborrar: 'Esborra',
                 aplicarManualment: 'Aplica manualment',
+                simular: 'Simula',
                 amunt: 'Amunt',
                 avall: 'Avall',
                 activar: 'Activa',
@@ -648,6 +650,26 @@ const translationCa = {
                 esborrarMassiuOk: "Les regles seleccionades s'han esborrat correctament",
                 error: "S'ha produït un error executant l'acció",
                 aplicarManualmentOk: "La regla s'ha assignat correctament a {{count}} anotacions que es processaran en segon pla",
+            },
+            simulador: {
+                title: 'Simulador de regles',
+                avaluarTotes: 'Avaluar totes les regles',
+                senseResultat: 'No s\'ha aplicat cap regla',
+                columna: {
+                    ordre: 'Ordre',
+                    descripcio: 'Descripció',
+                    regla: 'Regla',
+                },
+                accio: {
+                    BACKOFFICE: 'Es distribueix al backoffice',
+                    UNITAT: 'Es reenvia a la U.O.',
+                    BUSTIA_PER_DEFECTE: 'Es mou a la bústia principal',
+                    BUSTIA: 'Es mou a la bústia',
+                    LOOP_DETECTED:
+                        "Aquesta regla ja s'ha aplicat anteriorment. Es finalitza l'execució de regles encadenades per evitar el bucle infinit",
+                    ATURAR_EVALUACIO:
+                        "Aquesta regla està marcada per aturar l'avaluació de les següents. Es finalitza l'execució de regles encadenades",
+                },
             },
             aplicar: {
                 title: 'Aplica manualment',

@@ -593,6 +593,7 @@ const translationEs = {
             },
         },
         regla: {
+            unitatObsoleta: 'La unidad está obsoleta',
             grid: {
                 title: 'Reglas',
                 unitatObsoleta: 'La unidad organizativa de filtro ha quedado obsoleta',
@@ -630,6 +631,7 @@ const translationEs = {
                 modificar: 'Modifica',
                 esborrar: 'Borra',
                 aplicarManualment: 'Aplica manualmente',
+                simular: 'Simula',
                 amunt: 'Arriba',
                 avall: 'Abajo',
                 activar: 'Activa',
@@ -646,6 +648,26 @@ const translationEs = {
                 esborrarMassiuOk: 'Las reglas seleccionadas se han borrado correctamente',
                 error: 'Se ha producido un error ejecutando la acción',
                 aplicarManualmentOk: 'La regla se ha asignado correctamente a {{count}} anotaciones que se procesarán en segundo plano',
+            },
+            simulador: {
+                title: 'Simulador de reglas',
+                avaluarTotes: 'Evaluar todas las reglas',
+                senseResultat: 'No se ha aplicado ninguna regla',
+                columna: {
+                    ordre: 'Orden',
+                    descripcio: 'Descripción',
+                    regla: 'Regla',
+                },
+                accio: {
+                    BACKOFFICE: 'Se distribuye en el backoffice',
+                    UNITAT: 'Se reenvía a la U.O.',
+                    BUSTIA_PER_DEFECTE: 'Se mueve al buzón principal',
+                    BUSTIA: 'Se mueve al buzón',
+                    LOOP_DETECTED:
+                        'Esta regla ya se ha aplicado anteriormente. Se finaliza la ejecución de reglas encadenadas para evitar el bucle infinito',
+                    ATURAR_EVALUACIO:
+                        'Esta regla está marcada para parar la evaluación de las siguientes. Se finaliza la ejecución de las reglas encadenadas',
+                },
             },
             aplicar: {
                 title: 'Aplica manualmente',
