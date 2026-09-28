@@ -986,7 +986,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                         .collect(Collectors.groupingBy(
                                 dada -> dada.getMetaDada().getId(),
                                 Collectors.mapping(
-                                        dada -> {
+                                        (Function<DadaResourceEntity, Object>) dada -> {
                                             switch (dada.getMetaDada().getTipus()) {
                                                 case DATA:
                                                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
