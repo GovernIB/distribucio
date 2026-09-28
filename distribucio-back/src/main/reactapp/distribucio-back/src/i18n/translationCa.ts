@@ -1063,6 +1063,13 @@ const translationCa = {
                 copia: "Còpies",
             }
         },
+        BustiaObsoleta: {
+            unitat: "La unitat està obsoleta",
+            title: "La unitat d'aquesta bústia està obsoleta",
+            alert: "La unitat: {{unitat}} de la bústia: {{bustia}}",
+            newUnitats: "Noves unitats",
+            afectedBusties: "Altres bústies afectades",
+        },
     },
 };
 

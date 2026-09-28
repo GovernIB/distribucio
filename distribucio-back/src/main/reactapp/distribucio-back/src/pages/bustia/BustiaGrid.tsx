@@ -13,15 +13,9 @@ import {useAclCustomPermissionManager} from "../../components/AclPermissionManag
 import {Link} from "../../components/BaseApp.tsx";
 import {BustiaPermisosForm, useBustiaPermisosColumns} from "./BustiaPermisosForm.tsx";
 import {useActions, useBustiaActions} from "./detail/BustiaActions.tsx";
+import {useBustiaObsoleta} from "./detail/BustiaObsoleta.tsx";
 
 const columns: MuiDataGridColDef[] = [
-    { field: 'nom', flex: 4,
-        renderCell: (params) => (<>
-            {params.formattedValue}
-            {params.row.pendent &&
-                <Icon color={'error'} sx={{ marginLeft: 'auto' }}>warning</Icon>}
-        </>)
-    },
     { field: 'unitatOrganitzativa', flex: 4 },
     { field: 'perDefecte', flex: 1, type: 'boolean' },
     { field: 'activa', flex: 1, type: 'boolean' },
@@ -40,6 +34,14 @@ export const BustiaGrid = () => {
     }
 
     const additionalColumns = useMemo(() => [
+        { field: 'nom', flex: 4,
+            renderCell: (params) => (<>
+                {params.formattedValue}
+                {params.row.pendent && <IconButton onClick={() => handleObsoleta(params.id, params.row)}>
+                    <Icon title={t('component.BustiaObsoleta.unitat')} color={'error'} sx={{ marginLeft: 'auto' }}>warning</Icon>
+                </IconButton>}
+            </>)
+        },
         ...columns,
         { field: 'permisosCount', flex: 1,
             sortable: false,
@@ -69,6 +71,7 @@ export const BustiaGrid = () => {
 
     const {actions, components} = useBustiaActions(refresh);
     const { usersBustia } = useActions()
+    const { handleOpen: handleObsoleta, component: componentObsoleta } = useBustiaObsoleta();
 
     const {
         show: permissionShow,
@@ -127,6 +130,7 @@ export const BustiaGrid = () => {
                     paginationActive
                 />
                 {permissionComponent}
+                {componentObsoleta}
                 {components}
             </CardPage>
         </GridPage>

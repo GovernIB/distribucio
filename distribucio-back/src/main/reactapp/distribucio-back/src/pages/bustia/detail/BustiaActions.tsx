@@ -54,6 +54,10 @@ export const useActions = (refresh?: () => void) => {
         }
     }
 
+    const transicioInfo = (id:any) => {
+        return apiReport(id, {code: "TRANSICIO_INFO", fileType: 'JSON'})
+    }
+
     return {
         apiIsReady,
         perDefecte,
@@ -61,6 +65,7 @@ export const useActions = (refresh?: () => void) => {
         desactivar,
         usersBustia,
         favorite,
+        transicioInfo
     }
 }
 

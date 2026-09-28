@@ -22,7 +22,7 @@ const DadaField = ({ index, metaDada, value, onChange, required, ...other }: any
 
     const decimalScale = metaDada.tipus === 'SENCER' ? 0 : undefined;
 
-    console.log("metaDada", metaDada, type, value)
+    // console.log("metaDada", metaDada, type, value)
 
     return (
         <FormField
@@ -155,8 +155,8 @@ export const MetaDadesForm = ({entity}:any) => {
     const save = () => {
         if (apiIsReady) {
             apiAction(entity.id, { code: "UPDATE_DADES", data: apiRef.current?.getData() })
-                .then(() => console.log("AAAAAAAAAA"))
-                .catch((error) => console.log("BBBBBBBBB", error))
+                // .then(() => console.log("AAAAAAAAAA"))
+                // .catch((error) => console.log("BBBBBBBBB", error))
         }
     }
 

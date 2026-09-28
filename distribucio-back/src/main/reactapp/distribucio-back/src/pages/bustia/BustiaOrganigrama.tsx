@@ -130,6 +130,7 @@ export const useOrganigrama = ({quickFilter, filter, namedQueries, perspectives,
     return {
         apiRef,
         busties,
+        unitats,
         refresh,
         content
     }
@@ -154,7 +155,18 @@ export const BustiaOrganigrama = () => {
     const {apiRef, busties, content, refresh} = useOrganigrama({
         filter: springFilter,
         namedQueries: namedQueries,
-        onClick: (_id:any, row:any) => setEntity(row)
+        onClick: (_id:any, row:any) => setEntity(row),
+        renderCell: (item:any) => {
+            if (item.class == 'unitat') {
+                return <>
+                    <Box display={'flex'} alignItems={'center'} gap={1} onClick={item?.onClick}>
+                        <Icon>{item.icon}</Icon>{item.label}
+
+                        {item.data.estat != "V" && <Icon title={t('component.BustiaObsoleta.unitat')} color={'error'}>warning</Icon>}
+                    </Box>
+                </>
+            }
+        }
     })
 
     useEffect(() => {

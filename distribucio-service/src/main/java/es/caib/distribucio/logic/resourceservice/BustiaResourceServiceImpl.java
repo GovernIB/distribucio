@@ -1,8 +1,11 @@
 package es.caib.distribucio.logic.resourceservice;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.PermisosHelper;
+import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
@@ -12,6 +15,7 @@ import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
 import es.caib.distribucio.logic.intf.base.model.FieldOption;
 import es.caib.distribucio.logic.intf.base.model.ReportFileType;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.PermisDto;
 import es.caib.distribucio.logic.intf.dto.PrincipalTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganizzativaEstatEnumDto;
@@ -56,6 +60,7 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
     private final BustiaResourceRepository bustiaResourceRepository;
     private final BustiaService bustiaService;
     private final UsuariResourceRepository usuariResourceRepository;
+    private final UnitatOrganitzativaHelper unitatOrganitzativaHelper;
 
     @PostConstruct
     public void init() {
@@ -69,6 +74,7 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
         register(BustiaResource.ACTION_MOURE_ANOTACIO_CODE, new MoureAnotacioActionExecutor());
         register(BustiaResource.ACTION_TOOGLE_FAVORITA_CODE, new FavotitaActionExecutor());
         register(BustiaResource.REPORT_USUARIS_BUSTIA_CODE, new UsuarisBustiaReportGenerator());
+        register(BustiaResource.REPORT_TRANSICIO_INFO_CODE, new TransicioInfoReportGenerator());
     }
 
     private void beforeSave(BustiaResourceEntity entity, BustiaResource resource) {
@@ -422,6 +428,53 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
 
         @Override
         public void onChange(Serializable id, BustiaResource.UsuariBustiaForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, BustiaResource.UsuariBustiaForm target) {
+        }
+    }
+    private class TransicioInfoReportGenerator implements ReportGenerator<BustiaResourceEntity, Serializable, HashMap> {
+        @Override
+        public DownloadableFile generateFile(String code, List<?> data, ReportFileType fileType, OutputStream out) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+
+                byte[] jsonBytes = objectMapper.writeValueAsBytes(data.get(0));
+
+                out.write(jsonBytes);
+                out.flush();
+                return new DownloadableFile("transicio_info", "application/json", jsonBytes);
+            } catch (Exception e) {
+                throw new RuntimeException("Error generant JSON", e);
+            }
+        }
+
+        @Override
+        public List<HashMap> generateData(String code, BustiaResourceEntity entity, Serializable params) throws ReportGenerationException {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
+            Map<String, List<String>> map = new HashMap<>();
+
+            BustiaDto bustia = bustiaService.findById(
+                    entitatActualId,
+                    entity.getId());
+            map.put("newUnitats",
+                unitatOrganitzativaHelper.getLastHistoricos(bustia.getUnitatOrganitzativa())
+                        .getLastHistoricosUnitats().stream()
+                        .map(h -> h.getDenominacio() + " (" + h.getCodi() + ")")
+                        .collect(Collectors.toList())
+            );
+
+            map.put("afectedBusties",
+                    bustiaResourceRepository.findByEntitatIdAndUnitatOrganitzativaIdAndPareNotNull(
+                                entitatActualId, entity.getUnitatOrganitzativa().getId() ).stream()
+                            .filter(b -> !Objects.equals(b.getId(), entity.getId()))
+                            .map(ContingutResourceEntity::getNom)
+                            .collect(Collectors.toList())
+            );
+
+            return List.of((HashMap) map);
+        }
+
+        @Override
+        public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
         }
     }
 }

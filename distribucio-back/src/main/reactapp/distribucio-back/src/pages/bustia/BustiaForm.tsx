@@ -5,6 +5,8 @@ import {useTranslation} from "react-i18next";
 import {MuiDataFormDialogApi, MuiForm, MuiFormDialog} from "reactlib";
 import {BustiaPermisosForm, useBustiaPermisosColumns} from "./BustiaPermisosForm.tsx";
 import {AclPermissionGrid} from "../../components/AclPermissionManager.tsx";
+import Box from "@mui/material/Box";
+import {BustiaObsoleta} from "./detail/BustiaObsoleta.tsx";
 
 export const BustiaForm = () => {
     return <Grid container direction={"row"} columnSpacing={1} rowSpacing={1}>
@@ -43,8 +45,13 @@ export const BustiaOrganigramaForm = ({entity, ...other}:any) => {
             hiddenRevertButton
             hiddenSaveButton
             hiddenDeleteButton
+            sx={{ backgroundColor: 'red' }}
             {...other}
         >
+            {entity?.pendent && <Box mb={2}>
+                <BustiaObsoleta id={entity.id}/>
+            </Box>}
+
             <BustiaForm />
 
             <AclPermissionGrid

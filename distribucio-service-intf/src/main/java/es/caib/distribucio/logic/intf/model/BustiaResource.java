@@ -8,6 +8,7 @@ import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.dto.UnitatOrganizzativaEstatEnumDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -89,6 +90,10 @@ import java.util.List;
                         type = ResourceArtifactType.REPORT,
                         code = BustiaResource.REPORT_USUARIS_BUSTIA_CODE,
                         formClass = BustiaResource.UsuariBustiaForm.class),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.REPORT,
+                        code = BustiaResource.REPORT_TRANSICIO_INFO_CODE,
+                        requiresId = true),
         }
 )
 public class BustiaResource extends ContingutResource {
@@ -103,6 +108,7 @@ public class BustiaResource extends ContingutResource {
     public static final String ACTION_PRINCIPAL_CODE = "PRINCIPAL";
     public static final String ACTION_MOURE_ANOTACIO_CODE = "MOURE_ANOTACIO";
     public static final String REPORT_USUARIS_BUSTIA_CODE = "USUARIS_BUSTIA";
+    public static final String REPORT_TRANSICIO_INFO_CODE = "TRANSICIO_INFO";
 
 	@NotNull
 	private ResourceReference<UnitatOrganitzativaResource, Long> unitatOrganitzativa;
@@ -113,6 +119,7 @@ public class BustiaResource extends ContingutResource {
     @Transient private Integer permisosCount;
     @Transient private Boolean favorita;
 
+    @Transient private UnitatOrganizzativaEstatEnumDto uoEstat;
     @Transient private List<FieldOption> usuarisPermis;
 
     @Getter
