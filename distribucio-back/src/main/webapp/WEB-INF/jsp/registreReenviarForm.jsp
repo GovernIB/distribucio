@@ -299,6 +299,7 @@
 		var multiple = ${registres != null};
 		var idsBustiesFavorits = [];
 		var idsPerConeixement = [];
+		var deixarCopiaBloquejat = false;
 		$(document).ready(function() {
 						
 			$("input:visible:enabled:not([readonly]),textarea:visible:enabled:not([readonly]),select:visible:enabled:not([readonly])").first().focus();
@@ -382,6 +383,13 @@
 				}
 			});
 			favoritsCheckbox.trigger('change');
+
+			$('#deixarCopia').on('click', function(e) {
+				if (deixarCopiaBloquejat) {
+					e.preventDefault();
+				}
+			});
+
 			$("button[name='btnReenviarSubmit']").click(function(e){
 				if (${isPermesAssignarAnotacions}) {
 					mapBustiaUsuari();				
@@ -392,8 +400,8 @@
 		    });
 		});
 		
-		function mapBustiaUsuari() {			
-			$('#taula_tramitacio > tbody  > tr').each(function(e, tr) {
+		function mapBustiaUsuari() {
+			$('#taula_tramitacio > tbody > tr').not('.empty').each(function(e, tr) {
 				var bustiaId = $(tr).attr('id');
 				var bustiaTr = $(tr).find('td[id="bustia_desti_' + bustiaId + '"]');
 				
@@ -693,6 +701,7 @@
 				$taulaTramitacio.find('tr#' + idNode).remove();
 			}
 			actualitzarFilaBuida($tbody, false);
+			marcarDeixarCopiaSiNomesConeixement();
 		}
 		
 		function mostrarUsuarisComentar(idNode, $taulaTramitacio) {
@@ -765,6 +774,25 @@
 					$taulaConeixement.find('tr#' + idNode).remove();
 			}
 			actualitzarFilaBuida($tbody, true);
+			marcarDeixarCopiaSiNomesConeixement();
+		}
+
+		// Si només hi ha destins per coneixement (cap de tramitació), es marca "Deixar còpia" i es bloqueja perquè no es pugui desmarcar.
+		function marcarDeixarCopiaSiNomesConeixement() {
+			var totalTramitacio = $('#taula_tramitacio tbody tr').not('.empty').length;
+			var totalConeixement = $('#taula_coneixement tbody tr').not('.empty').length;
+			var $deixarCopia = $('#deixarCopia');
+			if (totalTramitacio == 0 && totalConeixement > 0) {
+				$deixarCopia.prop('checked', true);
+				deixarCopiaBloquejat = true;
+				$deixarCopia.addClass('disabled-bustia');
+				$('#deixarCopiaObligatori').show();
+			} else {
+				$deixarCopia.prop('checked', false);
+				deixarCopiaBloquejat = false;
+				$deixarCopia.removeClass('disabled-bustia');
+				$('#deixarCopiaObligatori').hide();
+			}
 		}
 		
 		function actualitzarFilaBuida($tbody, hide) {
@@ -923,6 +951,7 @@
 							<div class="form-group col-xs-12">
 								<form:checkbox path="deixarCopia" cssClass="span12" id="deixarCopia" disabled="${disableDeixarCopia}"/>
 								<label for="deixarCopia" style="padding: 7px 0 0 7px;"><spring:message code="contingut.enviar.camp.deixar.copia"/></label>
+								<div id="deixarCopiaObligatori" class="text-muted" style="display: none; padding-left: 27px;"><spring:message code="contingut.enviar.camp.deixar.copia.obligatori"/></div>
 							</div>
 						</c:when>
 						<c:otherwise>

@@ -6,6 +6,7 @@ package es.caib.distribucio.back.controller;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -1284,12 +1285,23 @@ public class RegistreUserController extends BaseUserController {
 				MissatgesHelper.error(
 						request,
 						getMessage(
-								request, 	
+								request,
 								"bustia.pendent.accio.reenviar.no.desti"));
-				model.addAttribute("maxLevel", getMaxLevelArbre());
-				model.addAttribute("isReenviarBustiaDefaultEntitatDisabled", isReenviarBustiaDefaultEntitatDisabled());
-				model.addAttribute("isPermesAssignarAnotacions", isPermesAssignarAnotacions());
+				omplirModelPerReenviar(
+						entitatActual,
+						registreId,
+						model);
 				return "registreReenviarForm";
+			}
+			boolean nomesPerConeixement = command.getPerConeixement() != null
+					&& command.getPerConeixement().length > 0
+					&& Arrays.asList(command.getPerConeixement()).containsAll(Arrays.asList(command.getDestins()));
+			if (nomesPerConeixement) {
+				MissatgesHelper.warning(
+						request,
+						getMessage(
+								request,
+								"bustia.controller.pendent.contingut.reenviar.nomes.coneixement"));
 			}
 			bustiaService.registreReenviar(
 					entitatActual.getId(),
