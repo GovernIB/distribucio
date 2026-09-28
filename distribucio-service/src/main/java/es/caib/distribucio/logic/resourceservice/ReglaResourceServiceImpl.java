@@ -31,9 +31,11 @@ import es.caib.distribucio.logic.intf.model.ReglaResource;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.resourceservice.ReglaResourceService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
+import es.caib.distribucio.persist.entity.BustiaEntity;
 import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
+import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.RegistreRepository;
 import es.caib.distribucio.persist.repository.ReglaRepository;
@@ -69,6 +71,7 @@ public class ReglaResourceServiceImpl
     private final ReglaHelper reglaHelper;
     private final ReglaRepository reglaRepository;
     private final EntitatRepository entitatRepository;
+    private final BustiaRepository bustiaRepository;
 
     @PostConstruct
     public void init() {
@@ -109,6 +112,15 @@ public class ReglaResourceServiceImpl
         if (entity.getUnitatOrganitzativaFiltre() != null) {
             resource.setUnitatOrganitzativaFiltreEstat(entity.getUnitatOrganitzativaFiltre().getEstat());
         }
+        if (entity.getUnitatDesti() != null) {
+            resource.setUnitatDestiEstat(entity.getUnitatDesti().getEstat());
+        }
+        // "tipusSia" no es desa: es dedueix de quin dels dos codis té la regla, perquè el formulari mostri el camp que toca.
+        boolean serveiInformat = entity.getServeiCodiFiltre() != null && !entity.getServeiCodiFiltre().trim().isEmpty();
+        boolean procedimentInformat = entity.getProcedimentCodiFiltre() != null && !entity.getProcedimentCodiFiltre().trim().isEmpty();
+        resource.setTipusSia(serveiInformat && !procedimentInformat
+                ? RegistreClassificarTipusEnum.SERVEI
+                : RegistreClassificarTipusEnum.PROCEDIMENT);
         resource.setCreatedByFullName(codiAndNom(entity.getCreatedBy()));
         resource.setLastModifiedByFullName(codiAndNom(entity.getLastModifiedBy()));
         if (entity.getEntitat() != null) {
@@ -140,6 +152,31 @@ public class ReglaResourceServiceImpl
                 entity.setEntitat(entitat);
                 entity.setOrdre(reglaResourceRepository.countByEntitat(entitat));
             }
+        }
+        netejarDestinsNoAplicables(entity);
+    }
+
+    @Override
+    protected void beforeUpdateSave(
+            ReglaResourceEntity entity,
+            ReglaResource resource,
+            Map<String, AnswerRequiredException.AnswerValue> answers) {
+        netejarDestinsNoAplicables(entity);
+    }
+
+    /**
+     * Només es conserva el destí que correspon al tipus de la regla: el formulari amaga els altres, però
+     * els valors d'una selecció anterior continuen viatjant a la petició i quedarien desats sense ser usats
+     */
+    private void netejarDestinsNoAplicables(ReglaResourceEntity entity) {
+        if (!ReglaTipusEnumDto.BUSTIA.equals(entity.getTipus())) {
+            entity.setBustiaDesti(null);
+        }
+        if (!ReglaTipusEnumDto.BACKOFFICE.equals(entity.getTipus())) {
+            entity.setBackofficeDesti(null);
+        }
+        if (!ReglaTipusEnumDto.UNITAT.equals(entity.getTipus())) {
+            entity.setUnitatDesti(null);
         }
     }
 
@@ -455,6 +492,13 @@ public class ReglaResourceServiceImpl
             return null;
         }
         List<String> errors = new ArrayList<>();
+        if (ReglaTipusEnumDto.BUSTIA.equals(resource.getTipus()) && resource.getBustiaDesti() != null) {
+            BustiaEntity bustiaDesti = bustiaRepository.findById(resource.getBustiaDesti().getId()).orElse(null);
+            if (bustiaDesti != null && bustiaDesti.getEntitat() != null
+                    && !entitatId.equals(bustiaDesti.getEntitat().getId())) {
+                errors.add(I18nUtil.getInstance().getI18nMessage("regla.validacio.bustia.desti.entitat"));
+            }
+        }
         if (resource.getNom() != null && resource.getTipus() != null
                 && reglaValidacioHelper.existeixNomTipusAssumpte(
                         entitatId,

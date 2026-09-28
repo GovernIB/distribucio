@@ -167,6 +167,8 @@ public class ReglaResource extends BaseAuditableResource<Long> {
     private ResourceReference<BustiaResource, Long> bustiaDesti;
     private ResourceReference<BackofficeResource, Long> backofficeDesti;
     private ResourceReference<UnitatOrganitzativaResource, Long> unitatDesti;
+    // Només lectura: estat de la unitat de destí, per marcar-la com a obsoleta al formulari (com unitatOrganitzativaFiltreEstat).
+    private UnitatOrganizzativaEstatEnumDto unitatDestiEstat;
     private boolean aturarAvaluacio;
 
     // Activa per defecte, igual que a la UI antiga.

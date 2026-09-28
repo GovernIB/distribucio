@@ -1,6 +1,7 @@
 import React from 'react';
 import StyledMuiFilter from '../../components/StyledMuiFilter';
 import GridFormField from '../../components/GridFormField';
+import GridUnitatField from '../../components/GridUnitatField';
 import * as builder from '../../util/springFilterUtils';
 import { useFormContext } from 'reactlib';
 
@@ -25,13 +26,15 @@ const ReglaFilterForm: React.FC = () => {
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="codiSIA" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="codiServei" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="codiTramit" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="unitat" />
+                    <GridUnitatField size={{ xs: 12, sm: 6, md: 3.5 }} name="unitat" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="bustia" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="activa" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="presencial" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="tipus" />
 
-                    {data?.tipus === 'UNITAT' && <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="unitatDesti" />}
+                    {data?.tipus === 'UNITAT' && (
+                        <GridUnitatField size={{ xs: 12, sm: 6, md: 3.5 }} name="unitatDesti" />
+                    )}
                     {data?.tipus === 'BUSTIA' && <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="bustiaDesti" />}
                     {data?.tipus === 'BACKOFFICE' && (
                         <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="backoffice" />

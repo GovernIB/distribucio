@@ -67,7 +67,9 @@ export const ReglaFormContent: React.FC = () => {
             <GridFormField size={4} name="tipus" />
             {data?.tipus === 'BUSTIA' && <GridFormField size={8} name="bustiaDesti" required />}
             {data?.tipus === 'BACKOFFICE' && <GridFormField size={8} name="backofficeDesti" required />}
-            {data?.tipus === 'UNITAT' && <GridFormField size={8} name="unitatDesti" required />}
+            {data?.tipus === 'UNITAT' && (
+                <GridUnitatField size={8} name="unitatDesti" required estatPerDefecte={data?.unitatDestiEstat} />
+            )}
 
             <GridFormField size={12} name="aturarAvaluacio" />
 
