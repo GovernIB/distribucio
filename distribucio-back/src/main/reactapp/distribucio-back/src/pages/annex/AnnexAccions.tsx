@@ -5,6 +5,7 @@ import { iniciaDescargaBlob } from '../../util/downloadUtils';
 import { ROLE_ADMIN, useDistribucioContext } from '../../components/DistribucioContext';
 import type { MassiveActionProps } from '../../components/MassiveActionSelector';
 import { useExecucioMassivaGrid } from '../execucioMassiva/ExecucioMassivaGrid';
+import { useRegistreDetail } from '../registre/detail/RegistreDetail';
 
 const ACTION_GUARDAR_DEFINITIU = 'GUARDAR_DEFINITIU';
 const ACTION_COMPROVAR_PENDENTS = 'COMPROVAR_PENDENTS';
@@ -34,13 +35,17 @@ export const useDescarregarAnnex = () => {
 
 type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
 
-export const useAnnexAccions = (mostrarDetall: (id: any, row: any) => void, refresh?: () => void): AccionsFila => {
+export const useAnnexAccions = (
+    mostrarDetall: (id: any, row: any) => void,
+    refresh?: () => void
+): { actions: AccionsFila; components: ReactNode } => {
     const { t } = useTranslation();
     const descarregar = useDescarregarAnnex();
     const { currentRole } = useDistribucioContext();
     const isAdmin = currentRole === ROLE_ADMIN;
     const { temporalMessageShow } = useBaseAppContext();
     const { artifactAction } = useResourceApiService('registreAnnexResource');
+    const { handleOpen: handleDetallAnotacio, dialog: dialogDetallAnotacio } = useRegistreDetail();
 
     const guardarDefinitiu = (id: any) => {
         artifactAction(id, { code: ACTION_GUARDAR_DEFINITIU })
@@ -60,13 +65,13 @@ export const useAnnexAccions = (mostrarDetall: (id: any, row: any) => void, refr
             );
     };
 
-    return [
+    const actions: AccionsFila = [
         {
             label: t('page.annex.accio.detallsAnotacio'),
             icon: 'adjust',
             showInMenu: true,
             hidden: () => !isAdmin,
-            onClick: () => alert("TODO: Pendent d'implementar!!"),
+            onClick: (_id: any, row: any) => handleDetallAnotacio(row?.registre?.id, row),
         },
         {
             label: t('page.annex.accio.detalls'),
@@ -103,6 +108,8 @@ export const useAnnexAccions = (mostrarDetall: (id: any, row: any) => void, refr
             onClick: (id: any) => guardarDefinitiu(id),
         },
     ];
+
+    return { actions, components: dialogDetallAnotacio };
 };
 
 /**

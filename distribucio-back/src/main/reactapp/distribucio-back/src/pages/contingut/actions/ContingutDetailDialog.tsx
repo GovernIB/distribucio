@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { MuiDialog, useCloseDialogButtons, useResourceApiService } from 'reactlib';
 import Load from '../../../components/Load';
 import BustiaContingutDetailContent from './BustiaContingutDetailContent';
-import RegistreContingutDetailContent from './RegistreContingutDetailContent';
+import { useRegistreDetail } from '../../registre/detail/RegistreDetail';
 
 /** "Detalls" del llistat de continguts: (Bústia -> bustiaAdminDetall.jsp, Registre -> registreDetall.jsp). */
 export const useContingutDetailDialog = () => {
     const { t } = useTranslation();
+    const { handleOpen: handleOpenRegistre, dialog: registreDialog } = useRegistreDetail();
     const closeButtons = useCloseDialogButtons();
     const { isReady: apiIsReady, getOne: apiGetOne } = useResourceApiService('bustiaResource');
     const [open, setOpen] = React.useState(false);
@@ -18,6 +19,10 @@ export const useContingutDetailDialog = () => {
     const isBustia = row?.tipus !== 'REGISTRE';
 
     const handleOpen = (id: any, r: any) => {
+        if (r?.tipus === 'REGISTRE') {
+            handleOpenRegistre(id, r);
+            return;
+        }
         setContingutId(id);
         setRow(r);
         setBustia(undefined);
@@ -51,17 +56,20 @@ export const useContingutDetailDialog = () => {
             buttons={closeButtons}
             buttonCallback={() => handleClose()}
         >
-            {isBustia ? (
-                <Load value={bustia}>
-                    <BustiaContingutDetailContent bustia={bustia} />
-                </Load>
-            ) : (
-                <RegistreContingutDetailContent /> // TODO: Aquest component està pendent de la implementació del registre
-            )}
+            <Load value={bustia}>
+                <BustiaContingutDetailContent bustia={bustia} />
+            </Load>
         </MuiDialog>
     );
 
-    return { show: handleOpen, close: handleClose, component: dialog };
+    const component = (
+        <>
+            {dialog}
+            {registreDialog}
+        </>
+    );
+
+    return { show: handleOpen, close: handleClose, component };
 };
 
 export default useContingutDetailDialog;

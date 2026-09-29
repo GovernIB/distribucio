@@ -11,6 +11,7 @@ import es.caib.distribucio.logic.helper.ReglaHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
+import es.caib.distribucio.logic.intf.base.exception.ResourceNotFoundException;
 import es.caib.distribucio.logic.intf.base.exception.ReportGenerationException;
 import es.caib.distribucio.logic.intf.base.model.*;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
@@ -40,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.criteria.*;
@@ -76,12 +78,20 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private final ReglaRepository reglaRepository;
     private final DadaResourceRepository dadaResourceRepository;
     private final MetaDadaResourceRepository metaDadaResourceRepository;
+    private final ContingutMovimentResourceRepository contingutMovimentResourceRepository;
+
+    /**
+     * Activat només durant {@link #getOne} amb la perspectiva VISTA_MOVIMENTS: permet que un usuari consulti (només lectura) una anotació que ja no és
+     * a cap de les seves bústies però hi ha tengut algun moviment (detall des de la "Vista de moviments").
+     */
+    private static final ThreadLocal<Boolean> LECTURA_PER_MOVIMENTS = new ThreadLocal<>();
 
     @PostConstruct
     public void init() {
         register(RegistreResource.PERSPECTIVE_DARRER_MOVIMENT_CODE, new DarrerMovimentPerspectiveApplicator());
         register(RegistreResource.PERSPECTIVE_ARXIU_DETALL_CODE, new ArxiuDetallPerspectiveApplicator());
         register(ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE, new CommentNumPerspectiveApplicator());
+        register(RegistreResource.PERSPECTIVE_VISTA_MOVIMENTS_CODE, new VistaMovimentsPerspectiveApplicator());
         register(RegistreResource.REPORT_INFORME_LOGS_CODE, new InformeLogsReportGenerator());
         register(RegistreResource.ACTION_CLASSIFICAR_CODE, new ClassificarActionExecutor());
         register(RegistreResource.ACTION_ENVIAR_EMAIL_CODE, new EnviarEmailActionExecutor());
@@ -90,6 +100,54 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(RegistreResource.ACTION_MARCAR_PENDENT_CODE, new MarcarPendentActionExecutor());
         register(RegistreResource.ACTION_TORNAR_PROCESSAR_CODE, new TornarProcessarActionExecutor());
         register(RegistreResource.ACTION_UPDATE_DADES_CODE, new UpdateDadesActionExecutor());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RegistreResource getOne(Long id, String[] perspectives) throws ResourceNotFoundException {
+        boolean vistaMoviments = perspectives != null
+                && Arrays.asList(perspectives).contains(RegistreResource.PERSPECTIVE_VISTA_MOVIMENTS_CODE);
+        if (vistaMoviments) {
+            LECTURA_PER_MOVIMENTS.set(true);
+        }
+        try {
+            return super.getOne(id, perspectives);
+        } finally {
+            LECTURA_PER_MOVIMENTS.remove();
+        }
+    }
+
+    @Override
+    protected Optional<RegistreResourceEntity> entityRepositoryFindOne(Long id) {
+        Optional<RegistreResourceEntity> result = super.entityRepositoryFindOne(id);
+        if (result.isPresent() || !Boolean.TRUE.equals(LECTURA_PER_MOVIMENTS.get())) {
+            return result;
+        }
+        boolean isUser = List.of(authenticationHelper.getCurrentUserRoles()).contains(BaseConfig.ROLE_USER);
+        Long entitatActualId = SessioActualUtil.getEntitatId();
+        if (!isUser || entitatActualId == null) {
+            return result;
+        }
+        Set<Serializable> ids = aclEntryResourceService.findIdsWithAnyPermission(
+                ResourceType.BUSTIA,
+                List.of(PermissionEnum.READ),
+                authenticationHelper.getCurrentUserName(),
+                new ArrayList<>(List.of(BaseConfig.ROLE_USER)));
+        List<Long> bustiesIds = ids.stream()
+                .map(i -> i instanceof Number ? ((Number) i).longValue() : Long.valueOf(i.toString()))
+                .collect(Collectors.toList());
+        return registreResourceRepository.findById(id)
+                .filter(r -> r.getEntitat() != null && entitatActualId.equals(r.getEntitat().getId()))
+                .filter(r -> {
+                    int chunkSize = 900; // límit d'elements d'un IN a Oracle
+                    for (int i = 0; i < bustiesIds.size(); i += chunkSize) {
+                        if (contingutMovimentResourceRepository.existsMovimentAmbBusties(
+                                r.getId(), bustiesIds.subList(i, Math.min(i + chunkSize, bustiesIds.size())))) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
     }
 
     @Override
@@ -414,6 +472,13 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 ArxiuDetallDto arxiuDetall = registreService.getArxiuDetall(entity.getId());
                 resource.setArxiuDetall( arxiuDetall );
             } catch (Exception ignore) {}
+        }
+    }
+
+    /** Perspectiva marca: l'efecte és a {@link #getOne}, no hi ha res a aplicar sobre el recurs. */
+    protected static class VistaMovimentsPerspectiveApplicator implements PerspectiveApplicator<RegistreResourceEntity, RegistreResource> {
+        @Override
+        public void applySingle(String code, RegistreResourceEntity entity, RegistreResource resource) {
         }
     }
 

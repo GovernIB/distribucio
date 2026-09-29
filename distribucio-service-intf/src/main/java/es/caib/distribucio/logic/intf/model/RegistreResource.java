@@ -69,6 +69,9 @@ import java.util.*;
                         code = RegistreResource.PERSPECTIVE_ARXIU_DETALL_CODE),
                 @ResourceArtifact(
                         type = ResourceArtifactType.PERSPECTIVE,
+                        code = RegistreResource.PERSPECTIVE_VISTA_MOVIMENTS_CODE),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.PERSPECTIVE,
                         code = ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE),
                 @ResourceArtifact(
                         type = ResourceArtifactType.REPORT,
@@ -152,6 +155,7 @@ public class RegistreResource extends ContingutResource {
     public static final String FILTER_CODE = "FILTER";
     public static final String PERSPECTIVE_DARRER_MOVIMENT_CODE = "DARRER_MOVIMENT";
     public static final String PERSPECTIVE_ARXIU_DETALL_CODE = "ARXIU_DETALL";
+    public static final String PERSPECTIVE_VISTA_MOVIMENTS_CODE = "VISTA_MOVIMENTS";
     public static final String REPORT_INFORME_LOGS_CODE = "INFORME_LOGS";
     public static final String ACTION_CLASSIFICAR_CODE = "CLASSIFICAR";
     public static final String ACTION_ENVIAR_EMAIL_CODE = "ENVIAR_EMAIL";

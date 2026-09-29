@@ -478,7 +478,7 @@ const RegistreDetail = () => {
 }
 
 const perspectives = ['ARXIU_DETALL', 'DARRER_MOVIMENT', 'COMMENT_NUM']
-export const useRegistreDetail = () => {
+export const useRegistreDetail = (perspectivesAddicionals: string[] = []) => {
     const { t } = useBaseAppContext();
     const [dialogShow, dialogComponent] = useMuiContentDialog();
 
@@ -488,7 +488,7 @@ export const useRegistreDetail = () => {
             <MuiDetail
                 id={id}
                 resourceName={'registreResource'}
-                perspectives={perspectives}
+                perspectives={[...perspectives, ...perspectivesAddicionals]}
                 hiddenToolbar
                 componentProps={{ sx: { mt: 0 } }}
             >

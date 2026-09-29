@@ -63,7 +63,7 @@ const AnnexGrid: React.FC = () => {
     const refresh = () => {
         apiRef.current?.refresh();
     };
-    const accions = useAnnexAccions(mostrarDetall, refresh);
+    const { actions: accions, components: accionsComponents } = useAnnexAccions(mostrarDetall, refresh);
     const { actions: massiveActions, components: massiveComponents } = useAnnexMassiveActions();
 
     const columns: MuiDataGridColDef[] = React.useMemo(
@@ -121,6 +121,7 @@ const AnnexGrid: React.FC = () => {
                     toolbarMassiveActions={massiveActions}
                 />
                 {detailDialog}
+                {accionsComponents}
                 {massiveComponents}
             </CardPage>
         </GridPage>

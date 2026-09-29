@@ -134,8 +134,17 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
     } = props;
     const theme = useTheme();
     const menuColorSet = getMenuColorSet(theme, menuAppearance ?? MenuEstil.TEMA);
+    // Amb el menú contret el lib amaga el text només amb opacity 0: si fa salt de línia 
+    // (noms amb diverses paraules) allarga l'entrada en vertical.
+    const menuContretSx = {
+        '& nav .MuiListItemButton-root[style*="padding-left: 40px"] .MuiListItemText-root': {
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+        },
+    };
     const menuColorSetSx = menuColorSet
         ? {
+              ...menuContretSx,
               '& nav .MuiDrawer-root': {
                   '& .MuiPaper-root, & .MuiList-root': {
                       backgroundColor: menuColorSet.background,
@@ -156,7 +165,7 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
                   },
               },
           }
-        : undefined;
+        : menuContretSx;
     const navigate = useNavigate();
     const location = useLocation();
     const i18nHandleLanguageChange = (language?: string) => {
