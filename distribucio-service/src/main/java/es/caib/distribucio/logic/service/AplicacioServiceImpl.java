@@ -29,6 +29,8 @@ import es.caib.distribucio.logic.helper.PluginHelper;
 import es.caib.distribucio.logic.helper.UsuariHelper;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.ExcepcioLogDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
@@ -324,22 +326,30 @@ public class AplicacioServiceImpl implements AplicacioService {
 	}
 
 	@Override
-	public void excepcioSave(Throwable exception, String source) {
+	public void excepcioSave(String uri, Throwable exception, String origen) {
 		logger.trace("Emmagatzemant excepció (" +
 				"exception=" + exception + ")");
-		excepcioLogHelper.addExcepcio(exception, source);
+		// Qualsevol error en guardar-la (inclòs el del commit de la transacció nova) s'ha
+		// d'empassar aquí: es crida des dels aspectes AfterThrowing, i una excepció nova
+		// substituiria l'original, a més de tornar a disparar l'aspecte de serveis.
+		try {
+			excepcioLogHelper.addExcepcio(uri, exception, origen);
+		} catch (Throwable th) {
+			logger.error("No s'ha pogut guardar l'excepció al log d'excepcions", th);
+			logger.error("Excepció no guardada (origen=" + origen + ", uri=" + uri + ")", exception);
+		}
 	}
 
 	@Override
-	public ExcepcioLogDto excepcioFindOne(Long index) {
-		logger.trace("Consulta d'una excepció (index=" + index + ")");
-		return excepcioLogHelper.findAll().get(index.intValue());
+	public ExcepcioLogDto excepcioFindOne(Long id) {
+		logger.trace("Consulta d'una excepció (id=" + id + ")");
+		return excepcioLogHelper.findById(id);
 	}
 
 	@Override
-	public List<ExcepcioLogDto> excepcioFindAll() {
-		logger.trace("Consulta de les excepcions disponibles");
-		return excepcioLogHelper.findAll();
+	public PaginaDto<ExcepcioLogDto> excepcioFindPage(PaginacioParamsDto paginacioParams) {
+		logger.trace("Consulta paginada de les excepcions emmagatzemades");
+		return excepcioLogHelper.findPage(paginacioParams);
 	}
 
 	@Override

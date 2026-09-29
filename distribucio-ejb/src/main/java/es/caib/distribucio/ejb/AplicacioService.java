@@ -6,6 +6,8 @@ package es.caib.distribucio.ejb;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.ExcepcioLogDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import org.springframework.security.core.Authentication;
 
@@ -74,20 +76,20 @@ public class AplicacioService extends AbstractService<es.caib.distribucio.logic.
 
 	@Override
 	@PermitAll
-	public void excepcioSave(Throwable exception, String source) {
-		getDelegateService().excepcioSave(exception, source);
+	public void excepcioSave(String uri, Throwable exception, String origen) {
+		getDelegateService().excepcioSave(uri, exception, origen);
 	}
 
 	@Override
 	@RolesAllowed(BaseConfig.ROLE_SUPER)
-	public ExcepcioLogDto excepcioFindOne(Long index) {
-		return getDelegateService().excepcioFindOne(index);
+	public ExcepcioLogDto excepcioFindOne(Long id) {
+		return getDelegateService().excepcioFindOne(id);
 	}
 
 	@Override
 	@RolesAllowed(BaseConfig.ROLE_SUPER)
-	public List<ExcepcioLogDto> excepcioFindAll() {
-		return getDelegateService().excepcioFindAll();
+	public PaginaDto<ExcepcioLogDto> excepcioFindPage(PaginacioParamsDto paginacioParams) {
+		return getDelegateService().excepcioFindPage(paginacioParams);
 	}
 
 	@Override

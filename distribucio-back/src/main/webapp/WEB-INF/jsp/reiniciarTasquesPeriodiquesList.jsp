@@ -94,6 +94,8 @@
 						<spring:message code="monitor.tasques.tasca.codi.execucionsMassives"/>
 					{{else codi == 'esborrarZipAccionsMassives'}}
 						<spring:message code="monitor.tasques.tasca.codi.esborrarZipAccionsMassives"/>
+					{{else codi == 'esborrarExcepcionsAntigues'}}
+						<spring:message code="monitor.tasques.tasca.codi.esborrarExcepcionsAntigues"/>
 					{{else}}
                         {{:codi}}
 					{{/if}}

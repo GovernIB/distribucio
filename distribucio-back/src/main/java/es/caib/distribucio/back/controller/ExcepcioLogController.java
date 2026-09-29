@@ -44,16 +44,18 @@ public class ExcepcioLogController extends BaseUserController {
 			HttpServletRequest request) {
 		DatatablesResponse dtr = DatatablesHelper.getDatatableResponse(
 				request,
-				aplicacioService.excepcioFindAll());
+				aplicacioService.excepcioFindPage(
+						DatatablesHelper.getPaginacioDtoFromRequest(request)),
+				"id");
 		return dtr;
 	}
 
-	@RequestMapping(value = "/{index}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public String detall(
 			HttpServletRequest request,
-			@PathVariable Long index,
+			@PathVariable Long id,
 			Model model) {
-		model.addAttribute("excepcio", aplicacioService.excepcioFindOne(index));
+		model.addAttribute("excepcio", aplicacioService.excepcioFindOne(id));
 		return "excepcioDetall";
 	}
 

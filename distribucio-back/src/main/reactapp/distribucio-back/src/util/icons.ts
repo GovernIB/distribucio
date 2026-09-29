@@ -27,6 +27,7 @@ export const icons = {
     annex: 'attach_file',
     contingut: 'archive',
     integracio: 'sync_alt',
+    excepcio: 'bug_report',
     vistaMoviments: 'move_down',
     regla: 'rule',
 } as const;

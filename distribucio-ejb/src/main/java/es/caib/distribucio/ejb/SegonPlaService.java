@@ -72,6 +72,12 @@ public class SegonPlaService extends AbstractService<es.caib.distribucio.logic.i
 	}
 
 	@Override
+	@RolesAllowed("**")
+	public void esborrarExcepcionsAntigues() {
+		getDelegateService().esborrarExcepcionsAntigues();
+	}
+
+	@Override
 	public void reintentarProcessamentBackoffice() {
 		getDelegateService().reintentarProcessamentBackoffice();
 	}

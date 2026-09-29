@@ -173,6 +173,13 @@ const InnerApp: React.FC = () => {
                     icon: icons.integracio,
                     pantalla: 'integracio',
                 },
+                {
+                    id: 'excepcio',
+                    title: t('app.menu.excepcio'),
+                    to: 'excepcio',
+                    icon: icons.excepcio,
+                    pantalla: 'excepcio',
+                },
             ],
         },
         {

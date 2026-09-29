@@ -22,6 +22,9 @@ const translationCa = {
         advancedSearchOpen: 'Obre la cerca avançada',
         advancedSearchClose: 'Tanca la cerca avançada',
         copiat: 'Copiat correctament',
+        refresh: 'Refresca',
+        create: 'Crea',
+        processing: 'Processant...',
         boolean: {
             true: "Si",
             false: "No",
@@ -53,6 +56,7 @@ const translationCa = {
             massiva: "Consultar accions massives",
             monitoritzar: 'Monitoritzar',
             integracio: 'Integracions',
+            excepcio: 'Excepcions',
             registre: "Anotacions",
             vistaMoviments: "Vista de moviments",
             regla: "Regles",
@@ -488,6 +492,15 @@ const translationCa = {
                     validarICustodiar: 'Validar i custodiar',
                     descarregarFirma: 'Descarregar firma',
                 },
+            },
+        },
+        excepcio: {
+            grid: {
+                title: 'Excepcions del sistema',
+            },
+            detail: {
+                title: "Detall de l'excepció",
+                boto: 'Detall',
             },
         },
         integracio: {

@@ -59,6 +59,12 @@ public interface SegonPlaService {
 	 * Esborra les dades antigues del monitor d'integracions
 	 */
 	public void esborrarDadesAntigesMonitorIntegracio();
+
+	/**
+	 * Esborra les excepcions del log d'excepcions més antigues que els dies indicats a la
+	 * propietat es.caib.distribucio.tasca.excepcions.esborrar.antics.dies (45 per defecte).
+	 */
+	public void esborrarExcepcionsAntigues();
 	
 	/**
 	 * Reintenta el processament al backoffice 

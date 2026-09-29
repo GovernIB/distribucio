@@ -22,6 +22,9 @@ const translationEs = {
         advancedSearchOpen: 'Abrir la búsqueda avanzada',
         advancedSearchClose: 'Cerrar la búsqueda avanzada',
         copiat: 'Copiado correctamente',
+        refresh: 'Refresca',
+        create: 'Crea',
+        processing: 'Procesando...',
         boolean: {
             true: "Si",
             false: "No",
@@ -52,6 +55,7 @@ const translationEs = {
             config: 'Propiedades configurables',
             monitoritzar: 'Monitorizar',
             integracio: 'Integraciones',
+            excepcio: 'Excepciones',
             vistaMoviments: "Vista de movimientos",
             regla: "Reglas",
         },
@@ -486,6 +490,15 @@ const translationEs = {
                     validarICustodiar: 'Validar y custodiar',
                     descarregarFirma: 'Descargar firma',
                 },
+            },
+        },
+        excepcio: {
+            grid: {
+                title: 'Excepciones del sistema',
+            },
+            detail: {
+                title: 'Detalle de la excepción',
+                boto: 'Detalle',
             },
         },
         integracio: {

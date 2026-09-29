@@ -55,7 +55,9 @@ export const useActions = (refresh?: () => void) => {
     }
 
     const transicioInfo = (id:any) => {
-        return apiReport(id, {code: "TRANSICIO_INFO", fileType: 'JSON'})
+        // El backend genera el report en JSON, però l'ExportFileType de base-react (lib/) no inclou
+        // 'JSON'. Sense fileType, apiReport no retornaria el blob que llegeix BustiaObsoleta.
+        return apiReport(id, {code: "TRANSICIO_INFO", fileType: 'JSON' as any})
     }
 
     return {
