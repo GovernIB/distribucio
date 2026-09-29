@@ -5,7 +5,7 @@ import StyledMuiGrid, {ToolbarButton} from "../../components/StyledMuiGrid.tsx";
 import {Box, Chip, LinearProgress} from "@mui/material";
 import {useEMContent} from "./ExecucioMassivaContingutGrid.tsx";
 import ExecucioMassivaFilter from "./ExecucioMassivaFiltre.tsx";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {useExecucioMassivaActions} from "./detail/ExecucioMassivaActions.tsx";
 
 const StyledLinearProgress = (props: any) => {
@@ -102,6 +102,16 @@ const EMGrid = () => {
 
     const {actions, components} = useExecucioMassivaActions(refresh)
 
+    const additionalActions = useMemo(() => [
+        {
+            label: t('page.massiva.accio.detail.label'),
+            icon: 'info',
+            showInMenu: true,
+            onClick: handleOpen,
+        },
+        ...actions,
+    ], [t])
+
     const intervalTime = 5;
     const {isRunning, handleToggle} = useToogleInterval(intervalTime * 1000, refresh)
 
@@ -117,8 +127,7 @@ const EMGrid = () => {
             disableColumnSorting
             toolbarShowFilterCount
 
-            rowAdditionalActions={actions}
-            onRowDoubleClick={(params) => handleOpen(params.id)}
+            rowAdditionalActions={additionalActions}
 
             toolbarHideRefresh
             toolbarElementsWithPositions={[

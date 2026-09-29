@@ -774,8 +774,11 @@ const translationEs = {
         massiva: {
             title: "Ejecuciones masivas globales",
             refresh: "Actualizar cada {{segons}}s.",
-            contingut: "Contenido",
             accio: {
+                detail: {
+                    label: "Detalle",
+                    title: "Contenido",
+                },
                 play: {
                     label: "Reanudar",
                     ok: "La acción se ha reanudado correctamente",

@@ -45,7 +45,7 @@ export const useEMContent = () => {
     const handleOpen = (id:any) => {
         // event.stopPropagation();
         dialogShow(
-            t('page.massiva.contingut'),
+            t('page.massiva.accio.detail.title'),
             <ExecucioMassivaContingutGrid apiRef={apiRef} id={id}/>,
             [],
             { maxWidth: 'md', fullWidth: true }

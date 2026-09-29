@@ -776,8 +776,11 @@ const translationCa = {
         massiva: {
             title: "Execucions massives globals",
             refresh: "Refresca cada {{segons}}s.",
-            contingut: "Contingut",
             accio: {
+                detail: {
+                    label: "Detall",
+                    title: "Contingut",
+                },
                 play: {
                     label: "Reprèn",
                     ok: "L'acció s'ha reprès correctament",

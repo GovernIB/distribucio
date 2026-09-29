@@ -27,7 +27,7 @@ import java.util.List;
 @FieldNameConstants
 @ResourceConfig(
         quickFilterFields = { "tipus", "estat" },
-        descriptionField = "tipus",
+        descriptionField = "parametres",
         accessConstraints = {
                 @ResourceAccessConstraint(
                         type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
