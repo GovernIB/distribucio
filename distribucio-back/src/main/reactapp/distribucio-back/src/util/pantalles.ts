@@ -28,6 +28,7 @@ export type Pantalla = 'home'
     | 'backoffice'
     | 'massiva'
     | 'integracio'
+    | 'monitor'
     | 'excepcio'
     | 'annex'
     | 'registre'
@@ -66,6 +67,7 @@ export const PANTALLA_ROLS: Record<Pantalla, string[]> = {
     backoffice: [ROLE_ADMIN],
     massiva: [ROLE_ADMIN, ROLE_USER],
     integracio: [ROLE_SUPER],
+    monitor: [ROLE_SUPER],
     excepcio: [ROLE_SUPER],
     annex: [ROLE_ADMIN, ROLE_ADMIN_LECTURA],
     registre: [ROLE_ADMIN, ROLE_ADMIN_LECTURA, ROLE_USER],

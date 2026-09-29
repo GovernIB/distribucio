@@ -5,8 +5,10 @@ package es.caib.distribucio.back.config;
 
 import es.caib.distribucio.logic.intf.resourceservice.*;
 import es.caib.distribucio.logic.intf.resourceservice.ConfigGroupResourceService;
+import es.caib.distribucio.logic.intf.resourceservice.MonitorTascaResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.ConfigResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.ConfigTypeResourceService;
+import es.caib.distribucio.logic.intf.resourceservice.MonitorFilResourceService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWarDeployment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -276,6 +278,18 @@ public class EjbClientConfig {
 	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean configResourceService() {
 		return getLocalEjbFactoyBean(ConfigResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean monitorFilResourceService() {
+		return getLocalEjbFactoyBean(MonitorFilResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean monitorTascaResourceService() {
+		return getLocalEjbFactoyBean(MonitorTascaResourceService.class);
 	}
 
 	@Bean

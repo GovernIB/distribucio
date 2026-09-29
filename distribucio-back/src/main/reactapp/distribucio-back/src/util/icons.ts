@@ -27,6 +27,7 @@ export const icons = {
     annex: 'attach_file',
     contingut: 'archive',
     integracio: 'sync_alt',
+    monitorSistema: 'monitor_heart',
     excepcio: 'bug_report',
     vistaMoviments: 'move_down',
     regla: 'rule',

@@ -180,6 +180,13 @@ const InnerApp: React.FC = () => {
                     icon: icons.excepcio,
                     pantalla: 'excepcio',
                 },
+                {
+                    id: 'monitor',
+                    title: t('app.menu.monitor'),
+                    to: 'monitor',
+                    icon: icons.monitorSistema,
+                    pantalla: 'monitor',
+                },
             ],
         },
         {
