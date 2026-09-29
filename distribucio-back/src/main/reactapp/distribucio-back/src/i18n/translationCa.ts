@@ -1106,6 +1106,7 @@ const translationCa = {
             quickfilter: "Bústia destí",
             favoritfilter: "Mostrar només bústies favorites",
             busties: "Bústies seleccionades",
+            todosContinguts: "Quan només s'envia per coneixement, cal deixar una còpia a la bústia actual",
             grid: {
                 userCodi: "Codi usuari",
                 userNom: "Nom usuari",

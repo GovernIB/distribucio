@@ -16,8 +16,9 @@ import {MenuActionButton} from "../../components/MenuButton.tsx";
 import {useActions, useBustiaActions} from "./detail/BustiaActions.tsx";
 import {ResourceApiError} from "../../../lib/components/ResourceApiProvider.tsx";
 
-export const useOrganigrama = ({quickFilter, filter, namedQueries, perspectives, onClick, ...other}:any) => {
+export const useOrganigrama = (props:any) => {
     const { t } = useTranslation();
+    const {quickFilter, filter, namedQueries, perspectives, onClick, disabled, ...other} = props
     const { currentEntitat } = useDistribucioContext();
     const apiRef = useSimpleTreeViewApiRef();
 
@@ -91,11 +92,12 @@ export const useOrganigrama = ({quickFilter, filter, namedQueries, perspectives,
                     label: <>{u.nom} {u.perDefecte && <strong>({t('page.bustia.grid.principal')})</strong>}</>,
                     icon: 'inbox',
                     onClick: () => onClick?.(u.id, u),
-                    componentProps: !u.activa ?{
+                    componentProps: {
                         sx: {
-                            color: 'lightgrey'
-                        }
-                    } :{},
+                            color: !u.activa ?'lightgrey'  :'inherit'
+                        },
+                        disableSelection: disabled?.(u) || false,
+                    },
                     class: 'bustia',
                     data: u
                 }

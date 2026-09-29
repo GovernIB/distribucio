@@ -1104,6 +1104,7 @@ const translationEs = {
             quickfilter: "Buzón destino",
             favoritfilter: "Mostrar solo buzones favoritos",
             busties: "Buzones seleccionados",
+            todosContinguts: "Cuando solo se envía para conocimiento, es necesario dejar una copia en el buzón actual",
             grid: {
                 userCodi: "Código de usuario",
                 userNom: "Nombre de usuario",

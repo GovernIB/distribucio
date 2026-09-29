@@ -870,7 +870,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         public void onChange(Serializable id, RegistreResource.ReenviarForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.ReenviarForm target) {
             if (fieldName == null) {
                 target.setWarning( getAdvertencies(previous.getIds()) );
-                /// TODO: implementar logica bustiaEntitatDisabled
                 target.setBustiaEntitatDisabled( this.isBustiaEntitatDisabled() );
                 target.setFavoritaActiva( this.isFavoritsActiva() );
                 target.setConeixementActiva( this.isConeixementActiva() );

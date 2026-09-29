@@ -7,7 +7,7 @@ import FormActionDialog from "../../../components/FormActionDialog.tsx";
 import {RegistreSelector} from "./RegistreSelector.tsx";
 import {useOrganigrama} from "../../bustia/BustiaOrganigrama.tsx";
 import {QuickFilter} from "../../propietats/Propietats.tsx";
-import React, {useMemo} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {useActions} from "../../bustia/detail/BustiaActions.tsx";
 import * as builder from "../../../util/springFilterUtils.ts";
 import StyledMuiGrid from "../../../components/StyledMuiGrid.tsx";
@@ -186,14 +186,16 @@ const BustiaGrid = () => {
 const Organig = ({quickFilter, favoriteSearch}:any) => {
     const { t } = useTranslation();
     const {data, apiRef} = useFormContext()
+    const [pare, setPare] = useState<any>()
 
     const namedQueries = useMemo(() => favoriteSearch ?['FAVORITA'] :[], [favoriteSearch])
     const perspectives = useMemo(() => data.permisActiva ?['FAVORITA', 'USUARIS_PERMIS'] :['FAVORITA'], [data.permisActiva])
 
-    const {content, refresh} = useOrganigrama({
+    const {content, unitats, refresh} = useOrganigrama({
         checkboxSelection: true,
         multiSelect: true,
         quickFilter: quickFilter,
+        filter: builder.eq('activa', true),
         perspectives: perspectives,
         namedQueries: namedQueries,
         selectedItems: data.busties,
@@ -203,6 +205,12 @@ const Organig = ({quickFilter, favoriteSearch}:any) => {
             if (d.coneixementActiva)
                 apiRef.current?.setFieldValue("coneixement",
                     d.coneixement?.filter((c:any) => id?.includes(c)))
+        },
+        disabled: (item:any) => {
+            if (data.setBustiaEntitatDisabled) {
+                return item.unitatOrganitzativa.id == pare?.id && item.perDefecte;
+            }
+            return false;
         },
         renderCell: (item:any) => {
             if (item.class == 'bustia') {
@@ -242,6 +250,8 @@ const Organig = ({quickFilter, favoriteSearch}:any) => {
         }
     })
 
+    useEffect(() => setPare( unitats?.[0].unitatArrel ), [unitats])
+
     const {favorite} = useActions(refresh)
 
     return <>
@@ -255,8 +265,19 @@ const Organig = ({quickFilter, favoriteSearch}:any) => {
  */
 export const ReenviarForm = ({ hideAmbCopia }: { hideAmbCopia?: boolean } = {}) => {
     const { t } = useTranslation();
+    const {data, apiRef} = useFormContext()
     const [quickFilter, setQuickFilter] = React.useState<string>();
     const [favoriteSearch, setFavoriteSearch] = React.useState<boolean>(false);
+
+    const todosContinguts = useMemo(() => {
+        if (hideAmbCopia || !data.coneixementActiva || data.busties.length <= 0 || data.coneixement.length <= 0)
+            return false;
+
+        return data.busties?.every((b: any) => data.coneixement?.includes(b))
+    }, [data.busties, data.coneixement]);
+    if (!hideAmbCopia && data.coneixementActiva && todosContinguts && !data.ambCopia) {
+        apiRef.current?.setFieldValue("ambCopia", true)
+    }
 
     return <Grid container direction={"row"} columnSpacing={1} rowSpacing={1}>
         <RegistreSelector />
@@ -273,7 +294,9 @@ export const ReenviarForm = ({ hideAmbCopia }: { hideAmbCopia?: boolean } = {}) 
 
         <Grid container size={6} direction={"column"} columnSpacing={1} rowSpacing={1}>
             <Grid size={12}><BustiaGrid/></Grid>
-            {!hideAmbCopia && <GridFormField size={12} name="ambCopia" type={'checkbox'}/>}
+            {!hideAmbCopia && <GridFormField size={12} name="ambCopia" type={'checkbox'}
+                                             componentProps={{ helperText: todosContinguts ?t('component.RegistreReenviar.todosContinguts') :undefined }}
+                                             disabled={todosContinguts} />}
             <GridFormField size={12} name="comentari" type={'textarea'}/>
         </Grid>
     </Grid>
