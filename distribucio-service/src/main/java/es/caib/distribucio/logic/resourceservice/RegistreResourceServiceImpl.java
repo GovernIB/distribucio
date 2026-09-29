@@ -575,7 +575,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             if (params.isMassive()) {
                 List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
                 if (this.isSameBustia( registreList )) {
-                    /// TODO: revisar versión massiva
                     Map<String, Object> map = new HashMap<>();
                     map.put("titol", null);
                     map.put("tipus", params.getTipus());
@@ -606,7 +605,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             } else {
                 Map<String, Object> map = new HashMap<>();
                 RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
-                /// TODO: revisar versión individual
                 ClassificacioResultatDto resultat = registreService.classificar(
                         entitatActualId,
                         registre.getId(),
@@ -721,7 +719,24 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
             if (params.isMassive()) {
                 List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
-                /// TODO: implementar versión massiva
+                Map<String, Object> map = new HashMap<>();
+                map.put("isVistaMoviments", params.isVistaMoviments());
+                map.put("destinataris", params.getDestinatari());
+                map.put("motiu", params.getMotiu());
+
+                try {
+                    execucioMassivaResourceHelper.executarAccioMassivaRegistres(
+                            ExecucioMassivaTipusDto.ENVIAR_VIA_EMAIL,
+                            registreList,
+                            map);
+                } catch (Exception e) {
+                    throw new ActionExecutionException(
+                            RegistreResource.class,
+                            null,
+                            code,
+                            e.getMessage()
+                    );
+                }
             } else {
                 RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
                 RegistreResource registreResource = objectMappingHelper.newInstanceMap(registre, RegistreResource.class);
@@ -737,7 +752,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 }
 
                 try {
-                    /// TODO: revisar versión individual
                     bustiaService.registreAnotacioEnviarPerEmail(
                             entitatActualId,
                             params.getIds().get(0),
@@ -799,7 +813,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
             if (params.isMassive()) {
                 List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
-                /// TODO: revisar versión massiva
                 Map<String, Object> map = new HashMap<>();
                 map.put("isVistaMoviments", false);
                 map.put("destins", params.getBusties());
@@ -824,7 +837,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 }
             } else {
                 RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
-                /// TODO: revisar versión individual
                 bustiaService.registreReenviar(
                         entitatActualId,
                         params.getBusties().toArray(Long[]::new),
@@ -874,7 +886,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             Long entitatActualId = SessioActualUtil.getEntitatId();
             if (params.isMassive()) {
                 List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
-                /// TODO: revisar versión massiva
                 Map<String, Object> map = new HashMap<>();
                 map.put("motiu", params.getMotiu());
 
@@ -893,7 +904,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 }
             } else {
                 RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
-                /// TODO: revisar versión individual
                 contingutService.marcarProcessat(
                         entitatActualId,
                         registre.getId(),
@@ -922,7 +932,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             Long entitatActualId = SessioActualUtil.getEntitatId();
             if (params.isMassive()) {
                 List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
-                /// TODO: revisar versión massiva
                 Map<String, Object> map = new HashMap<>();
                 map.put("motiu", params.getMotiu());
 
@@ -941,7 +950,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 }
             } else {
                 RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
-                /// TODO: revisar versión individual
                 registreService.marcarPendent(
                         entitatActualId,
                         registre.getId(),
@@ -969,7 +977,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         public Serializable exec(String code, RegistreResourceEntity entity, RegistreResource.MassiveWarningForm params) throws ActionExecutionException {
             if (params.isMassive()) {
                 List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
-                /// TODO: revisar versión massiva
 
                 try {
                     execucioMassivaResourceHelper.executarAccioMassivaRegistres(

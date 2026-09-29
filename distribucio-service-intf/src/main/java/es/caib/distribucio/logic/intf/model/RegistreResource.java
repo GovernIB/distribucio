@@ -342,6 +342,7 @@ public class RegistreResource extends ContingutResource {
         @EmailValid
         private String destinatari;
         private String motiu;
+        private boolean vistaMoviments = false;
     }
 
     @Getter
