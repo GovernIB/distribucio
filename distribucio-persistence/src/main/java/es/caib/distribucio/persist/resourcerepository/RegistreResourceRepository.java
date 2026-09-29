@@ -9,4 +9,5 @@ import es.caib.distribucio.persist.resourceentity.RegistreResourceEntity;
  * @author Límit Tecnologies
  */
 public interface RegistreResourceRepository extends BaseRepository<RegistreResourceEntity, Long> {
+    long countByNumero(String numero);
 }

@@ -28,7 +28,8 @@ const translationCa = {
         boolean: {
             true: "Si",
             false: "No",
-        }
+        },
+        actions: "Accions",
     },
     app: {
         loading: 'Iniciant DISTRIBUCIO',
@@ -165,6 +166,7 @@ const translationCa = {
             },
         },
         serveis: {
+            extingit: "El servei está marcat com extingit ja que no s'ha trobat a Rolsac",
             grid: {
                 title: "Serveis",
             },
@@ -196,6 +198,7 @@ const translationCa = {
             },
         },
         procediments: {
+            extingit: "El procediment está marcat com extingit ja que no s'ha trobat a Rolsac",
             grid: {
                 title: "Procediments",
             },
@@ -808,6 +811,12 @@ const translationCa = {
                 eniClassificacio: "Classificació",
                 eniEstat: "Estat",
             },
+            detail: {
+                unitatAdmin: {
+                    ENTRADA: "Òrgan destí",
+                    SORTIDA: "Òrgan origen",
+                }
+            },
             grid: {
                 avisos: "Avisos",
                 remitent: "Remitent",
@@ -1035,6 +1044,10 @@ const translationCa = {
             label: "Comentaris",
             envia: "Envia",
         },
+        RecordNavigation: {
+            prev: "Anterior",
+            next: "Següent",
+        },
         RegistreSelector:{
             title: "Anotacions seleccionades",
         },
@@ -1057,6 +1070,7 @@ const translationCa = {
             },
         },
         RegistreDetail: {
+            avancar: "Avançar pàgina al reenviar",
             titles: {
                 representant: "Representant",
                 original: "Original",

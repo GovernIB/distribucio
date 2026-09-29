@@ -15,7 +15,7 @@ const sortModel: any = [{ field: 'identificador', sort: 'asc' }];
 // eslint-disable-next-line react-refresh/only-export-components
 const ReglaAplicarPreview: React.FC<{ reglaId: any }> = ({ reglaId }) => {
     const { t } = useTranslation();
-    const namedQueries = React.useMemo(() => [`APLICABLES_REGLA#${reglaId}`, 'INACTIVES'], [reglaId]);
+    const namedQueries = React.useMemo(() => [`APLICABLES_REGLA#${reglaId}`], [reglaId]);
 
     const columns = [
         { field: 'numero', headerName: t('page.regla.aplicar.columna.numero'), flex: 1 },

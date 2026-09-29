@@ -5,7 +5,7 @@ import { iniciaDescargaBlob } from '../../util/downloadUtils';
 import { ROLE_ADMIN, useDistribucioContext } from '../../components/DistribucioContext';
 import type { MassiveActionProps } from '../../components/MassiveActionSelector';
 import { useExecucioMassivaGrid } from '../execucioMassiva/ExecucioMassivaGrid';
-import { useRegistreDetail } from '../registre/detail/RegistreDetail';
+import {useBasicDetail} from '../registre/detail/RegistreDetail';
 
 const ACTION_GUARDAR_DEFINITIU = 'GUARDAR_DEFINITIU';
 const ACTION_COMPROVAR_PENDENTS = 'COMPROVAR_PENDENTS';
@@ -45,7 +45,7 @@ export const useAnnexAccions = (
     const isAdmin = currentRole === ROLE_ADMIN;
     const { temporalMessageShow } = useBaseAppContext();
     const { artifactAction } = useResourceApiService('registreAnnexResource');
-    const { handleOpen: handleDetallAnotacio, dialog: dialogDetallAnotacio } = useRegistreDetail();
+    const { handleOpen: handleDetallAnotacio, dialog: dialogDetallAnotacio } = useBasicDetail();
 
     const guardarDefinitiu = (id: any) => {
         artifactAction(id, { code: ACTION_GUARDAR_DEFINITIU })

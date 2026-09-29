@@ -9,7 +9,16 @@ import dayjs from 'dayjs';
  */
 
 export const formatDate = (date: string, format: string = 'DD/MM/YYYY HH:mm:ss'): string | null => {
-    return date ? dayjs(date).format(format) : null;
+    if (!date || !format) return null;
+
+    const parsed = dayjs(date);
+    if (!parsed.isValid()) return null;
+
+    const result = parsed.format(format);
+
+    if (result === format) return null;
+
+    return result;
 };
 
 export const formatIso = (date: string) => {

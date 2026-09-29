@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useBaseAppContext } from 'reactlib';
 import useContingutHistorialDialog from '../contingut/actions/ContingutHistorialDialog.tsx';
 import { useAlertes } from '../registre/detail/Alertes.tsx';
-import { useRegistreDetail } from '../registre/detail/RegistreDetail.tsx';
+import {useBasicDetail} from '../registre/detail/RegistreDetail.tsx';
 import useEnviarViaEmail from './actions/EnviarEmail.tsx';
 import useDescarregarZip from './actions/Descarregar.tsx';
 import useReenviar from './actions/Reenviar.tsx';
@@ -16,7 +16,7 @@ export const useVistaMovimentsAccions = (refresh?: () => void) => {
     const { temporalMessageShow } = useBaseAppContext();
 
     const { show: handleHistoric, component: componentHistoric } = useContingutHistorialDialog();
-    const { handleOpen: handleDetail, dialog: dialogDetail } = useRegistreDetail(['VISTA_MOVIMENTS']);
+    const { handleOpen: handleDetail, dialog: dialogDetail } = useBasicDetail({perspectives: ['VISTA_MOVIMENTS']});
     const { handleOpen: handleAlertes, component: componentAlertes } = useAlertes(refresh);
     const descarregarZip = useDescarregarZip();
     const { handleShow: handleEnviarEmail, content: contentEnviarEmail } = useEnviarViaEmail((result: any) => {

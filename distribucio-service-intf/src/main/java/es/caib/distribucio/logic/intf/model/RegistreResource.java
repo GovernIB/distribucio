@@ -74,6 +74,9 @@ import java.util.*;
                         type = ResourceArtifactType.PERSPECTIVE,
                         code = ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE),
                 @ResourceArtifact(
+                        type = ResourceArtifactType.PERSPECTIVE,
+                        code = RegistreResource.PERSPECTIVE_DETAIL_INFO_CODE),
+                @ResourceArtifact(
                         type = ResourceArtifactType.REPORT,
                         code = RegistreResource.REPORT_INFORME_LOGS_CODE,
                         requiresId = true),
@@ -156,6 +159,7 @@ public class RegistreResource extends ContingutResource {
     public static final String PERSPECTIVE_DARRER_MOVIMENT_CODE = "DARRER_MOVIMENT";
     public static final String PERSPECTIVE_ARXIU_DETALL_CODE = "ARXIU_DETALL";
     public static final String PERSPECTIVE_VISTA_MOVIMENTS_CODE = "VISTA_MOVIMENTS";
+    public static final String PERSPECTIVE_DETAIL_INFO_CODE = "DETAIL_INFO";
     public static final String REPORT_INFORME_LOGS_CODE = "INFORME_LOGS";
     public static final String ACTION_CLASSIFICAR_CODE = "CLASSIFICAR";
     public static final String ACTION_ENVIAR_EMAIL_CODE = "ENVIAR_EMAIL";
@@ -223,6 +227,12 @@ public class RegistreResource extends ContingutResource {
 
     /** Conté el recompte del número d'annexos en estat esborrany */
     private int annexosEstatEsborrany;
+
+    @Transient private int numInteressats;
+    @Transient private int numAnnexos;
+    @Transient private int numDada;
+    @Transient private int numCopies;
+    @Transient private Boolean siaExtingit;
 
     @Transient private RegistreProcesEstatSimpleEnumDto procesEstatSimple;;
     @Transient private boolean reintentsEsgotat;

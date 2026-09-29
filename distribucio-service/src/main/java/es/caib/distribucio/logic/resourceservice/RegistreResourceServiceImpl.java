@@ -8,11 +8,7 @@ import es.caib.distribucio.logic.helper.ContingutHelper;
 import es.caib.distribucio.logic.helper.ContingutLogResourceHelper;
 import es.caib.distribucio.logic.helper.ExecucioMassivaResourceHelper;
 import es.caib.distribucio.logic.helper.ReglaHelper;
-import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
-import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
-import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
-import es.caib.distribucio.logic.intf.base.exception.ResourceNotFoundException;
-import es.caib.distribucio.logic.intf.base.exception.ReportGenerationException;
+import es.caib.distribucio.logic.intf.base.exception.*;
 import es.caib.distribucio.logic.intf.base.model.*;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.base.util.I18nUtil;
@@ -33,12 +29,12 @@ import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
-import es.caib.distribucio.persist.repository.MetaDadaRepository;
 import es.caib.distribucio.persist.repository.ReglaRepository;
 import es.caib.distribucio.persist.resourceentity.*;
 import es.caib.distribucio.persist.resourcerepository.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,6 +86,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     public void init() {
         register(RegistreResource.PERSPECTIVE_DARRER_MOVIMENT_CODE, new DarrerMovimentPerspectiveApplicator());
         register(RegistreResource.PERSPECTIVE_ARXIU_DETALL_CODE, new ArxiuDetallPerspectiveApplicator());
+        register(RegistreResource.PERSPECTIVE_DETAIL_INFO_CODE, new DetailInfoPerspectiveApplicator());
         register(ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE, new CommentNumPerspectiveApplicator());
         register(RegistreResource.PERSPECTIVE_VISTA_MOVIMENTS_CODE, new VistaMovimentsPerspectiveApplicator());
         register(RegistreResource.REPORT_INFORME_LOGS_CODE, new InformeLogsReportGenerator());
@@ -100,6 +97,11 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(RegistreResource.ACTION_MARCAR_PENDENT_CODE, new MarcarPendentActionExecutor());
         register(RegistreResource.ACTION_TORNAR_PROCESSAR_CODE, new TornarProcessarActionExecutor());
         register(RegistreResource.ACTION_UPDATE_DADES_CODE, new UpdateDadesActionExecutor());
+    }
+
+    @Override
+    protected Sort processSort(Sort sort) {
+        return sort.and(Sort.by(Sort.Direction.ASC, "id"));
     }
 
     @Override
@@ -210,8 +212,8 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 }
                 predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
             }
-            /// INACTIVES
-            if (!mapaNamedQueries.containsKey("INACTIVES")) {
+            /// ACTIVES
+            if (mapaNamedQueries.containsKey("ACTIVES")) {
                 predicates.add( cb.isTrue(pareBustia.get("activa")) );
             }
             /// AMB_REINTENTS
@@ -486,6 +488,35 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         @Override
         public void applySingle(String code, RegistreResourceEntity entity, RegistreResource resource) {
             resource.setNumComentaris(entity.getComentaris().size());
+        }
+    }
+
+    protected class DetailInfoPerspectiveApplicator implements PerspectiveApplicator<RegistreResourceEntity, RegistreResource> {
+        @Override
+        public void applySingle(String code, RegistreResourceEntity entity, RegistreResource resource) {
+            resource.setNumInteressats((int) entity.getInteressats().stream()
+                    .filter(i -> i.getRepresentat() == null)
+                    .count());
+            resource.setNumAnnexos((int) entity.getAnnexos().stream()
+                    .filter(a ->
+                            entity.getJustificant() == null ||
+                            !Objects.equals(a.getId(), entity.getJustificant().getId()))
+                    .count());
+            resource.setNumDada((int) dadaResourceRepository.countByRegistreId(entity.getId()));
+            resource.setNumCopies((int) registreResourceRepository.countByNumero(entity.getNumero()));
+
+            if ( resource.getProcediment() != null && resource.getProcediment().getId() != -1 ) {
+                procedimentResourceRepository.findById(resource.getProcediment().getId())
+                        .ifPresent(p -> resource.setSiaExtingit(
+                                ProcedimentEstatEnumDto.EXTINGIT.equals(p.getEstat())
+                        ));
+            }
+            if ( resource.getServei() != null && resource.getServei().getId() != -1 ) {
+                serveiResourceRepository.findById(resource.getServei().getId())
+                        .ifPresent(s -> resource.setSiaExtingit(
+                                ServeiEstatEnumDto.EXTINGIT.equals(s.getEstat())
+                        ));
+            }
         }
     }
 

@@ -134,6 +134,7 @@ const EMGrid = () => {
             ]}
 
             paginationActive
+            autoHeight
             readOnly
         />
         {component}

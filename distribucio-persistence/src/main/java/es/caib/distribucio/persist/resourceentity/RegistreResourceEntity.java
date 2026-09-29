@@ -173,11 +173,11 @@ public class RegistreResourceEntity extends ContingutResourceEntity<RegistreReso
             orphanRemoval = true)
     private List<RegistreAnnexResourceEntity> annexos = new ArrayList<>();
 
-//    @ManyToOne(optional = true, fetch = FetchType.EAGER)
-//    @JoinColumn(
-//            name = "regla_id",
-//            foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "registre_regla_fk"))
-//    private ReglaEntity regla;
+    @ManyToOne(optional = true, fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "regla_id",
+            foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "registre_regla_fk"))
+    private ReglaResourceEntity regla;
 
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(

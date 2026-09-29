@@ -1,6 +1,7 @@
 import {Box, Card, CardContent, CardHeader, Grid, Typography, Icon, IconButton, Collapse, darken} from "@mui/material";
 import React, {useState} from "react";
 import {useDetailContext} from "reactlib";
+import {formatDate} from "../util/dateUtils.ts";
 
 const iconButton = { p: 0.5, borderRadius: '5px', maxWidth: 'max-content', border: '1px solid grey' }
 
@@ -293,7 +294,7 @@ export const DetailField = (props:any) => {
     const field = fields?.find?.((item: any) => item?.name === name);
     const value = field?.options?.[data[name]] ?? data[name];
 
-    const v = value?.description || value
+    const v = value?.description || formatDate(value) || value
     return (
         <DetailCardContent
             title={props.label ?? (field?.label ?? name)}

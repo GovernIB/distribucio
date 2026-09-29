@@ -12,7 +12,6 @@ import useMarcarProcessada from "../actions/MarcarProcessada.tsx";
 import useMarcarPendent from "../actions/MarcarPendent.tsx";
 import {useSnackbar} from "notistack";
 import useTornarProcessar from "../actions/TornarProcessar.tsx";
-import {useRegistreDetail} from "./RegistreDetail.tsx";
 
 export const useActions = () => {
     const { t } = useTranslation();
@@ -42,12 +41,11 @@ export const useActions = () => {
     }
 }
 
-export const useRegistreActions = (refresh?: () => void) => {
+export const useRegistreActions = (refresh?: (code?:string) => void) => {
     const { t } = useTranslation();
     const {temporalMessageShow} = useBaseAppContext();
     const { enqueueSnackbar } = useSnackbar();
 
-    const {handleOpen: handleDetail, dialog: dialogDetail} = useRegistreDetail()
     const {show: handleHistoric, component: componentHistoric} = useContingutHistorialDialog()
     const {handleOpen: handleAlertes, component: componentAlertes} = useAlertes();
     const { handleShow: handleClassificar, content: contentClassificar } = useClassificar((result:any) => {
@@ -62,7 +60,7 @@ export const useRegistreActions = (refresh?: () => void) => {
         temporalMessageShow(null, t(`page.registre.accio.email.ok`, {numero: result.numero}), 'success');
     })
     const { handleShow: handleReenviar, content: contentReenviar } = useReenviar((result:any) => {
-        refresh?.()
+        refresh?.('REENVIAR')
         temporalMessageShow(null, t(`page.registre.accio.reenviar.ok`, {numero: result.numero}), 'success');
     })
     const { handleShow: handleProcessada, content: contentProcessada } = useMarcarProcessada((result:any) => {
@@ -75,12 +73,7 @@ export const useRegistreActions = (refresh?: () => void) => {
     })
 
     const actions:any[] = [
-        {
-            label: t('page.contingut.accio.detalls.label'),
-            icon: 'info',
-            showInMenu: true,
-            onClick: handleDetail,
-        },
+
         {
             label: t('page.contingut.accio.historial.label'),
             icon: 'list',
@@ -154,7 +147,6 @@ export const useRegistreActions = (refresh?: () => void) => {
     ]
 
     const components = <>
-        {dialogDetail}
         {componentHistoric}
         {componentAlertes}
         {contentClassificar}

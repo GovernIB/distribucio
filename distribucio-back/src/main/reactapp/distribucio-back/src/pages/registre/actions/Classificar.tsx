@@ -5,9 +5,9 @@ import GridFormField from "../../../components/GridFormField.tsx";
 import FormActionDialog from "../../../components/FormActionDialog.tsx";
 import {DetailField, DetailExpandCard} from "../../../components/CardData.tsx";
 import Alert from "@mui/material/Alert";
-import {formatDate} from "../../../util/dateUtils.ts";
 
 const Detail = ({expanded}:any) => {
+    const { t } = useTranslation();
     const {data} = useDetailContext()
 
     return <>
@@ -20,8 +20,8 @@ const Detail = ({expanded}:any) => {
             <DetailField size={6} name={"idiomaDescripcio"} inline>{data.idiomaDescripcio}({data.idiomaCodi})</DetailField>
             <DetailField size={6} name={"numero"} inline/>
             <DetailField size={6} name={"numeroOrigen"} inline/>
-            <DetailField size={6} name={"data"} inline>{formatDate(data.data)}</DetailField>
-            <DetailField size={6} name={"unitatAdministrativaDescripcio"} inline/>
+            <DetailField size={6} name={"data"} inline/>
+            <DetailField size={6} name={"unitatAdministrativaDescripcio"} label={t(`page.registre.detail.unitatAdmin.${data.registreTipus}`)} inline/>
             <DetailField size={6} name={"oficinaDescripcio"} inline>{data.oficinaDescripcio}({data.oficinaCodi})</DetailField>
             <DetailField size={6} name={"assumpteTipusDescripcio"} inline>{data.assumpteTipusDescripcio}({data.assumpteTipusCodi})</DetailField>
             <DetailField size={6} name={"llibreDescripcio"} inline>{data.llibreDescripcio}({data.llibreCodi})</DetailField>

@@ -42,11 +42,13 @@ export const useConfig = () :ConfigContextType => {
             return configCache.get(name);
         }
 
-        apiGetOne(name, { perspectives })
-            .then(response => {
-                const valor = getValue(response);
-                setConfigCache(prev => new Map(prev).set(name, valor));
-            });
+        if (isConfigReady) {
+            apiGetOne(name, {perspectives})
+                .then(response => {
+                    const valor = getValue(response);
+                    setConfigCache(prev => new Map(prev).set(name, valor));
+                });
+        }
 
         return configCache.get(name);
     };

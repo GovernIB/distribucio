@@ -51,15 +51,13 @@ const RegistreFilterForm: React.FC = () => {
 const springFilterBuilder = (data: any, setNamedQuery?: (value:string[]) => void) => {
     const namedQueries:any[] = []
 
-    // console.log("data", data)
-
     // UNITAT_ORGANITZATIVA -> builder.eq('pare.unitatOrganitzativa.id', data?.unitatOrganitzativa?.id),
     if (data?.unitatOrganitzativa)
         namedQueries.push(`UNITAT_ORGANITZATIVA#${data?.unitatOrganitzativa?.id}`)
 
-    // INACTIVES -> builder.eq('pare.activa', false),
-    if (data?.inactives)
-        namedQueries.push(`INACTIVES`)
+    // ACTIVES -> builder.eq('pare.activa', false),
+    if (!data?.inactives)
+        namedQueries.push(`ACTIVES`)
 
     if (data?.nombreAnnexes)
         namedQueries.push(`NOMBRE_ANNEXOS#${data?.nombreAnnexes}`)

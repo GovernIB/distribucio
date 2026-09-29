@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface DadaResourceRepository extends BaseRepository<DadaResourceEntity, Long> {
     List<DadaResourceEntity> findByRegistreId(Long id);
+
+    long countByRegistreId(Long registreId);
 }

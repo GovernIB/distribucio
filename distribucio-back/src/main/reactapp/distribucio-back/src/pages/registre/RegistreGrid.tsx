@@ -3,11 +3,14 @@ import {GridPage, useMuiDataGridApiRef} from "reactlib";
 import {CardPage} from "../../components/CardData.tsx";
 import StyledMuiGrid from "../../components/StyledMuiGrid.tsx";
 import RegistreFilter from "./RegistreFilter.tsx";
-import React from "react";
+import React, {useMemo} from "react";
 import { Icon } from "@mui/material";
 import {useCommentsColumn} from "../../components/CommentsColumn.tsx";
 import {RegistreEstat} from "../../components/RegistreEstat.tsx";
 import {useRegistreActions, useRegistreMassiveActions} from "./detail/RegistreActions.tsx";
+import {useGridApiRef} from "@mui/x-data-grid-pro";
+import {useRegistreDetail} from "./detail/RegistreDetail.tsx";
+import Load from "../../components/Load.tsx";
 
 const RegistreAvisos = ({entity}:any) => {
     const { t } = useTranslation();
@@ -71,12 +74,11 @@ const columns = (t:any) => [
     { field: 'interessatsString', flex: 4, sortable: false },
 ]
 const perspectives = ['DARRER_MOVIMENT', 'COMMENT_NUM']
-// Referència estable: mentre el filtre no està a punt la graella no ha de veure cap canvi.
-const SENSE_NAMED_QUERIES: string[] = []
 const sortModel:any = [{ field: 'data', sort: 'desc' }]
 export const RegistreGrid = () => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
+    const gridApiRef = useGridApiRef()
     const [springFilter, setSpringFilter] = React.useState<string>();
     const [namedQueries, setNamedQueries] = React.useState<string[]>([]);
     // La primera vegada que s'obre la pantalla, el filtre obté els valors per defecte del backend
@@ -100,8 +102,20 @@ export const RegistreGrid = () => {
         apiRef.current?.refresh()
     }
 
+    const {handleOpen: handleDetail, dialog: dialogDetail} = useRegistreDetail(gridApiRef, springFilter, namedQueries)
+
     const {actions, components} = useRegistreActions(refresh);
     const {actions: massiveActions, components: massiveComponents} = useRegistreMassiveActions();
+
+    const additionalActions = useMemo(() => [
+        {
+            label: t('page.contingut.accio.detalls.label'),
+            icon: 'info',
+            showInMenu: true,
+            onClick: handleDetail,
+        },
+        ...actions
+    ], [actions])
 
     return (
         <GridPage>
@@ -112,14 +126,15 @@ export const RegistreGrid = () => {
                     onReady={() => setFiltreLlest(true)}
                 />
 
+                <Load value={filtreLlest} noEffect>
                 <StyledMuiGrid
-                    key={filtreLlest ? 'llest' : 'esperant-filtre'}
                     apiRef={apiRef}
+                    datagridApiRef={gridApiRef}
                     resourceName="registreResource"
                     columns={additionalColumns}
-                    filter={filtreLlest ? springFilter : undefined}
+                    filter={springFilter}
                     perspectives={perspectives}
-                    namedQueries={filtreLlest ? namedQueries : SENSE_NAMED_QUERIES}
+                    namedQueries={namedQueries}
                     autoFindDisabled={!filtreLlest}
                     loading={!filtreLlest ? true : undefined}
                     sortModel={sortModel}
@@ -127,7 +142,7 @@ export const RegistreGrid = () => {
                     // filterCount={(num) => num + (namedQueries.length || 0)}
                     // toolbarShowFilterCount
 
-                    rowAdditionalActions={actions}
+                    rowAdditionalActions={additionalActions}
                     // reactlib crea la columna del menú d'accions amb 100px fixos i només hi va el
                     // botó "⋮": s'estreny com a RIPEA (ExpedientGrid) per deixar més espai al text.
                     rowActionsColumnProps={{ width: 55, minWidth: 55 }}
@@ -139,9 +154,11 @@ export const RegistreGrid = () => {
                     rowHideUpdateButton
                     rowHideDeleteButton
                 />
+                </Load>
                 {dialogComponent}
                 {components}
                 {massiveComponents}
+                {dialogDetail}
             </CardPage>
         </GridPage>
     )

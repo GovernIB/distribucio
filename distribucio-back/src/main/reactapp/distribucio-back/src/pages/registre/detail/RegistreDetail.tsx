@@ -1,7 +1,14 @@
-import {useBaseAppContext, useDetailContext, useMuiContentDialog, MuiDetail, useResourceApiService} from "reactlib";
-import {Badge, Box, Grid, Icon, IconButton, Tooltip} from "@mui/material";
+import {
+    useBaseAppContext,
+    useDetailContext,
+    MuiDetail,
+    useResourceApiService,
+    MuiDialog,
+    useMuiContentDialog
+} from "reactlib";
+import {Badge, Box, Grid, Icon, IconButton, Tooltip, Typography} from "@mui/material";
 import TabComponent from "../../../components/TabComponent.tsx";
-import React, {useMemo} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {useCommentDialog} from "../../CommentDialog.tsx";
 import {DetailCard, DetailCardContent, DetailExpandCard, DetailField} from "../../../components/CardData.tsx";
 import {formatDate} from "../../../util/dateUtils.ts";
@@ -14,6 +21,12 @@ import {ErrorArea} from "../../../components/ErrorArea.tsx";
 import {useConfig} from "../../../components/ConfigProvider.tsx";
 import useVisualitzar from "../../annex/actions/AnnexVisualitzar.tsx";
 import {MetaDadesForm} from "./MetaDadesForm.tsx";
+import {ROLE_ADMIN, ROLE_ADMIN_LECTURA, useDistribucioContext} from "../../../components/DistribucioContext.ts";
+import Button from "@mui/material/Button";
+import {MenuActionButton} from "../../../components/MenuButton.tsx";
+import {useRegistreActions} from "./RegistreActions.tsx";
+import {useSession} from "../../../components/SessionStorageContext.tsx";
+import {useRecordNavigation} from "../../../components/RecordNavigation.tsx";
 
 const AnnexTab = ({entity}:any) => {
     const { isReady: apiIsReady, find: apiFind } = useResourceApiService('registreAnnexResource');
@@ -59,6 +72,14 @@ const AnnexGrid = ({entity}:any) => {
 
     const {handleOpen, component} = useVisualitzar()
 
+    const actions = [
+        {
+            label: t('common.download'),
+            icon: 'download',
+            showInMenu: false,
+        },
+    ]
+
     return (<>
         <StyledMuiGrid
             resourceName={'registreAnnexResource'}
@@ -70,6 +91,7 @@ const AnnexGrid = ({entity}:any) => {
             perspectives={annexPerspectives}
             fixedSortModel={annexSortModel}
 
+            rowAdditionalActions={actions}
             onRowClick={(params) => handleOpen(params.row)}
 
             getDetailPanelHeight={() => 'auto'}
@@ -204,20 +226,17 @@ const ProcessBack = ({entity}:any) => {
         <DetailCard>
             <DetailField name={"procesEstat"} inline/>
             <DetailField name={"backCodi"} inline/>
-            <DetailField name={"backPendentData"} inline>{formatDate(entity.backPendentData)}</DetailField>
-            <DetailField name={"backRebudaData"} inline>{formatDate(entity.backRebudaData)}</DetailField>
+            <DetailField name={"backPendentData"} inline/>
+            <DetailField name={"backRebudaData"} inline/>
 
             {entity.procesEstat == 'BACK_PROCESSADA' && <DetailField name={"backProcesRebutjErrorData"}
-                             title={t('page.registre.grid.backProcesData')}
-                             inline>{formatDate(entity.backProcesRebutjErrorData)}</DetailField>}
+                             title={t('page.registre.grid.backProcesData')} inline/>}
 
             {entity.procesEstat == 'BACK_REBUTJADA' && <DetailField name={"backProcesRebutjErrorData"}
-                             title={t('page.registre.grid.backRebutjData')}
-                             inline>{formatDate(entity.backProcesRebutjErrorData)}</DetailField>}
+                             title={t('page.registre.grid.backRebutjData')} inline/>}
 
             {entity.procesEstat == 'BACK_ERROR' && <DetailField name={"backProcesRebutjErrorData"}
-                             title={t('page.registre.grid.backErrorData')}
-                             inline>{formatDate(entity.backProcesRebutjErrorData)}</DetailField>}
+                             title={t('page.registre.grid.backErrorData')} inline/>}
         </DetailCard>
 
         <Grid size={12}>
@@ -269,6 +288,7 @@ const Copies = ({entity}:any) => {
             filter={builder.eq("numero", `'${entity.numero}'`)}
             perspectives={copiesPerspectives}
             toolbarHide
+            autoHeight
             readOnly
         />
     </>
@@ -297,12 +317,14 @@ const ArxiuDetall = ({entity}:any) => {
 
 const InformacioRegistre = ({entity}:any) => {
     const { t } = useBaseAppContext();
+    const {currentRole} = useDistribucioContext()
+    const isAdmin = currentRole == ROLE_ADMIN || currentRole == ROLE_ADMIN_LECTURA
     return (<Grid container columnSpacing={1} rowSpacing={1}>
         <DetailCard>
             <DetailField name={"registreTipus"} inline/>
-            <DetailField name={"nom"} inline/>
-            <DetailField name={"identificador"} inline/>
-            <DetailField name={"data"} inline>{formatDate(entity.data)}</DetailField>
+            <DetailField name={"nom"} inline hidden={!isAdmin}/>
+            <DetailField name={isAdmin ?"identificador" :"numero"} inline/>
+            <DetailField name={"data"} inline/>
             <DetailField name={"procesEstat"} formatterValue={(v:any) => <Box display={'flex'} alignItems={'center'}>
                 {v}
                 {(entity.procesEstat?.includes('BACK_')) && entity.backCodi && <> - {entity.backCodi}</>}
@@ -318,7 +340,8 @@ const InformacioRegistre = ({entity}:any) => {
             <DetailField name={"llibreDescripcio"} inline>{entity.llibreDescripcio} ({entity.llibreCodi})</DetailField>
             <DetailField name={"extracte"} inline/>
             <DetailField name={"documentacioFisicaDescripcio"} inline>{entity.documentacioFisicaDescripcio} ({entity.documentacioFisicaCodi})</DetailField>
-            <DetailField name={"unitatAdministrativaDescripcio"} inline>{entity.unitatAdministrativaDescripcio} ({entity.unitatAdministrativaCodi})</DetailField>
+            <DetailField name={"unitatAdministrativaDescripcio"} label={t(`page.registre.detail.unitatAdmin.${entity.registreTipus}`)} inline
+            >{entity.unitatAdministrativaDescripcio} ({entity.unitatAdministrativaCodi})</DetailField>
             <DetailField name={"assumpteTipusDescripcio"} inline>{entity.assumpteTipusDescripcio} ({entity.assumpteTipusCodi})</DetailField>
             <DetailField name={"idiomaDescripcio"} inline>{entity.idiomaDescripcio} ({entity.idiomaCodi})</DetailField>
         </DetailCard>
@@ -332,17 +355,17 @@ const InformacioRegistre = ({entity}:any) => {
             <DetailField size={6} name={"transportTipusDescripcio"} inline>{entity.transportTipusDescripcio} ({entity.transportTipusCodi})</DetailField>
             <DetailField size={6} name={"transportNumero"} inline/>
             <DetailField size={6} name={"oficinaOrigenDescripcio"} inline>{entity.oficinaOrigenDescripcio} ({entity.oficinaOrigenCodi})</DetailField>
-            <DetailField size={6} name={"assumpteDescripcio"} inline>{entity.assumpteDescripcio} ({entity.assumpteCodi})</DetailField>
+            <DetailField size={6} name={"assumpteDescripcio"} inline>({entity.assumpteCodi})</DetailField>
             <DetailField size={6} name={"numeroOrigen"} inline/>
-            <DetailField size={6} name={"dataOrigen"} inline>{formatDate(entity.dataOrigen)}</DetailField>
+            <DetailField size={6} name={"dataOrigen"} inline/>
             <DetailField name={"observacions"} inline/>
         </DetailCard>
 
         <DetailExpandCard title={t('component.RegistreDetail.titles.seguiment')} headerProps={{backgroundColor: 'greyBackground'}}>
             <DetailField name={"entitat"} inline/>
             <DetailField name={"aplicacioCodi"} inline>{entity.aplicacioCodi} {entity.aplicacioVersio}</DetailField>
-            <DetailField name={"usuariNom"} inline>{entity.usuariNom} ({entity.usuariCodi})</DetailField>
-            <DetailField name={"createdDate"} inline>{formatDate(entity.createdDate)}</DetailField>
+            <DetailField name={"usuariNom"} inline hidden={!entity.usuariCodi}>{entity.usuariNom} ({entity.usuariCodi})</DetailField>
+            <DetailField name={"createdDate"} inline/>
         </DetailExpandCard>
 
         <Load value={entity.justificant?.id} noEffect>
@@ -354,11 +377,17 @@ const InformacioRegistre = ({entity}:any) => {
                     hiddenToolbar
                     componentProps={{ sx: { mt: 0 } }}
                 >
-                    <DetailField name={"dataCaptura"} formatterValue={(v:any) => formatDate(v)} inline/>
+                    <DetailField name={"dataCaptura"} inline/>
                     <DetailField name={"origenCiutadaAdmin"} inline/>
                     <DetailField name={"ntiElaboracioEstat"} inline/>
                     <DetailField name={"ntiTipusDocument"} inline/>
-                    <DetailField name={"fitxerNom"} formatterValue={(v:any, data:any) => <>{v} ({data.fitxerTamany} bytes)</>} inline/>
+                    <DetailField name={"fitxerNom"} formatterValue={(v:any, data:any) =>
+                        <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+                            <>{v} ({data.fitxerTamany} bytes)</>
+                            <IconButton sx={{ m:0, p:0 }}>
+                                <Icon>download</Icon>
+                            </IconButton>
+                        </Box>} inline/>
                 </MuiDetail>
                 </Grid>
             </DetailExpandCard>
@@ -368,21 +397,49 @@ const InformacioRegistre = ({entity}:any) => {
 
 const Resum = ({entity}:any) => {
     const { t } = useBaseAppContext();
+    const {currentRole} = useDistribucioContext()
+    const isAdmin = currentRole == ROLE_ADMIN || currentRole == ROLE_ADMIN_LECTURA
+    const senseCodi = ['ARXIU_PENDENT', 'REGLA_PENDENT', 'BUSTIA_PENDENT', 'BUSTIA_PROCESSADA'].includes(entity.procesEstat);
     return (<Grid container columnSpacing={1} rowSpacing={1}>
         <DetailCard>
-            <DetailField size={6} name={"identificador"} inline/>
-            <DetailField size={6} name={"data"} inline>{formatDate(entity.data)}</DetailField>
+            <DetailField size={6} name={isAdmin ?"identificador" :"numero"}
+                         formatterValue={(v:any) =>
+                             <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+                                 <Typography variant="inherit" color="textSecondary">
+                                     {v}
+                                 </Typography>
+                                 <IconButton sx={{ m:0, p:0 }}>
+                                     <Icon>download</Icon>
+                                 </IconButton>
+                             </Box>
+                         } isObject inline/>
+            <DetailField size={6} name={"data"} inline/>
             <DetailField size={6} name={"oficinaDescripcio"} inline>{entity.oficinaDescripcio}({entity.oficinaCodi})</DetailField>
-            <DetailField size={6} name={"presencial"} inline>{entity.presencial ?'Si' :'No'}</DetailField>
+            <DetailField size={6} name={"presencial"} inline>{t(`common.boolean.${entity.presencial}`)}</DetailField>
             <DetailField size={12} name={"extracte"} inline/>
-            <DetailField size={6} name={"procediment"} inline hidden={entity.serveiCodi}/>
-            <DetailField size={6} name={"servei"} inline hidden={!entity.serveiCodi}/>
+            <DetailField size={6} name={"procediment"} isObject inline hidden={entity.serveiCodi}>
+                <Box display={'flex'}>
+                    <Typography variant="inherit" color="textSecondary">
+                        {entity.procediment?.description}
+                    </Typography>
+                    {entity.siaExtingit && <Icon title={t('page.procediments.extingit')} fontSize={'small'} color={'warning'}>warning</Icon>}
+                </Box>
+            </DetailField>
+            <DetailField size={6} name={"servei"} isObject inline hidden={!entity.serveiCodi}>
+                <Box display={'flex'} >
+                    <Typography variant="inherit" color="textSecondary">
+                        {entity.servei?.description}
+                    </Typography>
+                    {entity.siaExtingit && <Icon title={t('page.serveis.extingit')} fontSize={'small'} color={'warning'}>warning</Icon>}
+                </Box>
+            </DetailField>
             <DetailField size={6} name={"expedientNumero"} inline/>
             <DetailField size={12} name={"tramitNom"} inline>{entity.tramitCodi} - {entity.tramitNom}</DetailField>
             <DetailField size={12} name={"observacions"} inline/>
-            <DetailField size={12} name={"backCodi"} inline/>
+            <DetailField size={12} name={"regla"} inline hidden={entity.procesEstat != 'REGLA_PENDENT' || !entity.regla}/>
+            <DetailField size={12} name={"backCodi"} inline hidden={senseCodi}/>
             <DetailField size={4} name={"numeroOrigen"} inline/>
-            <DetailField size={4} name={"dataOrigen"} inline>{formatDate(entity.dataOrigen)}</DetailField>
+            <DetailField size={4} name={"dataOrigen"} inline/>
             <DetailField size={4} name={"oficinaOrigenDescripcio"} inline>{entity.oficinaOrigenDescripcio}({entity.oficinaOrigenCodi})</DetailField>
         </DetailCard>
 
@@ -397,15 +454,23 @@ const Resum = ({entity}:any) => {
     </Grid>)
 }
 
-const RegistreDetail = () => {
+const RegistreDetail = (props:any) => {
     const { t } = useBaseAppContext();
     const {data} = useDetailContext()
+    const { refresh } = props
     // console.log("data", data)
 
     const { getByName } = useConfig()
     const metadadesActives = getByName("es.caib.distribucio.permetre.metadades.registre")
 
+    const [avanzarPagina, setAvanzarPagina] = useState<boolean>(true)
+    const {save} = useSession('avanzarPagina');
+    useEffect(() => {
+        save(avanzarPagina)
+    }, [avanzarPagina]);
+
     const { handleOpen, component } = useCommentDialog();
+    const {actions, components: actionComponents} = useRegistreActions(refresh)
 
     const tabs = useMemo(() => [
         {
@@ -421,23 +486,21 @@ const RegistreDetail = () => {
         {
             value: 'interessats',
             label: t('component.RegistreDetail.tabs.interessats'),
-            content: <InteressatsGrid id={data.id}/>
+            content: <InteressatsGrid id={data.id}/>,
+            badge: data.numInteressats,
+            showZero: true,
         },
         {
             value: 'annexos',
             label: t('component.RegistreDetail.tabs.annexos'),
-            content: <AnnexTab entity={data}/>
+            content: <AnnexTab entity={data}/>,
+            badge: data.numAnnexos,
+            showZero: true,
         },
         {
             value: 'arxiu',
             label: t('component.RegistreDetail.tabs.arxiu'),
             content: <ArxiuDetall entity={data.arxiuDetall}/>
-        },
-        {
-            value: "dades",
-            label: t('component.RegistreDetail.tabs.dades'),
-            content: <MetaDadesForm entity={data}/>,
-            hidden: !metadadesActives,
         },
         {
             value: 'procesBack',
@@ -446,9 +509,18 @@ const RegistreDetail = () => {
             hidden: data.procesEstat == 'BACK_PENDENT' || !(data.procesEstat?.includes('BACK_'))
         },
         {
+            value: "dades",
+            label: t('component.RegistreDetail.tabs.dades'),
+            content: <MetaDadesForm entity={data}/>,
+            badge: data.numDada,
+            showZero: true,
+            hidden: !metadadesActives,
+        },
+        {
             value: 'copia',
             label: t('component.RegistreDetail.tabs.copia'),
-            content: <Copies entity={data}/>
+            content: <Copies entity={data}/>,
+            badge: data.numCopies,
         },
     ], [metadadesActives])
 
@@ -461,7 +533,14 @@ const RegistreDetail = () => {
 
         <TabComponent
             variant="scrollable"
-            headerAdditionalData={<>
+            headerAdditionalData={<Box display={'flex'} justifyContent={'end'} gap={1}>
+                <Button
+                    title={t('component.RegistreDetail.avancar')}
+                    variant={avanzarPagina ?'contained' :'outlined'}
+                    onClick={() => setAvanzarPagina(prev => !prev)}
+                >
+                    <Icon>fast_forward</Icon>
+                </Button>
                 <IconButton
                     title={t('component.CommentDialog.label')}
                     onClick={() => handleOpen(data.id, data.nom) }
@@ -470,17 +549,32 @@ const RegistreDetail = () => {
                         <Icon>forum</Icon>
                     </Badge>
                 </IconButton>
-            </>}
+
+                <MenuActionButton
+                    id={data.id}
+                    entity={data}
+                    buttonLabel={<><Icon sx={{ mr: 1 }}>settings</Icon>{t('common.actions')}</>}
+                    actions={actions}
+                    buttonProps={{ variant: 'contained' }}
+                />
+            </Box>}
             tabs={tabs}
         />
         {component}
+        {actionComponents}
     </>);
 }
 
-const perspectives = ['ARXIU_DETALL', 'DARRER_MOVIMENT', 'COMMENT_NUM']
-export const useRegistreDetail = (perspectivesAddicionals: string[] = []) => {
+const perspectives = ['ARXIU_DETALL', 'DARRER_MOVIMENT', 'COMMENT_NUM', 'DETAIL_INFO']
+export const useBasicDetail = (props:any = {}) => {
     const { t } = useBaseAppContext();
+    const { perspectives: customPersp = [] } = props
     const [dialogShow, dialogComponent] = useMuiContentDialog();
+
+    const additionalPersp = useMemo(() => [
+        ...perspectives,
+        ...customPersp,
+    ], [perspectives])
 
     const handleOpen = (id:any, _row:any) => {
         dialogShow(
@@ -488,7 +582,7 @@ export const useRegistreDetail = (perspectivesAddicionals: string[] = []) => {
             <MuiDetail
                 id={id}
                 resourceName={'registreResource'}
-                perspectives={[...perspectives, ...perspectivesAddicionals]}
+                perspectives={additionalPersp}
                 hiddenToolbar
                 componentProps={{ sx: { mt: 0 } }}
             >
@@ -503,4 +597,104 @@ export const useRegistreDetail = (perspectivesAddicionals: string[] = []) => {
         handleOpen,
         dialog: dialogComponent
     };
+}
+
+export const useRegistreDetail = (gridApiRef:any, filter:any, namedQueries:any[]) => {
+    const { t } = useBaseAppContext();
+
+    const [open, setOpen] = useState(false);
+    const [entityId, setEntityId] = useState<any>();
+
+    const { apiIsReady, index, totalElem, prev, next } = useRecordNavigation({
+        id: entityId, setId: setEntityId, gridApiRef, filter, namedQueries,
+        resourceName: 'registreResource'
+    })
+
+    const { value: avanzarPagina } = useSession('avanzarPagina');
+    const refresh = (code?:string) => {
+        if (code == 'REENVIAR' && avanzarPagina) {
+            next()
+        }
+    }
+
+    const handleOpen = (id:any) => {
+        setEntityId(id)
+        setOpen(true)
+    };
+
+    const handleClose = (reason?: string) => {
+        if(reason !== 'backdropClick') {
+            setEntityId(undefined);
+            setOpen(false);
+        }
+    };
+
+    const buttons:any = useMemo(() => [
+        {
+            value: 'prev',
+            text: t('component.RecordNavigation.prev'),
+            icon: 'keyboard_double_arrow_left',
+            componentProps: { variant: 'outlined', disabled: index == 1 },
+        },
+        {
+            text: `${index} / ${totalElem}`,
+            componentProps: {
+                disabled: true,
+                sx: {
+                    '&.Mui-disabled': {
+                        color: 'primary.main',
+                        opacity: 1,
+                        cursor: 'not-allowed',
+                    }
+                }
+            },
+        },
+        {
+            value: 'next',
+            text: <>{t('component.RecordNavigation.next')}<Icon sx={{ ml: 1 }}>keyboard_double_arrow_right</Icon></>,
+            // icon: 'keyboard_double_arrow_right',
+            componentProps: { variant: 'outlined', sx: { mr: 'auto' }, disabled: index == totalElem },
+        },
+        {
+            value: 'close',
+            text: t('common.close'),
+            icon: 'close',
+            componentProps: { variant: 'outlined' },
+        },
+    ], [apiIsReady, index])
+
+    const dialog = (
+        <MuiDialog
+            open={open}
+            closeCallback={handleClose}
+            title={t('page.contingut.accio.detalls.title')}
+            componentProps={{ fullWidth: true, maxWidth: 'xl' }}
+            buttons={buttons}
+            buttonCallback={(value:string) => {
+                switch (value) {
+                    case 'prev':prev();break;
+                    case 'next':next();break;
+                    case 'close':handleClose();break;
+                }
+            }}
+        >
+            <Load value={entityId}>
+                <MuiDetail
+                    id={entityId}
+                    resourceName={'registreResource'}
+                    perspectives={perspectives}
+                    hiddenToolbar
+                    componentProps={{ sx: { mt: 0 } }}
+                >
+                    <RegistreDetail refresh={refresh}/>
+                </MuiDetail>
+            </Load>
+        </MuiDialog>
+    )
+
+    return {
+        handleOpen,
+        handleClose,
+        dialog
+    }
 }

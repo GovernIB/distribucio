@@ -28,7 +28,8 @@ const translationEs = {
         boolean: {
             true: "Si",
             false: "No",
-        }
+        },
+        actions: "Acciones",
     },
     app: {
         loading: 'Iniciando DISTRIBUCIO',
@@ -163,6 +164,7 @@ const translationEs = {
             },
         },
         serveis: {
+            extingit: "El servicio está marcado como extinguido porque no se ha encontrado en ROLSAC",
             grid: {
                 title: "Servicios",
             },
@@ -194,6 +196,7 @@ const translationEs = {
             },
         },
         procediments: {
+            extingit: "El procedimiento está marcado como extinguido porque no se ha encontrado en ROLSAC",
             grid: {
                 title: "Procedimientos",
             },
@@ -806,6 +809,12 @@ const translationEs = {
                 eniClassificacio: "Clasificación",
                 eniEstat: "Estado",
             },
+            detail: {
+                unitatAdmin: {
+                    ENTRADA: "Órgano destino",
+                    SORTIDA: "Órgano origen",
+                }
+            },
             grid: {
                 avisos: "Avisos",
                 remitent: "Remitente",
@@ -1033,6 +1042,10 @@ const translationEs = {
             label: "Comentarios",
             envia: "Enviar",
         },
+        RecordNavigation: {
+            prev: "Anterior",
+            next: "Siguiente",
+        },
         RegistreSelector:{
             title: "Anotaciones seleccionadas",
         },
@@ -1055,6 +1068,7 @@ const translationEs = {
             },
         },
         RegistreDetail: {
+            avancar: "Avanzar página al reenviar",
             titles: {
                 representant: "Representante",
                 original: "Original",
