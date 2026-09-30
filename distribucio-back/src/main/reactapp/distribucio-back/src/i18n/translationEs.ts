@@ -48,6 +48,7 @@ const translationEs = {
             configuracio: "Configuración",
             configurar: "Configurar",
             limitCanviEstat: "Limites de cambios de estado",
+            usuariCanviCodis: "Cambio de códigos de usuarios",
             bustia: 'Buzones',
             unitatOrganitzativa: 'Unidades Organizativas',
             procediment: 'Procedimientos',
@@ -653,6 +654,58 @@ const translationEs = {
                 crearOk: "El nuevo límite de cambio de estado se ha creado correctamente",
                 modificarOk: "El límite de cambio de estado se ha modificado correctamente",
                 esborrarOk: "El límite de cambio de estado se ha borrado correctamente",
+            },
+        },
+        usuariCanviCodis: {
+            title: "Cambio de códigos de usuarios",
+            form: {
+                mapeig: {
+                    ajuda: "Añade todas las entradas que quieras utilizando el formato 'codigo_actual=codigo_nuevo'. Ejemplo: e12345678Z=u123456",
+                },
+                unifica: {
+                    ajuda: "Si el código nuevo ya corresponde a un usuario existente, la línea se omite. Si lo marcas, se unificarán los dos usuarios con este último: los datos del usuario antiguo pasarán al nuevo y también se fusionarán los permisos (el usuario nuevo tendrá los suyos y los del antiguo), los buzones favoritos y el buzón por defecto (si ambos tienen, se mantiene el del nuevo). El usuario antiguo se borra.",
+                },
+            },
+            accio: {
+                modificar: 'Modifica',
+                error: "No se ha podido hacer el cambio de códigos",
+                respostaInesperada: "El servidor no ha devuelto el resultado de esta línea",
+                confirmar: {
+                    titol: "Cambiar los códigos de usuario",
+                    text: "Se cambiará el código de todos los usuarios indicados en todas las tablas de la aplicación (auditoría, permisos, buzones, movimientos y anotaciones) y se borrará el usuario antiguo. Esta acción no se puede deshacer. ¿Quieres continuar?",
+                },
+            },
+            info: {
+                enExecucio: "El proceso puede tardar según el número de registros. No cierres ni refresques la página hasta que termine.",
+                progres: "Procesando {{fetes}} de {{total}} líneas ({{percent}} %)",
+                enCurs: "En curso: '{{linia}}'",
+                sortir: "Hay un cambio de códigos en curso. Si sales, las líneas pendientes no se ejecutarán. ¿Quieres salir igualmente?",
+            },
+            resultat: {
+                title: "Resultado",
+                resum: {
+                    titol: 'Proceso finalizado en {{durada}}',
+                    text: '{{total}} líneas procesadas: {{ok}} cambios correctos, {{errors}} con error y {{omeses}} omitidas. {{registres}} registros modificados en total.',
+                },
+                canvi: "Para cada cambio correcto se ha sustituido el código antiguo por el nuevo en la auditoría (creado por y modificado por) de todas las tablas, en los permisos, en los buzones por defecto y favoritos, en los movimientos y en las anotaciones; el usuario antiguo se ha eliminado y se ha refrescado la caché de usuarios, entidades y permisos.",
+                unificats: "Como has marcado la unificación, los usuarios nuevos que ya existían han absorbido los datos y los permisos de los usuarios antiguos.",
+                senseLinies: "No había ninguna línea que procesar.",
+                columna: {
+                    linia: 'Línea',
+                    canvi: 'Cambio de código',
+                    resultat: 'Resultado',
+                    durada: 'Duración',
+                },
+                estat: {
+                    OK_sense: "Cambio hecho. El usuario no tenía ningún registro asociado",
+                    OK_one: 'Cambio hecho: {{count}} registro actualizado',
+                    OK_other: 'Cambio hecho: {{count}} registros actualizados',
+                    ERROR: "Se ha producido un error al modificar el código del usuario",
+                    FORMAT_INCORRECTE: "El formato no es correcto. El formato debe ser 'codigoAntiguo=codigoNuevo', y los códigos no pueden tener espacios",
+                    ANTIC_NO_EXISTEIX: "El usuario a modificar no existe",
+                    NOU_EXISTEIX_SALTAT: "El usuario nuevo ya existe: línea omitida (marca la unificación para unir los dos usuarios)",
+                    DUPLICAT: "El código actual ya aparece en una línea anterior",
+                },
             },
         },
         regla: {

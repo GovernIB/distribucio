@@ -21,6 +21,7 @@ export type Pantalla = 'home'
     | 'bustiaAdmin'
     | 'bustiaAdminOrganigrama'
     | 'limitCanviEstat'
+    | 'usuariCanviCodis'
     | 'procediment'
     | 'permis'
     | 'contingut'
@@ -58,6 +59,7 @@ export const PANTALLA_ROLS: Record<Pantalla, string[]> = {
     servei: [ROLE_ADMIN],
     unitatOrganitzativa: [ROLE_ADMIN],
     limitCanviEstat: [ROLE_SUPER],
+    usuariCanviCodis: [ROLE_SUPER],
     bustiaAdmin: [ROLE_ADMIN],
     bustiaAdminOrganigrama: [ROLE_ADMIN],
     permis: [ROLE_ADMIN],

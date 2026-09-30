@@ -3,7 +3,10 @@ package es.caib.distribucio.logic.resourceservice;
 import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.CacheHelper;
+import es.caib.distribucio.logic.helper.UsuariCodiHelper;
+import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
+import es.caib.distribucio.logic.intf.base.exception.ArtifactNotFoundException;
 import es.caib.distribucio.logic.intf.base.model.FieldOption;
 import es.caib.distribucio.logic.intf.base.util.I18nUtil;
 import es.caib.distribucio.logic.intf.dto.IdiomaEnumDto;
@@ -19,16 +22,25 @@ import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.UsuariResourceRepository;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -39,11 +51,14 @@ import java.util.stream.Collectors;
  *
  * @author Límit Tecnologies
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UsuariResourceServiceImpl extends BaseMutableResourceService<UsuariResource, String, UsuariResourceEntity> implements UsuariResourceService {
 
 	private static final String ROLE_DISPLAY_PREFIX = "DIS_";
+	/** Línia "codiActual=codiNou": dos codis no buits, sense espais i separats per un únic "=". */
+	private static final Pattern LINIA_CANVI_CODI = Pattern.compile("^([^\\s=]+)=([^\\s=]+)$");
 
 	private final AuthenticationHelper authenticationHelper;
 	private final CacheHelper cacheHelper;
@@ -52,10 +67,101 @@ public class UsuariResourceServiceImpl extends BaseMutableResourceService<Usuari
 
 	private final BustiaResourceRepository bustiaResourceRepository;
 	private final BustiaDefaultResourceRepository bustiaDefaultResourceRepository;
+	private final UsuariCodiHelper usuariCodiHelper;
 
 	@PostConstruct
 	public void init() {
 		register(UsuariResource.Fields.idioma, new IdiomaFieldOptionsProvider());
+		register(UsuariResource.ACTION_CANVI_CODIS_CODE, new CanviCodisActionExecutor());
+	}
+
+	/**
+	 * Les accions d'aquest recurs no s'executen dins una transacció: el canvi de codi d'un usuari ja obre la seva
+	 * ({@link UsuariCodiHelper#updateUsuariCodi}, amb timeout propi de 1200 s). Amb la transacció exterior per
+	 * defecte de {@code BaseMutableResourceService} el temps màxim del servidor d'aplicacions (uns 300 s a JBoss)
+	 * podria caducar mentre una línia lenta encara s'està executant: el canvi es confirmaria, però la resposta
+	 * seria un error 500 i el front el mostraria com a fallit.
+	 */
+	@Override
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	public <P extends Serializable> Serializable artifactActionExec(
+			String id,
+			String code,
+			P params) throws ArtifactNotFoundException, ActionExecutionException {
+		return super.artifactActionExec(id, code, params);
+	}
+
+	/**
+	 * Canvi de codis d'usuari: una línia "codiActual=codiNou" per usuari, sense espais. Mateix treball que
+	 * {@code UsuariController.setCanviCodis} de la interfície JSP, però amb totes les línies en una sola acció.
+	 * <p>
+	 * Cada línia es processa en ordre (es poden encadenar "a=b" i "b=c") i en la seva pròpia transacció:
+	 * l'error d'una línia no atura ni desfà les altres.
+	 */
+	private class CanviCodisActionExecutor implements
+			ActionExecutor<UsuariResourceEntity, UsuariResource.CanviCodisForm, UsuariResource.CanviCodisResultat> {
+
+		@Override
+		public UsuariResource.CanviCodisResultat exec(
+				String code,
+				UsuariResourceEntity entity,
+				UsuariResource.CanviCodisForm params) throws ActionExecutionException {
+			long t0 = System.currentTimeMillis();
+			boolean unifica = Boolean.TRUE.equals(params.getUnificaUsuarisExistents());
+			List<UsuariResource.CanviCodisLinia> linies = new ArrayList<>();
+			Set<String> codisAntics = new HashSet<>();
+			String[] entrades = params.getMapeig().split("\\R", -1);
+			for (int i = 0; i < entrades.length; i++) {
+				String entrada = entrades[i].trim();
+				if (entrada.isEmpty()) {
+					continue;
+				}
+				UsuariResource.CanviCodisLinia linia = new UsuariResource.CanviCodisLinia();
+				linia.setNumLinia(i + 1);
+				linies.add(linia);
+				Matcher matcher = LINIA_CANVI_CODI.matcher(entrada);
+				if (!matcher.matches() || matcher.group(1).equals(matcher.group(2))) {
+					linia.setEstat(UsuariResource.CanviCodisEstat.FORMAT_INCORRECTE);
+					linia.setMissatge(entrada);
+					continue;
+				}
+				String codiAntic = matcher.group(1);
+				String codiNou = matcher.group(2);
+				linia.setCodiAntic(codiAntic);
+				linia.setCodiNou(codiNou);
+				if (!codisAntics.add(codiAntic)) {
+					linia.setEstat(UsuariResource.CanviCodisEstat.DUPLICAT);
+				} else if (!usuariCodiHelper.existeixUsuari(codiAntic)) {
+					linia.setEstat(UsuariResource.CanviCodisEstat.ANTIC_NO_EXISTEIX);
+				} else if (!unifica && usuariCodiHelper.existeixUsuari(codiNou)) {
+					linia.setEstat(UsuariResource.CanviCodisEstat.NOU_EXISTEIX_SALTAT);
+				} else {
+					long tLinia = System.currentTimeMillis();
+					try {
+						linia.setRegistresModificats(usuariCodiHelper.updateUsuariCodi(codiAntic, codiNou));
+						linia.setEstat(UsuariResource.CanviCodisEstat.OK);
+					} catch (Exception ex) {
+						log.error("Error modificant el codi de l'usuari (codiAntic=" + codiAntic + ", codiNou=" + codiNou + ")", ex);
+						linia.setEstat(UsuariResource.CanviCodisEstat.ERROR);
+						linia.setMissatge(ex.getMessage());
+					}
+					linia.setDurada(System.currentTimeMillis() - tLinia);
+				}
+			}
+			return new UsuariResource.CanviCodisResultat(linies, System.currentTimeMillis() - t0);
+		}
+
+		@Override
+		public void onChange(
+				Serializable id,
+				UsuariResource.CanviCodisForm previous,
+				String fieldName,
+				Object fieldValue,
+				Map<String, AnswerRequiredException.AnswerValue> answers,
+				String[] previousFieldNames,
+				UsuariResource.CanviCodisForm target) {
+		}
+
 	}
 
 	/**

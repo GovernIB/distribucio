@@ -43,12 +43,24 @@ public interface UsuariBustiaFavoritRepository extends JpaRepository<UsuariBusti
 	public List<UsuariBustiaFavoritEntity> findByBustia (
 			@Param("bustia") long bustia);
 	
+	/**
+	 * Esborra les bústies favorites de l'usuari antic que el nou ja té marcades (restricció única bústia + usuari), abans de passar la resta al nou.
+	 */
+	@Modifying
+	@Query(value = "delete from dis_bustia_favorit f " +
+			"where f.usuari_codi = :codiAntic " +
+			"and exists (select 1 from dis_bustia_favorit n where n.usuari_codi = :codiNou and n.bustia_id = f.bustia_id)",
+			nativeQuery = true)
+	int deleteDuplicatsUsuariCodi(
+			@Param("codiAntic") String codiAntic,
+			@Param("codiNou") String codiNou);
+
 	@Modifying
 	@Query(value = "update dis_bustia_favorit " +
 			"set usuari_codi = :codiNou " +
 			"where usuari_codi = :codiAntic",
 			nativeQuery = true)
-	void updateUsuariCodi(
+	int updateUsuariCodi(
 			@Param("codiAntic") String codiAntic, 
 			@Param("codiNou") String codiNou);
 	

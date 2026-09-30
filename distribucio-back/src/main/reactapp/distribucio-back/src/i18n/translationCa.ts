@@ -48,6 +48,7 @@ const translationCa = {
             configuracio: 'Configuració',
             configurar: 'Configurar',
             limitCanviEstat: "Limits canvis d'estat",
+            usuariCanviCodis: "Canvi de codis d'usuaris",
             bustia: 'Bústies',
             unitatOrganitzativa: 'Unitats Organitzatives',
             procediment: 'Procediments',
@@ -655,6 +656,58 @@ const translationCa = {
                 crearOk: "El nou limit de canvi d'estat s'ha creat correctament",
                 modificarOk: "El limit de canvi d'estat s'ha modificat correctament",
                 esborrarOk: "El limit de canvi d'estat s'ha esborrat correctament",
+            },
+        },
+        usuariCanviCodis: {
+            title: "Canvi de codis d'usuaris",
+            form: {
+                mapeig: {
+                    ajuda: "Afegeix totes les entrades que vulguis emprant el format 'codi_actual=codi_nou'. Exemple: e12345678Z=u123456",
+                },
+                unifica: {
+                    ajuda: "Si el codi nou ja correspon a un usuari existent, la línia s'omet. Si ho marques, s'uniran els dos usuaris amb aquest últim: les dades de l'usuari antic passaran al nou i també es fusionaran els permisos (l'usuari nou tindrà els seus i els de l'antic), les bústies favorites i la bústia per defecte (si tots dos en tenen, es manté la del nou). L'usuari antic s'esborra.",
+                },
+            },
+            accio: {
+                modificar: 'Modifica',
+                error: "No s'ha pogut fer el canvi de codis",
+                respostaInesperada: "El servidor no ha retornat el resultat d'aquesta línia",
+                confirmar: {
+                    titol: "Canviar els codis d'usuari",
+                    text: "Es canviarà el codi de tots els usuaris indicats a totes les taules de l'aplicació (auditoria, permisos, bústies, moviments i anotacions) i s'esborrarà l'usuari antic. Aquesta acció no es pot desfer. Vols continuar?",
+                },
+            },
+            info: {
+                enExecucio: "El procés pot trigar estona segons el nombre de registres. No tanquis ni refresquis la pàgina fins que acabi.",
+                progres: "Processant {{fetes}} de {{total}} línies ({{percent}} %)",
+                enCurs: "En curs: '{{linia}}'",
+                sortir: "Hi ha un canvi de codis en curs. Si surts, les línies pendents no s'executaran. Vols sortir igualment?",
+            },
+            resultat: {
+                title: "Resultat",
+                resum: {
+                    titol: 'Procés finalitzat en {{durada}}',
+                    text: '{{total}} línies processades: {{ok}} canvis correctes, {{errors}} amb error i {{omeses}} omeses. {{registres}} registres modificats en total.',
+                },
+                canvi: "Per a cada canvi correcte s'ha substituït el codi antic pel nou a l'auditoria (creat per i modificat per) de totes les taules, als permisos, a les bústies per defecte i favorites, als moviments i a les anotacions; l'usuari antic s'ha eliminat i s'ha refrescat la memòria cau d'usuaris, entitats i permisos.",
+                unificats: "Com que has marcat la unificació, els usuaris nous que ja existien han absorbit les dades i els permisos dels usuaris antics.",
+                senseLinies: "No hi havia cap línia a processar.",
+                columna: {
+                    linia: 'Línia',
+                    canvi: 'Canvi de codi',
+                    resultat: 'Resultat',
+                    durada: 'Durada',
+                },
+                estat: {
+                    OK_sense: "Canvi fet. L'usuari no tenia cap registre associat",
+                    OK_one: 'Canvi fet: {{count}} registre actualitzat',
+                    OK_other: 'Canvi fet: {{count}} registres actualitzats',
+                    ERROR: "S'ha produït un error al modificar el codi de l'usuari",
+                    FORMAT_INCORRECTE: "El format no és correcte. El format ha de ser 'codiAntic=codiNou', i els codis no poden tenir espais",
+                    ANTIC_NO_EXISTEIX: "L'usuari a modificar no existeix",
+                    NOU_EXISTEIX_SALTAT: "L'usuari nou ja existeix: línia omesa (marca la unificació per unir els dos usuaris)",
+                    DUPLICAT: "El codi actual ja apareix en una línia anterior",
+                },
             },
         },
         regla: {

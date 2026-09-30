@@ -48,7 +48,7 @@ public interface ContingutMovimentRepository extends JpaRepository<ContingutMovi
 	@Query(value = "update dis_cont_mov " +
 			"set remitent_codi = :codiNou where remitent_codi = :codiAntic",
 			nativeQuery = true)
-	void updateUsuariCodi(
+	int updateUsuariCodi(
 			@Param("codiAntic") String codiAntic, 
 			@Param("codiNou") String codiNou);
 }

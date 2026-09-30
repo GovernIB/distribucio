@@ -24,6 +24,7 @@ export const icons = {
     backoffice: 'wifi',
     config: 'display_settings',
     limitCanviEstat: 'date_range',
+    usuariCanviCodis: 'manage_accounts',
     annex: 'attach_file',
     contingut: 'archive',
     integracio: 'sync_alt',

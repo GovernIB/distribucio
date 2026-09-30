@@ -234,7 +234,7 @@ export const CardData = (props:CardDataProps) => {
 }
 
 export const CardPage = (props:CardPageProps) => {
-    const {icon, title, header, headerProps, children, ...other} = props;
+    const {icon, title, header, headerProps, cardProps, children, ...other} = props;
     return <Card sx={{
         height: '100%',
         // La Card té overflow hidden i, com a element flex, es podria encongir per davall del
@@ -242,7 +242,9 @@ export const CardPage = (props:CardPageProps) => {
         // baixa). Així no s'encongeix per davall del contingut i fa scroll la pàgina.
         minHeight: 'min-content',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        // Permet a una pantalla que gestioni el seu propi scroll (p. ex. minHeight: 0)
+        ...cardProps,
     }}>
         {(title || header) &&
             <CardHead icon={icon} sx={(theme: any) => ({

@@ -18,6 +18,7 @@ import { SessionStorageProvider } from './components/SessionStorageContext';
 import TitolPagina from './components/TitolPagina';
 import {SnackbarProvider} from "notistack";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const envVars = {
     VITE_API_URL: import.meta.env.VITE_API_URL,
     VITE_API_PUBLIC_URL: import.meta.env.VITE_API_PUBLIC_URL,
@@ -26,6 +27,7 @@ export const envVars = {
     VITE_APP_VERSION: import.meta.env.VITE_APP_VERSION,
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const getEnvApiUrl = () => {
     const envApiPublicUrl = envVar('VITE_API_PUBLIC_URL', envVars);
     const envApiUrl = envVar('VITE_API_URL', envVars);
@@ -151,6 +153,13 @@ const InnerApp: React.FC = () => {
                     to: 'limitCanviEstat',
                     icon: icons.limitCanviEstat,
                     pantalla: 'limitCanviEstat'
+                },
+                {
+                    id: 'usuariCanviCodis',
+                    title: t('app.menu.usuariCanviCodis'),
+                    to: 'usuariCanviCodis',
+                    icon: icons.usuariCanviCodis,
+                    pantalla: 'usuariCanviCodis'
                 },
             ],
         },

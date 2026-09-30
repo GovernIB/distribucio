@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+
 import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
@@ -25,6 +28,9 @@ public class UsuariResourceServiceEjb  extends AbstractServiceEjb<UsuariResource
         this.delegate = delegate;
     }
     
+	// Sense transacció de l'EJB: el canvi de codi obre la seva (timeout 1200 s) i la per defecte del contenidor
+	// (uns 300 s) podria caducar amb una línia lenta (veure UsuariResourceServiceImpl#artifactActionExec).
+	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 	@Override
 	public <P extends Serializable> Serializable artifactActionExec(String id, String code, P params)
 			throws ArtifactNotFoundException, ActionExecutionException {

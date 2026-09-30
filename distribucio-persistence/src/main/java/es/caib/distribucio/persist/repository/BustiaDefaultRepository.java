@@ -27,6 +27,19 @@ public interface BustiaDefaultRepository extends JpaRepository<BustiaDefaultEnti
 	
 	List<BustiaDefaultEntity> findByBustia(BustiaEntity bustai);
 
+	/**
+	 * Esborra les bústies per defecte de l'usuari antic en les entitats on el nou ja en té una (en un canvi de
+	 * codi que unifica dos usuaris preval la del nou, perquè només n'hi ha d'haver una per entitat i usuari).
+	 */
+	@Modifying
+	@Query(value = "delete from dis_bustia_default d " +
+			"where d.usuari = :codiAntic " +
+			"and exists (select 1 from dis_bustia_default n where n.usuari = :codiNou and n.entitat = d.entitat)",
+			nativeQuery = true)
+	int deleteDuplicatsUsuariCodi(
+			@Param("codiAntic") String codiAntic,
+			@Param("codiNou") String codiNou);
+
 	@Modifying
 	@Query(value = "update dis_bustia_default " +
 			"set usuari = :codiNou where usuari = :codiAntic",

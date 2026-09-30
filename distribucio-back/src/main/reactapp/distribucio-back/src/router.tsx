@@ -26,6 +26,7 @@ import AnnexGrid from './pages/annex/AnnexGrid.tsx';
 import {RegistreGrid} from "./pages/registre/RegistreGrid.tsx";
 import {VistaMovimentsGrid} from "./pages/vistaMoviments/VistaMovimentsGrid.tsx";
 import ReglaGrid from './pages/regla/ReglaGrid.tsx';
+import UsuariCanviCodis from './pages/usuari/UsuariCanviCodis.tsx';
 
 export const router = createBrowserRouter(
     [
@@ -130,6 +131,16 @@ export const router = createBrowserRouter(
                             path: 'limitCanviEstat',
                             element: <LimitCanviEstatGrid />,
                             handle: { titol: 'page.limitCanviEstat.grid.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="usuariCanviCodis" />,
+                    children: [
+                        {
+                            path: 'usuariCanviCodis',
+                            element: <UsuariCanviCodis />,
+                            handle: { titol: 'page.usuariCanviCodis.title' },
                         },
                     ],
                 },
