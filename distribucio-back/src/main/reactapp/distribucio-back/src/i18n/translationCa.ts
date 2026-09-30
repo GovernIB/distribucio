@@ -920,6 +920,10 @@ const translationCa = {
                     SORTIDA: "Òrgan origen",
                 }
             },
+            dades: {
+                title: "Dades del registre",
+                success: "Les dades s'han actualitzat correctament",
+            },
             grid: {
                 avisos: "Avisos",
                 remitent: "Remitent",
@@ -1042,6 +1046,29 @@ const translationCa = {
                 },
                 descarregarCai: {
                     label: "Còpia autèntica imprimible",
+                },
+            },
+        },
+        metadada: {
+            title: "Meta-dades",
+            accio: {
+                new: {
+                    label: "Nova meta-dada",
+                    ok: "La meta-dada s'ha creat correctament",
+                },
+                update: {
+                    ok: "La meta-dada s'ha modificat correctament",
+                },
+                delete: {
+                    ok: "La meta-dada s'ha esborrat correctament",
+                },
+                activar: {
+                    label: "Activa",
+                    ok: "La meta-dada s'ha activat correctament",
+                },
+                desactivar: {
+                    label: "Desactiva",
+                    ok: "La meta-dada s'ha desactivat correctament",
                 },
             },
         },

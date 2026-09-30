@@ -526,7 +526,7 @@ const RegistreDetail = (props:any) => {
             content: <Copies entity={data}/>,
             badge: data.numCopies,
         },
-    ], [metadadesActives])
+    ], [data, metadadesActives])
 
     return (<>
         <Box display={'flex'} alignItems={'center'} flexWrap={'wrap'} bgcolor={'greyBackground'} p={1}>

@@ -34,6 +34,7 @@ export type Pantalla = 'home'
     | 'annex'
     | 'registre'
     | 'vistaMoviments'
+    | 'metaDada'
     | 'regla';
 
 /**
@@ -75,6 +76,7 @@ export const PANTALLA_ROLS: Record<Pantalla, string[]> = {
     registre: [ROLE_ADMIN, ROLE_ADMIN_LECTURA, ROLE_USER],
     vistaMoviments: [ROLE_USER],
     regla: [ROLE_ADMIN, ROLE_ADMIN_LECTURA],
+    metaDada: [ROLE_ADMIN],
 };
 
 export const isPantallaPermesa = (pantalla: Pantalla, rol?: string): boolean =>

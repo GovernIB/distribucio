@@ -38,33 +38,17 @@ import javax.validation.constraints.NotNull;
                 )
         },
         artifacts = {
-                @ResourceArtifact(
-                        type = ResourceArtifactType.ACTION,
-                        code = MetaDadaResource.ACTION_REORDENAR_CODE,
-                        formClass = Integer.class,
-                        requiresId = true),
         }
 )
-public class MetaDadaResource extends BaseResource<Long> {
+public class DominiResource extends BaseResource<Long> {
 
-    public static final String ACTION_REORDENAR_CODE = "REORDENAR";
-
-    @NotNull private String codi;
-    @NotNull private String nom;
-    @NotNull @ResourceField(onChangeActive = true)
-    private MetaDadaTipusEnumDto tipus;
-    @NotNull private MultiplicitatEnumDto multiplicitat;
-    private Object value;
+    private String codi;
+    private String nom;
     private String descripcio;
-    private boolean activa = true;
-    private boolean readOnly;
-    private int ordre;
-    private boolean noAplica;
+    private String consulta;
+    private String cadena;
+    private String contrasenya;
 
     protected ResourceReference<EntitatResource, Long> entitat;
-
-    @Transient private ResourceReference<DominiResource, Long> domini;
-
-    private long version = 0;
 
 }

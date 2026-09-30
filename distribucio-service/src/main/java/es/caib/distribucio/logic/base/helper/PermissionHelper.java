@@ -6,8 +6,11 @@ import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
+import es.caib.distribucio.logic.intf.model.DominiResource;
+import es.caib.distribucio.logic.intf.model.MetaDadaResource;
 import es.caib.distribucio.logic.intf.model.RegistreResource;
 import es.caib.distribucio.logic.intf.model.ResourceType;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.persist.resourceentity.ContingutResourceEntity;
 import es.caib.distribucio.persist.resourceentity.RegistreResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.RegistreResourceRepository;
@@ -31,6 +34,7 @@ public class PermissionHelper extends BasePermissionHelper {
 
     private final RegistreResourceRepository registreResourceRepository;
     private final AclResourceHelper aclResourceHelper;
+    private final AplicacioService aplicacioService;
 
     @Override
 	protected boolean checkCustomResourceAccessConstraint(
@@ -39,6 +43,10 @@ public class PermissionHelper extends BasePermissionHelper {
 			Class<?> resourceClass,
 			ResourceAccessConstraint resourceAccessConstraint,
 			BasePermission[] permissions) {
+
+        if (MetaDadaResource.class.isAssignableFrom(resourceClass) || DominiResource.class.isAssignableFrom(resourceClass)) {
+            return Boolean.parseBoolean( aplicacioService.propertyFindByNom("es.caib.distribucio.permetre.metadades.registre") );
+        }
 
         if (RegistreResource.class.isAssignableFrom(resourceClass)) {
             if (resourceId != null) {

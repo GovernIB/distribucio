@@ -5,6 +5,7 @@ import es.caib.distribucio.logic.intf.dto.MetaDadaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.MultiplicitatEnumDto;
 import es.caib.distribucio.logic.intf.model.MetaDadaResource;
 import es.caib.distribucio.persist.base.entity.BaseAuditableEntity;
+import es.caib.distribucio.persist.converter.MetaDataValueConverter;
 import es.caib.distribucio.persist.entity.MetaDadaEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -62,4 +63,20 @@ public class MetaDadaResourceEntity extends BaseAuditableEntity<MetaDadaResource
     @Version
     private long version = 0;
 
+    @Transient
+    private Object value;
+
+    public Object getValue() {
+        if (valor == null) return null;
+        return MetaDataValueConverter.formatToResource( tipus, valor );
+    }
+
+    public void setValue(Object valor) {
+        if (valor == null) {
+            this.valor = null;
+            return;
+        }
+
+        this.valor = MetaDataValueConverter.formatToEntity( tipus, valor );
+    }
 }

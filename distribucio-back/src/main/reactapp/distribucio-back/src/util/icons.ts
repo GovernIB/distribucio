@@ -31,5 +31,6 @@ export const icons = {
     monitorSistema: 'monitor_heart',
     excepcio: 'bug_report',
     vistaMoviments: 'move_down',
+    metaDada: '',
     regla: 'rule',
 } as const;

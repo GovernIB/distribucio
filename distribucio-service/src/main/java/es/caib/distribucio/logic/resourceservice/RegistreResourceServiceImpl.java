@@ -3,17 +3,14 @@ package es.caib.distribucio.logic.resourceservice;
 import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.helper.ObjectMappingHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
-import es.caib.distribucio.logic.helper.ConfigHelper;
-import es.caib.distribucio.logic.helper.ContingutHelper;
-import es.caib.distribucio.logic.helper.ContingutLogResourceHelper;
-import es.caib.distribucio.logic.helper.ExecucioMassivaResourceHelper;
-import es.caib.distribucio.logic.helper.ReglaHelper;
+import es.caib.distribucio.logic.helper.*;
 import es.caib.distribucio.logic.intf.base.exception.*;
 import es.caib.distribucio.logic.intf.base.model.*;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.base.util.I18nUtil;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.*;
+import es.caib.distribucio.logic.intf.exception.DominiException;
 import es.caib.distribucio.logic.intf.model.*;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
@@ -27,6 +24,7 @@ import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.ExecucioMassivaContingutEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
+import es.caib.distribucio.persist.repository.DominiRepository;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
 import es.caib.distribucio.persist.repository.ReglaRepository;
@@ -42,9 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.persistence.criteria.*;
 import java.io.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -81,6 +76,9 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
      * a cap de les seves bústies però hi ha tengut algun moviment (detall des de la "Vista de moviments").
      */
     private static final ThreadLocal<Boolean> LECTURA_PER_MOVIMENTS = new ThreadLocal<>();
+    private final DominiResourceRepository dominiResourceRepository;
+    private final DominiRepository dominiRepository;
+    private final DominiService dominiService;
 
     @PostConstruct
     public void init() {
@@ -1003,25 +1001,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     }
     protected class UpdateDadesActionExecutor implements ActionExecutor<RegistreResourceEntity, RegistreResource.DadaForm, Serializable> {
 
-        private String formatarValor(Object value) {
-            if (value == null || value.toString().isBlank()) {
-                return null;
-            }
-
-            String str = value.toString().trim();
-
-            if (str.matches("\\d{4}-\\d{2}-\\d{2}.*")) {
-                try {
-                    LocalDate date = LocalDate.parse(str.substring(0, 10));
-                    return date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                } catch (DateTimeParseException e) {
-                    return str;
-                }
-            }
-
-            return str;
-        }
-
         @Override
         public Serializable exec(String code, RegistreResourceEntity entity, RegistreResource.DadaForm params) throws ActionExecutionException {
             Map<Long, MetaDadaResourceEntity> metaDadesMap = metaDadaResourceRepository
@@ -1054,14 +1033,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                     dada.setRegistre(entity);
                     dada.setMetaDada(metaDada);
 
-                    switch (dada.getMetaDada().getTipus()) {
-                        case DATA:
-                            dada.setValor( formatarValor(value) );
-                            break;
-                        default:
-                            dada.setValor(value.toString());
-                            break;
-                    }
+                    dada.setValue( value );
 
                     dada.setOrdre(ordre++);
                     dades.add(dada);
@@ -1077,8 +1049,32 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
         @Override
         public List<FieldOption> getOptions(String fieldName, Map<String, String[]> requestParameterMap) {
-            /// TODO
-            return ActionExecutor.super.getOptions(fieldName, requestParameterMap);
+            List<FieldOption> result = new ArrayList<>();
+            if (requestParameterMap.containsKey("domini")) {
+                Long entitatActualId = SessioActualUtil.getEntitatId();
+                Long dominiId = Long.valueOf(requestParameterMap.get("domini")[0]);
+                dominiResourceRepository.findById(dominiId)
+                        .ifPresent((domini) -> {
+                            DominiDto dominiDto = objectMappingHelper.newInstanceMap(
+                                    domini,
+                                    DominiDto.class);
+                            try {
+                                // TODO
+//                                dominiService.getResultDomini(
+//                                        entitatActualId,
+//                                        dominiDto,
+//                                        null,
+//                                        0,
+//                                        100).getResultat()
+//                                        .forEach(r ->
+//                                                result.add(new FieldOption(r.getId(), r.getText())));
+                            } catch (DominiException e) {
+                                e.printStackTrace();
+                            }
+                        });
+            }
+
+            return result;
         }
 
         @Override
@@ -1088,17 +1084,8 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                         .collect(Collectors.groupingBy(
                                 dada -> dada.getMetaDada().getId(),
                                 Collectors.mapping(
-                                        (Function<DadaResourceEntity, Object>) dada -> {
-                                            switch (dada.getMetaDada().getTipus()) {
-                                                case DATA:
-                                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                                                    return LocalDate.parse(dada.getValor(), formatter);
-                                                case BOOLEA:
-                                                    return Boolean.valueOf(dada.getValor());
-                                                default:
-                                                    return dada.getValor();
-                                            }
-                                        },
+                                        (Function<DadaResourceEntity, Object>) dada ->
+                                                dada.getValue(),
                                         Collectors.toList()
                                 )
                         ));

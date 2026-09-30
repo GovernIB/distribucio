@@ -918,6 +918,10 @@ const translationEs = {
                     SORTIDA: "Órgano origen",
                 }
             },
+            dades: {
+                title: "Datos del registro",
+                success: "Los datos se han actualizado correctamente",
+            },
             grid: {
                 avisos: "Avisos",
                 remitent: "Remitente",
@@ -1040,6 +1044,29 @@ const translationEs = {
                 },
                 descarregarCai: {
                     label: "Copia auténtica imprimible",
+                },
+            },
+        },
+        metadada: {
+            title: "Metadatos",
+            accio: {
+                new: {
+                    label: "Nuevo metadato",
+                    ok: "El metadato se ha creado correctamente",
+                },
+                update: {
+                    ok: "El metadato se ha modificado correctamente",
+                },
+                delete: {
+                    ok: "El metadato se ha eliminado correctamente",
+                },
+                activar: {
+                    label: "Activa",
+                    ok: "El metadato se ha activado correctamente",
+                },
+                desactivar: {
+                    label: "Desactiva",
+                    ok: "El metadato se ha desactivado correctamente",
                 },
             },
         },

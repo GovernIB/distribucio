@@ -133,6 +133,13 @@ const InnerApp: React.FC = () => {
                     icon: icons.permis,
                     pantalla: 'permis'
                 },
+                {
+                    id: 'metaDada',
+                    title: t('page.metadada.title'),
+                    to: 'metaDada',
+                    icon: icons.metaDada,
+                    pantalla: 'metaDada',
+                },
             ],
         },
         {

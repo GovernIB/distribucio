@@ -37,7 +37,7 @@ public class DadaResource extends BaseResource<Long> {
 
     protected ResourceReference<MetaDadaResource, Long> metaDada;
     protected ResourceReference<RegistreResource, Long> registre;
-    protected String valor;
+    protected Object value;
     protected int ordre;
 
     private long version = 0;

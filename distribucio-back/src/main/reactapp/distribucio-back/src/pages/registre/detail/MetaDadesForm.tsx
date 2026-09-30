@@ -1,28 +1,25 @@
 import StyledMuiGrid from "../../../components/StyledMuiGrid.tsx";
-import {FormField, MuiForm, useFormApiRef, useFormContext, useResourceApiService} from "reactlib";
+import {FormField, MuiForm, useBaseAppContext, useFormApiRef, useFormContext, useResourceApiService} from "reactlib";
 import {useMemo} from "react";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import Icon from "@mui/material/Icon";
 import Load from "../../../components/Load.tsx";
+import * as builder from '../../../util/springFilterUtils';
+import {fieldType} from "../../metadada/MetaDadaGrid.tsx";
 
 const DadaField = ({ index, metaDada, value, onChange, required, ...other }: any) => {
     const { fields } = useFormContext()
 
     const fieldDomini = fields?.filter(i=>i.name=='domini')[0];
+    const isDomini = metaDada.tipus == "DOMINI"
 
-    const additionalProps = metaDada.tipus == 'DOMINI'
-        ?{ field: fieldDomini, requestParams: {} } :{}
+    const additionalProps = isDomini
+        ?{ field: fieldDomini, requestParams: { domini: metaDada.domini?.id } } :{}
 
-    const type = metaDada.tipus == 'BOOLEA' ?'checkbox'
-        :metaDada.tipus == 'DATA' ?'date'
-        :(metaDada.tipus == 'SENCER' || metaDada.tipus == 'FLOTANT') ?'number'
-        :metaDada.tipus == 'DOMINI' ?'reference'
-        :"text"
+    const type = isDomini ?'enum' :fieldType(metaDada.tipus)
 
     const decimalScale = metaDada.tipus === 'SENCER' ? 0 : undefined;
-
-    // console.log("metaDada", metaDada, type, value)
 
     return (
         <FormField
@@ -30,12 +27,11 @@ const DadaField = ({ index, metaDada, value, onChange, required, ...other }: any
             name={`${metaDada.id}-${index}`}
             type={type}
             value={value}
-            forma
             onChange={(e: any) => {
                 const newValue = e?.target ? e.target.value : e;
                 onChange?.(newValue);
             }}
-            componentProps={{ size: "small", fullWidth: true }}
+            componentProps={{ size: "small" }}
             required={false}
             decimalScale={decimalScale}
             disabled={metaDada.readOnly}
@@ -142,27 +138,32 @@ const MetaDadaColumn = ({ metaDada }: any) => {
 const columns = [
     { field: 'nom', flex: 1 },
 ]
-const sortModel:any = [{ field: 'id', sort: 'asc' }]
+const sortModel:any = [{ field: 'ordre', sort: 'asc' }]
 export const MetaDadesForm = ({entity}:any) => {
+    const { t } = useBaseAppContext();
     const apiRef = useFormApiRef();
 
     const {
         isReady: apiIsReady,
         artifactAction: apiAction,
     } = useResourceApiService('registreResource');
-    // const {temporalMessageShow} = useBaseAppContext();
+    const {temporalMessageShow} = useBaseAppContext();
 
     const save = () => {
         if (apiIsReady) {
             apiAction(entity.id, { code: "UPDATE_DADES", data: apiRef.current?.getData() })
-                // .then(() => console.log("AAAAAAAAAA"))
-                // .catch((error) => console.log("BBBBBBBBB", error))
+                .then(() => {
+                    temporalMessageShow(null, t('page.registre.dades.success'), 'success');
+                })
+                .catch((error) => {
+                    temporalMessageShow(null, error?.message, 'error');
+                });
         }
     }
 
     const additionalColumns = useMemo(() => [
         ...columns,
-        { field: 'id', flex: 1,
+        { field: 'id', flex: 1, headerName: '',
             renderCell: (params:any) => <MetaDadaColumn metaDada={params.row} />
         },
     ], [])
@@ -177,7 +178,9 @@ export const MetaDadesForm = ({entity}:any) => {
         <Load value={entity} noEffect>
         <MuiForm
             apiRef={apiRef}
+            key={entity.id}
             id={entity.id}
+            title={t('page.registre.dades.title')}
             resourceName={'registreResource'}
             resourceType={"ACTION"}
             resourceTypeCode={"UPDATE_DADES"}
@@ -198,7 +201,9 @@ export const MetaDadesForm = ({entity}:any) => {
             <StyledMuiGrid
                 resourceName={'metaDadaResource'}
                 columns={additionalColumns}
+                filter={builder.eq('activa', true)}
                 fixedSortModel={sortModel}
+                disableColumnSorting
 
                 toolbarHide
                 autoHeight

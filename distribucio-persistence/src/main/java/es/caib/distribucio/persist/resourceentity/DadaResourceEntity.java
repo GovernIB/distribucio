@@ -3,6 +3,7 @@ package es.caib.distribucio.persist.resourceentity;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.model.DadaResource;
 import es.caib.distribucio.persist.base.entity.BaseAuditableEntity;
+import es.caib.distribucio.persist.converter.MetaDataValueConverter;
 import es.caib.distribucio.persist.entity.DadaEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,4 +48,20 @@ public class DadaResourceEntity extends BaseAuditableEntity<DadaResource, Long> 
     @Version
     private long version = 0;
 
+    @Transient
+    private Object value;
+
+    public Object getValue() {
+        if (valor == null) return null;
+        return MetaDataValueConverter.formatToResource( metaDada.getTipus(), valor );
+    }
+
+    public void setValue(Object valor) {
+        if (valor == null) {
+            this.valor = null;
+            return;
+        }
+
+        this.valor = MetaDataValueConverter.formatToEntity( metaDada.getTipus(), valor );
+    }
 }
