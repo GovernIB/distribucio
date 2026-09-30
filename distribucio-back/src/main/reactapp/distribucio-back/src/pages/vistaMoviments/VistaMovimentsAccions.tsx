@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useBaseAppContext } from 'reactlib';
 import useContingutHistorialDialog from '../contingut/actions/ContingutHistorialDialog.tsx';
 import { useAlertes } from '../registre/detail/Alertes.tsx';
-import {useBasicDetail} from '../registre/detail/RegistreDetail.tsx';
+import {useRegistreDetail} from '../registre/detail/RegistreDetail.tsx';
 import useEnviarViaEmail from './actions/EnviarEmail.tsx';
 import useDescarregarZip from './actions/Descarregar.tsx';
 import useReenviar from './actions/Reenviar.tsx';
@@ -11,12 +11,26 @@ const REPORT_DESCARREGAR_ZIP_ORIGINAL = 'DESCARREGAR_ZIP_ORIGINAL';
 const REPORT_DESCARREGAR_ZIP_CAI = 'DESCARREGAR_ZIP_CAI';
 
 /** Menú d'accions de la "Vista de moviments" */
-export const useVistaMovimentsAccions = (refresh?: () => void) => {
+export const useVistaMovimentsAccions = (options: {
+    gridApiRef: any;
+    filter?: string;
+    namedQueries?: any[];
+    refresh?: () => void;
+}) => {
+    const { gridApiRef, filter, namedQueries, refresh } = options;
     const { t } = useTranslation();
     const { temporalMessageShow } = useBaseAppContext();
 
     const { show: handleHistoric, component: componentHistoric } = useContingutHistorialDialog();
-    const { handleOpen: handleDetail, dialog: dialogDetail } = useBasicDetail({perspectives: ['VISTA_MOVIMENTS']});
+    const { handleOpen: handleDetail, dialog: dialogDetail } = useRegistreDetail({
+        gridApiRef,
+        filter,
+        namedQueries,
+        resourceName: 'vistaMovimentResource',
+        getDetailId: (row: any) => row?.idRegistre,
+        perspectives: ['VISTA_MOVIMENTS'],
+        onClose: refresh,
+    });
     const { handleOpen: handleAlertes, component: componentAlertes } = useAlertes(refresh);
     const descarregarZip = useDescarregarZip();
     const { handleShow: handleEnviarEmail, content: contentEnviarEmail } = useEnviarViaEmail((result: any) => {
@@ -33,7 +47,7 @@ export const useVistaMovimentsAccions = (refresh?: () => void) => {
             label: t('page.vistaMoviments.accio.detalls.label'),
             icon: 'info',
             showInMenu: true,
-            onClick: (_id: any, row: any) => handleDetail(row.idRegistre, row),
+            onClick: (id: any, row: any) => handleDetail(id, row),
         },
         {
             label: t('page.contingut.accio.historial.label'),

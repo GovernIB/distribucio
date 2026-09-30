@@ -102,7 +102,7 @@ export const RegistreGrid = () => {
         apiRef.current?.refresh()
     }
 
-    const {handleOpen: handleDetail, dialog: dialogDetail} = useRegistreDetail(gridApiRef, springFilter, namedQueries)
+    const {handleOpen: handleDetail, dialog: dialogDetail} = useRegistreDetail({gridApiRef, filter: springFilter, namedQueries})
 
     const {actions, components} = useRegistreActions(refresh);
     const {actions: massiveActions, components: massiveComponents} = useRegistreMassiveActions();

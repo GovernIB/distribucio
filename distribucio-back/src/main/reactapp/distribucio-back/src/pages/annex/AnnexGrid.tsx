@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Icon, Tooltip } from '@mui/material';
+import { useGridApiRef } from '@mui/x-data-grid-pro';
 import { GridPage, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
 import { CardPage } from '../../components/CardData';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
@@ -58,12 +59,18 @@ export const AnnexArxiuEstatCell: React.FC<{ params: any }> = ({ params }) => {
 const AnnexGrid: React.FC = () => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
+    const gridApiRef = useGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
     const { show: mostrarDetall, component: detailDialog } = useAnnexDetailDialog();
     const refresh = () => {
         apiRef.current?.refresh();
     };
-    const { actions: accions, components: accionsComponents } = useAnnexAccions(mostrarDetall, refresh);
+    const { actions: accions, components: accionsComponents } = useAnnexAccions(
+        mostrarDetall,
+        gridApiRef,
+        springFilter,
+        refresh
+    );
     const { actions: massiveActions, components: massiveComponents } = useAnnexMassiveActions();
 
     const columns: MuiDataGridColDef[] = React.useMemo(
@@ -112,6 +119,7 @@ const AnnexGrid: React.FC = () => {
                     selectionActive
                     resourceName="registreAnnexResource"
                     apiRef={apiRef}
+                    datagridApiRef={gridApiRef}
                     columns={columns}
                     filter={springFilter}
                     paginationActive

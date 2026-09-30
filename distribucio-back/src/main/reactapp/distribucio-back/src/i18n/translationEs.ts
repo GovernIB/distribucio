@@ -1096,6 +1096,7 @@ const translationEs = {
         RecordNavigation: {
             prev: "Anterior",
             next: "Siguiente",
+            error: "No se ha podido cargar el registro",
         },
         RegistreSelector:{
             title: "Anotaciones seleccionadas",

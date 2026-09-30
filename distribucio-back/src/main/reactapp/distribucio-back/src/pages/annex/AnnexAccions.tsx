@@ -5,7 +5,7 @@ import { iniciaDescargaBlob } from '../../util/downloadUtils';
 import { ROLE_ADMIN, useDistribucioContext } from '../../components/DistribucioContext';
 import type { MassiveActionProps } from '../../components/MassiveActionSelector';
 import { useExecucioMassivaGrid } from '../execucioMassiva/ExecucioMassivaGrid';
-import {useBasicDetail} from '../registre/detail/RegistreDetail';
+import {useRegistreDetail} from '../registre/detail/RegistreDetail';
 
 const ACTION_GUARDAR_DEFINITIU = 'GUARDAR_DEFINITIU';
 const ACTION_COMPROVAR_PENDENTS = 'COMPROVAR_PENDENTS';
@@ -37,6 +37,8 @@ type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
 
 export const useAnnexAccions = (
     mostrarDetall: (id: any, row: any) => void,
+    gridApiRef: any,
+    filter?: string,
     refresh?: () => void
 ): { actions: AccionsFila; components: ReactNode } => {
     const { t } = useTranslation();
@@ -45,7 +47,13 @@ export const useAnnexAccions = (
     const isAdmin = currentRole === ROLE_ADMIN;
     const { temporalMessageShow } = useBaseAppContext();
     const { artifactAction } = useResourceApiService('registreAnnexResource');
-    const { handleOpen: handleDetallAnotacio, dialog: dialogDetallAnotacio } = useBasicDetail();
+    const { handleOpen: handleDetallAnotacio, dialog: dialogDetallAnotacio } = useRegistreDetail({
+        gridApiRef,
+        filter,
+        resourceName: 'registreAnnexResource',
+        getDetailId: (row: any) => row?.registre?.id,
+        onClose: refresh,
+    });
 
     const guardarDefinitiu = (id: any) => {
         artifactAction(id, { code: ACTION_GUARDAR_DEFINITIU })
@@ -71,7 +79,7 @@ export const useAnnexAccions = (
             icon: 'adjust',
             showInMenu: true,
             hidden: () => !isAdmin,
-            onClick: (_id: any, row: any) => handleDetallAnotacio(row?.registre?.id, row),
+            onClick: (id: any, row: any) => handleDetallAnotacio(id, row),
         },
         {
             label: t('page.annex.accio.detalls'),

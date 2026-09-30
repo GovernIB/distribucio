@@ -6,9 +6,9 @@ import {
     MuiDialog,
     useMuiContentDialog
 } from "reactlib";
-import {Badge, Box, Grid, Icon, IconButton, Tooltip, Typography} from "@mui/material";
+import {alpha, Badge, Box, CircularProgress, Grid, Icon, IconButton, Tooltip, Typography} from "@mui/material";
 import TabComponent from "../../../components/TabComponent.tsx";
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {useCommentDialog} from "../../CommentDialog.tsx";
 import {DetailCard, DetailCardContent, DetailExpandCard, DetailField} from "../../../components/CardData.tsx";
 import {formatDate} from "../../../util/dateUtils.ts";
@@ -457,8 +457,12 @@ const Resum = ({entity}:any) => {
 const RegistreDetail = (props:any) => {
     const { t } = useBaseAppContext();
     const {data} = useDetailContext()
-    const { refresh } = props
-    // console.log("data", data)
+    const { refresh, onLoaded } = props
+
+    // MuiDetail manté les dades velles mentre carrega un altre id: quan arriben les noves, ho notifiquem
+    useEffect(() => {
+        if (data) onLoaded?.()
+    }, [data]);
 
     const { getByName } = useConfig()
     const metadadesActives = getByName("es.caib.distribucio.permetre.metadades.registre")
@@ -599,33 +603,87 @@ export const useBasicDetail = (props:any = {}) => {
     };
 }
 
-export const useRegistreDetail = (gridApiRef:any, filter:any, namedQueries:any[]) => {
-    const { t } = useBaseAppContext();
+type RegistreDetailOptions = {
+    /** Api del grid des del qual es navega. */
+    gridApiRef: any
+    /** Filtre (Spring filter) aplicat al grid. */
+    filter?: any
+    /** Named queries aplicades al grid. */
+    namedQueries?: any[]
+    /** Recurs del grid des del qual es navega (per defecte, el propi registre). */
+    resourceName?: string
+    /** Id de l'anotació a mostrar a partir de la fila del grid (per defecte, l'id de la fila). */
+    getDetailId?: (row: any) => any
+    /** S'invoca en tancar el diàleg (p. ex. per refrescar el grid). */
+    onClose?: () => void
+    /** Perspectives addicionals a les per defecte en carregar l'anotació. */
+    perspectives?: string[]
+}
+
+export const useRegistreDetail = (options:RegistreDetailOptions) => {
+    const { t, temporalMessageShow } = useBaseAppContext();
+    const { gridApiRef, filter, namedQueries, resourceName = 'registreResource', getDetailId, onClose, perspectives: customPersp } = options
+    const detailPerspectives = useMemo(
+        () => [...perspectives, ...(customPersp ?? [])],
+        [customPersp?.join(',')]
+    )
 
     const [open, setOpen] = useState(false);
-    const [entityId, setEntityId] = useState<any>();
+    const [entityId, setEntityId] = useState<any>(); // id de la fila del grid (navegació); 
+    const [detailId, setDetailId] = useState<any>(); // id de l'anotació mostrada
+    // Càrrega d'una nova anotació en navegar (anterior/següent): es mostra un indicador sobre el detall
+    const [navigating, setNavigating] = useState(false);
+    // setRow el captura el useCallback de useRecordNavigation: cal un ref per llegir el valor actual
+    const detailIdRef = useRef<any>(undefined);
 
-    const { apiIsReady, index, totalElem, prev, next } = useRecordNavigation({
-        id: entityId, setId: setEntityId, gridApiRef, filter, namedQueries,
-        resourceName: 'registreResource'
+    const setRow = (rowId:any, row?:any) => {
+        const newDetailId = rowId === undefined ? undefined : (getDetailId && row ? getDetailId(row) : rowId)
+        // Si l'anotació no canvia (p. ex. dos annexos seguits del mateix registre) MuiDetail no la
+        // tornarà a carregar i mai avisaria que ha acabat
+        if (newDetailId === undefined || newDetailId === detailIdRef.current) {
+            setNavigating(false)
+        }
+        detailIdRef.current = newDetailId
+        setEntityId(rowId)
+        setDetailId(newDetailId)
+    }
+
+    const { apiIsReady, index, totalElem, prev, next, reset } = useRecordNavigation({
+        id: entityId, setId: setRow, gridApiRef, filter, namedQueries, resourceName
     })
+
+    const navigate = (move: () => Promise<boolean>) => {
+        if (!apiIsReady || navigating) return
+        setNavigating(true)
+        move()
+            .then((moved) => { if (!moved) setNavigating(false) })
+            .catch(() => {
+                setNavigating(false)
+                temporalMessageShow(null, t('component.RecordNavigation.error'), 'error')
+            })
+    }
 
     const { value: avanzarPagina } = useSession('avanzarPagina');
     const refresh = (code?:string) => {
-        if (code == 'REENVIAR' && avanzarPagina) {
-            next()
+        if (code == 'REENVIAR' && avanzarPagina && index < totalElem) {
+            navigate(next)
         }
     }
 
-    const handleOpen = (id:any) => {
-        setEntityId(id)
+    const handleOpen = (id:any, row?:any) => {
+        setRow(id, row)
         setOpen(true)
     };
 
     const handleClose = (reason?: string) => {
         if(reason !== 'backdropClick') {
             setEntityId(undefined);
+            setDetailId(undefined);
+            detailIdRef.current = undefined;
+            setNavigating(false);
+            reset();
             setOpen(false);
+            onClose?.();
         }
     };
 
@@ -634,7 +692,7 @@ export const useRegistreDetail = (gridApiRef:any, filter:any, namedQueries:any[]
             value: 'prev',
             text: t('component.RecordNavigation.prev'),
             icon: 'keyboard_double_arrow_left',
-            componentProps: { variant: 'outlined', disabled: index == 1 },
+            componentProps: { variant: 'outlined', disabled: index == 1 || navigating },
         },
         {
             text: `${index} / ${totalElem}`,
@@ -652,8 +710,7 @@ export const useRegistreDetail = (gridApiRef:any, filter:any, namedQueries:any[]
         {
             value: 'next',
             text: <>{t('component.RecordNavigation.next')}<Icon sx={{ ml: 1 }}>keyboard_double_arrow_right</Icon></>,
-            // icon: 'keyboard_double_arrow_right',
-            componentProps: { variant: 'outlined', sx: { mr: 'auto' }, disabled: index == totalElem },
+            componentProps: { variant: 'outlined', sx: { mr: 'auto' }, disabled: index == totalElem || navigating },
         },
         {
             value: 'close',
@@ -661,7 +718,7 @@ export const useRegistreDetail = (gridApiRef:any, filter:any, namedQueries:any[]
             icon: 'close',
             componentProps: { variant: 'outlined' },
         },
-    ], [apiIsReady, index])
+    ], [t, apiIsReady, index, totalElem, navigating])
 
     const dialog = (
         <MuiDialog
@@ -672,22 +729,32 @@ export const useRegistreDetail = (gridApiRef:any, filter:any, namedQueries:any[]
             buttons={buttons}
             buttonCallback={(value:string) => {
                 switch (value) {
-                    case 'prev':prev();break;
-                    case 'next':next();break;
+                    case 'prev':navigate(prev);break;
+                    case 'next':navigate(next);break;
                     case 'close':handleClose();break;
                 }
             }}
         >
-            <Load value={entityId}>
-                <MuiDetail
-                    id={entityId}
-                    resourceName={'registreResource'}
-                    perspectives={perspectives}
-                    hiddenToolbar
-                    componentProps={{ sx: { mt: 0 } }}
-                >
-                    <RegistreDetail refresh={refresh}/>
-                </MuiDetail>
+            <Load value={detailId}>
+                <Box sx={{ position: 'relative' }}>
+                    <MuiDetail
+                        id={detailId}
+                        resourceName={'registreResource'}
+                        perspectives={detailPerspectives}
+                        hiddenToolbar
+                        componentProps={{ sx: { mt: 0 } }}
+                    >
+                        <RegistreDetail refresh={refresh} onLoaded={() => setNavigating(false)}/>
+                    </MuiDetail>
+                    {navigating &&
+                        <Box sx={{
+                            position: 'absolute', inset: 0, zIndex: 10,
+                            display: 'flex', justifyContent: 'center', alignItems: 'flex-start',
+                            bgcolor: (theme) => alpha(theme.palette.background.paper, 0.7),
+                        }}>
+                            <CircularProgress sx={{ position: 'sticky', top: '30vh' }}/>
+                        </Box>}
+                </Box>
             </Load>
         </MuiDialog>
     )

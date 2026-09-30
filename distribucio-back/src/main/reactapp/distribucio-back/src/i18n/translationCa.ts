@@ -1098,6 +1098,7 @@ const translationCa = {
         RecordNavigation: {
             prev: "Anterior",
             next: "Següent",
+            error: "No s'ha pogut carregar el registre",
         },
         RegistreSelector:{
             title: "Anotacions seleccionades",

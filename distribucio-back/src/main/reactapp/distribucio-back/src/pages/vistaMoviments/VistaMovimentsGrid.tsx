@@ -185,7 +185,12 @@ export const VistaMovimentsGrid = () => {
     const [springFilter, setSpringFilter] = React.useState<string>();
     const [namedQueries, setNamedQueries] = React.useState<string[]>([]);
 
-    const { actions, components } = useVistaMovimentsAccions(() => apiRef.current?.refresh());
+    const { actions, components } = useVistaMovimentsAccions({
+        gridApiRef: datagridApiRef,
+        filter: springFilter,
+        namedQueries,
+        refresh: () => apiRef.current?.refresh(),
+    });
     // Refresca la graella i neteja la selecció (després de qualsevol acció massiva)
     const refreshAfterMassiveAction = () => {
         apiRef.current?.refresh();
