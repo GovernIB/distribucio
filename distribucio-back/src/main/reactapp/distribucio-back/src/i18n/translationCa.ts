@@ -1126,6 +1126,26 @@ const translationCa = {
                 },
             },
         },
+        domini: {
+            title: "Dominis",
+            accio: {
+                cache: {
+                    label: "Buida cache",
+                    title: "Buida la cache dels dominis",
+                    ok: "La cache s'ha buidat correctament",
+                },
+                new: {
+                    label: "Afegeix domini",
+                    ok: "El domini s'ha creat correctament",
+                },
+                update: {
+                    ok: "El domini s'ha modificat correctament",
+                },
+                delete: {
+                    ok: "El domini s'ha esborrat correctament",
+                },
+            },
+        },
     },
     component: {
         Offline: {

@@ -9,8 +9,10 @@ import es.caib.distribucio.logic.intf.dto.MultiplicitatEnumDto;
 import es.caib.distribucio.logic.intf.model. MetaDadaResource;
 import es.caib.distribucio.logic.intf.resourceservice. MetaDadaResourceService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
+import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
 import es.caib.distribucio.persist.resourceentity. MetaDadaResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.DominiResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.MetaDadaResourceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ public class MetaDadaResourceServiceImpl extends BaseMutableResourceService<Meta
 
     private final MetaDadaResourceRepository metaDadaResourceRepository;
     private final DominiResourceRepository dominiResourceRepository;
+    private final EntitatResourceRepository entitatResourceRepository;
 
     @PostConstruct
     public void init() {
@@ -44,6 +47,14 @@ public class MetaDadaResourceServiceImpl extends BaseMutableResourceService<Meta
 
     @Override
     protected void beforeCreateSave(MetaDadaResourceEntity entity, MetaDadaResource resource, Map<String, AnswerRequiredException.AnswerValue> answers) {
+        Long entitatId = SessioActualUtil.getEntitatId();
+        if (entitatId != null && entity.getEntitat() == null) {
+            EntitatResourceEntity entitat = entitatResourceRepository.getReferenceById(entitatId);
+            entity.setEntitat(entitat);
+        }
+
+        entity.setOrdre(metaDadaResourceRepository.countByEntitatId(entitatId));
+
         this.beforeSave(entity, resource);
         super.beforeCreateSave(entity, resource, answers);
     }

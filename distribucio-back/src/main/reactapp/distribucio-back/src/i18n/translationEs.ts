@@ -1124,6 +1124,26 @@ const translationEs = {
                 },
             },
         },
+        domini: {
+            title: "Dominios",
+            accio: {
+                cache: {
+                    label: "Vacia caché",
+                    title: "Vacia la caché de los dominios",
+                    ok: "La caché se ha vaciado correctamente",
+                },
+                new: {
+                    label: "Añade dominio",
+                    ok: "El dominio se ha creado correctamente",
+                },
+                update: {
+                    ok: "El dominio se ha modificado correctamente",
+                },
+                delete: {
+                    ok: "El dominio se ha eliminado correctamente",
+                },
+            },
+        },
     },
     component: {
         Offline: {

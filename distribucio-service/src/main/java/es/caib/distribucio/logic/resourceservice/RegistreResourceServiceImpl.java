@@ -32,6 +32,7 @@ import es.caib.distribucio.persist.resourceentity.*;
 import es.caib.distribucio.persist.resourcerepository.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -1122,29 +1123,31 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
         @Override
         public List<FieldOption> getOptions(String fieldName, Map<String, String[]> requestParameterMap) {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
             List<FieldOption> result = new ArrayList<>();
-            if (requestParameterMap.containsKey("domini")) {
-                Long entitatActualId = SessioActualUtil.getEntitatId();
+            if (RegistreResource.DadaForm.Fields.domini.equals(fieldName) && requestParameterMap.containsKey("domini")) {
                 Long dominiId = Long.valueOf(requestParameterMap.get("domini")[0]);
-                dominiResourceRepository.findById(dominiId)
-                        .ifPresent((domini) -> {
-                            DominiDto dominiDto = objectMappingHelper.newInstanceMap(
-                                    domini,
-                                    DominiDto.class);
-                            try {
-                                // TODO
-//                                dominiService.getResultDomini(
-//                                        entitatActualId,
-//                                        dominiDto,
-//                                        null,
-//                                        0,
-//                                        100).getResultat()
-//                                        .forEach(r ->
-//                                                result.add(new FieldOption(r.getId(), r.getText())));
-                            } catch (DominiException e) {
-                                e.printStackTrace();
-                            }
-                        });
+
+                int page = 1;
+                int size = Integer.MAX_VALUE;
+
+                dominiResourceRepository.findById(dominiId).ifPresent((domini) -> {
+                    DominiDto dominiDto = objectMappingHelper.newInstanceMap(domini, DominiDto.class);
+                    try {
+                        ResultatDominiDto response = dominiService.getResultDomini(
+                                entitatActualId,
+                                dominiDto,
+                                "",
+                                page,
+                                size);
+
+                        response.getResultat()
+                                .forEach(r ->
+                                        result.add(new FieldOption(r.getId(), r.getText())));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
             }
 
             return result;

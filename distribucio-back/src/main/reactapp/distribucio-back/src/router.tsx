@@ -30,6 +30,7 @@ import {VistaMovimentsGrid} from "./pages/vistaMoviments/VistaMovimentsGrid.tsx"
 import ReglaGrid from './pages/regla/ReglaGrid.tsx';
 import UsuariCanviCodis from './pages/usuari/UsuariCanviCodis.tsx';
 import {MetaDadaGrid} from "./pages/metadada/MetaDadaGrid.tsx";
+import {DominiGrid} from "./pages/domini/DominiGrid.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -319,6 +320,16 @@ export const router = createBrowserRouter(
                             path: 'metaDada',
                             element: <MetaDadaGrid/>,
                             handle: { titol: 'page.metaDada.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="domini" />,
+                    children: [
+                        {
+                            path: 'domini',
+                            element: <DominiGrid/>,
+                            handle: { titol: 'page.domini.title' },
                         },
                     ],
                 },

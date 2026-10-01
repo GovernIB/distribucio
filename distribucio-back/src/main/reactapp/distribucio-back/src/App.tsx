@@ -140,6 +140,13 @@ const InnerApp: React.FC = () => {
                     icon: icons.metaDada,
                     pantalla: 'metaDada',
                 },
+                {
+                    id: 'domini',
+                    title: t('page.domini.title'),
+                    to: 'domini',
+                    icon: icons.domini,
+                    pantalla: 'domini',
+                },
             ],
         },
         {

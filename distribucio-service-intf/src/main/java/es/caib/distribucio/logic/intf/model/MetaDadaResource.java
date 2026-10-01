@@ -11,6 +11,7 @@ import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.MetaDadaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.MultiplicitatEnumDto;
+import es.caib.distribucio.logic.intf.resourcevalidation.CodiMetaDadaNomValid;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -49,11 +50,12 @@ public class MetaDadaResource extends BaseResource<Long> {
 
     public static final String ACTION_REORDENAR_CODE = "REORDENAR";
 
-    @NotNull private String codi;
+    @NotNull @CodiMetaDadaNomValid
+    private String codi;
     @NotNull private String nom;
     @NotNull @ResourceField(onChangeActive = true)
-    private MetaDadaTipusEnumDto tipus;
-    @NotNull private MultiplicitatEnumDto multiplicitat;
+    private MetaDadaTipusEnumDto tipus = MetaDadaTipusEnumDto.TEXT;
+    @NotNull private MultiplicitatEnumDto multiplicitat = MultiplicitatEnumDto.M_1;
     private Object value;
     private String descripcio;
     private boolean activa = true;

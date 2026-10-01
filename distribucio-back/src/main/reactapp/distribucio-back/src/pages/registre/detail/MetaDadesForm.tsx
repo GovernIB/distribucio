@@ -15,7 +15,7 @@ const DadaField = ({ index, metaDada, value, onChange, required, ...other }: any
     const isDomini = metaDada.tipus == "DOMINI"
 
     const additionalProps = isDomini
-        ?{ field: fieldDomini, requestParams: { domini: metaDada.domini?.id } } :{}
+        ?{ field: fieldDomini, autocomplete: true, requestParams: { domini: metaDada.domini?.id } } :{}
 
     const type = isDomini ?'enum' :fieldType(metaDada.tipus)
 

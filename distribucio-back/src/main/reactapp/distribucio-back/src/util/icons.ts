@@ -34,5 +34,6 @@ export const icons = {
     excepcio: 'bug_report',
     vistaMoviments: 'move_down',
     metaDada: '',
+    domini: '',
     regla: 'rule',
 } as const;
