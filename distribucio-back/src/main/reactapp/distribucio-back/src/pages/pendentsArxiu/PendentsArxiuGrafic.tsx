@@ -28,6 +28,15 @@ export const PendentsArxiuGrafic: React.FC<PendentsArxiuGraficProps> = ({ entrad
         );
     }
 
+    const valorMaxim = Math.max(
+        ...entrades.flatMap((entrada) => [
+            entrada.pendentArxiu,
+            entrada.processats,
+            entrada.errors,
+            msASegons(entrada.tempsMitjaMs),
+        ])
+    );
+
     return (
         <Box flex={1} minHeight={320}>
             <LineChart
@@ -37,7 +46,8 @@ export const PendentsArxiuGrafic: React.FC<PendentsArxiuGraficProps> = ({ entrad
                         data: entrades.map((entrada) => formatHora(entrada.data, i18n.language)),
                     },
                 ]}
-                yAxis={[{ min: 0 }]}
+                // Si tot és 0 l'eix quedaria amb min = max i la línia al mig; es fixa a 0-1.
+                yAxis={[{ min: 0, max: valorMaxim > 0 ? undefined : 1 }]}
                 slotProps={{ legend: { toggleVisibilityOnClick: true } }} // Clicar un valor de la llegenda amaga/mostra la sèrie
                 series={[
                     {
