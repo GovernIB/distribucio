@@ -21,6 +21,7 @@ import {BackofficeGrid} from "./pages/backoffice/BackofficeGrid.tsx";
 import {ExecucioMassivaGrid} from "./pages/execucioMassiva/ExecucioMassivaGrid.tsx";
 import IntegracioGrid from './pages/integracio/IntegracioGrid.tsx';
 import MonitorSistemaPage from './pages/monitorSistema/MonitorSistemaPage.tsx';
+import MetriquesPage from './pages/metriques/MetriquesPage.tsx';
 import ExcepcioGrid from './pages/excepcio/ExcepcioGrid.tsx';
 import AnnexGrid from './pages/annex/AnnexGrid.tsx';
 import {RegistreGrid} from "./pages/registre/RegistreGrid.tsx";
@@ -192,6 +193,16 @@ export const router = createBrowserRouter(
                             path: 'integracio',
                             element: <IntegracioGrid />,
                             handle: { titol: 'page.integracio.grid.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="metriques" />,
+                    children: [
+                        {
+                            path: 'metriques',
+                            element: <MetriquesPage />,
+                            handle: { titol: 'page.metriques.title' },
                         },
                     ],
                 },

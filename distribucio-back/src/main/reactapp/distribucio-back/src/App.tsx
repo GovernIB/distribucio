@@ -197,6 +197,13 @@ const InnerApp: React.FC = () => {
                     pantalla: 'excepcio',
                 },
                 {
+                    id: 'metriques',
+                    title: t('app.menu.metriques'),
+                    to: 'metriques',
+                    icon: icons.metriques,
+                    pantalla: 'metriques',
+                },
+                {
                     id: 'monitor',
                     title: t('app.menu.monitor'),
                     to: 'monitor',

@@ -29,6 +29,7 @@ export const icons = {
     contingut: 'archive',
     integracio: 'sync_alt',
     monitorSistema: 'monitor_heart',
+    metriques: 'stacked_bar_chart',
     excepcio: 'bug_report',
     vistaMoviments: 'move_down',
     metaDada: '',
