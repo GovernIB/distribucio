@@ -1,17 +1,37 @@
 package es.caib.distribucio.logic.helper;
 
+import es.caib.distribucio.logic.base.helper.ObjectMappingHelper;
 import es.caib.distribucio.logic.intf.base.util.I18nUtil;
-import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
-import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
+import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.model.ContingutLogResource;
+import es.caib.distribucio.logic.intf.model.ContingutResource;
+import es.caib.distribucio.logic.intf.model.RegistreResource;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.persist.entity.ContingutLogParamEntity;
 import es.caib.distribucio.persist.resourceentity.ContingutLogResourceEntity;
 import es.caib.distribucio.persist.resourceentity.RegistreResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.RegistreResourceRepository;
+import fr.opensagres.xdocreport.converter.ConverterTypeTo;
+import fr.opensagres.xdocreport.converter.Options;
+import fr.opensagres.xdocreport.document.IXDocReport;
+import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
+import fr.opensagres.xdocreport.template.IContext;
+import fr.opensagres.xdocreport.template.TemplateEngineKind;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.time.DateFormatUtils;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Component
@@ -19,6 +39,8 @@ import java.util.stream.Collectors;
 public class ContingutLogResourceHelper {
 
     private final RegistreResourceRepository registreResourceRepository;
+    private final AplicacioService aplicacioService;
+    private final ObjectMappingHelper objectMappingHelper;
 
     public void transferParams(ContingutLogResourceEntity entity, ContingutLogResource resource) {
         resource.setParams(
@@ -178,5 +200,66 @@ public class ContingutLogResourceHelper {
                 break;
         }
         resource.setResum( sb.toString() );
+    }
+
+    public byte[] generaInformeTracabilitat(
+            Date data,
+            ContingutResource contingut,
+            RegistreResource registre,
+            List<ContingutLogResource> logsResum) throws Exception{
+        Locale locale = LocaleContextHolder.getLocale();
+
+        String plantilla = getPlantillaInformeTrasabilitat(locale.getLanguage());
+
+        // 1) Load ODT file and set Velocity template engine and cache it to the registry					
+        InputStream in = null;
+        if (plantilla != null)
+            in = new FileInputStream(new File(plantilla));
+        else
+            in = this.getClass().getResourceAsStream("/plantilles/informe_" + locale.getLanguage() + ".odt");
+        IXDocReport report = XDocReportRegistry.getRegistry().loadReport(in, TemplateEngineKind.Velocity);
+
+        // 2) Create Java model context
+        IContext context = report.createContext();
+        context.put("contingut", contingut);
+        context.put("registre", registre);
+        List<String> textList = new ArrayList<String>();
+        String text;
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        for (ContingutLogResource log : logsResum) {
+            // posa la 1a lletra en minúscula
+            text = decapitalize( log.getResum() );
+            // Afegeix "A data"
+            text = I18nUtil.getInstance().getI18nMessage(
+                    "contingut.log.informe.text",
+                    new Object[] {
+                            log.getCreatedDate().format(formatter),
+                            text});
+            textList.add(text);
+        }
+        context.put("text_list", textList);
+        context.put("data", new SimpleDateFormat("EEEE dd 'de' MMMM 'de' yyyy", locale).format(data));
+
+        // 3) Set PDF as format converter
+        Options options = Options.getTo(ConverterTypeTo.PDF);
+
+        // 3) Generate report by merging Java model with the ODT and convert it to PDF
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        report.convert(context, options, bos);
+        return bos.toByteArray();
+    }
+
+    private String getPlantillaInformeTrasabilitat(String idioma) {
+        return aplicacioService.propertyFindByNom("es.caib.distribucio.plantilla.informe.trasabilitat." + idioma);
+    }
+
+    public static String decapitalize(String string) {
+        if (string == null || string.length() == 0) {
+            return string;
+        }
+        char c[] = string.toCharArray();
+        c[0] = Character.toLowerCase(c[0]);
+        return new String(c);
     }
 }

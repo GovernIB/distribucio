@@ -265,11 +265,9 @@ const translationEs = {
                     moviments: "Movimientos",
                     auditoria: "Auditoría",
                 },
-                accio: {
-                    informe: {
-                        label: "Informe",
-                    },
-                    veureDetall: "Ver detalles",
+                informe: {
+                    label: "Informe",
+                    ok: "El informe se ha descaregado correctamente",
                 },
                 detall: {
                     title: "Detalle de la acción",

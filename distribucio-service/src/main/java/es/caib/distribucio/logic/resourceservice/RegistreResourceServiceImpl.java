@@ -40,7 +40,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.persistence.criteria.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -522,7 +524,48 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         @Override
         public DownloadableFile generateFile(String code, List<?> data, ReportFileType fileType, OutputStream out) {
             // TODO: generar informe historico
-            return null;
+            List<ContingutLogResource> logs = (List<ContingutLogResource>) data;
+
+            AtomicReference<ContingutResource> contingut = new AtomicReference<>();
+            AtomicReference<RegistreResource> registre = new AtomicReference<>();
+
+            Long id = logs.get(0).getContingut().getId();
+            registreResourceRepository.findById( id )
+                    .ifPresent(r -> {
+                        registre.set(objectMappingHelper.newInstanceMap(r, RegistreResource.class));
+                        contingut.set(objectMappingHelper.newInstanceMap(r, ContingutResource.class));
+                    });
+
+            if (registre.get() == null || contingut.get() == null) {
+                throw new ReportGenerationException(
+                        RegistreResource.class,
+                        id,
+                        code,
+                        "No s'ha trobat element amb id: " + id
+                );
+            }
+
+            try {
+                Date date = new Date();
+                byte[] informeContingut = contingutLogResourceHelper.generaInformeTracabilitat(
+                        date,
+                        contingut.get(),
+                        registre.get(),
+                        logs
+                );
+                String informeNom = I18nUtil.getInstance().getI18nMessage("contingut.log.informe.nom.template", new Object[] {
+                        registre.get().getNumero(),
+                        new SimpleDateFormat("yyyyMMddHHmm").format(date)
+                });
+                return new DownloadableFile(informeNom, "application/pdf", informeContingut);
+            } catch (Exception e) {
+                throw new ReportGenerationException(
+                        RegistreResource.class,
+                        id,
+                        code,
+                        e.getMessage()
+                );
+            }
         }
 
         @Override
@@ -539,6 +582,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 contingutLogResourceHelper.setLogText(e, r);
             }
 
+            logResourceList.sort(Comparator.comparing(BaseAuditableResource::getCreatedDate));
             return logResourceList;
         }
 

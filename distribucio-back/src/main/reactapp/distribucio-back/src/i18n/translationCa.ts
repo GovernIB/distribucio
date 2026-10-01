@@ -267,11 +267,9 @@ const translationCa = {
                     moviments: "Moviments",
                     auditoria: "Auditoria",
                 },
-                accio: {
-                    informe: {
-                        label: "Informe",
-                    },
-                    veureDetall: "Veure detalls",
+                informe: {
+                    label: "Informe",
+                    ok: "L'informe s'ha descarregat correctament",
                 },
                 detall: {
                     title: "Detall de l'acció",

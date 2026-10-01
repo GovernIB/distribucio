@@ -30,7 +30,7 @@ export const useContingutHistorialDialog = () => {
             buttons={closeButtons}
             buttonCallback={() => handleClose()}
         >
-            <Box sx={{ height: '70vh', minHeight: 0 }}>
+            <Box>
                 <ContingutHistorialContent contingutId={contingut?.id} contingutRow={contingut} />
             </Box>
         </MuiDialog>

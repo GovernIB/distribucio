@@ -46,7 +46,6 @@ export const ContingutLogGrid: React.FC<ContingutLogGridProps> = ({ contingutRow
 
     return (
         <StyledMuiGrid
-            toolbarHideCreate
             resourceName="contingutLogResource"
             apiRef={apiRef}
             columns={columns}
@@ -55,21 +54,23 @@ export const ContingutLogGrid: React.FC<ContingutLogGridProps> = ({ contingutRow
             perspectives={perspectives}
             popupEditActive
             popupEditFormContent={<ContingutLogDetallContent row />}
-            paginationActive
+            toolbarHideCreate
             rowHideDeleteButton
+            paginationActive
             autoHeight
 
-            toolbarElementsWithPositions={contingut.tipus == 'REGISTRE' ?[
+            toolbarElementsWithPositions={[
                 {
                     position: 0,
                     element: <ToolbarButton
                         icon={'description'}
                         variant={'contained'}
-                        title={t('page.contingut.historial.informe.label')}
+                        // title={t('page.contingut.historial.informe.label')}
                         onClick={() => informeLogs(contingut.id)}
-                    >Informe</ToolbarButton>
+                        hidden={contingut.tipus != 'REGISTRE'}
+                    >{t('page.contingut.historial.informe.label')}</ToolbarButton>
                 }
-            ] :[]}
+            ]}
         />
     );
 };
