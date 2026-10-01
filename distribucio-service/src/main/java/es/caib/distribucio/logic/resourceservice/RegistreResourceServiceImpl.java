@@ -89,7 +89,10 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(RegistreResource.PERSPECTIVE_DETAIL_INFO_CODE, new DetailInfoPerspectiveApplicator());
         register(ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE, new CommentNumPerspectiveApplicator());
         register(RegistreResource.PERSPECTIVE_VISTA_MOVIMENTS_CODE, new VistaMovimentsPerspectiveApplicator());
+
         register(RegistreResource.REPORT_INFORME_LOGS_CODE, new InformeLogsReportGenerator());
+        register(RegistreResource.REPORT_JUSTIFICANT_CODE, new JustificantReportGenerator());
+
         register(RegistreResource.ACTION_CLASSIFICAR_CODE, new ClassificarActionExecutor());
         register(RegistreResource.ACTION_ENVIAR_EMAIL_CODE, new EnviarEmailActionExecutor());
         register(RegistreResource.ACTION_REENVIAR_CODE, new ReenviarActionExecutor());
@@ -523,7 +526,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     public class InformeLogsReportGenerator implements ReportGenerator<RegistreResourceEntity, Serializable, ContingutLogResource> {
         @Override
         public DownloadableFile generateFile(String code, List<?> data, ReportFileType fileType, OutputStream out) {
-            // TODO: generar informe historico
             List<ContingutLogResource> logs = (List<ContingutLogResource>) data;
 
             AtomicReference<ContingutResource> contingut = new AtomicReference<>();
@@ -584,6 +586,33 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
             logResourceList.sort(Comparator.comparing(BaseAuditableResource::getCreatedDate));
             return logResourceList;
+        }
+
+        @Override
+        public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
+        }
+    }
+    public class JustificantReportGenerator implements ReportGenerator<RegistreResourceEntity, Serializable, RegistreResource> {
+        @Override
+        public DownloadableFile generateFile(String code, List<?> data, ReportFileType fileType, OutputStream out) {
+            RegistreResource registre = (RegistreResource) data.get(0);
+            try {
+                FitxerDto fitxer = registreService.getJustificant(registre.getId());
+                return new DownloadableFile(fitxer.getNom(), fitxer.getContentType(), fitxer.getContingut());
+            } catch (Exception e) {
+                throw new ReportGenerationException(
+                        RegistreResource.class,
+                        registre.getId(),
+                        code,
+                        e.getMessage()
+                );
+            }
+        }
+
+        @Override
+        public List<RegistreResource> generateData(String code, RegistreResourceEntity entity, Serializable params) throws ReportGenerationException {
+            ConfigHelper.setEntitatActualCodi(entity.getEntitatCodi());
+            return List.of(objectMappingHelper.newInstanceMap(entity, RegistreResource.class));
         }
 
         @Override

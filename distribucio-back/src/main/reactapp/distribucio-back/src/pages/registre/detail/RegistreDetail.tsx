@@ -24,9 +24,10 @@ import {MetaDadesForm} from "./MetaDadesForm.tsx";
 import {ROLE_ADMIN, ROLE_ADMIN_LECTURA, useDistribucioContext} from "../../../components/DistribucioContext.ts";
 import Button from "@mui/material/Button";
 import {MenuActionButton} from "../../../components/MenuButton.tsx";
-import {useRegistreActions} from "./RegistreActions.tsx";
+import {useActions, useRegistreActions} from "./RegistreActions.tsx";
 import {useSession} from "../../../components/SessionStorageContext.tsx";
 import {useRecordNavigation} from "../../../components/RecordNavigation.tsx";
+import {REPORT_DESCARREGAR_IMPRIMIBLE, useDescarregarAnnex} from "../../annex/AnnexAccions.tsx";
 
 const AnnexTab = ({entity}:any) => {
     const { isReady: apiIsReady, find: apiFind } = useResourceApiService('registreAnnexResource');
@@ -70,13 +71,16 @@ const annexSortModel:any = [{ field: 'id', sort: 'asc' }]
 const AnnexGrid = ({entity}:any) => {
     const { t } = useTranslation();
 
+    const descarregar = useDescarregarAnnex();
+
     const {handleOpen, component} = useVisualitzar()
 
     const actions = [
         {
-            label: t('common.download'),
+            label: t('page.annex.accio.descarregarImprimible'),
             icon: 'download',
             showInMenu: false,
+            onClick: (id:any) => descarregar(id, REPORT_DESCARREGAR_IMPRIMIBLE)
         },
     ]
 
@@ -319,6 +323,9 @@ const InformacioRegistre = ({entity}:any) => {
     const { t } = useBaseAppContext();
     const {currentRole} = useDistribucioContext()
     const isAdmin = currentRole == ROLE_ADMIN || currentRole == ROLE_ADMIN_LECTURA
+
+    const {justificant} = useActions()
+
     return (<Grid container columnSpacing={1} rowSpacing={1}>
         <DetailCard>
             <DetailField name={"registreTipus"} inline/>
@@ -384,8 +391,11 @@ const InformacioRegistre = ({entity}:any) => {
                     <DetailField name={"fitxerNom"} formatterValue={(v:any, data:any) =>
                         <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
                             <>{v} ({data.fitxerTamany} bytes)</>
-                            <IconButton sx={{ m:0, p:0 }}>
-                                <Icon>download</Icon>
+                            <IconButton
+                                title={t('page.registre.accio.justificant.label')}
+                                onClick={() => justificant(entity.id)}
+                                sx={{ m:0, p:0 }}>
+                                <Icon fontSize={'small'}>download</Icon>
                             </IconButton>
                         </Box>} inline/>
                 </MuiDetail>
@@ -400,6 +410,9 @@ const Resum = ({entity}:any) => {
     const {currentRole} = useDistribucioContext()
     const isAdmin = currentRole == ROLE_ADMIN || currentRole == ROLE_ADMIN_LECTURA
     const senseCodi = ['ARXIU_PENDENT', 'REGLA_PENDENT', 'BUSTIA_PENDENT', 'BUSTIA_PROCESSADA'].includes(entity.procesEstat);
+
+    const {justificant} = useActions()
+
     return (<Grid container columnSpacing={1} rowSpacing={1}>
         <DetailCard>
             <DetailField size={6} name={isAdmin ?"identificador" :"numero"}
@@ -408,8 +421,11 @@ const Resum = ({entity}:any) => {
                                  <Typography variant="inherit" color="textSecondary">
                                      {v}
                                  </Typography>
-                                 <IconButton sx={{ m:0, p:0 }}>
-                                     <Icon>download</Icon>
+                                 <IconButton
+                                     title={t('page.registre.accio.justificant.label')}
+                                     onClick={() => justificant(entity.id)}
+                                     sx={{ m:0, p:0 }}>
+                                     <Icon fontSize={'small'}>download</Icon>
                                  </IconButton>
                              </Box>
                          } isObject inline/>

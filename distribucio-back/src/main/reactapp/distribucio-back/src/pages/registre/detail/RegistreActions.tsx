@@ -35,9 +35,23 @@ export const useActions = () => {
         }
     }
 
+    const justificant = (id:any) => {
+        if (apiIsReady) {
+            apiReport(id, {code: "JUSTIFICANT", fileType: 'PDF'})
+                .then((result) => {
+                    iniciaDescargaBlob(result)
+                    temporalMessageShow(null, t('page.registre.accio.justificant.ok'), 'success');
+                })
+                .catch((error) => {
+                    temporalMessageShow(null, error?.message, 'error');
+                });
+        }
+    }
+
     return {
         apiIsReady,
-        informeLogs
+        informeLogs,
+        justificant,
     }
 }
 

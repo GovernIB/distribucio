@@ -1032,6 +1032,10 @@ const translationCa = {
                     title: "Torna a processar",
                     titleMassive: "Torna a processar {{num}} anotacions",
                 },
+                justificant: {
+                    label: "Justificant",
+                    ok: "El justificant s'ha descarregat correctamnet",
+                },
             },
         },
         alerta: {

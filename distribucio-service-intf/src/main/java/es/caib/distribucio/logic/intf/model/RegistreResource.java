@@ -81,6 +81,10 @@ import java.util.*;
                         code = RegistreResource.REPORT_INFORME_LOGS_CODE,
                         requiresId = true),
                 @ResourceArtifact(
+                        type = ResourceArtifactType.REPORT,
+                        code = RegistreResource.REPORT_JUSTIFICANT_CODE,
+                        requiresId = true),
+                @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = RegistreResource.ACTION_CLASSIFICAR_CODE,
                         formClass = RegistreResource.ClassificarForm.class,
@@ -160,7 +164,10 @@ public class RegistreResource extends ContingutResource {
     public static final String PERSPECTIVE_ARXIU_DETALL_CODE = "ARXIU_DETALL";
     public static final String PERSPECTIVE_VISTA_MOVIMENTS_CODE = "VISTA_MOVIMENTS";
     public static final String PERSPECTIVE_DETAIL_INFO_CODE = "DETAIL_INFO";
+
     public static final String REPORT_INFORME_LOGS_CODE = "INFORME_LOGS";
+    public static final String REPORT_JUSTIFICANT_CODE = "JUSTIFICANT";
+
     public static final String ACTION_CLASSIFICAR_CODE = "CLASSIFICAR";
     public static final String ACTION_ENVIAR_EMAIL_CODE = "ENVIAR_EMAIL";
     public static final String ACTION_REENVIAR_CODE = "REENVIAR";

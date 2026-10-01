@@ -1030,6 +1030,10 @@ const translationEs = {
                     title: "Volver a procesar",
                     titleMassive: "Volver a procesar {{num}} anotaciones",
                 },
+                justificant: {
+                    label: "Justificante",
+                    ok: "El justificante se ha descargado correctamente",
+                },
             },
         },
         alerta: {
