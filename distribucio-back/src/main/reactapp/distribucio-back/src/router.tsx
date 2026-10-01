@@ -22,6 +22,7 @@ import {ExecucioMassivaGrid} from "./pages/execucioMassiva/ExecucioMassivaGrid.t
 import IntegracioGrid from './pages/integracio/IntegracioGrid.tsx';
 import MonitorSistemaPage from './pages/monitorSistema/MonitorSistemaPage.tsx';
 import MetriquesPage from './pages/metriques/MetriquesPage.tsx';
+import PendentsArxiuPage from './pages/pendentsArxiu/PendentsArxiuPage.tsx';
 import ExcepcioGrid from './pages/excepcio/ExcepcioGrid.tsx';
 import AnnexGrid from './pages/annex/AnnexGrid.tsx';
 import {RegistreGrid} from "./pages/registre/RegistreGrid.tsx";
@@ -203,6 +204,16 @@ export const router = createBrowserRouter(
                             path: 'metriques',
                             element: <MetriquesPage />,
                             handle: { titol: 'page.metriques.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="pendentsArxiu" />,
+                    children: [
+                        {
+                            path: 'pendentsArxiu',
+                            element: <PendentsArxiuPage />,
+                            handle: { titol: 'page.pendentsArxiu.title' },
                         },
                     ],
                 },

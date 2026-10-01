@@ -300,6 +300,12 @@ public class EjbClientConfig {
 
 	@Bean
 	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean pendentsArxiuResourceService() {
+		return getLocalEjbFactoyBean(PendentsArxiuResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean configGroupResourceService() {
 		return getLocalEjbFactoyBean(ConfigGroupResourceService.class);
 	}

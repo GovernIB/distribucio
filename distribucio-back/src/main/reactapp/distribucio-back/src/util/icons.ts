@@ -30,6 +30,7 @@ export const icons = {
     integracio: 'sync_alt',
     monitorSistema: 'monitor_heart',
     metriques: 'stacked_bar_chart',
+    pendentsArxiu: 'query_stats',
     excepcio: 'bug_report',
     vistaMoviments: 'move_down',
     metaDada: '',

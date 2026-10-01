@@ -31,6 +31,7 @@ export type Pantalla = 'home'
     | 'integracio'
     | 'monitor'
     | 'metriques'
+    | 'pendentsArxiu'
     | 'excepcio'
     | 'annex'
     | 'registre'
@@ -73,6 +74,7 @@ export const PANTALLA_ROLS: Record<Pantalla, string[]> = {
     integracio: [ROLE_SUPER],
     monitor: [ROLE_SUPER],
     metriques: [ROLE_SUPER],
+    pendentsArxiu: [ROLE_SUPER],
     excepcio: [ROLE_SUPER],
     annex: [ROLE_ADMIN, ROLE_ADMIN_LECTURA],
     registre: [ROLE_ADMIN, ROLE_ADMIN_LECTURA, ROLE_USER],

@@ -204,6 +204,13 @@ const InnerApp: React.FC = () => {
                     pantalla: 'metriques',
                 },
                 {
+                    id: 'pendentsArxiu',
+                    title: t('app.menu.pendentsArxiu'),
+                    to: 'pendentsArxiu',
+                    icon: icons.pendentsArxiu,
+                    pantalla: 'pendentsArxiu',
+                },
+                {
                     id: 'monitor',
                     title: t('app.menu.monitor'),
                     to: 'monitor',

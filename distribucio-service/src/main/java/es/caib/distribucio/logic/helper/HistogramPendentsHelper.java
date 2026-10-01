@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import es.caib.distribucio.logic.intf.dto.HistogramPendentsEntryDto;
+import es.caib.distribucio.logic.intf.model.PendentsArxiuResource;
 
 /**
  * Mètodes per a la gestió d'integracions.
@@ -98,6 +99,22 @@ public class HistogramPendentsHelper {
 		return this.histogram;
 	}
 
+	/** Còpia de l'històric (de més antiga a més recent) segura davant de modificacions concurrents: les entrades
+	 * es modifiquen des dels fils de processament i se n'afegeixen des de la tasca en segon pla. */
+	synchronized public List<PendentsArxiuResource.Entrada> getSnapshot() {
+		List<PendentsArxiuResource.Entrada> entrades = new ArrayList<PendentsArxiuResource.Entrada>(this.histogram.size());
+		for (HistogramPendentsEntryDto item : this.histogram) {
+			PendentsArxiuResource.Entrada entrada = new PendentsArxiuResource.Entrada();
+			entrada.setData(item.getData());
+			entrada.setPendentArxiu(item.getPendentArxiu());
+			entrada.setProcessats(item.getProcessats());
+			entrada.setErrors(item.getErrors());
+			entrada.setTempsMitjaMs(item.getProcessTimeAverage());
+			entrades.add(entrada);
+		}
+		return entrades;
+	}
+
 	/** This method shoult to be called from WorkerThread when there is an error. */
 	synchronized public void addHistogramError() {
 		if (!this.histogram.isEmpty()){
@@ -121,7 +138,7 @@ public class HistogramPendentsHelper {
 	}
 	
 	
-	public void addNewEntryToHistogram(int pendentArxiu) {
+	synchronized public void addNewEntryToHistogram(int pendentArxiu) {
 
 		HistogramPendentsEntryDto entry = new HistogramPendentsEntryDto();
 		entry.setData(new Date());
