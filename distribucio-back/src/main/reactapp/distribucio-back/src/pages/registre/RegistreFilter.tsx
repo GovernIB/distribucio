@@ -26,7 +26,7 @@ const RegistreFilterForm: React.FC = () => {
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="dataRecepcioInici" />
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="dataRecepcioFi" />
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="unitatOrganitzativa" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="bustia" />
+                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="bustia" filter={builder.eq('activa', true)} />
                 <GridButtonField icon={'inbox'} size={{ xs: 12, sm: 1, md: 1 }} name="inactives" />
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="enviatPerEmail" />
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="documentacio" />

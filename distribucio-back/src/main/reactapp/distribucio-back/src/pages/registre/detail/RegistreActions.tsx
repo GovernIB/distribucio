@@ -13,14 +13,28 @@ import useMarcarPendent from "../actions/MarcarPendent.tsx";
 import {useSnackbar} from "notistack";
 import useTornarProcessar from "../actions/TornarProcessar.tsx";
 
-export const useActions = () => {
+export const useActions = (refresh?: () => void) => {
     const { t } = useTranslation();
 
     const {
         isReady: apiIsReady,
         artifactReport: apiReport,
+        artifactAction: apiAction,
     } = useResourceApiService('registreResource');
     const {temporalMessageShow} = useBaseAppContext();
+
+    const marcarSobreescriure = (id:any) => {
+        if (apiIsReady) {
+            apiAction(id, {code: "MARCAR_SOBREESCRIURE"})
+                .then((response) => {
+                    refresh?.()
+                    temporalMessageShow(null, t('page.registre.accio.sobreescriure.ok', {numero: response.numero}), 'success');
+                })
+                .catch((error) => {
+                    temporalMessageShow(null, error?.message, 'error');
+                });
+        }
+    }
 
     const informeLogs = (id:any) => {
         if (apiIsReady) {
@@ -48,8 +62,25 @@ export const useActions = () => {
         }
     }
 
+    const descarregarDoc = (id:any, imprimible:boolean) => {
+        if (apiIsReady) {
+            apiReport(id, {code: "DESCARREGAR_DOC", data: {imprimible}, fileType: 'PDF'})
+                .then((result) => {
+                    iniciaDescargaBlob(result)
+                    imprimible
+                        ?temporalMessageShow(null, t('page.registre.accio.descargaAutentica.ok'), 'success')
+                        :temporalMessageShow(null, t('page.registre.accio.descargaOriginal.ok'), 'success');
+                })
+                .catch((error) => {
+                    temporalMessageShow(null, error?.message, 'error');
+                });
+        }
+    }
+
     return {
         apiIsReady,
+        marcarSobreescriure,
+        descarregarDoc,
         informeLogs,
         justificant,
     }
@@ -60,6 +91,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
     const {temporalMessageShow} = useBaseAppContext();
     const { enqueueSnackbar } = useSnackbar();
 
+    const {marcarSobreescriure, descarregarDoc} = useActions(refresh)
     const {show: handleHistoric, component: componentHistoric} = useContingutHistorialDialog()
     const {handleOpen: handleAlertes, component: componentAlertes} = useAlertes();
     const { handleShow: handleClassificar, content: contentClassificar } = useClassificar((result:any) => {
@@ -112,12 +144,14 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
             action: 'CLASSIFICAR',
             showInMenu: true,
             onClick: (id:any) => handleClassificar([id], false),
+            hidden: (row:any) => !row.potModificar,
         },
         {
             label: <Divider sx={{width: '100%'}} color={"none"}/>,
             action: 'CLASSIFICAR',
             showInMenu: true,
             disabled: true,
+            hidden: (row:any) => !row.potModificar,
         },
         {
             label: t('page.registre.accio.email.label'),
@@ -132,6 +166,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
             action: 'REENVIAR',
             showInMenu: true,
             onClick: (id:any) => handleReenviar([id], false),
+            hidden: (row:any) => !row.potModificar,
         },
         {
             label: t('page.registre.accio.marcarProcessada.label'),
@@ -147,7 +182,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
                     || row.procesEstat == 'BACK_REBUTJADA'
                 )
             },
-            hidden: (row:any) => !(row.procesEstatSimple == 'PENDENT'),
+            hidden: (row:any) => !(row.procesEstatSimple == 'PENDENT') || !row.potModificar,
         },
         {
             label: t('page.registre.accio.marcarPendent.label'),
@@ -156,7 +191,29 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
             showInMenu: true,
             onClick: (id:any) => handlePendent([id], false),
             disabled: (row:any) => row.pendentExecucioMassiva,
-            hidden: (row:any) => !(row.procesEstat == 'BUSTIA_PROCESSADA'),
+            hidden: (row:any) => !(row.procesEstat == 'BUSTIA_PROCESSADA') || !row.potModificar,
+        },
+        {
+            label: t('page.registre.accio.sobreescriure.label'),
+            icon: 'history',
+            action: 'MARCAR_SOBREESCRIURE',
+            showInMenu: true,
+            onClick: marcarSobreescriure,
+            hidden: (row:any) => row.sobreescriure || !row.potModificar,
+        },
+        {
+            label: t('page.registre.accio.descargaOriginal.label'),
+            icon: 'download',
+            report: 'DESCARREGAR_DOC',
+            onClick: (id:any) => descarregarDoc(id, false),
+            showInMenu: true,
+        },
+        {
+            label: t('page.registre.accio.descargaAutentica.label'),
+            icon: 'download',
+            report: 'DESCARREGAR_DOC',
+            onClick: (id:any) => descarregarDoc(id, true),
+            showInMenu: true,
         },
     ]
 

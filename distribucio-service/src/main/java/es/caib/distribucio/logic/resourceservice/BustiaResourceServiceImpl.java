@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
+import es.caib.distribucio.logic.helper.AclResourceHelper;
 import es.caib.distribucio.logic.helper.PermisosHelper;
 import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
@@ -14,12 +15,14 @@ import es.caib.distribucio.logic.intf.base.model.BaseAuditableResource;
 import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
 import es.caib.distribucio.logic.intf.base.model.FieldOption;
 import es.caib.distribucio.logic.intf.base.model.ReportFileType;
+import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.PermisDto;
 import es.caib.distribucio.logic.intf.dto.PrincipalTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganizzativaEstatEnumDto;
 import es.caib.distribucio.logic.intf.model.BustiaResource;
+import es.caib.distribucio.logic.intf.model.ResourceType;
 import es.caib.distribucio.logic.intf.resourceservice.BustiaResourceService;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
@@ -61,6 +64,7 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
     private final BustiaService bustiaService;
     private final UsuariResourceRepository usuariResourceRepository;
     private final UnitatOrganitzativaHelper unitatOrganitzativaHelper;
+    private final AclResourceHelper aclResourceHelper;
 
     @PostConstruct
     public void init() {
@@ -116,6 +120,30 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
 
             if (entitatActualId != null) {
                 predicates.add(cb.equal(root.get("entitat").get("id"), entitatActualId));
+            }
+
+            /// Permisos
+            boolean isUser = List.of(authenticationHelper.getCurrentUserRoles()).contains(BaseConfig.ROLE_USER);
+            if ( isUser ) {
+                Set<Serializable> ids = aclResourceHelper.findIdsWithAnyPermission(
+                        ResourceType.BUSTIA,
+                        List.of(PermissionEnum.READ),
+                        authenticationHelper.getCurrentUserName(),
+                        new ArrayList<>(List.of(BaseConfig.ROLE_USER))
+                );
+
+                if (ids.isEmpty()) {
+                    return cb.disjunction();
+                }
+
+                int chunkSize = 900;
+                List<Predicate> orPredicates = new ArrayList<>();
+                for (int i = 0; i < ids.size(); i += chunkSize) {
+                    List<Serializable> chunk = new ArrayList<>(ids).subList(i, Math.min(i + chunkSize, ids.size()));
+                    orPredicates.add(root.get("id").in(chunk));
+                }
+
+                predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
             }
 
             if (mapaNamedQueries.containsKey("PERMIS_PER_USUARI")) {

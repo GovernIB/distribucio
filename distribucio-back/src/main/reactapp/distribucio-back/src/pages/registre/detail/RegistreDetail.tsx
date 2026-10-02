@@ -79,7 +79,7 @@ const AnnexGrid = ({entity}:any) => {
         {
             label: t('page.annex.accio.descarregarImprimible'),
             icon: 'download',
-            action: REPORT_DESCARREGAR_IMPRIMIBLE,
+            report: REPORT_DESCARREGAR_IMPRIMIBLE,
             showInMenu: false,
             onClick: (id:any) => descarregar(id, REPORT_DESCARREGAR_IMPRIMIBLE)
         },

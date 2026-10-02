@@ -1053,6 +1053,18 @@ const translationEs = {
                     label: "Justificante",
                     ok: "El justificante se ha descargado correctamente",
                 },
+                sobreescriure: {
+                    label: "Marcar para sobrescribir...",
+                    ok: "La anotación con número \"{{numero}}\" se ha marcado para sobrescribir correctamente",
+                },
+                descargaOriginal: {
+                    label: "Versión original del justificante y anexos",
+                    ok: "La versión original del justificante y anexos se ha descargado correctamente",
+                },
+                descargaAutentica: {
+                    label: "Copia auténtica imprimible",
+                    ok: "La copia auténtica imprimible se ha descargado correctamente",
+                },
             },
         },
         alerta: {

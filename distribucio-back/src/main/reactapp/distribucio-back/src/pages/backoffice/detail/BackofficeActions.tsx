@@ -1,6 +1,7 @@
 import {useBaseAppContext, useConfirmDialogButtons, useResourceApiService} from "reactlib";
 import {useTranslation} from "react-i18next";
 import {useSnackbar} from "notistack";
+import {ROLE_ADMIN, useDistribucioContext} from "../../../components/DistribucioContext.ts";
 
 const useActions = (refresh?: () => void) => {
     const {
@@ -68,6 +69,7 @@ export const useBackofficeActions = (refresh?: () => void) => {
         {
             label: t('page.backoffice.accio.prova.label'),
             icon: 'settings',
+            action: 'PROVAR',
             showInMenu: true,
             onClick: (id:any) => massiveProva([id])
         },
@@ -83,6 +85,7 @@ export const useBackofficeActions = (refresh?: () => void) => {
 }
 export const useBackofficeMassiveActions = (refresh?: () => void) => {
     const { t } = useTranslation();
+    const {currentRole} = useDistribucioContext()
 
     const { massiveProva, massiveDelete } = useActions(refresh)
 
@@ -90,6 +93,7 @@ export const useBackofficeMassiveActions = (refresh?: () => void) => {
         {
             label: t('page.backoffice.accio.prova.label'),
             icon: 'settings',
+            action: 'PROVAR',
             showInMenu: true,
             onClick: massiveProva
         },
@@ -98,6 +102,7 @@ export const useBackofficeMassiveActions = (refresh?: () => void) => {
             icon: 'delete',
             showInMenu: true,
             onClick: massiveDelete,
+            hidden: currentRole != ROLE_ADMIN
         },
     ]
 

@@ -6,7 +6,6 @@ import {
     MuiDataGridDialog,
     MuiDataGridDialogApi,
 } from 'reactlib';
-import {ROLE_ADMIN, ROLE_SUPER, useDistribucioContext} from "./DistribucioContext.ts";
 import StyledMuiGrid from "./StyledMuiGrid.tsx";
 
 const AclEntryForm: React.FC = () => {
@@ -46,14 +45,14 @@ export const AclPermissionGrid = (
     }: {resourceId: any, resourceType: string, columns?:MuiDataGridColDef[], formContent?: any, additionalData?: any, [key: string]: any; }
 ) => {
     const { t } = useTranslation();
-    const { currentRole } = useDistribucioContext()
-    const gestorReadOnly = !(currentRole == ROLE_SUPER ||  currentRole == ROLE_ADMIN);
 
     return <StyledMuiGrid
         popupEditFormDialogResourceTitle={t('component.AclPermissionManager.resourceTitle')}
         resourceName={"aclEntryResource"}
         filter={"resourceType:'" + resourceType + "' and resourceId:" + resourceId}
         columns={columns}
+        popupEditActive
+        popupEditCreateActive
         popupEditUpdateActive
         popupEditFormContent={formContent}
         formAdditionalData={{
@@ -63,7 +62,6 @@ export const AclPermissionGrid = (
             ...additionalData
         }}
         paginationActive
-        readOnly={gestorReadOnly || undefined}
         {...other}
     />
 }
@@ -87,8 +85,6 @@ export const useAclCustomPermissionManager = (
     }
 ) => {
     const { t } = useTranslation();
-    const { currentRole } = useDistribucioContext()
-    const gestorReadOnly = readOnly || !(currentRole == ROLE_SUPER ||  currentRole == ROLE_ADMIN);
 
     const dataGridDialogApiRef = React.useRef<MuiDataGridDialogApi | any>({});
     const currentResourceIdRef = React.useRef<any>(undefined);
@@ -111,7 +107,7 @@ export const useAclCustomPermissionManager = (
                         }
                         : {}),
                 }),
-                readOnly: gestorReadOnly,
+                readOnly: readOnly,
                 popupEditActive: true,
                 popupEditFormContent: formContent,
                 popupEditFormDialogResourceTitle: t('component.AclPermissionManager.resourceTitle'),

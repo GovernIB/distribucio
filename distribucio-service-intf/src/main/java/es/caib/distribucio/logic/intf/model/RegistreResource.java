@@ -85,6 +85,11 @@ import java.util.*;
                         code = RegistreResource.REPORT_JUSTIFICANT_CODE,
                         requiresId = true),
                 @ResourceArtifact(
+                        type = ResourceArtifactType.REPORT,
+                        code = RegistreResource.REPORT_DESCARREGAR_DOC_CODE,
+                        requiresId = true,
+                        formClass = RegistreResource.DescarregarDoc.class),
+                @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = RegistreResource.ACTION_CLASSIFICAR_CODE,
                         formClass = RegistreResource.ClassificarForm.class,
@@ -155,6 +160,11 @@ import java.util.*;
                         requiresId = true,
                         formClass = RegistreResource.DadaForm.class
                 ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_MARCAR_SOBREESCRIURE_CODE,
+                        requiresId = true
+                ),
         }
 )
 public class RegistreResource extends ContingutResource {
@@ -167,6 +177,7 @@ public class RegistreResource extends ContingutResource {
 
     public static final String REPORT_INFORME_LOGS_CODE = "INFORME_LOGS";
     public static final String REPORT_JUSTIFICANT_CODE = "JUSTIFICANT";
+    public static final String REPORT_DESCARREGAR_DOC_CODE = "DESCARREGAR_DOC";
 
     public static final String ACTION_CLASSIFICAR_CODE = "CLASSIFICAR";
     public static final String ACTION_ENVIAR_EMAIL_CODE = "ENVIAR_EMAIL";
@@ -175,6 +186,7 @@ public class RegistreResource extends ContingutResource {
     public static final String ACTION_MARCAR_PENDENT_CODE = "MARCAR_PENDENT";
     public static final String ACTION_TORNAR_PROCESSAR_CODE = "TORNAR_PROCESSAR";
     public static final String ACTION_UPDATE_DADES_CODE = "UPDATE_DADES";
+    public static final String ACTION_MARCAR_SOBREESCRIURE_CODE = "MARCAR_SOBREESCRIURE";
 
     private RegistreTipusEnum registreTipus;
     private String numero;
@@ -234,6 +246,8 @@ public class RegistreResource extends ContingutResource {
 
     /** Conté el recompte del número d'annexos en estat esborrany */
     private int annexosEstatEsborrany;
+
+    @Transient private boolean potModificar;
 
     @Transient private int numInteressats;
     @Transient private int numAnnexos;
@@ -399,6 +413,13 @@ public class RegistreResource extends ContingutResource {
 
         @ResourceField(enumType = true)
         private String domini;
+    }
+
+    @Getter
+    @Setter
+    @FieldNameConstants
+    public static class DescarregarDoc implements Serializable {
+        private boolean imprimible;
     }
 
 }

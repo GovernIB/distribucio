@@ -10,11 +10,9 @@ import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.base.util.I18nUtil;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.*;
-import es.caib.distribucio.logic.intf.exception.DominiException;
 import es.caib.distribucio.logic.intf.model.*;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
-import es.caib.distribucio.logic.intf.resourceservice.AclEntryResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.ContingutMovimentResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.RegistreResourceService;
 import es.caib.distribucio.logic.intf.service.*;
@@ -24,7 +22,6 @@ import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.ExecucioMassivaContingutEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
-import es.caib.distribucio.persist.repository.DominiRepository;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
 import es.caib.distribucio.persist.repository.ReglaRepository;
@@ -32,7 +29,6 @@ import es.caib.distribucio.persist.resourceentity.*;
 import es.caib.distribucio.persist.resourcerepository.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -51,7 +47,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RegistreResourceServiceImpl extends BaseMutableResourceService<RegistreResource, Long, RegistreResourceEntity> implements RegistreResourceService {
 
-    private final AclEntryResourceService aclEntryResourceService;
     private final AuthenticationHelper authenticationHelper;
     private final ContingutHelper contingutHelper;
     private final EntitatRepository entitatRepository;
@@ -73,6 +68,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private final DadaResourceRepository dadaResourceRepository;
     private final MetaDadaResourceRepository metaDadaResourceRepository;
     private final ContingutMovimentResourceRepository contingutMovimentResourceRepository;
+    private final AclResourceHelper aclResourceHelper;
 
     /**
      * Activat només durant {@link #getOne} amb la perspectiva VISTA_MOVIMENTS: permet que un usuari consulti (només lectura) una anotació que ja no és
@@ -80,7 +76,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
      */
     private static final ThreadLocal<Boolean> LECTURA_PER_MOVIMENTS = new ThreadLocal<>();
     private final DominiResourceRepository dominiResourceRepository;
-    private final DominiRepository dominiRepository;
     private final DominiService dominiService;
 
     @PostConstruct
@@ -93,6 +88,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
         register(RegistreResource.REPORT_INFORME_LOGS_CODE, new InformeLogsReportGenerator());
         register(RegistreResource.REPORT_JUSTIFICANT_CODE, new JustificantReportGenerator());
+        register(RegistreResource.REPORT_DESCARREGAR_DOC_CODE, new DescarregarDocReportGenerator());
 
         register(RegistreResource.ACTION_CLASSIFICAR_CODE, new ClassificarActionExecutor());
         register(RegistreResource.ACTION_ENVIAR_EMAIL_CODE, new EnviarEmailActionExecutor());
@@ -101,6 +97,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(RegistreResource.ACTION_MARCAR_PENDENT_CODE, new MarcarPendentActionExecutor());
         register(RegistreResource.ACTION_TORNAR_PROCESSAR_CODE, new TornarProcessarActionExecutor());
         register(RegistreResource.ACTION_UPDATE_DADES_CODE, new UpdateDadesActionExecutor());
+        register(RegistreResource.ACTION_MARCAR_SOBREESCRIURE_CODE, new SobreescriureActionExecutor());
     }
 
     @Override
@@ -134,7 +131,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         if (!isUser || entitatActualId == null) {
             return result;
         }
-        Set<Serializable> ids = aclEntryResourceService.findIdsWithAnyPermission(
+        Set<Serializable> ids = aclResourceHelper.findIdsWithAnyPermission(
                 ResourceType.BUSTIA,
                 List.of(PermissionEnum.READ),
                 authenticationHelper.getCurrentUserName(),
@@ -174,7 +171,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             /// Permisos
             boolean isUser = List.of(authenticationHelper.getCurrentUserRoles()).contains(BaseConfig.ROLE_USER);
             if ( isUser ) {
-                Set<Serializable> ids = aclEntryResourceService.findIdsWithAnyPermission(
+                Set<Serializable> ids = aclResourceHelper.findIdsWithAnyPermission(
                         ResourceType.BUSTIA,
                         List.of(PermissionEnum.READ),
                         authenticationHelper.getCurrentUserName(),
@@ -436,6 +433,19 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         int maxRegla = Integer.parseInt( configHelper.getConfigForEntitat(entitat != null ? entitat.getCodi() : null, "es.caib.distribucio.tasca.aplicar.regles.max.reintents") );
         int maxError = Integer.parseInt( configHelper.getConfigForEntitat(entitat != null ? entitat.getCodi() : null, "es.caib.distribucio.backoffice.reintentar.processament.max.reintents") );
 
+        boolean isAdmin = List.of(authenticationHelper.getCurrentUserRoles()).contains(BaseConfig.ROLE_ADMIN);
+        boolean isUser = List.of(authenticationHelper.getCurrentUserRoles()).contains(BaseConfig.ROLE_USER);
+        Set<Serializable> permesesIds = new HashSet<>();
+
+        if (isUser) {
+            permesesIds = aclResourceHelper.findIdsWithAnyPermission(
+                    ResourceType.BUSTIA,
+                    List.of(PermissionEnum.WRITE),
+                    authenticationHelper.getCurrentUserName(),
+                    new ArrayList<>(List.of(authenticationHelper.getCurrentUserRoles()))
+            );
+        }
+
         for (RegistreResource resource: resources) {
             switch (resource.getProcesEstat()) {
                 case ARXIU_PENDENT:
@@ -453,6 +463,8 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             if (resource.getProcesIntents() >= resource.getMaxReintents()) {
                 resource.setReintentsEsgotat(true);
             }
+
+            resource.setPotModificar(isAdmin || permesesIds.contains(resource.getPare().getId()));
         }
 
         super.afterConversion(entities, resources);
@@ -618,6 +630,35 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
         @Override
         public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
+        }
+    }
+    public class DescarregarDocReportGenerator implements ReportGenerator<RegistreResourceEntity, RegistreResource.DescarregarDoc, FitxerDto> {
+        @Override
+        public DownloadableFile generateFile(String code, List<?> data, ReportFileType fileType, OutputStream out) {
+            FitxerDto registre = (FitxerDto) data.get(0);
+            return new DownloadableFile(registre.getNom(), registre.getContentType(), registre.getContingut());
+        }
+
+        @Override
+        public List<FitxerDto> generateData(String code, RegistreResourceEntity entity, RegistreResource.DescarregarDoc params) throws ReportGenerationException {
+            try {
+                FitxerDto fitxer = registreService.getZipDocumentacio(
+                        entity.getId(),
+                        authenticationHelper.getCurrentUserRoles()[0],
+                        params.isImprimible());
+                return List.of(fitxer);
+            } catch (Exception e) {
+                throw new ReportGenerationException(
+                        RegistreResource.class,
+                        entity.getId(),
+                        code,
+                        e.getMessage()
+                );
+            }
+        }
+
+        @Override
+        public void onChange(Serializable id, RegistreResource.DescarregarDoc previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.DescarregarDoc target) {
         }
     }
 
@@ -1167,6 +1208,19 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                         ));
                 target.setDades(map);
             }
+        }
+    }
+    protected class SobreescriureActionExecutor implements ActionExecutor<RegistreResourceEntity, Serializable, RegistreResource> {
+
+        @Override
+        public RegistreResource exec(String code, RegistreResourceEntity entity, Serializable params) throws ActionExecutionException {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
+            registreService.marcarSobreescriure(entitatActualId, entity.getId());
+            return objectMappingHelper.newInstanceMap(entity, RegistreResource.class);
+        }
+
+        @Override
+        public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
         }
     }
 

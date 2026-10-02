@@ -5,7 +5,7 @@ import {CardPage} from "../../components/CardData.tsx";
 import {useTranslation} from "react-i18next";
 import UnitatOrganitzativaFilter from "./UnitatOrganitzativaFilter.tsx";
 import {useUnitatOrganitzativaOrganigrama} from "./UnitatOrganitzativaOrganigrama.tsx";
-import {useDistribucioContext} from "../../components/DistribucioContext.ts";
+import {ROLE_ADMIN, useDistribucioContext} from "../../components/DistribucioContext.ts";
 import {useSincronitzar} from "./actions/Sincronitzar.tsx";
 import {Icon, Tooltip} from "@mui/material";
 import {formatDate} from "../../util/dateUtils.ts";
@@ -20,7 +20,7 @@ const columns: MuiDataGridColDef[] = [
 
 export const UnitatOrganitzativaGrid = () => {
     const { t } = useTranslation();
-    const { currentEntitat } = useDistribucioContext();
+    const { currentEntitat, currentRole } = useDistribucioContext();
     const [springFilter, setSpringFilter] = React.useState<string>();
     const [namedQueries, setNamedQueries] = React.useState<string[]>([]);
     const {handleOpen: handleOrgOpen, dialog: organigrama} = useUnitatOrganitzativaOrganigrama()
@@ -59,6 +59,7 @@ export const UnitatOrganitzativaGrid = () => {
                             element: <ToolbarButton
                                 icon={'cached'}
                                 onClick={handleSinc}
+                                hidden={currentRole != ROLE_ADMIN}
                             >
                                 {t('page.unitatOrganitzativa.accio.sincronitzar.label')}
                             </ToolbarButton>

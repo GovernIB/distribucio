@@ -1053,7 +1053,19 @@ const translationCa = {
                 },
                 justificant: {
                     label: "Justificant",
-                    ok: "El justificant s'ha descarregat correctamnet",
+                    ok: "El justificant s'ha descarregat correctament",
+                },
+                sobreescriure: {
+                    label: "Marcar per a sobreescriure...",
+                    ok: "L'anotació amb número \"{{numero}}\" s'ha marcat per a sobreescriure correctament",
+                },
+                descargaOriginal: {
+                    label: "Versió original de justificant i annexos",
+                    ok: "La versió original de justificant i annexos s'ha descarregat correctament",
+                },
+                descargaAutentica: {
+                    label: "Còpia autèntica imprimible",
+                    ok: "La còpia autèntica imprimible s'ha descarregat correctament",
                 },
             },
         },

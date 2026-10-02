@@ -21,6 +21,10 @@ import java.util.Base64;
 @NoArgsConstructor
 @ResourceConfig(
 		accessConstraints = {
+                @ResourceAccessConstraint(
+                        type = ResourceAccessConstraint.ResourceAccessConstraintType.AUTHENTICATED,
+                        grantedPermissions = { PermissionEnum.READ }
+                ),
 				@ResourceAccessConstraint(
 						type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
 						roles = { BaseConfig.ROLE_SUPER, BaseConfig.ROLE_ADMIN },
