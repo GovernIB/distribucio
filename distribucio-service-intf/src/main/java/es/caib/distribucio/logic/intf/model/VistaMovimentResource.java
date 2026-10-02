@@ -182,7 +182,8 @@ public class VistaMovimentResource extends BaseResource<String> {
 		private String numero;
 		private String titol;
 		private String numeroOrigen;
-		private ResourceReference<UsuariResource, String> remitent;
+		/** Les opcions surten de UsuariLlistatResource: UsuariResource només retorna l'usuari actual. */
+		private ResourceReference<UsuariLlistatResource, String> remitent;
 		private String interessat;
 		private Date dataRecepcioInici;
 		private Date dataRecepcioFi;

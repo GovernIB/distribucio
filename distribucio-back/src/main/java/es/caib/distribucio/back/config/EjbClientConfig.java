@@ -388,6 +388,12 @@ public class EjbClientConfig {
 		return getLocalEjbFactoyBean(DominiResourceService.class);
 	}
 
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean usuariLlistatResourceService() {
+		return getLocalEjbFactoyBean(UsuariLlistatResourceService.class);
+	}
+
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {
 		String jndiName = jndiServiceName(serviceClass);
 		log.info("Creating EJB proxy for " + serviceClass.getSimpleName() + " with JNDI name " + jndiName);
