@@ -1242,7 +1242,34 @@ public class BustiaServiceImpl implements BustiaService {
 		Timer.Context contextvalidateRegistre = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.validateRegistre")).time();
 		EntitatEntity entitat = validateRegistre(entitatCodi, registreAnotacio);
 		contextvalidateRegistre.stop();
-		
+
+        boolean alertaSia = false;
+        String codiSia = registreAnotacio.getProcedimentCodi() != null ?registreAnotacio.getProcedimentCodi() :registreAnotacio.getServeiCodi();
+        RegistreClassificarTipusEnum tipusSia = procedimentHelper.getTipusSiaByCodi(entitat.getId(), codiSia);
+
+        if (codiSia != null) {
+            if (tipusSia != null) {
+                if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(tipusSia)) {
+                    registreAnotacio.setProcedimentCodi(codiSia);
+
+                    if (registreAnotacio.getServeiCodi() != null) {
+                        alertaSia = true;
+                        registreAnotacio.setServeiCodi(null);
+                    }
+                } else {
+                    registreAnotacio.setServeiCodi(codiSia);
+
+                    if (registreAnotacio.getProcedimentCodi() != null) {
+                        alertaSia = true;
+                        registreAnotacio.setProcedimentCodi(null);
+                    }
+                }
+            } else {
+                alertaSia = true;
+                registreAnotacio.setProcedimentCodi(codiSia);
+                registreAnotacio.setServeiCodi(null);
+            }
+        }
 		
 		//---- find estat of anotacio -----
 		Timer.Context contextfindEstat = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.findEstat")).time();
@@ -1285,6 +1312,19 @@ public class BustiaServiceImpl implements BustiaService {
 				reglaAplicable,
 				estat);
 		contextcrearRegistreEntity.stop();
+
+        /// ALERTA SIA
+        if (alertaSia) {
+            if (tipusSia != null) {
+                if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(tipusSia)) {
+                    alertaHelper.crearAlerta("Llegó como código SIA de servicio, pero este corresponde a un procedimiento.", null, false, anotacioEntity.getId());
+                } else {
+                    alertaHelper.crearAlerta("Llegó como codigo SIA de procedimiento, pero este corresponde a un servicio.", null, false, anotacioEntity.getId());
+                }
+            } else {
+                alertaHelper.crearAlerta("No se ha encontrado ningun procedimiento o servicio con el codigo sia " + codiSia, null, false, anotacioEntity.getId());
+            }
+        }
 		
 		//-- create emails ---
 		Timer.Context contextmoveAnotacioToBustiaPerDefecte = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.moveAnotacioToBustiaPerDefecte")).time();
