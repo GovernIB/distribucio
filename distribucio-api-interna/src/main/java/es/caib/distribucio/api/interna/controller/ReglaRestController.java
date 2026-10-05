@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import es.caib.distribucio.logic.helper.ProcedimentHelper;
 import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.service.*;
 import org.slf4j.Logger;
@@ -54,6 +55,8 @@ public class ReglaRestController {
 	private ProcedimentService procedimentService;
     @Autowired
     private ServeiService serveiService;
+    @Autowired
+    private ProcedimentHelper procedimentHelper;
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
 	@Operation(
@@ -109,9 +112,14 @@ public class ReglaRestController {
 		novaReglaDto.setTipus(tipus);
 		novaReglaDto.setBackofficeDestiId(backofficeDto.getId());
 		novaReglaDto.setBackofficeDestiNom(backoffice);
-        if (RegistreClassificarTipusEnum.PROCEDIMENT.name().equals(tipusSia)) {
+
+        RegistreClassificarTipusEnum tipSia = procedimentHelper.getTipusSiaByCodi(entitatDto.getId(), sia);
+        if (tipSia == null) {
+            tipSia = RegistreClassificarTipusEnum.valueOf(tipusSia);
+        }
+        if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(tipSia)) {
             novaReglaDto.setProcedimentCodiFiltre(sia);
-        } else if (RegistreClassificarTipusEnum.SERVEI.name().equals(tipusSia)) {
+        } else if (RegistreClassificarTipusEnum.SERVEI.equals(tipSia)) {
             novaReglaDto.setServeiCodiFiltre(sia);
         }
         novaReglaDto.setTramitCodiFiltre(tramit);

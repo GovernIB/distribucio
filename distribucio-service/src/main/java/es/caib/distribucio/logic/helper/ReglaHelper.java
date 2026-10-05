@@ -85,8 +85,7 @@ public class ReglaHelper {
 			ReglaEntity reglaActual,
 			Long unitatId,
 			Long bustiaId,
-			String procedimentCodi,
-			String serveiCodi,
+			String codiSia,
 			String tramitCodi,
 			String assumpteCodi,
 			Boolean presencial) {
@@ -101,8 +100,7 @@ public class ReglaHelper {
 				entitat,
 				unitatId,
 				bustiaId,
-				procedimentCodi != null ? procedimentCodi : "",
-				serveiCodi != null ? serveiCodi : "",
+                codiSia != null ? codiSia : "",
 				tramitCodi != null ? tramitCodi : "",
 				assumpteCodi != null ? assumpteCodi : "",
 				esPresencial == null,
@@ -135,8 +133,7 @@ public class ReglaHelper {
 			EntitatEntity entitat,
 			Long unitatId,
 			Long bustiaId,
-			String procedimentCodi,
-			String serveiCodi,
+			String codiSia,
 			String tramitCodi,
 			String assumpteCodi,
 			Boolean presencial) {
@@ -150,8 +147,7 @@ public class ReglaHelper {
 					entitat,
 					unitatId,
 					bustiaId,
-					procedimentCodi != null ? procedimentCodi : "",
-					serveiCodi != null ? serveiCodi : "",
+                    codiSia != null ? codiSia : "",
 					tramitCodi != null ? tramitCodi : "",
 					assumpteCodi != null ? assumpteCodi : "",
 					esPresencial == null,
@@ -306,8 +302,9 @@ public class ReglaHelper {
 						reglaToApply, 
 						registreSimulatDto.getUnitatId(),
 						registreSimulatDto.getBustiaId(),
-						registreSimulatDto.getProcedimentCodi(),
-						registreSimulatDto.getServeiCodi(),
+						registreSimulatDto.getProcedimentCodi() != null
+                                ?registreSimulatDto.getProcedimentCodi()
+                                :registreSimulatDto.getServeiCodi(),
 						registreSimulatDto.getTramitCodi(),
 						registreSimulatDto.getAssumpteCodi(),
 						presencial);
@@ -317,8 +314,9 @@ public class ReglaHelper {
 						entitatEntity,
 						registreSimulatDto.getUnitatId(),
 						registreSimulatDto.getBustiaId(),
-						registreSimulatDto.getProcedimentCodi(),
-						registreSimulatDto.getServeiCodi(),
+                        registreSimulatDto.getProcedimentCodi() != null
+                                ?registreSimulatDto.getProcedimentCodi()
+                                :registreSimulatDto.getServeiCodi(),
                         registreSimulatDto.getTramitCodi(),
 						registreSimulatDto.getAssumpteCodi(), 
 						presencial);
@@ -497,8 +495,9 @@ public class ReglaHelper {
 							regla, 
 							bustia.getUnitatOrganitzativa().getId(),
 							bustia.getId(),
-							registre.getProcedimentCodi(),
-							registre.getServeiCodi(),
+                            registre.getProcedimentCodi() != null
+                                    ?registre.getProcedimentCodi()
+                                    :registre.getServeiCodi(),
 							registre.getTramitCodi(),
 							registre.getAssumpteCodi(),
 							presencial);
@@ -508,8 +507,9 @@ public class ReglaHelper {
 							registre.getEntitat(),
 							bustia.getUnitatOrganitzativa().getId(),
 							bustia.getId(),
-							registre.getProcedimentCodi(),
-							registre.getServeiCodi(),
+                            registre.getProcedimentCodi() != null
+                                    ?registre.getProcedimentCodi()
+                                    :registre.getServeiCodi(),
 							registre.getTramitCodi(),
 							registre.getAssumpteCodi(),
 							presencial);

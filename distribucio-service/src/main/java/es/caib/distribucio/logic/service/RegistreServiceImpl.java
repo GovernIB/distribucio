@@ -2001,8 +2001,9 @@ public class RegistreServiceImpl implements RegistreService {
 							entitat,
 							unitat.getId(),
 							bustia.getId(),
-							anotacio.getProcedimentCodi(),
-							anotacio.getServeiCodi(),
+							anotacio.getProcedimentCodi() != null
+                                    ?anotacio.getProcedimentCodi()
+                                    :anotacio.getServeiCodi(),
 							anotacio.getTramitCodi(),
 							anotacio.getAssumpteCodi(),
 							presencial);
@@ -2741,8 +2742,9 @@ public class RegistreServiceImpl implements RegistreService {
 				bustia.getUnitatOrganitzativa().getId(),
 				registre.getPare() != null? registre.getPare().getId() : null,
 				registre.getProcedimentCodi(),
-				registre.getServeiCodi(),
-				registre.getTramitCodi(),
+				registre.getProcedimentCodi() != null
+                        ?registre.getServeiCodi()
+                        :registre.getTramitCodi(),
 				registre.getAssumpteCodi(),
 				registre.getPresencial());
 		ClassificacioResultatDto classificacioResultat = new ClassificacioResultatDto();

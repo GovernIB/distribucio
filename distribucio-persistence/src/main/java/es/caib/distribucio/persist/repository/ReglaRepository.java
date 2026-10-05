@@ -164,8 +164,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
             "and r.activa = true " +
             "and (r.unitatOrganitzativaFiltre is null or r.unitatOrganitzativaFiltre.id = :unitatOrganitzativaFiltreId) " +
             "and (r.bustiaFiltre is null or r.bustiaFiltre.id = :bustiaId) " +
-            "and (r.procedimentCodiFiltre is null or (r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre = :procedimentCodiFiltre or r.procedimentCodiFiltre like (:procedimentCodiFiltre||' %') or r.procedimentCodiFiltre like ('% '||:procedimentCodiFiltre))) " +
-            "and (r.serveiCodiFiltre is null or (r.serveiCodiFiltre like ('% '||:serveiCodiFiltre||' %') or r.serveiCodiFiltre = :serveiCodiFiltre or r.serveiCodiFiltre like (:serveiCodiFiltre||' %') or r.serveiCodiFiltre like ('% '||:serveiCodiFiltre))) " +
+            "and (r.procedimentCodiFiltre is null or (r.procedimentCodiFiltre like ('% '||:codiSia||' %') or r.procedimentCodiFiltre = :codiSia or r.procedimentCodiFiltre like (:codiSia||' %') or r.procedimentCodiFiltre like ('% '||:codiSia))) " +
+            "and (r.serveiCodiFiltre is null or (r.serveiCodiFiltre like ('% '||:codiSia||' %') or r.serveiCodiFiltre = :codiSia or r.serveiCodiFiltre like (:codiSia||' %') or r.serveiCodiFiltre like ('% '||:codiSia))) " +
             "and (r.tramitCodiFiltre is null or (r.tramitCodiFiltre like ('% '||:tramitCodiFiltre||' %') or r.tramitCodiFiltre = :tramitCodiFiltre or r.tramitCodiFiltre like (:tramitCodiFiltre||' %') or r.tramitCodiFiltre like ('% '||:tramitCodiFiltre))) " +
             "and (r.assumpteCodiFiltre is null or r.assumpteCodiFiltre = :assumpteCodiFiltre) " +
 			"and ((r.presencial is null) or (:isPresencialNull is true or r.presencial = :presencial)) " +
@@ -174,8 +174,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("entitat") EntitatEntity entitat,
 			@Param("unitatOrganitzativaFiltreId") Long unitatOrganitzativaFiltreId,
 			@Param("bustiaId") Long bustiaId,
-			@Param("procedimentCodiFiltre") String procedimentCodiFiltre,
-			@Param("serveiCodiFiltre") String serveiCodiFiltre,
+			@Param("codiSia") String codiSia,
 			@Param("tramitCodiFiltre") String tramitCodiFiltre,
 			@Param("assumpteCodiFiltre") String assumpteCodiFiltre,
 			@Param("isPresencialNull") boolean isPresencialNull,

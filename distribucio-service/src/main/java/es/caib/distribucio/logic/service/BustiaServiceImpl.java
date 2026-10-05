@@ -19,7 +19,10 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 
+import es.caib.distribucio.logic.helper.*;
+import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.persist.entity.*;
+import es.caib.distribucio.persist.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,41 +41,8 @@ import com.codahale.metrics.Timer;
 import com.codahale.metrics.json.MetricsModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import es.caib.distribucio.logic.helper.BustiaHelper;
-import es.caib.distribucio.logic.helper.CacheHelper;
-import es.caib.distribucio.logic.helper.ConfigHelper;
-import es.caib.distribucio.logic.helper.ContingutHelper;
-import es.caib.distribucio.logic.helper.ContingutLogHelper;
-import es.caib.distribucio.logic.helper.ConversioTipusHelper;
-import es.caib.distribucio.logic.helper.EmailHelper;
-import es.caib.distribucio.logic.helper.EntityComprovarHelper;
-import es.caib.distribucio.logic.helper.MessageHelper;
-import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper.Converter;
-import es.caib.distribucio.logic.helper.PermisosHelper;
 import es.caib.distribucio.logic.helper.PermisosHelper.ObjectIdentifierExtractor;
-import es.caib.distribucio.logic.helper.RegistreHelper;
-import es.caib.distribucio.logic.helper.ReglaHelper;
-import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
-import es.caib.distribucio.logic.helper.UsuariHelper;
-import es.caib.distribucio.logic.intf.dto.ArbreDto;
-import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDetallDto;
-import es.caib.distribucio.logic.intf.dto.ArxiuFirmaDto;
-import es.caib.distribucio.logic.intf.dto.ArxiuFirmaTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.BustiaContingutDto;
-import es.caib.distribucio.logic.intf.dto.BustiaDto;
-import es.caib.distribucio.logic.intf.dto.BustiaFiltreDto;
-import es.caib.distribucio.logic.intf.dto.ContingutTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.PaginaDto;
-import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
-import es.caib.distribucio.logic.intf.dto.PermisDto;
-import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
-import es.caib.distribucio.logic.intf.dto.RegistreDto;
-import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
-import es.caib.distribucio.logic.intf.dto.UsuariBustiaFavoritDto;
-import es.caib.distribucio.logic.intf.dto.UsuariPermisDto;
 import es.caib.distribucio.logic.intf.dto.dadesobertes.BustiaDadesObertesDto;
 import es.caib.distribucio.logic.intf.dto.dadesobertes.UsuariDadesObertesDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
@@ -84,18 +54,6 @@ import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
 import es.caib.distribucio.logic.permission.ExtendedPermission;
-import es.caib.distribucio.persist.repository.BustiaDefaultRepository;
-import es.caib.distribucio.persist.repository.BustiaRepository;
-import es.caib.distribucio.persist.repository.ContingutComentariRepository;
-import es.caib.distribucio.persist.repository.ContingutMovimentRepository;
-import es.caib.distribucio.persist.repository.ContingutRepository;
-import es.caib.distribucio.persist.repository.EntitatRepository;
-import es.caib.distribucio.persist.repository.RegistreRepository;
-import es.caib.distribucio.persist.repository.ReglaRepository;
-import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
-import es.caib.distribucio.persist.repository.UsuariBustiaFavoritRepository;
-import es.caib.distribucio.persist.repository.UsuariRepository;
-import es.caib.distribucio.persist.repository.VistaMovimentRepository;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
 /**
@@ -169,8 +127,12 @@ public class BustiaServiceImpl implements BustiaService {
 
 	@Autowired
 	private ConfigHelper configHelper;
-	
-	@Override
+    @Autowired
+    private AlertaHelper alertaHelper;
+    @Autowired
+    private ProcedimentHelper procedimentHelper;
+
+    @Override
 	@Transactional
 	public BustiaDto create(
 			Long entitatId,
@@ -1124,7 +1086,34 @@ public class BustiaServiceImpl implements BustiaService {
 		Timer.Context contextvalidateRegistre = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.validateRegistre")).time();
 		EntitatEntity entitat = validateRegistre(entitatCodi, registreAnotacio);
 		contextvalidateRegistre.stop();
-		
+
+        boolean alertaSia = false;
+        String codiSia = registreAnotacio.getProcedimentCodi() != null ?registreAnotacio.getProcedimentCodi() :registreAnotacio.getServeiCodi();
+        RegistreClassificarTipusEnum tipusSia = procedimentHelper.getTipusSiaByCodi(entitat.getId(), codiSia);
+
+        if (codiSia != null) {
+            if (tipusSia != null) {
+                if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(tipusSia)) {
+                    registreAnotacio.setProcedimentCodi(codiSia);
+
+                    if (registreAnotacio.getServeiCodi() != null) {
+                        alertaSia = true;
+                        registreAnotacio.setServeiCodi(null);
+                    }
+                } else {
+                    registreAnotacio.setServeiCodi(codiSia);
+
+                    if (registreAnotacio.getProcedimentCodi() != null) {
+                        alertaSia = true;
+                        registreAnotacio.setProcedimentCodi(null);
+                    }
+                }
+            } else {
+                alertaSia = true;
+                registreAnotacio.setProcedimentCodi(codiSia);
+                registreAnotacio.setServeiCodi(null);
+            }
+        }
 		
 		//---- find estat of anotacio -----
 		Timer.Context contextfindEstat = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.findEstat")).time();
@@ -1138,8 +1127,9 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				unitat.getId(),
 				bustia.getId(),
-				registreAnotacio.getProcedimentCodi(),
-				registreAnotacio.getServeiCodi(),
+				registreAnotacio.getProcedimentCodi() != null
+                        ?registreAnotacio.getProcedimentCodi()
+                        :registreAnotacio.getServeiCodi(),
 				registreAnotacio.getTramitCodi(),
 				registreAnotacio.getAssumpteCodi(),
 				registreAnotacio.isPresencial());
@@ -1165,6 +1155,19 @@ public class BustiaServiceImpl implements BustiaService {
 				reglaAplicable,
 				estat);
 		contextcrearRegistreEntity.stop();
+
+        /// ALERTA SIA
+        if (alertaSia) {
+            if (tipusSia != null) {
+                if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(tipusSia)) {
+                    alertaHelper.crearAlerta("Llegó como código SIA de servicio, pero este corresponde a un procedimiento.", null, false, anotacioEntity.getId());
+                } else {
+                    alertaHelper.crearAlerta("Llegó como codigo SIA de procedimiento, pero este corresponde a un servicio.", null, false, anotacioEntity.getId());
+                }
+            } else {
+                alertaHelper.crearAlerta("No se ha encontrado ningun procedimiento o servicio con el codigo sia " + codiSia, null, false, anotacioEntity.getId());
+            }
+        }
 		
 		//-- create emails ---
 		Timer.Context contextmoveAnotacioToBustiaPerDefecte = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.moveAnotacioToBustiaPerDefecte")).time();
@@ -1254,8 +1257,9 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				unitat.getId(),
 				bustia.getId(),
-				registreAnotacio.getProcedimentCodi(),
-				registreAnotacio.getServeiCodi(),
+				registreAnotacio.getProcedimentCodi() != null
+                        ?registreAnotacio.getProcedimentCodi()
+                        :registreAnotacio.getServeiCodi(),
 				registreAnotacio.getTramitCodi(),
 				registreAnotacio.getAssumpteCodi(),
 				registreAnotacio.isPresencial());

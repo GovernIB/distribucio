@@ -9,6 +9,9 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
+import es.caib.distribucio.persist.entity.ServeiEntity;
+import es.caib.distribucio.persist.repository.ServeiRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +47,10 @@ public class ProcedimentHelper {
 	private PluginHelper pluginHelper;
 	@Autowired
 	private ConversioTipusHelper conversioTipusHelper;
-	
-	/** Consutla la llista de procediments de BBDD i marca com a extingits els que no hagi retornat la consulta a Distribucio.
+    @Autowired
+    private ServeiRepository serveiRepository;
+
+    /** Consutla la llista de procediments de BBDD i marca com a extingits els que no hagi retornat la consulta a Distribucio.
 	 * 
 	 * @param procedimentMap Map amb els procediments de Distribucio.
 	 */
@@ -238,6 +243,21 @@ public class ProcedimentHelper {
 		}
 		return uo;
 	}
+
+    public RegistreClassificarTipusEnum getTipusSiaByCodi(Long entitatId, String codiSia) {
+        if (codiSia != null) {
+            ProcedimentEntity procedimentEntity = procedimentRepository.findByCodiSia(entitatId, codiSia);
+            if (procedimentEntity != null) {
+                return RegistreClassificarTipusEnum.PROCEDIMENT;
+            } else {
+                ServeiEntity serveiEntity = serveiRepository.findByCodiSia(entitatId, codiSia);
+                if (serveiEntity != null) {
+                    return RegistreClassificarTipusEnum.SERVEI;
+                }
+            }
+        }
+        return null;
+    }
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProcedimentHelper.class);
 }
