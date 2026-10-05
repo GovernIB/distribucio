@@ -5,12 +5,12 @@ package es.caib.distribucio.logic.service;
 
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import es.caib.distribucio.logic.helper.*;
 import es.caib.distribucio.logic.intf.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,15 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.logic.helper.BustiaHelper;
-import es.caib.distribucio.logic.helper.ConversioTipusHelper;
-import es.caib.distribucio.logic.helper.EntityComprovarHelper;
-import es.caib.distribucio.logic.helper.IntegracioHelper;
-import es.caib.distribucio.logic.helper.PaginacioHelper;
-import es.caib.distribucio.logic.helper.ReglaHelper;
-import es.caib.distribucio.logic.helper.SubsistemesHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper.SubsistemesEnum;
-import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
@@ -82,8 +74,10 @@ public class ReglaServiceImpl implements ReglaService {
 
     @PersistenceContext
     private EntityManager entityManager;
+    @Autowired
+    private ProcedimentHelper procedimentHelper;
 
-	@Override
+    @Override
 	@Transactional
 	public ReglaDto create(
 			Long entitatId,
@@ -709,6 +703,11 @@ public class ReglaServiceImpl implements ReglaService {
                 sia,
                 null);
         return conversioTipusHelper.convertirList(reglesPerSia, ReglaDto.class);
+    }
+
+    @Override
+    public RegistreClassificarTipusEnum getTipusSiaByCodi(Long entitatId, String codiSia) {
+        return procedimentHelper.getTipusSiaByCodi(entitatId, codiSia);
     }
 
     @Transactional(readOnly = true)

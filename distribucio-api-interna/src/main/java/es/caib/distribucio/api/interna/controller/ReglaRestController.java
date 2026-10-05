@@ -13,7 +13,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import es.caib.distribucio.logic.helper.ProcedimentHelper;
 import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.service.*;
 import org.slf4j.Logger;
@@ -55,8 +54,6 @@ public class ReglaRestController {
 	private ProcedimentService procedimentService;
     @Autowired
     private ServeiService serveiService;
-    @Autowired
-    private ProcedimentHelper procedimentHelper;
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
 	@Operation(
@@ -113,7 +110,7 @@ public class ReglaRestController {
 		novaReglaDto.setBackofficeDestiId(backofficeDto.getId());
 		novaReglaDto.setBackofficeDestiNom(backoffice);
 
-        RegistreClassificarTipusEnum tipSia = procedimentHelper.getTipusSiaByCodi(entitatDto.getId(), sia);
+        RegistreClassificarTipusEnum tipSia = reglaService.getTipusSiaByCodi(entitatDto.getId(), sia);
         if (tipSia == null) {
             tipSia = RegistreClassificarTipusEnum.valueOf(tipusSia);
         }

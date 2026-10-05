@@ -219,6 +219,12 @@ public class ReglaServiceEjb extends AbstractServiceEjb<ReglaService> implements
 		return delegateService.findReglaBackofficeByCodiSiaAndTramit(siaCodi, tramit);
 	}
 
+    @Override
+    @RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
+    public RegistreClassificarTipusEnum getTipusSiaByCodi(Long entitatId, String codiSia) {
+        return delegateService.getTipusSiaByCodi(entitatId, codiSia);
+    }
+
 	@Override
 	@RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
 	public List<ReglaDto> findReglaBackofficeByCodiSiaAndAnyTramit(String siaCodi, String tramit) {
