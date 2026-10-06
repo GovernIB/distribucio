@@ -12,6 +12,10 @@ import useMarcarProcessada from "../actions/MarcarProcessada.tsx";
 import useMarcarPendent from "../actions/MarcarPendent.tsx";
 import {useSnackbar} from "notistack";
 import useTornarProcessar from "../actions/TornarProcessar.tsx";
+import useMarcarSobreescriure from "../actions/MarcarSobreescriure.tsx";
+import useDescargaMassiva from "../actions/DescargaMassiva.tsx";
+import useReenviarBackoffice from "../actions/ReenviarBackoffice.tsx";
+import useEnviarMarcar from "../actions/EnviarMarcar.tsx";
 
 export const useActions = (refresh?: () => void) => {
     const { t } = useTranslation();
@@ -25,10 +29,23 @@ export const useActions = (refresh?: () => void) => {
 
     const marcarSobreescriure = (id:any) => {
         if (apiIsReady) {
-            apiAction(id, {code: "MARCAR_SOBREESCRIURE"})
+            apiAction(undefined, {code: "MARCAR_SOBREESCRIURE", data: { ids: [id], massive: false } })
                 .then((response) => {
                     refresh?.()
                     temporalMessageShow(null, t('page.registre.accio.sobreescriure.ok', {numero: response.numero}), 'success');
+                })
+                .catch((error) => {
+                    temporalMessageShow(null, error?.message, 'error');
+                });
+        }
+    }
+
+    const reenviarBackoffice = (id:any) => {
+        if (apiIsReady) {
+            apiAction(undefined, {code: "REENVIAR_BACKOFFICE", data: { ids: [id], massive: false } })
+                .then((response) => {
+                    refresh?.()
+                    temporalMessageShow(null, t('page.registre.accio.reenviarBackoffice.ok', {numero: response.numero}), 'success');
                 })
                 .catch((error) => {
                     temporalMessageShow(null, error?.message, 'error');
@@ -77,12 +94,27 @@ export const useActions = (refresh?: () => void) => {
         }
     }
 
+    const exportRegistre = (ids:any[], fileType?:any) => {
+        if (apiIsReady) {
+            apiReport(undefined, {code: "EXPORT", data: { ids }, fileType})
+                .then((result) => {
+                    iniciaDescargaBlob(result)
+                    temporalMessageShow(null, t(`page.registre.accio.export.ok`, {format: fileType}), 'success')
+                })
+                .catch((error) => {
+                    temporalMessageShow(null, error?.message, 'error');
+                });
+        }
+    }
+
     return {
         apiIsReady,
         marcarSobreescriure,
         descarregarDoc,
         informeLogs,
         justificant,
+        exportRegistre,
+        reenviarBackoffice,
     }
 }
 
@@ -144,6 +176,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
             action: 'CLASSIFICAR',
             showInMenu: true,
             onClick: (id:any) => handleClassificar([id], false),
+            disabled: (row:any) => row.procesEstat == 'ARXIU_PENDENT',
             hidden: (row:any) => !row.potModificar,
         },
         {
@@ -236,6 +269,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
 export const useRegistreMassiveActions = () => {
     const { t } = useTranslation();
 
+    const {exportRegistre} = useActions()
     const { handleOpen: handleEM, component: componentEM } = useExecucioMassivaGrid();
 
     const { handleShow: handleClassificar, content: contentClassificar } = useClassificar(() => {
@@ -262,14 +296,44 @@ export const useRegistreMassiveActions = () => {
         handleEM()
         // temporalMessageShow(null, t(`page.registre.accio.tornarProcessar.ok`), 'success');
     })
+    const { handleShow: handleSobreescriure, content: contentSobreescriure } = useMarcarSobreescriure(() => {
+        handleEM()
+        // temporalMessageShow(null, t(`page.registre.accio.sobreescriure.ok`), 'success');
+    })
+    const { handleShow: handleDescargaMassiva, content: contentDescargaMassiva } = useDescargaMassiva(() => {
+        handleEM()
+        // temporalMessageShow(null, t(`page.registre.accio.descargaMassiva.ok`), 'success');
+    })
+    const { handleShow: handleReenviarBackoffice, content: contentReenviarBackoffice } = useReenviarBackoffice(() => {
+        handleEM()
+        // temporalMessageShow(null, t(`page.registre.accio.reenviarBackoffice.ok`), 'success');
+    })
+    const { handleShow: handleEnviaMarca, content: contentEnviaMarca } = useEnviarMarcar(() => {
+        handleEM()
+        // temporalMessageShow(null, t(`page.registre.accio.enviaMarca.ok`), 'success');
+    })
 
     const actions:any[] = [
+        {
+            label: t('page.registre.accio.reenviarBackoffice.label'),
+            icon: 'settings',
+            action: 'REENVIAR_BACKOFFICE',
+            showInMenu: true,
+            onClick: (ids:any) => handleReenviarBackoffice(ids, true),
+        },
         {
             label: t('page.registre.accio.tornarProcessar.label'),
             icon: 'settings',
             action: 'TORNAR_PROCESSAR',
             showInMenu: true,
             onClick: (ids:any) => handleTornarProcessar(ids, true),
+        },
+        {
+            label: t('page.registre.accio.sobreescriure.label'),
+            icon: 'history',
+            action: 'MARCAR_SOBREESCRIURE',
+            showInMenu: true,
+            onClick: (ids:any) => handleSobreescriure(ids, true),
         },
         {
             label: <Divider sx={{width: '100%'}} color={"none"}/>,
@@ -312,6 +376,34 @@ export const useRegistreMassiveActions = () => {
             showInMenu: true,
             onClick: (ids:any) => handlePendent(ids, true),
         },
+        {
+            label: t('page.registre.accio.enviaMarca.label'),
+            icon: 'mail',
+            action: 'ENVIAR_MARCAR',
+            showInMenu: true,
+            onClick: (ids:any) => handleEnviaMarca(ids, true),
+        },
+        {
+            label: t('page.registre.accio.export.ODS'),
+            icon: 'download',
+            report: 'EXPORT',
+            showInMenu: true,
+            onClick: (ids:any) => exportRegistre(ids, 'ODS'),
+        },
+        {
+            label: t('page.registre.accio.export.CSV'),
+            icon: 'download',
+            report: 'EXPORT',
+            showInMenu: true,
+            onClick: (ids:any) => exportRegistre(ids, 'CSV'),
+        },
+        {
+            label: t('page.registre.accio.descargaMassiva.label'),
+            icon: 'download',
+            action: 'DESCARREGAR_MASSIU',
+            showInMenu: true,
+            onClick: (ids:any) => handleDescargaMassiva(ids, true),
+        },
     ]
 
     const components = <>
@@ -322,6 +414,10 @@ export const useRegistreMassiveActions = () => {
         {contentProcessada}
         {contentPendent}
         {contentTornarProcessar}
+        {contentSobreescriure}
+        {contentDescargaMassiva}
+        {contentReenviarBackoffice}
+        {contentEnviaMarca}
     </>
 
     return {

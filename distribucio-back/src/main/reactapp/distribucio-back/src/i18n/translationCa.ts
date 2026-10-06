@@ -30,6 +30,7 @@ const translationCa = {
             false: "No",
         },
         actions: "Accions",
+        download: "Descarrega",
     },
     app: {
         loading: 'Iniciant DISTRIBUCIO',
@@ -1056,8 +1057,29 @@ const translationCa = {
                     ok: "El justificant s'ha descarregat correctament",
                 },
                 sobreescriure: {
-                    label: "Marcar per a sobreescriure...",
+                    label: "Marca per a sobreescriure...",
+                    title: "Marcar per a sobreescriure",
+                    titleMassive: "Marcar per a sobreescriure {{num}} anotacions",
                     ok: "L'anotació amb número \"{{numero}}\" s'ha marcat per a sobreescriure correctament",
+                },
+                reenviarBackoffice: {
+                    label: "Reintenta l'enviament al backoffice",
+                    titleMassive: "Reintentar l'enviament al backoffice de {{num}} anotacions",
+                    ok: "L'anotació \"{{numero}}\" s'ha processat correctament",
+                },
+                descargaMassiva: {
+                    label: "Descarrega el justificant i els annexos...",
+                    titleMassive: "Exportar el contingut de les {{num}} anotacions seleccionades",
+                },
+                export: {
+                    ODS: "Exporta ODS",
+                    CSV: "Exporta CSV",
+                    ok: "Les anotacions s'han exportat a {{format}} correctament",
+                },
+                enviaMarca: {
+                    destinatari: "Introduïu els destinataris separats per coma o per espai",
+                    label: "Enviar i marcar com a processades...",
+                    titleMassive: "Enviar per correu electrònic i marcar com a processades {{num}} anotacions",
                 },
                 descargaOriginal: {
                     label: "Versió original de justificant i annexos",

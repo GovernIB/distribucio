@@ -9,6 +9,7 @@ import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.dto.*;
+import es.caib.distribucio.logic.intf.registre.FileNameOption;
 import es.caib.distribucio.logic.intf.resourcevalidation.EmailValid;
 import es.caib.distribucio.logic.intf.resourcevalidation.RegistreClassificarValid;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
@@ -37,23 +38,23 @@ import java.util.*;
 @NoArgsConstructor
 @FieldNameConstants
 @ResourceConfig(
-		descriptionField = ContingutResource.Fields.nom,
-		quickFilterFields = { ContingutResource.Fields.nom },
-		accessConstraints = {
+        descriptionField = ContingutResource.Fields.nom,
+        quickFilterFields = {ContingutResource.Fields.nom},
+        accessConstraints = {
                 @ResourceAccessConstraint(
                         type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-                        roles = { BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_USER },
-                        grantedPermissions = { PermissionEnum.READ }
+                        roles = {BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_USER},
+                        grantedPermissions = {PermissionEnum.READ}
                 ),
                 @ResourceAccessConstraint(
                         type = ResourceAccessConstraint.ResourceAccessConstraintType.CUSTOM,
-                        roles = { BaseConfig.ROLE_USER },
+                        roles = {BaseConfig.ROLE_USER},
                         grantedPermissions = {PermissionEnum.WRITE}
                 ),
                 @ResourceAccessConstraint(
                         type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-                        roles = { BaseConfig.ROLE_ADMIN },
-                        grantedPermissions = { PermissionEnum.READ, PermissionEnum.WRITE }
+                        roles = {BaseConfig.ROLE_ADMIN},
+                        grantedPermissions = {PermissionEnum.READ, PermissionEnum.WRITE}
                 )
         },
         artifacts = {
@@ -89,6 +90,18 @@ import java.util.*;
                         code = RegistreResource.REPORT_DESCARREGAR_DOC_CODE,
                         requiresId = true,
                         formClass = RegistreResource.DescarregarDoc.class),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.REPORT,
+                        code = RegistreResource.REPORT_EXPORT_CODE,
+                        formClass = MassiveForm.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_USER},
+                                        grantedPermissions = {PermissionEnum.WRITE}
+                                ),
+                        }
+                ),
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = RegistreResource.ACTION_CLASSIFICAR_CODE,
@@ -158,12 +171,55 @@ import java.util.*;
                         type = ResourceArtifactType.ACTION,
                         code = RegistreResource.ACTION_UPDATE_DADES_CODE,
                         requiresId = true,
-                        formClass = RegistreResource.DadaForm.class
+                        formClass = RegistreResource.DadaForm.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER},
+                                        grantedPermissions = {PermissionEnum.WRITE}
+                                ),
+                        }
                 ),
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = RegistreResource.ACTION_MARCAR_SOBREESCRIURE_CODE,
-                        requiresId = true
+                        formClass = MassiveForm.class
+                ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_DESCARREGAR_MASSIU_CODE,
+                        formClass = RegistreResource.DescarregarMassiu.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER},
+                                        grantedPermissions = {PermissionEnum.WRITE}
+                                ),
+                        }
+                ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_REENVIAR_BACKOFFICE_CODE,
+                        formClass = MassiveForm.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER},
+                                        grantedPermissions = {PermissionEnum.WRITE}
+                                ),
+                        }
+                ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_ENVIAR_MARCAR_CODE,
+                        formClass = RegistreResource.EnviarMarcarForm.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER},
+                                        grantedPermissions = {PermissionEnum.WRITE}
+                                ),
+                        }
                 ),
         }
 )
@@ -178,6 +234,7 @@ public class RegistreResource extends ContingutResource {
     public static final String REPORT_INFORME_LOGS_CODE = "INFORME_LOGS";
     public static final String REPORT_JUSTIFICANT_CODE = "JUSTIFICANT";
     public static final String REPORT_DESCARREGAR_DOC_CODE = "DESCARREGAR_DOC";
+    public static final String REPORT_EXPORT_CODE = "EXPORT";
 
     public static final String ACTION_CLASSIFICAR_CODE = "CLASSIFICAR";
     public static final String ACTION_ENVIAR_EMAIL_CODE = "ENVIAR_EMAIL";
@@ -187,6 +244,9 @@ public class RegistreResource extends ContingutResource {
     public static final String ACTION_TORNAR_PROCESSAR_CODE = "TORNAR_PROCESSAR";
     public static final String ACTION_UPDATE_DADES_CODE = "UPDATE_DADES";
     public static final String ACTION_MARCAR_SOBREESCRIURE_CODE = "MARCAR_SOBREESCRIURE";
+    public static final String ACTION_DESCARREGAR_MASSIU_CODE = "DESCARREGAR_MASSIU";
+    public static final String ACTION_REENVIAR_BACKOFFICE_CODE = "REENVIAR_BACKOFFICE";
+    public static final String ACTION_ENVIAR_MARCAR_CODE = "ENVIAR_MARCAR";
 
     private RegistreTipusEnum registreTipus;
     private String numero;
@@ -247,7 +307,7 @@ public class RegistreResource extends ContingutResource {
     /** Conté el recompte del número d'annexos en estat esborrany */
     private int annexosEstatEsborrany;
 
-    @Transient private boolean potModificar;
+    @Transient private Boolean potModificar;
 
     @Transient private int numInteressats;
     @Transient private int numAnnexos;
@@ -255,7 +315,7 @@ public class RegistreResource extends ContingutResource {
     @Transient private int numCopies;
     @Transient private Boolean siaExtingit;
 
-    @Transient private RegistreProcesEstatSimpleEnumDto procesEstatSimple;;
+    @Transient private RegistreProcesEstatSimpleEnumDto procesEstatSimple;
     @Transient private boolean reintentsEsgotat;
     @Transient private int maxReintents;
     @Transient private ArxiuDetallDto arxiuDetall;
@@ -386,7 +446,8 @@ public class RegistreResource extends ContingutResource {
         private boolean ambCopia;
         private String comentari;
 
-        @NotNull @NotEmpty
+        @NotNull
+        @NotEmpty
         private List<Long> busties = new ArrayList<>();
         private List<Long> coneixement = new ArrayList<>();
     }
@@ -421,6 +482,36 @@ public class RegistreResource extends ContingutResource {
     @FieldNameConstants
     public static class DescarregarDoc implements Serializable {
         private boolean imprimible;
+    }
+
+    @Getter
+    @Setter
+    @FieldNameConstants
+    public static class DescarregarMassiu extends MassiveForm {
+
+        @NotEmpty
+        @ResourceField(onChangeActive = true)
+        private List<Long> ids;
+
+        private boolean estructuraCarpetes;
+        private boolean versioImprimible;
+        @NotNull
+        private FileNameOption nomDocument = FileNameOption.ORIGINAL;
+
+        private boolean disabled;
+        private List<String> info;
+        private List<String> errors;
+    }
+
+    @Getter
+    @Setter
+    @FieldNameConstants
+    public static class EnviarMarcarForm extends MassiveWarningForm {
+        @NotNull
+        @EmailValid
+        private String destinatari;
+        @NotBlank
+        private String motiu;
     }
 
 }

@@ -1054,8 +1054,29 @@ const translationEs = {
                     ok: "El justificante se ha descargado correctamente",
                 },
                 sobreescriure: {
-                    label: "Marcar para sobrescribir...",
+                    label: "Marca para sobrescribir...",
+                    title: "Marcar para sobrescribir",
+                    titleMassive: "Marcar para sobrescribir {{num}} anotaciones",
                     ok: "La anotación con número \"{{numero}}\" se ha marcado para sobrescribir correctamente",
+                },
+                reenviarBackoffice: {
+                    label: "Reintenta el envío al backoffice",
+                    titleMassive: "Reintentar el envío al backoffice de {{num}} anotaciones",
+                    ok: "La anotación \"{{numero}}\" se ha procesado correctamente",
+                },
+                descargaMassiva: {
+                    label: "Descarga justificante y anexos...",
+                    titleMassive: "Exportar el contenido de las {{num}} anotaciones seleccionadas",
+                },
+                export: {
+                    ODS: "Exporta ODS",
+                    CSV: "Exporta CSV",
+                    ok: "Las anotaciones se han exportado a {{format}} correctamente",
+                },
+                enviaMarca: {
+                    destinatari: "Introduze los destinatarios separados por coma o por espacio",
+                    label: "Enviar y marcar como procesadas...",
+                    titleMassive: "Enviar por correo electrónico y marcar como procesadas {{num}} anotaciones",
                 },
                 descargaOriginal: {
                     label: "Versión original del justificante y anexos",

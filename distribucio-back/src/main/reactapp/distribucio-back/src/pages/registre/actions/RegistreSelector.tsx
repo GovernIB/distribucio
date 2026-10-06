@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { DetailExpandCard } from '../../../components/CardData.tsx';
 import { Chip, Typography, Box, Icon } from '@mui/material';
 
-export const RegistreSelector = ({ disabled = false }: any) => {
+export const RegistreSelector = ({ expanded = false, disabled = false }: any) => {
     const { t } = useTranslation();
     const { data, apiRef } = useFormContext();
 
@@ -41,6 +41,7 @@ export const RegistreSelector = ({ disabled = false }: any) => {
                 }
                 cardProps={{ backgroundColor: 'greyBackground' }}
                 sx={{ backgroundColor: 'customBackground', p: 2 }}
+                expanded={expanded}
             >
                 <StyledMuiGrid
                     resourceName="registreResource"

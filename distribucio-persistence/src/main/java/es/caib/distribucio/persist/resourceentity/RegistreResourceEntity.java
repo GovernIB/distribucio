@@ -168,7 +168,7 @@ public class RegistreResourceEntity extends ContingutResourceEntity<RegistreReso
 
     @OneToMany(
             mappedBy = "registre",
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<RegistreAnnexResourceEntity> annexos = new ArrayList<>();

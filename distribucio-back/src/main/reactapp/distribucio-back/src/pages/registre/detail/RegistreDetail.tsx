@@ -218,13 +218,16 @@ const InteressatsGrid = ({id}:any) => {
     </>)
 }
 
-const ProcessBack = ({entity}:any) => {
+const ProcessBack = ({entity, refresh}:any) => {
     const { t } = useBaseAppContext();
 
+    const { reenviarBackoffice } = useActions(refresh)
+
     return <Grid container columnSpacing={1} rowSpacing={1}>
-        {(entity.procesEstat == 'BACK_COMUNICADA' || entity.procesEstat == 'BACK_REBUTJADA' || entity.procesEstat == 'BACK_ERROR') && <>
+        {entity.potModificar && (entity.procesEstat == 'BACK_COMUNICADA' || entity.procesEstat == 'BACK_REBUTJADA' || entity.procesEstat == 'BACK_ERROR') && <>
             <Grid size={12} sx={{ textAlign: 'end' }}>
-                <ToolbarButton icon={'refresh'}>Reintentar enviament al backoffice</ToolbarButton>
+                <ToolbarButton icon={'refresh'} onClick={() => reenviarBackoffice(entity.id)} >
+                    {t('page.registre.accio.reenviarBackoffice.label')}</ToolbarButton>
             </Grid>
         </>}
 
@@ -526,7 +529,7 @@ const RegistreDetail = (props:any) => {
         {
             value: 'procesBack',
             label: t('component.RegistreDetail.tabs.procesBack'),
-            content: <ProcessBack entity={data}/>,
+            content: <ProcessBack entity={data} refresh={refresh}/>,
             hidden: data.procesEstat == 'BACK_PENDENT' || !(data.procesEstat?.includes('BACK_'))
         },
         {

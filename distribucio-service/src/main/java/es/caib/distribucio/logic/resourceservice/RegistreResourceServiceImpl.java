@@ -18,10 +18,7 @@ import es.caib.distribucio.logic.intf.resourceservice.RegistreResourceService;
 import es.caib.distribucio.logic.intf.service.*;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.logic.intf.util.Utils;
-import es.caib.distribucio.persist.entity.EntitatEntity;
-import es.caib.distribucio.persist.entity.ExecucioMassivaContingutEntity;
-import es.caib.distribucio.persist.entity.RegistreEntity;
-import es.caib.distribucio.persist.entity.ReglaEntity;
+import es.caib.distribucio.persist.entity.*;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
 import es.caib.distribucio.persist.repository.ReglaRepository;
@@ -37,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.persistence.criteria.*;
 import java.io.*;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -69,6 +67,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private final MetaDadaResourceRepository metaDadaResourceRepository;
     private final ContingutMovimentResourceRepository contingutMovimentResourceRepository;
     private final AclResourceHelper aclResourceHelper;
+    private final RegistreResourceHelper registreResourceHelper;
 
     /**
      * Activat només durant {@link #getOne} amb la perspectiva VISTA_MOVIMENTS: permet que un usuari consulti (només lectura) una anotació que ja no és
@@ -89,6 +88,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(RegistreResource.REPORT_INFORME_LOGS_CODE, new InformeLogsReportGenerator());
         register(RegistreResource.REPORT_JUSTIFICANT_CODE, new JustificantReportGenerator());
         register(RegistreResource.REPORT_DESCARREGAR_DOC_CODE, new DescarregarDocReportGenerator());
+        register(RegistreResource.REPORT_EXPORT_CODE, new ExportReportGenerator());
 
         register(RegistreResource.ACTION_CLASSIFICAR_CODE, new ClassificarActionExecutor());
         register(RegistreResource.ACTION_ENVIAR_EMAIL_CODE, new EnviarEmailActionExecutor());
@@ -98,6 +98,9 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(RegistreResource.ACTION_TORNAR_PROCESSAR_CODE, new TornarProcessarActionExecutor());
         register(RegistreResource.ACTION_UPDATE_DADES_CODE, new UpdateDadesActionExecutor());
         register(RegistreResource.ACTION_MARCAR_SOBREESCRIURE_CODE, new SobreescriureActionExecutor());
+        register(RegistreResource.ACTION_DESCARREGAR_MASSIU_CODE, new DescarregarMassiuActionExecutor());
+        register(RegistreResource.ACTION_REENVIAR_BACKOFFICE_CODE, new ReenviarBackofficeActionExecutor());
+        register(RegistreResource.ACTION_ENVIAR_MARCAR_CODE, new EnviarMarcarActionExecutor());
     }
 
     @Override
@@ -420,6 +423,17 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                                 ExecucioMassivaContingutEstatDto.PAUSADA)
                 )
         );
+
+        if (resource.getPotModificar() == null) {
+            resource.setPotModificar( aclResourceHelper.anyPermissionGranted(
+                    ResourceType.BUSTIA,
+                    resource.getPare().getId(),
+                    List.of(PermissionEnum.WRITE),
+                    authenticationHelper.getCurrentUserName(),
+                    new ArrayList<>(List.of(authenticationHelper.getCurrentUserRoles()))
+            ));
+        }
+
         resource.setPendentExecucioMassiva(execucioMassivaPendent != null);
     }
 
@@ -464,7 +478,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 resource.setReintentsEsgotat(true);
             }
 
-            resource.setPotModificar(isAdmin || permesesIds.contains(resource.getPare().getId()));
+            resource.setPotModificar(isAdmin || permesesIds.contains(new BigDecimal(resource.getPare().getId())));
         }
 
         super.afterConversion(entities, resources);
@@ -659,6 +673,35 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
         @Override
         public void onChange(Serializable id, RegistreResource.DescarregarDoc previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.DescarregarDoc target) {
+        }
+    }
+    public class ExportReportGenerator implements ReportGenerator<RegistreResourceEntity, MassiveForm, HashMap> {
+        @Override
+        public DownloadableFile generateFile(String code, List<?> data, ReportFileType fileType, OutputStream out) {
+            try {
+                Map<String, Object> map = ((List<HashMap>) data).get(0);
+                List<RegistreResourceEntity> registres = (List<RegistreResourceEntity>) map.get("registres");
+                return registreResourceHelper.exportarAnotacions(registres, fileType);
+            } catch (Exception e) {
+                throw new ReportGenerationException(
+                        RegistreResource.class,
+                        null,
+                        code,
+                        e.getMessage()
+                );
+            }
+        }
+
+        @Override
+        public List<HashMap> generateData(String code, RegistreResourceEntity entity, MassiveForm params) throws ReportGenerationException {
+            List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
+            Map<String, Object> map = new HashMap<>();
+            map.put("registres", registreList);
+            return List.of((HashMap) map);
+        }
+
+        @Override
+        public void onChange(Serializable id, MassiveForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, MassiveForm target) {
         }
     }
 
@@ -1210,17 +1253,172 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             }
         }
     }
-    protected class SobreescriureActionExecutor implements ActionExecutor<RegistreResourceEntity, Serializable, RegistreResource> {
+    protected class SobreescriureActionExecutor implements ActionExecutor<RegistreResourceEntity, MassiveForm, RegistreResource> {
 
         @Override
-        public RegistreResource exec(String code, RegistreResourceEntity entity, Serializable params) throws ActionExecutionException {
+        public RegistreResource exec(String code, RegistreResourceEntity entity, MassiveForm params) throws ActionExecutionException {
             Long entitatActualId = SessioActualUtil.getEntitatId();
-            registreService.marcarSobreescriure(entitatActualId, entity.getId());
-            return objectMappingHelper.newInstanceMap(entity, RegistreResource.class);
+
+            if (params.isMassive()) {
+                List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
+                try {
+                    execucioMassivaResourceHelper.executarAccioMassivaRegistres(
+                            ExecucioMassivaTipusDto.SOBREESCRIURE,
+                            registreList,
+                            null);
+                } catch (Exception e) {
+                    throw new ActionExecutionException(
+                            RegistreResource.class,
+                            null,
+                            code,
+                            e.getMessage()
+                    );
+                }
+            } else {
+                RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
+                registreService.marcarSobreescriure(entitatActualId, registre.getId());
+                return objectMappingHelper.newInstanceMap(registre, RegistreResource.class);
+            }
+            return null;
         }
 
         @Override
-        public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
+        public void onChange(Serializable id, MassiveForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, MassiveForm target) {
+        }
+    }
+    protected class DescarregarMassiuActionExecutor implements ActionExecutor<RegistreResourceEntity, RegistreResource.DescarregarMassiu, Serializable> {
+
+        private int getMidaMaxima() {
+            return Integer.parseInt(configHelper.getConfig("es.caib.distribucio.exportar.annex.zip.mida.max", "10"));
+        }
+
+        @Override
+        public Serializable exec(String code, RegistreResourceEntity entity, RegistreResource.DescarregarMassiu params) throws ActionExecutionException {
+            List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
+            List<String> errors = registreResourceHelper.validarDescargaMassivaForm(registreList);
+            if ( !errors.isEmpty() ) {
+                throw new ActionExecutionException(
+                        RegistreResource.class,
+                        null,
+                        code,
+                        String.join("\n", errors)
+                );
+            }
+
+            try {
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("estructuraCarpetes", params.isEstructuraCarpetes());
+                map.put("versioImprimible", params.isVersioImprimible());
+                map.put("nomDocument", params.getNomDocument());
+                map.put("rolActual", authenticationHelper.getCurrentUserRoles()[0]);
+                execucioMassivaResourceHelper.executarAccioMassivaRegistres(
+                        ExecucioMassivaTipusDto.DESCARREGAR,
+                        registreList,
+                        map);
+            } catch (Exception e) {
+                throw new ActionExecutionException(
+                        RegistreResource.class,
+                        null,
+                        code,
+                        e.getMessage()
+                );
+            }
+            return null;
+        }
+
+        @Override
+        public void onChange(Serializable id, RegistreResource.DescarregarMassiu previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.DescarregarMassiu target) {
+            if (fieldName == null || RegistreResource.DescarregarMassiu.Fields.ids.equals(fieldName)) {
+                List<Long> ids = fieldName == null
+                        ?previous.getIds()
+                        :(List<Long>) fieldValue;
+
+                List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(ids);
+                target.setErrors( registreResourceHelper.validarDescargaMassivaForm(registreList) );
+                target.setDisabled( !target.getErrors().isEmpty() );
+
+                if (target.getErrors().isEmpty()) {
+                    target.setInfo( List.of(I18nUtil.getInstance().getI18nMessage("registre.annex.descarregar.zip.size", this.getMidaMaxima() )) );
+                } else {
+                    target.setInfo( Collections.emptyList() );
+                }
+            }
+        }
+    }
+    protected class ReenviarBackofficeActionExecutor implements ActionExecutor<RegistreResourceEntity, MassiveForm, Serializable> {
+
+        @Override
+        public Serializable exec(String code, RegistreResourceEntity entity, MassiveForm params) throws ActionExecutionException {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
+
+            if (params.isMassive()) {
+                List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
+                try {
+                    execucioMassivaResourceHelper.executarAccioMassivaRegistres(
+                            ExecucioMassivaTipusDto.BACKOFFICE,
+                            registreList,
+                            null);
+                } catch (Exception e) {
+                    throw new ActionExecutionException(
+                            RegistreResource.class,
+                            null,
+                            code,
+                            e.getMessage()
+                    );
+                }
+            } else {
+                RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
+                Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(entitatActualId, registre.getId());
+
+                if (throwable != null) {
+                    throw new ActionExecutionException(
+                            RegistreResource.class,
+                            registre.getId(),
+                            code,
+                            I18nUtil.getInstance().getI18nMessage("contingut.admin.controller.registre.reintentat.error")
+                    );
+                }
+
+                return objectMappingHelper.newInstanceMap(registre, RegistreResource.class);
+            }
+            return null;
+        }
+
+        @Override
+        public void onChange(Serializable id, MassiveForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, MassiveForm target) {
+
+        }
+    }
+    protected class EnviarMarcarActionExecutor implements ActionExecutor<RegistreResourceEntity, RegistreResource.EnviarMarcarForm, Serializable> {
+
+        @Override
+        public Serializable exec(String code, RegistreResourceEntity entity, RegistreResource.EnviarMarcarForm params) throws ActionExecutionException {
+            List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
+
+            try {
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("destinataris", params.getDestinatari());
+                map.put("motiu", params.getMotiu());
+                execucioMassivaResourceHelper.executarAccioMassivaRegistres(
+                        ExecucioMassivaTipusDto.ENVIAR_VIA_EMAIL_PROCESSAR,
+                        registreList,
+                        map);
+            } catch (Exception e) {
+                throw new ActionExecutionException(
+                        RegistreResource.class,
+                        null,
+                        code,
+                        e.getMessage()
+                );
+            }
+            return null;
+        }
+
+        @Override
+        public void onChange(Serializable id, RegistreResource.EnviarMarcarForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.EnviarMarcarForm target) {
+            if (fieldName == null) {
+                target.setWarning( getAdvertencies(previous.getIds()) );
+            }
         }
     }
 

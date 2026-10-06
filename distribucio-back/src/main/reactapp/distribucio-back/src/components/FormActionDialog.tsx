@@ -1,5 +1,5 @@
-import React from 'react';
-import { useBaseAppContext, useMuiActionReportLogic, type DialogButton } from 'reactlib';
+import React, {useMemo} from 'react';
+import {useBaseAppContext, useMuiActionReportLogic, type DialogButton} from 'reactlib';
 
 export type FormActionDialogApi = {
     /**
@@ -48,11 +48,25 @@ export type FormActionDialogProps = {
  * d'accions -- RIPEA hi té també la variant per a informes.
  */
 export const FormActionDialog: React.FC<FormActionDialogProps> = (props) => {
+    const { t } = useBaseAppContext();
+    const formDialogButtons = useMemo(() => [
+        {
+            value: true,
+            text: t('buttons.action.exec'),
+            icon: 'bolt',
+            componentProps: { variant: 'contained' },
+        },
+        {
+            value: false,
+            text: t('buttons.action.cancel'),
+            componentProps: { variant: 'outlined' },
+        },
+    ], [t]);
     const {
         resourceName,
         action,
         title,
-        buttons,
+        buttons = formDialogButtons,
         dialogComponentProps,
         apiRef,
         formDialogResultProcessor,
