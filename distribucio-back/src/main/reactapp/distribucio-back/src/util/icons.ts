@@ -33,7 +33,7 @@ export const icons = {
     pendentsArxiu: 'query_stats',
     excepcio: 'bug_report',
     vistaMoviments: 'move_down',
-    metaDada: '',
-    domini: '',
+    metaDada: 'data_object',
+    domini: 'domain',
     regla: 'rule',
 } as const;

@@ -5,6 +5,7 @@ import {
     ROLE_SUPER,
     ROLE_USER,
 } from '../components/DistribucioContext';
+import {useConfig} from "../components/ConfigProvider.tsx";
 
 /**
  * Rols amb els quals es pot operar a la interfície REACT: els mateixos que ofereix el selector de
@@ -126,8 +127,15 @@ export const filtrarEntradesMenu = (
 ): MenuEntry[] =>
     entrades.reduce<MenuEntry[]>((visibles, entrada) => {
         const { pantalla, children, ...entradaMenu } = entrada;
+        const { getByName } = useConfig()
         if (pantalla != null && !isPantallaPermesa(pantalla, rol)) {
             return visibles;
+        }
+        if (pantalla == 'metaDada' || pantalla == 'domini') {
+            const metadadesActives = getByName("es.caib.distribucio.permetre.metadades.registre")
+            if (!metadadesActives) {
+                return visibles;
+            }
         }
         if (children != null) {
             const fills = filtrarEntradesMenu(children, rol);
