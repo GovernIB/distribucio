@@ -161,7 +161,7 @@ class ProcedimentHelperTest {
             mapaUO.put("DEFAULT", uoArrel);
 
             // Act
-            ProcedimentDto resultat = procedimentHelper.actualitzaProcediment(procMock, mapaUO, entitat);
+            ProcedimentEntity resultat = procedimentHelper.actualitzaProcediment(procMock, mapaUO, entitat);
 
             // Assert
             ArgumentCaptor<ProcedimentEntity> captor = ArgumentCaptor.forClass(ProcedimentEntity.class);
@@ -253,7 +253,7 @@ class ProcedimentHelperTest {
             Map<String, UnitatOrganitzativaEntity> mapaUO = new HashMap<>();
 
             // Act
-            ProcedimentDto resultat = procedimentHelper.actualitzaProcediment(procMock, mapaUO, entitat);
+            ProcedimentEntity resultat = procedimentHelper.actualitzaProcediment(procMock, mapaUO, entitat);
 
             // Assert
             verify(procedimentRepository, never()).save(any());

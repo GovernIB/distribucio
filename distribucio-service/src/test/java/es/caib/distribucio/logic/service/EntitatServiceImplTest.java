@@ -362,14 +362,14 @@ class EntitatServiceImplTest {
         void findAccessiblesUsuariActual_QuanAutenticat_LlavorsConsultaCache() {
             // Arrange
             List<EntitatDto> entitatsCache = Collections.singletonList(entitatDto);
-            when(cacheHelper.findEntitatsAccessiblesUsuari("testUser")).thenReturn(entitatsCache);
+            when(cacheHelper.findEntitatsAccessiblesUsuari(eq("testUser"), anyString())).thenReturn(entitatsCache);
 
             // Act
             List<EntitatDto> resultat = entitatService.findAccessiblesUsuariActual();
 
             // Assert
             assertEquals(1, resultat.size());
-            verify(cacheHelper, times(1)).findEntitatsAccessiblesUsuari("testUser");
+            verify(cacheHelper, times(1)).findEntitatsAccessiblesUsuari("testUser", anyString());
         }
 
         @Test
@@ -383,7 +383,7 @@ class EntitatServiceImplTest {
 
             // Assert
             assertTrue(resultat.isEmpty());
-            verify(cacheHelper, never()).findEntitatsAccessiblesUsuari(anyString());
+            verify(cacheHelper, never()).findEntitatsAccessiblesUsuari(anyString(), anyString());
         }
 
         @Test

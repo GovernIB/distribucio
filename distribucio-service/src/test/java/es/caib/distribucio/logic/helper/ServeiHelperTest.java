@@ -161,7 +161,7 @@ class ServeiHelperTest {
             mapaUO.put("DEFAULT", uoArrel);
 
             // Act
-            ServeiDto resultat = serveiHelper.actualitzaServei(serveiMock, mapaUO, entitat);
+            ServeiEntity resultat = serveiHelper.actualitzaServei(serveiMock, mapaUO, entitat);
 
             // Assert
             ArgumentCaptor<ServeiEntity> captor = ArgumentCaptor.forClass(ServeiEntity.class);
@@ -255,7 +255,7 @@ class ServeiHelperTest {
             Map<String, UnitatOrganitzativaEntity> mapaUO = new HashMap<>();
 
             // Act
-            ServeiDto resultat = serveiHelper.actualitzaServei(serveiMock, mapaUO, entitat);
+            ServeiEntity resultat = serveiHelper.actualitzaServei(serveiMock, mapaUO, entitat);
 
             // Assert
             verify(serveiRepository, never()).save(any());

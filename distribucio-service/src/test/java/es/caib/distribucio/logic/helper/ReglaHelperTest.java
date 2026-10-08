@@ -243,7 +243,7 @@ class ReglaHelperTest {
         // Cap regla aplicable i bústia informada: no hi ha cap acció.
         assertTrue(accions.isEmpty());
         verify(reglaRepository).findAplicables(
-                eq(entitatActual), eq(10L), eq(20L), eq(""), eq(""), eq(""), eq(""), eq(false), eq(ReglaPresencialEnumDto.SI));
+                eq(entitatActual), eq(10L), eq(20L), eq(""), eq(""), eq(""), eq(false), eq(ReglaPresencialEnumDto.SI));
         // El DTO rebut no queda modificat.
         assertEquals(10L, entrada.getUnitatId());
         assertEquals(20L, entrada.getBustiaId());
@@ -264,7 +264,7 @@ class ReglaHelperTest {
         reglaHelper.simular(entitatActual, entrada);
 
         verify(reglaRepository).findAplicables(
-                eq(entitatActual), eq(10L), eq(20L), eq(""), eq(""), eq(""), eq(""), eq(true), isNull());
+                eq(entitatActual), eq(10L), eq(20L), eq(""), eq(""), eq(""), eq(true), isNull());
     }
 
     // ---------- Aplicar manualment ----------
