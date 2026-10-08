@@ -9,7 +9,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
 
-import javax.persistence.ManyToOne;
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -20,19 +20,25 @@ import org.springframework.lang.Nullable;
 /**
  * Classe basse de on extendre per a activar les auditories.
  * 
+ * Els camps d'usuari guarden el codi de l'usuari ({@link UsuariEntity#getCodi()})
+ * i no una referència a l'entitat, per a poder compartir el mateix
+ * {@link org.springframework.data.domain.AuditorAware} amb les entitats de
+ * recurs de la capa REACT
+ * ({@link es.caib.distribucio.persist.base.entity.BaseAuditableEntity}).
+ * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @MappedSuperclass
-public class DistribucioAuditable<PK extends Serializable> extends DistribucioPersistable<PK> implements Auditable<UsuariEntity, PK, LocalDateTime> {
+public class DistribucioAuditable<PK extends Serializable> extends DistribucioPersistable<PK> implements Auditable<String, PK, LocalDateTime> {
 
-	@ManyToOne
-	private @Nullable UsuariEntity createdBy;
+	@Column(name = "createdby_codi", length = 64)
+	private @Nullable String createdBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private @Nullable Date createdDate;
 
-	@ManyToOne //
-	private @Nullable UsuariEntity lastModifiedBy;
+	@Column(name = "lastmodifiedby_codi", length = 64)
+	private @Nullable String lastModifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private @Nullable Date lastModifiedDate;
@@ -42,7 +48,7 @@ public class DistribucioAuditable<PK extends Serializable> extends DistribucioPe
 	 * @see org.springframework.data.domain.Auditable#getCreatedBy()
 	 */
 	@Override
-	public Optional<UsuariEntity> getCreatedBy() {
+	public Optional<String> getCreatedBy() {
 		return Optional.ofNullable(createdBy);
 	}
 
@@ -51,7 +57,7 @@ public class DistribucioAuditable<PK extends Serializable> extends DistribucioPe
 	 * @see org.springframework.data.domain.Auditable#setCreatedBy(java.lang.Object)
 	 */
 	@Override
-	public void setCreatedBy(UsuariEntity createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
 
@@ -79,7 +85,7 @@ public class DistribucioAuditable<PK extends Serializable> extends DistribucioPe
 	 * @see org.springframework.data.domain.Auditable#getLastModifiedBy()
 	 */
 	@Override
-	public Optional<UsuariEntity> getLastModifiedBy() {
+	public Optional<String> getLastModifiedBy() {
 		return Optional.ofNullable(lastModifiedBy);
 	}
 
@@ -88,7 +94,7 @@ public class DistribucioAuditable<PK extends Serializable> extends DistribucioPe
 	 * @see org.springframework.data.domain.Auditable#setLastModifiedBy(java.lang.Object)
 	 */
 	@Override
-	public void setLastModifiedBy(UsuariEntity lastModifiedBy) {
+	public void setLastModifiedBy(String lastModifiedBy) {
 		this.lastModifiedBy = lastModifiedBy;
 	}
 

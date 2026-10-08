@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
@@ -38,9 +37,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.codahale.metrics.json.MetricsModule;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
+import es.caib.distribucio.logic.helper.BustiaHelper;
+import es.caib.distribucio.logic.helper.CacheHelper;
+import es.caib.distribucio.logic.helper.ConfigHelper;
+import es.caib.distribucio.logic.helper.ContingutHelper;
+import es.caib.distribucio.logic.helper.ContingutLogHelper;
+import es.caib.distribucio.logic.helper.ConversioTipusHelper;
+import es.caib.distribucio.logic.helper.EmailHelper;
+import es.caib.distribucio.logic.helper.EntityComprovarHelper;
+import es.caib.distribucio.logic.helper.MessageHelper;
+import es.caib.distribucio.logic.helper.MetriquesHelper;
+import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.helper.PaginacioHelper.Converter;
 import es.caib.distribucio.logic.helper.PermisosHelper.ObjectIdentifierExtractor;
 import es.caib.distribucio.logic.intf.dto.dadesobertes.BustiaDadesObertesDto;
@@ -110,6 +118,8 @@ public class BustiaServiceImpl implements BustiaService {
 	
 	@Autowired
 	private MetricRegistry metricRegistry;
+	@Autowired
+	private MetriquesHelper metriquesHelper;
 	@Autowired
 	private ContingutComentariRepository contingutComentariRepository;
 	@Autowired
@@ -1168,7 +1178,7 @@ public class BustiaServiceImpl implements BustiaService {
                 alertaHelper.crearAlerta("No se ha encontrado ningun procedimiento o servicio con el codigo sia " + codiSia, null, false, anotacioEntity.getId());
             }
         }
-		
+
 		//-- create emails ---
 		Timer.Context contextmoveAnotacioToBustiaPerDefecte = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.moveAnotacioToBustiaPerDefecte")).time();
 		moveAnotacioToBustiaPerDefecte(
@@ -1325,7 +1335,7 @@ public class BustiaServiceImpl implements BustiaService {
                 alertaHelper.crearAlerta("No se ha encontrado ningun procedimiento o servicio con el codigo sia " + codiSia, null, false, anotacioEntity.getId());
             }
         }
-		
+
 		//-- create emails ---
 		Timer.Context contextmoveAnotacioToBustiaPerDefecte = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "registreAnotacioCrearIProcessar.moveAnotacioToBustiaPerDefecte")).time();
 		moveAnotacioToBustiaPerDefecte(
@@ -1605,16 +1615,9 @@ public class BustiaServiceImpl implements BustiaService {
 	@Transactional(readOnly = true)
 	@Override
 	public String getApplictionMetrics() {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(
-				new MetricsModule(
-						TimeUnit.SECONDS,
-						TimeUnit.MILLISECONDS,
-						false));
-		
 		logger.debug("Consultant les mètriques de l'aplicació");
 		try {
-			return mapper.writeValueAsString(metricRegistry);
+			return metriquesHelper.getMetriquesJson();
 		} catch (Exception ex) {
 			logger.error("Error al generar les mètriques de l'aplicació", ex);
 			return "ERR";

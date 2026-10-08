@@ -1,0 +1,44 @@
+ARG BASE_IMAGE=docker.io/goib/jboss-eap72-openshift-base:latest
+
+ARG BASE_PLATFORM=linux/amd64
+FROM --platform=${BASE_PLATFORM} ${BASE_IMAGE}
+
+LABEL org.opencontainers.image.source="https://github.com/GovernIB/distribucio"
+
+WORKDIR /home/jboss
+
+USER root
+
+COPY config/standalone-openshift.xml \
+    $JBOSS_HOME/standalone/configuration/standalone-openshift.xml
+
+COPY properties/ \
+    $JBOSS_HOME/apps/distribucio/
+
+COPY config/jboss_config.sh \
+    $JBOSS_HOME/apps/distribucio/jboss_config.sh
+
+COPY distribucio.ear \
+    $JBOSS_HOME/standalone/deployments/
+
+RUN chmod a+x $JBOSS_HOME/apps/distribucio/jboss_config.sh \
+    && dos2unix $JBOSS_HOME/apps/distribucio/jboss_config.sh \
+    && sed -i 's~#!/bin/sh~#!/bin/sh\n$JBOSS_HOME/apps/distribucio/jboss_config.sh~' $JBOSS_HOME/bin/standalone.sh \
+    && rm -rf $JBOSS_HOME/standalone/configuration/standalone_xml_history \
+    && mkdir -p $JBOSS_HOME/standalone/configuration/standalone_xml_history/current \
+    && mkdir -p $JBOSS_HOME/standalone/data/content \
+    && mkdir -p $JBOSS_HOME/standalone/tmp \
+    && mkdir -p $JBOSS_HOME/standalone/log \
+    && chmod -R g=u $JBOSS_HOME/standalone/data \
+    && chmod -R g=u $JBOSS_HOME/standalone/tmp \
+    && chmod -R g=u $JBOSS_HOME/standalone/log \
+    && chmod -R g=u $JBOSS_HOME/standalone/configuration/standalone_xml_history \
+    && chmod -R g=u $JBOSS_HOME/apps/distribucio \
+    && mkdir -p /opt/webapps/distribucio \
+    && chmod -R g=u /opt/webapps/distribucio
+
+USER jboss
+
+WORKDIR /home/jboss
+
+EXPOSE 8080 8787

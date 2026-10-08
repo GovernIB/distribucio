@@ -23,7 +23,7 @@ public interface RegistreInteressatRepository extends JpaRepository<RegistreInte
 			"set createdby_codi = :codiNou, lastmodifiedby_codi = :codiNou " +
 			"where createdby_codi = :codiAntic or lastmodifiedby_codi = :codiAntic",
 			nativeQuery = true)
-	void updateUsuariAuditoria(
+	int updateUsuariAuditoria(
 			@Param("codiAntic") String codiAntic, 
 			@Param("codiNou") String codiNou);
 }

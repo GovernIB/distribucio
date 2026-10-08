@@ -272,7 +272,7 @@ public interface RegistreService {
 	 * @param registreId
 	 * @return Si tot va bé retorna null i si hi ha hagut cap error retorna l'excepció.
 	 */
-	@PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "')")
+    @PreAuthorize("isAuthenticated()")
 	public Throwable reintentarEnviamentBackofficeAdmin(
 			Long entitatId,
 			Long registreId);

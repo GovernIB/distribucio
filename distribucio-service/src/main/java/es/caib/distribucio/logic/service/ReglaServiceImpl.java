@@ -20,7 +20,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.logic.helper.BustiaHelper;
+import es.caib.distribucio.logic.helper.ConversioTipusHelper;
+import es.caib.distribucio.logic.helper.EntityComprovarHelper;
+import es.caib.distribucio.logic.helper.IntegracioHelper;
+import es.caib.distribucio.logic.helper.PaginacioHelper;
+import es.caib.distribucio.logic.helper.ReglaHelper;
+import es.caib.distribucio.logic.helper.ReglaValidacioHelper;
+import es.caib.distribucio.logic.helper.SubsistemesHelper;
 import es.caib.distribucio.logic.helper.SubsistemesHelper.SubsistemesEnum;
+import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
@@ -65,6 +74,8 @@ public class ReglaServiceImpl implements ReglaService {
 	private BackofficeRepository backofficeRepository;
 	@Resource
 	private ReglaHelper reglaHelper;
+	@Resource
+	private ReglaValidacioHelper reglaValidacioHelper;
 	@Resource
 	private BustiaHelper bustiaHelper;
 	@Resource
@@ -376,140 +387,37 @@ public class ReglaServiceImpl implements ReglaService {
 		logger.debug("Aplicant la regla manualment ("
 				+ "entitatId=" + entitatId + ", "
 				+ "reglaId=" + reglaId + ")");
-		
-		List<String> numerosRegistres = new ArrayList<>();
-
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				false,
 				true,
 				false);
-		
 		ReglaEntity regla = entityComprovarHelper.comprovarRegla(
 				entitat,
 				reglaId);
-		
-		List<String> codisProcediments;
-		if(regla.getProcedimentCodiFiltre() != null && !regla.getProcedimentCodiFiltre().trim().isEmpty()) {
-			codisProcediments = Arrays.asList(regla.getProcedimentCodiFiltre().split(" "));
-		} else {
-			codisProcediments = new ArrayList<>();
-			codisProcediments.add("-");
-		}
-
-		List<String> codisServei = new ArrayList<>();
-		if(regla.getServeiCodiFiltre() != null && !regla.getServeiCodiFiltre().trim().isEmpty()) {
-			codisServei.addAll(Arrays.asList(regla.getServeiCodiFiltre().split(" ")));
-		} else {
-			codisServei.add("-");
-		}
-		
-		List<Long> bustiesUnitatOrganitzativaIds = new ArrayList<>();
-		if (regla.getUnitatOrganitzativaFiltre() != null) {			
-			for (BustiaEntity bustia : bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNotNull(entitat, regla.getUnitatOrganitzativaFiltre())) {
-				bustiesUnitatOrganitzativaIds.add(bustia.getId());
-			}
-		}
-		if (bustiesUnitatOrganitzativaIds.isEmpty()) {
-			bustiesUnitatOrganitzativaIds.add(0L);
-		}
-		
-		Boolean registrePresencial = null;
-		if (regla.getPresencial() != null) {
-			registrePresencial = ReglaPresencialEnumDto.SI.equals(regla.getPresencial());
-		}
-		
-		for(RegistreEntity registre : reglaRepository.findRegistres(
-				entitat,
-				regla.getUnitatOrganitzativaFiltre() == null,
-				bustiesUnitatOrganitzativaIds,
-				registrePresencial == null,
-				registrePresencial != null ? registrePresencial.booleanValue() : false,
-				regla.getBustiaFiltre() == null,
-				regla.getBustiaFiltre() != null ? regla.getBustiaFiltre().getId() : 0L,
-				codisProcediments,
-                codisServei,
-				regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(),
-				regla.getAssumpteCodiFiltre() != null && !regla.getAssumpteCodiFiltre().trim().isEmpty() ?
-						regla.getAssumpteCodiFiltre() : "-")) {
-			
-			// S'assigna la regla per a que es processi en segon pla
-			registre.updateRegla(regla);
-
-			numerosRegistres.add( registre.getNumero());
-			logger.debug("Regla " + regla.getId() + " \"" + regla.getNom() + "\" aplicada manualment a l'anotació " + registre.getNumero());
-		}
-
-		return numerosRegistres;
+		return reglaHelper.aplicarManualment(entitat, regla);
 	}
 
-    @Override
-    @Transactional
-    public List<RegistreDto> consultaRegistresAplicaRegla(
-            Long entitatId,
-            Long reglaId) {
-        logger.debug("Consultant els registres per aplicar la regla manualment ("
-                + "entitatId=" + entitatId + ", "
-                + "reglaId=" + reglaId + ")");
-
-        List<RegistreDto> numerosRegistres = new ArrayList<>();
-
-        EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
-                entitatId,
-                false,
-                true,
-                false);
-
-        ReglaEntity regla = entityComprovarHelper.comprovarRegla(
-                entitat,
-                reglaId);
-
-        List<String> codisProcediments;
-        if(regla.getProcedimentCodiFiltre() != null && !regla.getProcedimentCodiFiltre().trim().isEmpty()) {
-            codisProcediments = Arrays.asList(regla.getProcedimentCodiFiltre().split(" "));
-        } else {
-            codisProcediments = new ArrayList<>();
-            codisProcediments.add("-");
-        }
-
-        List<String> codisServei = new ArrayList<>();
-        if(regla.getServeiCodiFiltre() != null && !regla.getServeiCodiFiltre().trim().isEmpty()) {
-            codisServei.addAll(Arrays.asList(regla.getServeiCodiFiltre().split(" ")));
-        } else {
-            codisServei.add("-");
-        }
-
-        List<Long> bustiesUnitatOrganitzativaIds = new ArrayList<>();
-        if (regla.getUnitatOrganitzativaFiltre() != null) {
-            for (BustiaEntity bustia : bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNotNull(entitat, regla.getUnitatOrganitzativaFiltre())) {
-                bustiesUnitatOrganitzativaIds.add(bustia.getId());
-            }
-        }
-        if (bustiesUnitatOrganitzativaIds.isEmpty()) {
-            bustiesUnitatOrganitzativaIds.add(0L);
-        }
-
-        Boolean registrePresencial = null;
-        if (regla.getPresencial() != null) {
-            registrePresencial = ReglaPresencialEnumDto.SI.equals(regla.getPresencial());
-        }
-
-        List<RegistreEntity> registres = reglaRepository.findRegistres(
-                entitat,
-                regla.getUnitatOrganitzativaFiltre() == null,
-                bustiesUnitatOrganitzativaIds,
-                registrePresencial == null,
-                registrePresencial != null ? registrePresencial.booleanValue() : false,
-                regla.getBustiaFiltre() == null,
-                regla.getBustiaFiltre() != null ? regla.getBustiaFiltre().getId() : 0L,
-                codisProcediments,
-                codisServei,
-                regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(),
-                regla.getAssumpteCodiFiltre() != null && !regla.getAssumpteCodiFiltre().trim().isEmpty() ?
-                        regla.getAssumpteCodiFiltre() : "-");
-
-        return conversioTipusHelper.convertirList(registres, RegistreDto.class);
-    }
+	@Override
+	@Transactional
+	public List<RegistreDto> consultaRegistresAplicaRegla(
+			Long entitatId,
+			Long reglaId) {
+		logger.debug("Consultant els registres per aplicar la regla manualment ("
+				+ "entitatId=" + entitatId + ", "
+				+ "reglaId=" + reglaId + ")");
+		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
+				entitatId,
+				false,
+				true,
+				false);
+		ReglaEntity regla = entityComprovarHelper.comprovarRegla(
+				entitat,
+				reglaId);
+		return conversioTipusHelper.convertirList(
+				reglaHelper.findRegistresAplicables(entitat, regla),
+				RegistreDto.class);
+	}
 
 	@Override
 	@Transactional(readOnly = true)
@@ -712,64 +620,12 @@ public class ReglaServiceImpl implements ReglaService {
 
     @Transactional(readOnly = true)
     public List<ReglaMatchDto> findReglesByCodisSiaAndTramits(List<String> sias, List<String> tramits) {
-        if (sias == null || sias.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<ReglaEntity> resultats = new ArrayList<>();
-        for (String sia: sias) {
-            if (tramits != null && !tramits.isEmpty()) {
-                for (String tramit : tramits) {
-                    resultats.addAll(reglaRepository.findReglaByCodiSiaAndTramit(sia, false, tramit));
-                }
-            } else {
-                resultats.addAll(reglaRepository.findReglaByCodiSiaAndTramit(sia, true, null));
-            }
-        }
-
         List<ReglaMatchDto> result = new ArrayList<>();
-        Set<String> alreadyAdded = new HashSet<>();
-
-        for (ReglaEntity regla : resultats) {
-            ReglaDto reglaDto = conversioTipusHelper.convertir(regla, ReglaDto.class);
-
-            List<String> procesimentsRegla = regla.getProcedimentCodiFiltre() != null
-                    ? Arrays.asList(regla.getProcedimentCodiFiltre().split("\\s+"))
-                    : Collections.emptyList();
-
-            List<String> serveisRegla = regla.getServeiCodiFiltre() != null
-                    ? Arrays.asList(regla.getServeiCodiFiltre().split("\\s+"))
-                    : Collections.emptyList();
-
-            List<String> siasRegla = new ArrayList<>();
-            siasRegla.addAll(procesimentsRegla);
-            siasRegla.addAll(serveisRegla);
-
-            List<String> tramitsRegla = regla.getTramitCodiFiltre() != null
-                    ? Arrays.asList(regla.getTramitCodiFiltre().split("\\s+"))
-                    : Collections.emptyList();
-
-            for (String sia : sias) {
-                if (!siasRegla.contains(sia)) {
-                    continue;
-                }
-
-                if (regla.getTramitCodiFiltre() == null) {
-                    String key = regla.getId() + "|" + sia + "|null";
-                    if (alreadyAdded.add(key)) {
-                        result.add(new ReglaMatchDto(reglaDto, sia, null));
-                    }
-                } else {
-                    for (String tramit : tramits) {
-                        if (tramitsRegla.contains(tramit)) {
-                            String key = regla.getId() + "|" + sia + "|" + tramit;
-                            if (alreadyAdded.add(key)) {
-                                result.add(new ReglaMatchDto(reglaDto, sia, tramit));
-                            }
-                        }
-                    }
-                }
-            }
+        for (ReglaValidacioHelper.Match match : reglaValidacioHelper.findReglesByCodisSiaAndTramits(sias, tramits)) {
+            result.add(new ReglaMatchDto(
+                    conversioTipusHelper.convertir(match.getRegla(), ReglaDto.class),
+                    match.getSia(),
+                    match.getTramit()));
         }
         return result;
     }
@@ -844,38 +700,11 @@ public class ReglaServiceImpl implements ReglaService {
 				+ "codiAssumpte=" + registreSimulatDto.getAssumpteCodi() + ")");
 		
 		
-		List<RegistreSimulatAccionDto> simulatAccions = new ArrayList<>();
-		
+		// L'entitat es dedueix de la unitat, com sempre; la resta de la lògica és a ReglaHelper.simular
 		UnitatOrganitzativaEntity unitatOrganitzativaEntity = unitatOrganitzativaRepository.getReferenceById(
 				registreSimulatDto.getUnitatId());
-		
 		EntitatEntity entitatEntity = entitatRepository.findByCodiDir3(unitatOrganitzativaEntity.getCodiDir3Entitat());
-		
-		BustiaEntity bustiaDesti = null;
-		if (registreSimulatDto.getBustiaId() == null) {
-			bustiaDesti = bustiaHelper.findBustiaDesti(
-					entitatEntity,
-					unitatOrganitzativaEntity.getCodi());
-			simulatAccions.add(new RegistreSimulatAccionDto(RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE, bustiaDesti.getNom(), null));
-
-		} else { 
-			bustiaDesti = bustiaRepository.findById(registreSimulatDto.getBustiaId()).orElse(null);
-		}
-		Boolean presencial = null;
-		if (registreSimulatDto.getPresencial() != null) {
-			presencial = registreSimulatDto.getPresencial().equals(ReglaPresencialEnumDto.SI) ? true : false;
-		}
-		registreSimulatDto.setUnitatId(unitatOrganitzativaEntity.getId());
-		registreSimulatDto.setBustiaId(bustiaDesti.getId());
-		
-		reglaHelper.aplicarSimulation(
-				entitatEntity,
-				registreSimulatDto,
-				new ArrayList<ReglaEntity>(),
-				simulatAccions, 
-				presencial);
-		
-		return simulatAccions;
+		return reglaHelper.simular(entitatEntity, registreSimulatDto);
 	}
 	
 	
@@ -884,16 +713,11 @@ public class ReglaServiceImpl implements ReglaService {
 			int posicio) {
 		List<ReglaEntity> regles = reglaRepository.findByEntitatOrderByOrdreAsc(
 				regla.getEntitat());
-		
-		if (posicio != regles.indexOf(regla)) {
-			regles.remove(regla);
-			regles.add(posicio, regla);
-			int i = 0;
-			for (ReglaEntity r : regles) {
-				r.updateOrdre(i++);
-			}
-		}
-
+		ReglaHelper.canviPosicio(
+				regles,
+				regla,
+				posicio,
+				ReglaEntity::updateOrdre);
 	}
 
 	private ReglaDto toReglaDto(ReglaEntity regla) {
@@ -923,11 +747,11 @@ public class ReglaServiceImpl implements ReglaService {
 		}
 
         if (regla.getCreatedBy().isPresent())  {
-            dto.setCreatedBy(conversioTipusHelper.convertir(regla.getCreatedBy().get(), UsuariDto.class));
+            dto.setCreatedBy(conversioTipusHelper.usuariDtoPerCodi(regla.getCreatedBy().get()));
         }
 
         if (regla.getLastModifiedBy().isPresent())  {
-            dto.setLastModifiedBy(conversioTipusHelper.convertir(regla.getLastModifiedBy().get(), UsuariDto.class));
+            dto.setLastModifiedBy(conversioTipusHelper.usuariDtoPerCodi(regla.getLastModifiedBy().get()));
         }
         
 		regla.getCreatedDate()

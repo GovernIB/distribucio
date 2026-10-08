@@ -59,6 +59,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
     private final String codiEnviarEmailsAnotacionsErrorProcessament = "enviarEmailsAnotacionsErrorProcessament";
     private final String codiEsborrarZipAccionsMassives = "esborrarZipAccionsMassives";
     private final String codiExecucionMassives = "execucionsMassives";
+    private final String codiEsborrarExcepcionsAntigues = "esborrarExcepcionsAntigues";
 
     @Bean
     public TaskScheduler taskScheduler() {
@@ -404,6 +405,26 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                 },
                 getTrigger(codiEsborrarZipAccionsMassives)
         );
+
+        addTask(
+                codiEsborrarExcepcionsAntigues,
+                new Runnable() {
+                    @SneakyThrows
+                    @Override
+                    public void run() {
+                        monitorTasquesService.inici(codiEsborrarExcepcionsAntigues);
+                        try {
+                            segonPlaService.esborrarExcepcionsAntigues();
+                            monitorTasquesService.fi(codiEsborrarExcepcionsAntigues);
+                        } catch (Throwable th) {
+                            tractarErrorTascaSegonPla(th, codiEsborrarExcepcionsAntigues);
+                        } finally {
+                            SecurityContextHolder.clearContext();
+                        }
+                    }
+                },
+                getTrigger(codiEsborrarExcepcionsAntigues)
+        );
     } //Fi de configureTasks
 
     private Date getPeriodicTriggerNextExecutionTime(TriggerContext triggerContext, String taskCodi, Long value) {
@@ -653,6 +674,22 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     }
                     if (value == null) {
                         value = "0 0 0 * * *";
+                    }
+                    return getCronTriggerNextExecutionTime(triggerContext, taskCodi, value);
+                }
+            };
+        } else if (taskCodi.equals(codiEsborrarExcepcionsAntigues)) {
+            return new Trigger() {
+                @Override
+                public Date nextExecutionTime(TriggerContext triggerContext) {
+                    String value = null;
+                    try {
+                        value = configService.getConfig("es.caib.distribucio.tasca.excepcions.esborrar.antics.cron");
+                    } catch (Exception e) {
+                        log.warn("Error consultant la propietat per la propera execució d'esborrar les excepcions antigues: " + e.getMessage());
+                    }
+                    if (value == null || value.trim().isEmpty()) {
+                        value = "0 0 3 * * *"; // Cada dia a les 3:00
                     }
                     return getCronTriggerNextExecutionTime(triggerContext, taskCodi, value);
                 }

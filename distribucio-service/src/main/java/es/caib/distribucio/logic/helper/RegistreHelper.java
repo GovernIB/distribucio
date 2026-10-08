@@ -2520,6 +2520,63 @@ public class RegistreHelper {
 		}
 	}
 
+	/**
+	 * Custodia un annex a l'Arxiu: el crea/actualitza al contenidor ({@link #crearAnnexInArxiu}) i, si ja
+	 * té UUID a l'Arxiu, el marca com a definitiu i en recarrega els detalls de firma.
+	 * <p>
+	 * Extret de l'antic {@code RegistreServiceImpl.custodiarAnnex(Long, Long, Long)} perquè el pugui
+	 * reutilitzar tant el servei antic com el nou {@code RegistreAnnexResourceServiceImpl} (acció
+	 * "Validar firmes").
+	 */
+	@Transactional
+	public void custodiarAnnex(Long annexId) {
+		RegistreAnnexEntity annex = registreAnnexRepository.getReferenceById(annexId);
+		RegistreEntity registre = annex.getRegistre();
+		Long registreId = registre.getId();
+
+		try {
+			DistribucioRegistreAnnex distribucioRegistreAnnex = conversioTipusHelper.convertir(
+					annex, DistribucioRegistreAnnex.class);
+			DistribucioRegistreAnotacio distribucioRegistreAnotacio =
+					this.getDistribucioRegistreAnotacio(registreId);
+
+			this.crearAnnexInArxiu(
+					annexId,
+					distribucioRegistreAnnex,
+					distribucioRegistreAnotacio.getUnitatOrganitzativaCodi(),
+					distribucioRegistreAnotacio.getExpedientArxiuUuid(),
+					distribucioRegistreAnotacio.getProcedimentCodi());
+
+			// Actualitza el recompte d'esborranys
+			List<RegistreAnnexEntity> registreAnnex = registreRepository.getDadesRegistreAnnex(registreId);
+			int numEsborrany = 0;
+			for (RegistreAnnexEntity annexList : registreAnnex) {
+				if (annexList.getArxiuEstat() == AnnexEstat.ESBORRANY) {
+					numEsborrany++;
+				}
+			}
+			registre.setAnnexosEstatEsborrany(numEsborrany);
+
+			// Modificar
+			if (annex.getFitxerArxiuUuid() != null) {
+				pluginHelper.arxiuDocumentSetDefinitiu(annex);
+				annex.setArxiuEstat(AnnexEstat.DEFINITIU);
+				registre.setAnnexosEstatEsborrany(numEsborrany - 1);
+				registreRepository.saveAndFlush(registre);
+				registreAnnexRepository.saveAndFlush(annex);
+				entityManager.flush();
+			}
+			// Finalment si està a l'arxiu com a definitiu i no s'han carregat els detalls de la firma els carrega
+			if (annex.getFitxerArxiuUuid() != null
+					&& AnnexEstat.DEFINITIU.compareTo(annex.getArxiuEstat()) == 0
+					&& !annex.isSignaturaDetallsDescarregat()) {
+				this.loadSignaturaDetallsToDB(annex);
+			}
+		} catch (Exception e) {
+			logger.error("Error no controlat custodiant l'annex amb id:  " + annexId + " de l'anotació amb id:  " + registreId + " a l'Arxiu: " + e.getMessage(), e);
+		}
+	}
+
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void updateAnotacioEstat(long anotacioId, List<Throwable> exceptionsGuardantAnnexos) {
 		RegistreEntity anotacio = registreRepository.getReferenceById(anotacioId);
@@ -2698,6 +2755,49 @@ public class RegistreHelper {
 			}
 		}
 		return firma;
+	}
+
+	/** Descàrrega del fitxer d'una firma individual de l'annex (registreAnnexFirmes.jsp/ContingutController.descarregarFirma). */
+	public FitxerDto getAnnexFirmaFitxer(Long annexId, int indexFirma) {
+		FitxerDto fitxerDto = new FitxerDto();
+
+		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(annexId);
+		RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(indexFirma);
+		RegistreEntity registre = registreAnnexEntity.getRegistre();
+
+		// if annex is already created in arxiu take firma content from arxiu
+		if (registreAnnexEntity.getFitxerArxiuUuid() != null
+				&& !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()
+				&& firmaEntity != null) {
+
+			es.caib.pluginsib.arxiu.api.Firma firma = this.getFirma(registreAnnexEntity, indexFirma);
+			if (firma != null) {
+				fitxerDto.setNom(firmaEntity.getFitxerNom());
+				fitxerDto.setContentType(firmaEntity.getTipusMime());
+				fitxerDto.setContingut(firma.getContingut());
+				fitxerDto.setTamany(firma.getContingut().length);
+			}
+
+		// if annex is not yet created in arxiu take firma content from gestio documental
+		} else {
+			if (firmaEntity.getGesdocFirmaId() != null) {
+				ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
+				gestioDocumentalHelper.gestioDocumentalGet(
+						firmaEntity.getGesdocFirmaId(),
+						firmaEntity.getFitxerNom(),
+						GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP,
+						streamAnnexFirma,
+						registre.getNumero());
+				byte[] firmaContingut = streamAnnexFirma.toByteArray();
+
+				fitxerDto.setNom(firmaEntity.getFitxerNom());
+				fitxerDto.setContentType(firmaEntity.getTipusMime());
+				fitxerDto.setContingut(firmaContingut);
+				fitxerDto.setTamany(firmaContingut.length);
+			}
+		}
+
+		return fitxerDto;
 	}
 
 	/** Mètode per consultar totes les anotacions pendents d'enviar agrupades per ReglaDto, cal tenir en compte que cada entitat

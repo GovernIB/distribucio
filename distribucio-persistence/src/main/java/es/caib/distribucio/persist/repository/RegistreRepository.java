@@ -39,6 +39,9 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 
 	List<RegistreEntity> findByRegla(
 			ReglaEntity regla);
+
+	List<RegistreEntity> findByRegla_Id(
+			Long reglaId);
 	
 	List<RegistreEntity> findByNumero(String numero);
 

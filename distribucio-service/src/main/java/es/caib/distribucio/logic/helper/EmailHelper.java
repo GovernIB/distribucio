@@ -173,7 +173,7 @@ public class EmailHelper {
 		mailSender.send(missatge);
 	}
 
-	private String getPrefixDistribucio() {
+    public String getPrefixDistribucio() {
 		String entorn = configHelper.getConfig("es.caib.distribucio.default.user.entorn");
 		String prefix;
 		if (entorn != null) {

@@ -42,6 +42,7 @@ import es.caib.distribucio.logic.helper.BustiaHelper;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.helper.EmailHelper;
 import es.caib.distribucio.logic.helper.EntitatHelper;
+import es.caib.distribucio.logic.helper.ExcepcioLogHelper;
 import es.caib.distribucio.logic.helper.HistogramPendentsHelper;
 import es.caib.distribucio.logic.helper.HistoricHelper;
 import es.caib.distribucio.logic.helper.RegistreHelper;
@@ -86,6 +87,8 @@ public class SegonPlaServiceImpl implements SegonPlaService {
     private HistogramPendentsHelper historicsPendentHelper;
     @Autowired
     private ConfigHelper configHelper;
+    @Autowired
+    private ExcepcioLogHelper excepcioLogHelper;
     @Autowired
     private HistoricHelper historicHelper;
     @Autowired
@@ -648,6 +651,30 @@ public class SegonPlaServiceImpl implements SegonPlaService {
         }
     }
 
+
+    /** Dies d'antiguitat de les excepcions a partir dels quals s'esborren si no s'ha configurat la propietat. */
+    private static final int EXCEPCIONS_ESBORRAR_DIES_DEFECTE = 45;
+
+    @Override
+    public void esborrarExcepcionsAntigues() {
+        String diesPropietat = configHelper.getConfig(
+                "es.caib.distribucio.tasca.excepcions.esborrar.antics.dies",
+                String.valueOf(EXCEPCIONS_ESBORRAR_DIES_DEFECTE));
+        int dies;
+        try {
+            dies = Integer.parseInt(diesPropietat.trim());
+        } catch (NumberFormatException ex) {
+            logger.warn("Valor no vàlid per als dies d'antiguitat de les excepcions a esborrar (" + diesPropietat + "). S'usen " + EXCEPCIONS_ESBORRAR_DIES_DEFECTE + " dies.");
+            dies = EXCEPCIONS_ESBORRAR_DIES_DEFECTE;
+        }
+        Calendar c = new GregorianCalendar();
+        c.add(Calendar.DATE, -dies);
+        logger.debug("Execució de tasca programada d'esborrar les excepcions de més de " + dies + " dies d'antiguitat");
+        int n = excepcioLogHelper.esborrarAnteriorsA(c.getTime());
+        if (n > 0) {
+            logger.info(n + " excepcions de més de " + dies + " dies d'antiguitat esborrades del log d'excepcions");
+        }
+    }
 
     @Override
     public void reintentarProcessamentBackoffice() {

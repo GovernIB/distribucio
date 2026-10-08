@@ -87,6 +87,13 @@ public class UsuariController  extends BaseAdminController {
 				EnumHelper.getOptionsForEnum(
 						IdiomaEnumDto.class,
 						"usuari.form.camp.idioma.enum."));
+		// Interfície per defecte de l'usuari. El desplegable admet l'opció buida: sense valor
+		// mana la propietat es.caib.distribucio.interface.defecte (veure DistribucioController).
+		model.addAttribute(
+				"interficieUsuariEnumOptions",
+				EnumHelper.getOptionsForEnum(
+						InterficieUsuariEnumDto.class,
+						"usuari.form.camp.interficieUsuari.enum."));
 		if (bustiaPerDefecte != null)
 			model.addAttribute("bustiaPerDefecte", bustiaPerDefecte.getId());
 		return "usuariForm";

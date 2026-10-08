@@ -11,15 +11,24 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.dto.PermisDto;
 import es.caib.distribucio.logic.intf.exception.PropietatNotFoundException;
+import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.repository.EntitatRepository;
 
 /**
@@ -30,10 +39,11 @@ import es.caib.distribucio.persist.repository.EntitatRepository;
 @Component
 public class EntitatHelper {
 
-	@Autowired
-	private ConfigHelper configHelper;
-	@Autowired
-	private EntitatRepository entitatRepository;
+	@Autowired private ConfigHelper configHelper;
+	@Autowired private CacheHelper cacheHelper;
+	@Autowired private EntitatRepository entitatRepository;
+	@Autowired private EntityComprovarHelper entityComprovarHelper;
+	@Autowired private PermisosHelper permisosHelper;
 
 	public void createLogo(
 			String entitatCodi,
@@ -124,6 +134,81 @@ public class EntitatHelper {
 		return entitatRepository.getCodiEntitatPerAnotacioId(anotacioId);
 	}
 
+	public List<EntitatDto> findAccessiblesUsuariActual() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		List<EntitatDto> entitats;
+		if (auth != null) {
+			String authUserName = auth.getName();
+			logger.trace("Consulta les entitats accessibles per l'usuari actual (" +
+					"usuari=" + authUserName + ")");
+			entitats = cacheHelper.findEntitatsAccessiblesUsuari(
+					authUserName,
+					getRolsClauCache(auth));
+		} else {
+			logger.trace("Consulta de les entitats per l'usuari actual sense usuari autenticat.");
+			entitats = new ArrayList<EntitatDto>();
+		}
+		return entitats;
+	}
+	
+	public void updatePermisSuper(
+			Long id,
+			PermisDto permis) {
+		logger.debug("Modificació com a superusuari del permis de l'entitat (" +
+				"id=" + id + ", " +
+				"permis=" + permis + ")");
+		entityComprovarHelper.comprovarEntitat(
+				id,
+				false,
+				false,
+				false);
+		permisosHelper.updatePermis(
+				id,
+				EntitatEntity.class,
+				permis);
+	}
+	
+	public void deletePermisSuper(
+			Long id,
+			Long permisId) {
+		logger.debug("Eliminació com a superusuari del permis de l'entitat (" +
+				"id=" + id + ", " +
+				"permisId=" + permisId + ")");
+		entityComprovarHelper.comprovarEntitat(
+				id,
+				false,
+				false,
+				false);
+		permisosHelper.deletePermis(
+				id,
+				EntitatEntity.class,
+				permisId);
+	}
+	
+	public List<PermisDto> findPermisSuper(Long id) {
+		logger.debug("Consulta com a superusuari dels permisos de l'entitat (" +
+				"id=" + id + ")");
+		entityComprovarHelper.comprovarEntitat(
+				id,
+				false,
+				false,
+				false);
+		return permisosHelper.findPermisos(
+				id,
+				EntitatEntity.class);
+	}
+	
+	/**
+	 * Rols de l'autenticacio, ordenats i concatenats, per a formar part de la clau de la cache
+	 * d'entitats accessibles (veure {@code CacheHelper.findEntitatsAccessiblesUsuari}).
+	 */
+	private String getRolsClauCache(Authentication auth) {
+		return auth.getAuthorities().stream().
+				map(GrantedAuthority::getAuthority).
+				sorted().
+				collect(Collectors.joining(","));
+	}
+	
 	private String getLogosDir() {
 		String propertyNom = "es.caib.distribucio.entitat.logos.base.dir";
 		String baseDir = configHelper.getConfig(propertyNom);

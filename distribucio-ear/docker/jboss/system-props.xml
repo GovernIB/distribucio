@@ -1,4 +1,0 @@
-    <system-properties>
-        <property name="es.caib.distribucio.properties" value="/home/jboss/apps/distribucio/jboss.properties"/>
-        <property name="es.caib.distribucio.system.properties" value="/home/jboss/apps/distribucio/jboss_system.properties"/>
-    </system-properties>
