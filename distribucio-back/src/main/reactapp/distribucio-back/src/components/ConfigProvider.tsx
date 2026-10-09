@@ -19,7 +19,7 @@ const construirKeyEspecifica = (keyBase: string, entitat: string): string => {
 };
 
 const getValue = (item:any) => {
-    return (item.value != null)
+    return (item.value != null && item.value !== "false")
         ?(item.type?.id == 'BOOL' && typeof item.value == 'string')
             ? item.value === "true"
             : item.value

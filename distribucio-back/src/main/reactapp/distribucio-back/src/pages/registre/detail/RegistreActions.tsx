@@ -53,6 +53,19 @@ export const useActions = (refresh?: () => void) => {
         }
     }
 
+    const tornarProcessar = (id:any) => {
+        if (apiIsReady) {
+            apiAction(undefined, {code: "TORNAR_PROCESSAR", data: { ids: [id], massive: false } })
+                .then((response) => {
+                    refresh?.()
+                    temporalMessageShow(null, t('page.registre.accio.tornarProcessar.ok', {numero: response.numero}), 'success');
+                })
+                .catch((error) => {
+                    temporalMessageShow(null, error?.message, 'error');
+                });
+        }
+    }
+
     const informeLogs = (id:any) => {
         if (apiIsReady) {
             apiReport(id, {code: "INFORME_LOGS", fileType: 'PDF'})
@@ -115,6 +128,7 @@ export const useActions = (refresh?: () => void) => {
         justificant,
         exportRegistre,
         reenviarBackoffice,
+        tornarProcessar,
     }
 }
 

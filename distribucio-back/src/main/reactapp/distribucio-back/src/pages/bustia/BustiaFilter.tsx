@@ -12,7 +12,7 @@ const BustiaFilterForm: React.FC = () => {
             <GridFormField size={{ xs: 12, sm: 6, md: 2 }} type={'checkbox'} name="pendent" />
             <GridFormField size={{ xs: 12, sm: 6, md: 2 }} type={'checkbox'} name="principal" />
             <GridFormField size={{ xs: 12, sm: 6, md: 2 }} type={'checkbox'} name="activa" />
-            <GridButtonField size={{ xs: 12, sm: 6, md: 0.5 }} name="permisPerUsuari" icon={'warning'}/>
+            <GridButtonField size={{ xs: 12, sm: 6, md: 1 }} name="permisPerUsuari" icon={'warning'}/>
         </>
     );
 };

@@ -963,6 +963,8 @@ const translationEs = {
                 eniEstat: "Estado",
             },
             detail: {
+                coneixement: 'Para conocimiento',
+                tramit: "Para tramitar",
                 unitatAdmin: {
                     ENTRADA: "Órgano destino",
                     SORTIDA: "Órgano origen",
@@ -1308,6 +1310,7 @@ const translationEs = {
             },
         },
         RegistreDetail: {
+            error: "El procesamiento automático de esta anotación ha producido errores",
             avancar: "Avanzar página al reenviar",
             titles: {
                 representant: "Representante",
@@ -1324,6 +1327,7 @@ const translationEs = {
                 annexos: "Anexos",
                 arxiu: "Info. del archivo",
                 procesBack: "Procesamiento del backoffice",
+                procesAuto: "Procesamiento automático",
                 dades: "Datos",
                 copia: "Copias",
             }

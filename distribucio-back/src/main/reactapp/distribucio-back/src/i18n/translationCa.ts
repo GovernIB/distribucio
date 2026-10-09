@@ -966,6 +966,8 @@ const translationCa = {
                 eniEstat: "Estat",
             },
             detail: {
+                coneixement: 'Per coneixement',
+                tramit: "Per tramitar",
                 unitatAdmin: {
                     ENTRADA: "Òrgan destí",
                     SORTIDA: "Òrgan origen",
@@ -1311,6 +1313,7 @@ const translationCa = {
             },
         },
         RegistreDetail: {
+            error: "El processament automàtic d'aquesta anotació ha produit errors",
             avancar: "Avançar pàgina al reenviar",
             titles: {
                 representant: "Representant",
@@ -1327,6 +1330,7 @@ const translationCa = {
                 annexos: "Annexos",
                 arxiu: "Arxiu info.",
                 procesBack: "Processament backoffice",
+                procesAuto: "Processament automàtic",
                 dades: "Dades",
                 copia: "Còpies",
             }

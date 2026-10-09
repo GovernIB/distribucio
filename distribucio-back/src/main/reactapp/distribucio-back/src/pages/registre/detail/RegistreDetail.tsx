@@ -21,13 +21,19 @@ import {ErrorArea} from "../../../components/ErrorArea.tsx";
 import {useConfig} from "../../../components/ConfigProvider.tsx";
 import useVisualitzar from "../../annex/actions/AnnexVisualitzar.tsx";
 import {MetaDadesForm} from "./MetaDadesForm.tsx";
-import {ROLE_ADMIN, ROLE_ADMIN_LECTURA, useDistribucioContext} from "../../../components/DistribucioContext.ts";
+import {
+    ROLE_ADMIN,
+    ROLE_ADMIN_LECTURA,
+    ROLE_USER,
+    useDistribucioContext
+} from "../../../components/DistribucioContext.ts";
 import Button from "@mui/material/Button";
 import {MenuActionButton} from "../../../components/MenuButton.tsx";
 import {useActions, useRegistreActions} from "./RegistreActions.tsx";
 import {useSession} from "../../../components/SessionStorageContext.tsx";
 import {useRecordNavigation} from "../../../components/RecordNavigation.tsx";
 import {REPORT_DESCARREGAR_IMPRIMIBLE, useDescarregarAnnex} from "../../annex/AnnexAccions.tsx";
+import Alert from "@mui/material/Alert";
 
 const AnnexTab = ({entity}:any) => {
     const { isReady: apiIsReady, find: apiFind } = useResourceApiService('registreAnnexResource');
@@ -255,6 +261,54 @@ const ProcessBack = ({entity, refresh}:any) => {
         </Grid>
     </Grid>
 }
+const ProcessAuto = ({entity, refresh}:any) => {
+    const { t } = useBaseAppContext();
+    const {currentRole} = useDistribucioContext()
+    const { tornarProcessar, reenviarBackoffice } = useActions(refresh)
+
+    const isAdmin = currentRole == ROLE_ADMIN;
+
+    const reenviar = <>
+        {entity.potModificar && (entity.procesEstat == 'BACK_PENDENT') && <>
+            <Grid size={12} sx={{ textAlign: 'end' }}>
+                <ToolbarButton icon={'refresh'} onClick={() => reenviarBackoffice(entity.id)} >
+                    {t('page.registre.accio.reenviarBackoffice.label')}</ToolbarButton>
+            </Grid>
+        </>}
+    </>
+
+    return <Grid container columnSpacing={1} rowSpacing={1}>
+
+        {entity.procesError != null && <Grid size={12}>
+            <Alert severity={'error'}
+                   action={<>
+                       {isAdmin && (entity.procesEstat == 'ARXIU_PENDENT' || entity.procesEstat == 'REGLA_PENDENT' || entity.procesEstat == 'BUSTIA_PROCESSADA') && <>
+                           <Grid size={12} sx={{ textAlign: 'end' }}>
+                               <ToolbarButton icon={'refresh'} onClick={() => tornarProcessar(entity.id)} >
+                                   {t('page.registre.accio.tornarProcessar.label')}</ToolbarButton>
+                           </Grid>
+                       </>}
+                       {reenviar}
+                   </>}
+            >{t('component.RegistreDetail.error')}</Alert>
+        </Grid>}
+
+        {entity.procesError == null && reenviar}
+
+        <DetailCard>
+            <DetailField name={"procesEstat"} inline>{entity.procesEstat}</DetailField>
+            {entity.procesEstat == 'REGLA_PENDENT' && <DetailField name={"regla"} inline hidden={!entity.regla?.id}/>}
+            <DetailField name={"backCodi"} inline hidden={!entity.backCodi}/>
+            <DetailField name={"procesData"} inline hidden={!entity.procesData}/>
+            {entity.procesEstat == 'BACK_PENDENT' && <DetailField name={"backRetryEnviarData"} inline hidden={!entity.backRetryEnviarData}/>}
+            <DetailField name={"procesIntents"} inline/>
+        </DetailCard>
+
+        {entity.procesError && <Grid size={12}>
+            <ErrorArea sx={{backgroundColor: 'customBackground', fontSize: 12}}>{entity.procesError}</ErrorArea>
+        </Grid>}
+    </Grid>
+}
 
 const copiesColumns = (t:any, id:any) => [
     { field: 'numero', flex: 1 },
@@ -477,6 +531,7 @@ const Resum = ({entity}:any) => {
 const RegistreDetail = (props:any) => {
     const { t } = useBaseAppContext();
     const {data} = useDetailContext()
+    const {currentRole, currentEntitat} = useDistribucioContext()
     const { refresh, onLoaded } = props
 
     // MuiDetail manté les dades velles mentre carrega un altre id: quan arriben les noves, ho notifiquem
@@ -484,8 +539,11 @@ const RegistreDetail = (props:any) => {
         if (data) onLoaded?.()
     }, [data]);
 
-    const { getByName } = useConfig()
+    const { getByName, getByNameAndEntity } = useConfig()
     const metadadesActives = getByName("es.caib.distribucio.permetre.metadades.registre")
+    const isConeixementActiu = getByNameAndEntity("es.caib.distribucio.contingut.enviar.coneixement", currentEntitat.codi)
+
+    const isUser = currentRole == ROLE_USER
 
     const [avanzarPagina, setAvanzarPagina] = useState<boolean>(true)
     const {save} = useSession('avanzarPagina');
@@ -527,6 +585,14 @@ const RegistreDetail = (props:any) => {
             content: <ArxiuDetall entity={data.arxiuDetall}/>
         },
         {
+            value: 'procesAuto',
+            label: t('component.RegistreDetail.tabs.procesAuto'),
+            icon: 'warning',
+            content: <ProcessAuto entity={data} refresh={refresh}/>,
+            error: true,
+            hidden: !(data.procesEstat == 'ARXIU_PENDENT' || data.procesEstat == 'REGLA_PENDENT' || data.procesEstat == 'BACK_PENDENT' || (data.procesEstat == 'BUSTIA_PROCESSADA' && data.procesError != null))
+        },
+        {
             value: 'procesBack',
             label: t('component.RegistreDetail.tabs.procesBack'),
             content: <ProcessBack entity={data} refresh={refresh}/>,
@@ -558,6 +624,17 @@ const RegistreDetail = (props:any) => {
         <TabComponent
             variant="scrollable"
             headerAdditionalData={<Box display={'flex'} justifyContent={'end'} gap={1}>
+                {isUser && isConeixementActiu && <Button
+                    variant={'contained'}
+                    color={data.darrerMovimentResource?.perConeixement ? 'info' : 'warning'}
+                >
+                    <Typography variant={'caption'}>
+                        {data.darrerMovimentResource?.perConeixement
+                            ?t('page.registre.detail.coneixement')
+                            :t('page.registre.detail.tramit')}
+                    </Typography>
+                </Button>}
+                {data.pendentExecucioMassiva && <Icon title={t('page.registre.avisos.pendentExecucioMassiva')} color={'warning'}>schedule</Icon>}
                 <Button
                     title={t('component.RegistreDetail.avancar')}
                     variant={avanzarPagina ?'contained' :'outlined'}
