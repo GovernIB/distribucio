@@ -4,13 +4,15 @@ package es.caib.distribucio.logic.intf.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 /** Classe tenir l'estat d'actualització. Permet tractar 
  * les actualitzacions de procediments i serveis de les diferents entitats en transaccions separades.
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Getter @Setter
-public class UpdateProgressDto {
+public class UpdateProgressDto implements Serializable {
 
 	/** Estat de consulta o actualització per unitats. */
 	public enum Estat {

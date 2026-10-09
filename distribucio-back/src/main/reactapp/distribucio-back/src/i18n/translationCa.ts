@@ -1,0 +1,1344 @@
+const translationCa = {
+    comu: {
+        empty: {
+            option: 'Selecciona...',
+        },
+    },
+    // Claus compartides pels components portats de RIPEA (StyledMuiFilter...). Es manté el
+    // nom "common" que fan servir aquests components perquè els propers ports hi encaixin
+    // sense retocs.
+    common: {
+        save: "Guarda",
+        update: 'Modifica',
+        delete: 'Esborra',
+        actualitza: "Actualitza",
+        cancel: "Cancel·la",
+        close: 'Tanca',
+        clear: 'Neteja',
+        filter: 'Filtra',
+        filterCount_one: '{{num}} filtre aplicat',
+        filterCount_other: '{{num}} filtres aplicats',
+        advancedSearch: 'Cerca avançada',
+        advancedSearchOpen: 'Obre la cerca avançada',
+        advancedSearchClose: 'Tanca la cerca avançada',
+        copiat: 'Copiat correctament',
+        refresh: 'Refresca',
+        create: 'Crea',
+        processing: 'Processant...',
+        boolean: {
+            true: "Si",
+            false: "No",
+        },
+        actions: "Accions",
+        download: "Descarrega",
+    },
+    app: {
+        loading: 'Iniciant DISTRIBUCIO',
+        sessio: {
+            caducada: 'La sessió ha caducat. Torna a iniciar la sessió per continuar.',
+            iniciar: 'Inicia la sessió',
+            error: "No s'ha pogut obtenir la sessió de l'usuari.",
+            tornarAProvar: 'Torna-ho a provar',
+        },
+        menu: {
+            home: 'Inici',
+            entitats: 'Entitats',
+            avisos: 'Avisos',
+            consultar: "Consultar",
+            serveis: 'Serveis',
+            configuracio: 'Configuració',
+            configurar: 'Configurar',
+            limitCanviEstat: "Limits canvis d'estat",
+            usuariCanviCodis: "Canvi de codis d'usuaris",
+            bustia: 'Bústies',
+            unitatOrganitzativa: 'Unitats Organitzatives',
+            procediment: 'Procediments',
+            contingut: 'Continguts',
+            annex: 'Annexos',
+            config: 'Propietats configurables',
+            massiva: "Consultar accions massives",
+            monitoritzar: 'Monitoritzar',
+            integracio: 'Integracions',
+            monitor: 'Monitor de sistema',
+            metriques: 'Mètriques',
+            pendentsArxiu: "Anotacions pendents d'Arxiu",
+            excepcio: 'Excepcions',
+            registre: "Anotacions",
+            vistaMoviments: "Vista de moviments",
+            regla: "Regles",
+        },
+        avisos: {
+            mostra: "Mostra el detall de l'avís",
+            amaga: "Amaga el detall de l'avís",
+        },
+        interficie: {
+            classica: 'Interfície clàssica',
+        },
+    },
+    page: {
+        forbidden: {
+            message: 'No teniu accés a aquesta pàgina amb el rol actual',
+        },
+        notFound: {
+            message: 'Pàgina no trobada',
+        },
+        home: {
+            toolbar: {
+                title: 'DISTRIBUCIO',
+                subtitle: "Distribució d'anotacions de registre a les diferents bústies dels organismes.",
+            },
+        },
+        entitats: {
+            grid: {
+                title: 'Entitats',
+                column: {
+                    // Única capçalera que no és cap atribut del recurs: és la columna del botó
+                    // que obre el llistat de permisos. La resta les aporta el backend (_prompt).
+                    permisos: 'Permisos',
+                },
+                adminAllowed: 'Administració',
+                perm0Allowed: 'Admin (Lectura)',
+                readAllowed: 'Usuaris',
+            },
+            permis: {
+                title: "Permisos de l'entitat",
+                grid: {
+                    buit: 'Aquesta entitat no té cap permís',
+                },
+                form: {
+                    titleCreate: 'Nou permís',
+                    titleUpdate: 'Modifica el permís',
+                },
+                esborrar: {
+                    title: 'Confirmació',
+                    confirm: 'Estau segur que voleu esborrar aquest permís?',
+                },
+                accio: {
+                    gestionar: 'Gestiona els permisos',
+                    nou: 'Nou permís',
+                    modificar: 'Modifica',
+                    esborrar: 'Esborra',
+                    guardarOk: "El permís s'ha desat correctament",
+                    esborrarOk: "El permís s'ha esborrat correctament",
+                    error: "No s'ha pogut executar l'acció",
+                },
+            },
+            form: {
+                titleCreate: 'Nova entitat',
+                titleUpdate: 'Modifica entitat',
+                // El diàleg de la graella compon el títol amb el verb de l'acció ("Crea" o
+                // "Modifica") més aquest nom de recurs.
+                resourceTitle: 'entitat',
+            },
+            accio: {
+                new: "Nova entitat",
+                modificar: 'Modifica',
+                activar: 'Activa',
+                desactivar: 'Desactiva',
+                esborrar: 'Esborra',
+                crearOk: "L'entitat s'ha creat correctament",
+                modificarOk: "L'entitat s'ha modificat correctament",
+                esborrarOk: "L'entitat s'ha esborrat correctament",
+                activarOk: "L'entitat s'ha activat correctament",
+                desactivarOk: "L'entitat s'ha desactivat correctament",
+                error: "No s'ha pogut executar l'acció",
+            },
+        },
+        avisos: {
+            grid: {
+                title: "Avisos",
+            },
+            form: {
+                titleCreate: 'Nou avis',
+                titleUpdate: 'Modifica avis',
+                resourceTitle: 'avis',
+            },
+            accio: {
+                new: "Nou avis",
+                modificar: 'Modifica',
+                activar: 'Activa',
+                desactivar: 'Desactiva',
+                esborrar: 'Esborra',
+                crearOk: "L'avis s'ha creat correctament",
+                modificarOk: "L'avis s'ha modificat correctament",
+                esborrarOk: "L'avis s'ha esborrat correctament",
+                activarOk: "L'avis s'ha activat correctament",
+                desactivarOk: "L'avis s'ha desactivat correctament",
+                activarMassiuOk: "Els avisos seleccionats s'han activat correctament",
+                desactivarMassiuOk: "Els avisos seleccionats s'han desactivat correctament",
+                esborrarMassiuOk: "Els avisos seleccionats s'han esborrat correctament",
+                error: "No s'ha pogut executar l'acció",
+            },
+        },
+        serveis: {
+            extingit: "El servei está marcat com extingit ja que no s'ha trobat a Rolsac",
+            grid: {
+                title: "Serveis",
+            },
+            accio: {
+                actualitzarTotsButton: 'Actualitza tots els serveis',
+                actualitzar: 'Actualitza el servei',
+                esborrar: 'Esborra',
+                actualitzarOk: "El servei s'ha actualitzat correctament",
+                actualitzarTotsOk: "Tots els serveis s'han actualitzat correctament",
+                esborrarOk: "El servei s'ha esborrat correctament",
+                error: "No s'ha pogut executar l'acció",
+                actualitzarTots: {
+                    title: "Actualització de serveis",
+                    confirmacio: "Voleu actualitzar els serveis amb la informació de ROLSAC?",
+                    estat: "Estat",
+                    total: "Número de serveis totals",
+                    processats: "Número de serveis processats",
+                    estats: {
+                        INICIALITZANT: "Inicialitzant",
+                        ACTUALITZANT: "Actualitzant",
+                        FINALITZAT: "Finalitzat",
+                        ERROR: "Error",
+                    },
+                    close: {
+						check: "Estau segur que voleu tancar aquesta finestra?",
+						description: "L'acció continuarà en segon pla i podreu consultar el resultat més tard.",
+					},
+                },
+            },
+        },
+        procediments: {
+            extingit: "El procediment está marcat com extingit ja que no s'ha trobat a Rolsac",
+            grid: {
+                title: "Procediments",
+            },
+            accio: {
+                actualitzarTotsButton: "Actualitza tots els procediments",
+                actualitzar: "Actualitza el procediment",
+                actualitzarOk: "El procediment s'ha actualitzat correctament",
+                actualitzarTotsOk: "Tots els procediments s'han actualitzat correctament",
+                error: "No s'ha pogut executar l'acció",
+                actualitzarTots: {
+                    title: "Actualització de procediments",
+                    confirmacio: "Voleu actualitzar els procediments amb la informació de ROLSAC?",
+                    estat: "Estat",
+                    total: "Número de procediments totals",
+                    processats: "Número de procediments processats",
+                    estats: {
+                        INICIALITZANT: "Inicialitzant",
+                        ACTUALITZANT: "Actualitzant",
+                        FINALITZAT: "Finalitzat",
+                        ERROR: "Error",
+                    },
+                    close: {
+						check: "Estau segur que voleu tancar aquesta finestra?",
+						description: "L'acció continuarà en segon pla i podreu consultar el resultat més tard.",
+					},
+                },
+            },
+        },
+        contingut: {
+            grid: {
+                title: "Localitzador de continguts",
+                icona: {
+                    bustia: "Bústia",
+                    registre: "Anotació de registre",
+                    unitat: "Unitat organitzativa",
+                    esborrat: "Esborrat",
+                    alerta: "Aquest registre s'ha distribuit amb regles",
+                },
+            },
+            accio: {
+                detalls: {
+                    label: "Detalls",
+                    title: "Detalls del contingut",
+                },
+                historial: {
+                    label: "Històric d'accions",
+                },
+            },
+            detall: {
+                title: "Detall de l'element",
+                camp: {
+                    nom: "Nom",
+                    entitat: "Entitat",
+                    unitatOrganitzativa: "Unitat organitzativa",
+                    activa: "Activa",
+                    perDefecte: "Per defecte",
+                    permisos: "Permisos",
+                },
+            },
+            historial: {
+                title: "Històric d'accions de l'element",
+                tab: {
+                    accions: "Accions",
+                    moviments: "Moviments",
+                    auditoria: "Auditoria",
+                },
+                informe: {
+                    label: "Informe",
+                    ok: "L'informe s'ha descarregat correctament",
+                },
+                detall: {
+                    title: "Detall de l'acció",
+                    objecte: "Objecte: {{nom}}",
+                    params: "Paràmetres",
+                    accioPare: "Acció pare",
+                    moviment: "Moviment",
+                    movimentOrigen: "Origen",
+                    movimentDesti: "Destí",
+                },
+                auditoria: {
+                    creacio: "Creació",
+                    modificacio: "Darrera modificació",
+                    usuari: "Usuari",
+                    data: "Data",
+                },
+            },
+        },
+        annex: {
+            grid: {
+                title: "Localitzador d'annexos",
+                registre: {
+                    original: 'original',
+                    copia: 'còpia {{num}}',
+                },
+                arxiuEstat: {
+                    buitAvis: "Aquest annex no està guardat dins l'Arxiu",
+                },
+            },
+            accio: {
+                detalls: "Detalls de l'annex",
+                detallsAnotacio: "Detalls de l'anotació",
+                concsv: 'Enllaç al ConCSV',
+                descarregarOriginal: 'Descàrrega original',
+                descarregarImprimible: 'Descàrrega imprimible',
+                guardarDefinitiu: {
+                    label: 'Custòdia',
+                    jaDefinitiu: "L'annex \"{{titol}}\" de l'anotació {{numero}} ja consta com a Definitiu a Distribució",
+                    expedientTancat: "L'expedient que conté l'annex \"{{titol}}\" de l'anotació {{numero}} està tancat a l'arxiu",
+                    definitiuArxiu: "El document annex \"{{titol}}\" de l'anotació {{numero}} ja estava com a definitiu a l'arxiu",
+                    mogutBackoffice: "El document annex \"{{titol}}\" de l'anotació {{numero}} s'ha mogut a un expedient del backoffice",
+                    updated: "L'annex \"{{titol}}\" de l'anotació {{numero}} s'ha marcat com a Definitiu",
+                    errorUpdate: "Ha ocorregut un error en el moment de crear/modificar a l'arxiu l'annex \"{{titol}}\" de l'anotació {{numero}}",
+                    errorArxiu: "Error no controlat marcant l'annex \"{{titol}}\" de l'anotació {{numero}} com a definitiu",
+                    errorFirma: "Hi ha hagut un error validant la firma de l'annex {{titol}} de l'anotació {{numero}}",
+                    senseFirma: "Error no controlat amb la firma de l'annex \"{{titol}}\" de l'anotació {{numero}}",
+                },
+                guardarDefinitiuMultiple: {
+                    label: 'Custòdia',
+                    duplicat: 'Ja existeix una execució massiva pendent dels elements seleccionats: {{elements}}',
+                },
+                validarFirmes: {
+                    valides: "Les firmes de l'annex són vàlides",
+                    noValides: 'Les firmes no són vàlides',
+                    errorValidant: "Les firmes no s'han pogut validar",
+                    custodiat: 'Annex custodiat correctament',
+                },
+                error: "No s'ha pogut executar l'acció",
+            },
+            detall: {
+                title: "Detalls de l'annex",
+                camp: {
+                    dataCaptura: 'Data de captura (ENI)',
+                    origen: 'Origen (ENI)',
+                    ntiElaboracioEstat: "Estat d'elaboració (ENI)",
+                    ntiTipusDocument: 'Tipus documental (ENI)',
+                    sicresTipusDocument: 'Tipus de document annexat',
+                    localitzacio: 'Localitzacio',
+                    observacions: 'Observacions',
+                    fitxerArxiuUuid: "Identificador dins l'Arxiu",
+                    firmaCsv: 'Firma CSV',
+                    concsvUrl: 'Enllaç a ConCSV',
+                    fitxerTipusMime: 'Tipus MIME',
+                    validacioFirmaEstat: 'Validació de firma',
+                    arxiuEstat: "Estat a l'Arxiu",
+                    gestioDocumental: 'Gestió documental',
+                    fitxer: 'Fitxer',
+                    firma: 'Firma',
+                    firmes: 'Firmes',
+                },
+                firmes: {
+                    mostrar: 'Mostrar firmes',
+                    column: {
+                        nom: 'Nom',
+                        nif: 'NIF',
+                        data: 'Data',
+                        emissor: 'Emissor',
+                        fitxerNom: 'Fitxer',
+                        csvRegulacio: 'CSV regulació',
+                    },
+                    data: {
+                        nd: 'N/D',
+                    },
+                    autofirma: {
+                        info: "DISTRIBUCIÓ ha afegit automàticament aquesta firma a l'annex de l'anotació de registre per desar-lo com a definitiu a l'arxiu",
+                    },
+                    tipus: {
+                        CSV: 'CSV',
+                        XADES_DET: 'XAdES internally detached signature',
+                        XADES_ENV: 'XAdES enveloped signature',
+                        CADES_DET: 'CAdES detached/explicit signature',
+                        CADES_ATT: 'CAdES attached/implicit signature',
+                        PADES: 'PAdES',
+                        SMIME: 'S/MIME',
+                        ODT: 'ODT',
+                        OOXML: 'OOXML',
+                    },
+                },
+                gestioDocumental: {
+                    identificador: 'Identificador',
+                    firmes: 'Firmes',
+                    cap: '(cap)',
+                    column: {
+                        tipus: 'Tipus firma',
+                        perfil: 'Perfil firma',
+                        fitxer: 'Fitxer',
+                        csvRegulacio: 'CSV regulació',
+                        autofirma: "Firmat per DISTRIBUCIÓ",
+                        gesdocFirmaId: 'Gestió documental firma',
+                    },
+                },
+                ntiElaboracioEstat: {
+                    ORIGINAL: 'Original',
+                    COPIA_ELECT_AUTENTICA_CANVI_FORMAT: 'Còpia electrònica autèntica amb canvi de format',
+                    COPIA_ELECT_AUTENTICA_PAPER: 'Còpia electrònica autèntica de document paper',
+                    COPIA_ELECT_AUTENTICA_PARCIAL: 'Còpia electrònica parcial autèntica',
+                    ALTRES: 'Altres',
+                },
+                ntiTipusDocument: {
+                    RESOLUCIO: 'Resolució',
+                    ACORD: 'Acord',
+                    CONTRACTE: 'Contracte',
+                    CONVENI: 'Conveni',
+                    DECLARACIO: 'Declaració',
+                    COMUNICACIO: 'Comunicació',
+                    NOTIFICACIO: 'Notificació',
+                    PUBLICACIO: 'Publicació',
+                    ACUS_REBUT: 'Justificant de recepció',
+                    ACTE: 'Acta',
+                    CERTIFICAT: 'Certificat',
+                    DILIGENCIA: 'Diligència',
+                    INFORME: 'Informe',
+                    SOLICITUD: "Sol·licitud",
+                    DENUNCIA: 'Denúncia',
+                    ALEGACIONS: 'Alegació',
+                    RECURSOS: 'Recursos',
+                    COMUNICACIO_CIUTADA: 'Comunicació ciutadà',
+                    FACTURA: 'Factura',
+                    ALTRES_INCAUTATS: 'Altres confiscats',
+                    LLEI: 'Llei',
+                    MOCIO: 'Moció',
+                    INSTRUCCIO: 'Instrucció',
+                    CONVOCATORIA: 'Convocatòria',
+                    ORDRE_DIA: 'Ordre del dia',
+                    INFORME_PONENCIA: 'Informe de ponència',
+                    DICTAMEN_COMISSIO: 'Dictamen de comissió',
+                    INICIATIVA_LEGISLATIVA: 'Iniciativa legislativa',
+                    PREGUNTA: 'Pregunta',
+                    INTERPELACIO: "Interpel·lació",
+                    RESPOSTA: 'Resposta',
+                    PROPOSICIO_NO_LLEI: 'Proposició no de llei',
+                    ESQUEMA: 'Esmena',
+                    PROPOSTA_RESOLUCIO: 'Proposta de resolució',
+                    COMPAREIXENSA: 'Compareixença',
+                    SOLICITUD_INFORMACIO: "Sol·licitud d'informació",
+                    ESCRIT: 'Escrit',
+                    INICIATIVA__LEGISLATIVA: 'Iniciativa legislativa',
+                    PETICIO: 'Petició',
+                    ALTRES: 'Altres tipus de documents',
+                },
+                sicresTipusDocument: {
+                    FORM: 'Formulari',
+                    FORM_ADJUNT: 'Document adjunt al formulari',
+                    INTERN: 'Fitxer tècnic intern',
+                },
+                metaData: {
+                    codiProcediment: 'Codi de procediment',
+                    resolucion: 'Resolució',
+                    profundidadColor: 'Profunditat color',
+                    titol: 'Títol',
+                    idioma: 'Idioma',
+                    descripcio: 'Descripció',
+                    appTramitDoc: 'App tràmit document',
+                    organ: 'Òrgan',
+                    origen: 'Origen',
+                    estatElaboracio: 'Estat elaboració',
+                    tipusDocEni: 'Tipus doc ENI',
+                    codiClassificacio: 'Codi classificació',
+                    csv: 'Csv',
+                    defCsv: 'Def. csv',
+                    id: 'Id',
+                    idOrigen: 'Id origen',
+                    dataInici: 'Data inici',
+                    nomFormat: 'Nom format',
+                    extensioFormat: 'Extensió format',
+                    midaLogica: 'Mida lógica',
+                    termePuntAcces: 'Terme punt accés',
+                    idPuntAcces: 'Id punt accés',
+                    esquemaPuntAcces: 'Esquema punt accés',
+                    suport: 'Suport',
+                    locArxiuCentral: 'Loc. arxiu central',
+                    arxiuGeneral: 'Arxiu general',
+                    unitats: 'Unitats',
+                    subtipusDoc: 'Subtipus doc.',
+                    tipusAsientoRegistral: 'Tipus asiento registral',
+                    codiOficinaRegistre: 'Codi oficina registre',
+                    dataAsientoRegistral: 'Data asiento registral',
+                    numAsientoRegistral: 'Nombre asiento registral',
+                    tipusFirma: 'Tipus firma',
+                    perfilFirma: 'Perfil firma',
+                    dataSegellat: 'Data segellat',
+                    idTramite: 'Id tràmit',
+                },
+                validacioFirmaEstat: {
+                    NO_VALIDAT: 'No validat',
+                    SENSE_FIRMES: 'Sense firmes',
+                    FIRMA_VALIDA: 'Firma vàlida',
+                    FIRMA_INVALIDA: 'Firma invàlida',
+                    ERROR_VALIDANT: 'Error en la validació',
+                },
+                action: {
+                    validarFirmes: 'Validar firmes',
+                    validarICustodiar: 'Validar i custodiar',
+                    descarregarFirma: 'Descarregar firma',
+                },
+            },
+        },
+        metriques: {
+            title: 'Mètriques',
+            timers: 'Timers',
+            accio: {
+                importar: 'Importar',
+                exportar: 'Exportar',
+                error: 'Error',
+                errorCarrega: 'No s’han pogut obtenir les mètriques',
+                errorImportar: 'El fitxer seleccionat no conté mètriques vàlides',
+            },
+            llegenda: {
+                title: 'Llegenda:',
+                pes: "Pes: Nombre d'execucions x Temps mig d'una execució (ms)",
+                tempsMig: "Temps mig d'una execució (ms)",
+                tempsMaxim: 'Temps màxim (ms)',
+            },
+            generics: 'Genèrics',
+            execucions: '{{count}} execucions',
+            detail: {
+                frequencia: 'Freqüència',
+                total: '{{count}} en total',
+                durada: 'Durada',
+                percentils: 'Percentils',
+                minut1: '1 min',
+                minut5: '5 min',
+                minut15: '15 min',
+                mitjana: 'Mitjana',
+                minim: 'Mínim',
+                maxim: 'Màxim',
+                desviacio: 'Desv. estàndard',
+            },
+        },
+        pendentsArxiu: {
+            title: "Monitor anotacions pendents d'Arxiu",
+            tasca: 'Dades de la tasca',
+            dataConsulta: 'Data consulta',
+            threads: 'Número de threads configurats',
+            pendents: "Número d'anotacions pendents",
+            cronInactivitat: "Expressió 'cron' inactivitat",
+            histograma: 'Histograma',
+            refrescar: 'Refrescar',
+            errorCarrega: "No s'ha pogut obtenir l'històric d'anotacions pendents",
+            senseDades: 'Encara no hi ha dades de la tasca',
+            serie: {
+                pendents: 'Pendents',
+                processats: 'Processats',
+                errors: 'Errors',
+                tempsMitja: 'Temps mitjà (segons)',
+            },
+        },
+        monitorSistema: {
+            title: 'Monitor de sistema',
+            tabs: {
+                sistema: 'Sistema',
+                fils: "Fils d'execució",
+                tasques: 'Tasques en segon pla',
+            },
+            detail: {
+                sistemaOperatiu: 'Sistema operatiu',
+                arquitectura: 'Arquitectura',
+                processadors: 'Processadors',
+                versioJboss: 'Versió de JBoss',
+                servidorAplicacions: "Servidor d'aplicacions",
+                jvm: 'JVM',
+                versioJdk: 'Versió del JDK',
+                dataArrencada: 'Data d’arrencada',
+                tempsFuncionant: 'Temps funcionant',
+                memoriaJvm: 'Màquina virtual de Java',
+                memoriaMaxima: 'Memòria màxima de la JVM',
+                senseLimit: 'Il·limitada',
+                memoriaFisica: 'Memòria física',
+                filsActius: 'Fils actius',
+                filsPic: 'Màxim de fils',
+                filsDaemon: 'Fils daemon',
+                filsDeadlock: 'Fils en deadlock',
+                gcExecucions: 'Execucions del GC',
+                gcTemps: 'Temps de GC (ms)',
+                nuclis: 'Nuclis',
+                carregaMitjana: 'Càrrega mitjana',
+                carregaCpuSistema: 'Càrrega de CPU del sistema',
+                carregaCpuProces: 'Càrrega de CPU del procés',
+                discos: 'Disc i CPU',
+            },
+            accio: {
+                refrescar: 'Refrescar',
+                error: 'Error',
+                reiniciar: {
+                    label: 'Reiniciar tasca',
+                    ok: 'La tasca s’ha reiniciat correctament',
+                },
+                reiniciarTotes: {
+                    label: 'Reiniciar seleccionades',
+                    ok: 'Les tasques s’han reiniciat correctament',
+                },
+            },
+        },
+        excepcio: {
+            grid: {
+                title: 'Excepcions del sistema',
+            },
+            detail: {
+                title: "Detall de l'excepció",
+                boto: 'Detall',
+            },
+        },
+        integracio: {
+            grid: {
+                title: "Monitor d'integracions",
+                column: {
+                    data: 'Data',
+                    descripcio: 'Descripció',
+                    tipus: 'Tipus',
+                    codiUsuari: 'Usuari',
+                    entitat: 'Entitat',
+                    numeroRegistre: 'Número de registre',
+                    tempsResposta: 'Temps resposta',
+                    estat: 'Estat',
+                },
+            },
+            pipella: {
+                USUARIS: 'Usuaris',
+                UNITATS: 'Unitats admin.',
+                ARXIU: 'Arxiu digital',
+                DADESEXT: 'Dades ext.',
+                SIGNATURA: 'Signatura',
+                VALIDASIG: 'Valida sig.',
+                GESDOC: 'Gestió documental',
+                BUSTIAWS: 'Bústia WS',
+                PROCEDIMENT: 'Procediments',
+                SERVEI: 'Serveis',
+                DISTRIBUCIO: 'Distribució',
+                BACKOFFICE: 'Backoffice',
+            },
+            detail: {
+                title: 'Detall',
+                tipus: {
+                    ENVIAMENT: 'Enviament',
+                    RECEPCIO: 'Recepció',
+                },
+                errorDescripcio: 'Descripció de l\'error',
+                excepcioMessage: 'Missatge',
+                excepcioStacktrace: 'Traça',
+                copyTooltip: 'Còpia la traça al portapapers',
+            },
+            diagnostic: {
+                boto: 'Diagnòstic',
+                title: 'Diagnòstic de les integracions',
+                entitat: 'Entitat',
+                entitatAjuda: "Els plugins es proven amb la configuració d'aquesta entitat",
+                executant: 'Executant la prova...',
+                executa: 'Torna a executar la prova',
+                executaTotes: 'Torna a executar-les totes',
+                mostraTraca: 'Mostra la traça',
+                amagaTraca: 'Amaga la traça',
+            },
+        },
+        unitatOrganitzativa: {
+            grid: {
+                title: "Gestió d'unitats organitzatives",
+                dataSinc: "Data sincronització",
+                dataDarrerSinc: "Data darrera actualització",
+            },
+            accio: {
+                organigrama: {
+                    label: "Mostrar arbre d'unitats vigents",
+                    title: "Arbre d'unitats vigents",
+                },
+                descarregarPdf: {
+                    label: "Descarrega pdf",
+                },
+                sincronitzar: {
+                    label: "Sincronitzar",
+                    title: "Predicció de sincronització",
+                    sincronitzar: "Sincronitza",
+                    forzar: "Força sincronització",
+                    ok: "Sincronització realitzada amb èxit",
+                    info: {
+                        first: 'Primera sincronización',
+                        empty: {
+                            title: "No hi ha canvis",
+                            label: "Les unitats organitzatives estan actualizades",
+                            unitat: "No s'ha trobat cap unitat vigent amb aquesta unitat pare",
+                        },
+                        noves: 'NOVES',
+                        divisions: 'DIVISIONS',
+                        fusions: 'FUSIONS',
+                        substitucio: 'SUBSTITUCIONS',
+                        canvi: 'CANVIS EN ATRIBUTS',
+                        reglesAfectades: 'REGLES AFECTADES PER LA SINCRONITZACIÓ',
+                    }
+                },
+            },
+        },
+        limitCanviEstat: {
+            grid: {
+                title: "Límits de canvis d'estat",
+            },
+            form: {
+                resourceTitle: "limit de canvi d'estat",
+            },
+            accio: {
+                new: "Nou limit de canvi d'estat",
+                modificar: 'Modifica',
+                esborrar: 'Esborra',
+                crearOk: "El nou limit de canvi d'estat s'ha creat correctament",
+                modificarOk: "El limit de canvi d'estat s'ha modificat correctament",
+                esborrarOk: "El limit de canvi d'estat s'ha esborrat correctament",
+            },
+        },
+        usuariCanviCodis: {
+            title: "Canvi de codis d'usuaris",
+            form: {
+                mapeig: {
+                    ajuda: "Afegeix totes les entrades que vulguis emprant el format 'codi_actual=codi_nou'. Exemple: e12345678Z=u123456",
+                },
+                unifica: {
+                    ajuda: "Si el codi nou ja correspon a un usuari existent, la línia s'omet. Si ho marques, s'uniran els dos usuaris amb aquest últim: les dades de l'usuari antic passaran al nou i també es fusionaran els permisos (l'usuari nou tindrà els seus i els de l'antic), les bústies favorites i la bústia per defecte (si tots dos en tenen, es manté la del nou). L'usuari antic s'esborra.",
+                },
+            },
+            accio: {
+                modificar: 'Modifica',
+                error: "No s'ha pogut fer el canvi de codis",
+                respostaInesperada: "El servidor no ha retornat el resultat d'aquesta línia",
+                confirmar: {
+                    titol: "Canviar els codis d'usuari",
+                    text: "Es canviarà el codi de tots els usuaris indicats a totes les taules de l'aplicació (auditoria, permisos, bústies, moviments i anotacions) i s'esborrarà l'usuari antic. Aquesta acció no es pot desfer. Vols continuar?",
+                },
+            },
+            info: {
+                enExecucio: "El procés pot trigar estona segons el nombre de registres. No tanquis ni refresquis la pàgina fins que acabi.",
+                progres: "Processant {{fetes}} de {{total}} línies ({{percent}} %)",
+                enCurs: "En curs: '{{linia}}'",
+                sortir: "Hi ha un canvi de codis en curs. Si surts, les línies pendents no s'executaran. Vols sortir igualment?",
+            },
+            resultat: {
+                title: "Resultat",
+                resum: {
+                    titol: 'Procés finalitzat en {{durada}}',
+                    text: '{{total}} línies processades: {{ok}} canvis correctes, {{errors}} amb error i {{omeses}} omeses. {{registres}} registres modificats en total.',
+                },
+                canvi: "Per a cada canvi correcte s'ha substituït el codi antic pel nou a l'auditoria (creat per i modificat per) de totes les taules, als permisos, a les bústies per defecte i favorites, als moviments i a les anotacions; l'usuari antic s'ha eliminat i s'ha refrescat la memòria cau d'usuaris, entitats i permisos.",
+                unificats: "Com que has marcat la unificació, els usuaris nous que ja existien han absorbit les dades i els permisos dels usuaris antics.",
+                senseLinies: "No hi havia cap línia a processar.",
+                columna: {
+                    linia: 'Línia',
+                    canvi: 'Canvi de codi',
+                    resultat: 'Resultat',
+                    durada: 'Durada',
+                },
+                estat: {
+                    OK_sense: "Canvi fet. L'usuari no tenia cap registre associat",
+                    OK_one: 'Canvi fet: {{count}} registre actualitzat',
+                    OK_other: 'Canvi fet: {{count}} registres actualitzats',
+                    ERROR: "S'ha produït un error al modificar el codi de l'usuari",
+                    FORMAT_INCORRECTE: "El format no és correcte. El format ha de ser 'codiAntic=codiNou', i els codis no poden tenir espais",
+                    ANTIC_NO_EXISTEIX: "L'usuari a modificar no existeix",
+                    NOU_EXISTEIX_SALTAT: "L'usuari nou ja existeix: línia omesa (marca la unificació per unir els dos usuaris)",
+                    DUPLICAT: "El codi actual ja apareix en una línia anterior",
+                },
+            },
+        },
+        regla: {
+            unitatObsoleta: 'La unitat està obsoleta',
+            grid: {
+                title: 'Regles',
+                unitatObsoleta: 'La unitat organitzativa de filtre ha quedat obsoleta',
+                columna: {
+                    destinacio: 'Destinació',
+                    aturar: 'Aturar',
+                    icona: {
+                        bustia: 'Bústia',
+                        backoffice: 'BackOffice',
+                        unitat: 'Unitat',
+                    },
+                },
+            },
+            form: {
+                resourceTitle: 'regla',
+                legend: {
+                    filtre: 'Filtre',
+                    accio: 'Acció',
+                },
+                camp: {
+                    procedimentCodiFiltre: {
+                        info: 'Introduïu els codis SIA de procediment separats per espai',
+                    },
+                    serveiCodiFiltre: {
+                        info: 'Introduïu els codis SIA de servei separats per espai',
+                    },
+                },
+                auditoria: {
+                    creat: 'Creat el {{data}} per {{usuari}}.',
+                    modificat: 'Modificat el {{data}} per {{usuari}}.',
+                },
+            },
+            accio: {
+                new: 'Nova regla',
+                modificar: 'Modifica',
+                esborrar: 'Esborra',
+                aplicarManualment: 'Aplica manualment',
+                simular: 'Simula',
+                amunt: 'Amunt',
+                avall: 'Avall',
+                activar: 'Activa',
+                desactivar: 'Desactiva',
+                esborrarMassiu: 'Esborra',
+                crearOk: 'La regla s\'ha creat correctament',
+                modificarOk: 'La regla s\'ha modificat correctament',
+                esborrarOk: 'La regla s\'ha esborrat correctament',
+                activarOk: 'La regla s\'ha activat correctament',
+                desactivarOk: 'La regla s\'ha desactivat correctament',
+                amuntAvallOk: "La regla s'ha mogut correctament",
+                activarMassiuOk: "Les regles seleccionades s'han activat correctament",
+                desactivarMassiuOk: "Les regles seleccionades s'han desactivat correctament",
+                esborrarMassiuOk: "Les regles seleccionades s'han esborrat correctament",
+                error: "S'ha produït un error executant l'acció",
+                aplicarManualmentOk: "La regla s'ha assignat correctament a {{count}} anotacions que es processaran en segon pla",
+            },
+            simulador: {
+                title: 'Simulador de regles',
+                avaluarTotes: 'Avaluar totes les regles',
+                senseResultat: 'No s\'ha aplicat cap regla',
+                columna: {
+                    ordre: 'Ordre',
+                    descripcio: 'Descripció',
+                    regla: 'Regla',
+                },
+                accio: {
+                    BACKOFFICE: 'Es distribueix al backoffice',
+                    UNITAT: 'Es reenvia a la U.O.',
+                    BUSTIA_PER_DEFECTE: 'Es mou a la bústia principal',
+                    BUSTIA: 'Es mou a la bústia',
+                    LOOP_DETECTED:
+                        "Aquesta regla ja s'ha aplicat anteriorment. Es finalitza l'execució de regles encadenades per evitar el bucle infinit",
+                    ATURAR_EVALUACIO:
+                        "Aquesta regla està marcada per aturar l'avaluació de les següents. Es finalitza l'execució de regles encadenades",
+                },
+            },
+            aplicar: {
+                title: 'Aplica manualment',
+                confirm:
+                    "Amb aquesta acció s'assignarà la regla a les anotacions que coincideixin amb el filtre per a que es processin en segon pla. Voleu continuar?",
+                columna: {
+                    numero: 'Número',
+                    titol: 'Títol',
+                    data: 'Data',
+                    unitatOrganitzativa: 'Unitat organitzativa',
+                    bustia: 'Bústia',
+                },
+            },
+        },
+        bustia: {
+            title: "Bústia",
+            vista: "Canvi de vista",
+            grid: {
+                title: "Gestió de bústies",
+                writeAllowed: "Accés",
+                principal: "principal",
+                favorit: "Favorit"
+            },
+            permisos: {
+                readAllowed: "Només lectura",
+                writeAllowed: "Complet",
+            },
+            accio: {
+                new: {
+                    label: "Nova bústia",
+                },
+                update: {
+                    title: "Modifica bústia",
+                },
+                moureAnotacions: {
+                    title : "Moure les anotacions de registre de la bústia '{{nom}}'",
+                    label: 'Mou anotacions'
+                },
+                perDefecte: {
+                    label: 'Marca com a principal',
+                    ok: "La bústia s'ha marcat com a principal",
+                },
+                activar: {
+                    label: 'Activa',
+                    ok: "La bústia s'ha activat correctament",
+                },
+                desactivar: {
+                    label: 'Desactiva',
+                    ok: "La bústia s'ha desactivat correctament",
+                },
+                usuarisBustia: {
+                    label: 'Usuaris',
+                    ok: "El document s'ha descarregat correctament",
+                }
+            },
+        },
+        config: {
+            title: "Propietats de configuració",
+            accio: {
+                restart: {
+                    label: "Reinicia tasques en segon pla",
+                    ok: "S'han reiniciat les tasques en segon pla. Pot comprovar l'estat d'execució de cada tasca en el monitor del sistema.",
+                },
+                sync: {
+                    label: "Sincronitza",
+                    ok: "Sincronització realitzada amb èxit",
+                },
+            }
+        },
+        backoffice: {
+            title: "Backoffices",
+            form: {
+                resourceTitle: "backoffice",
+                codi: "Codi per identificar amb quin Backoffice s'ha distribuit l'anotació",
+                url: "Clau de el fitxer de propietats corresponent a la url per a la connexió amb format ${clau.fitxer.propietats.url} o url directament",
+                usuari: "Clau de el fitxer de propietats corresponent a el nom d'usuari per a la connexió amb format ${clau.fitxer.propietats.usuari} o usuari directament",
+                contrasenya: "Clau de el fitxer de propietats corresponent a la contrasenya per a la connexió amb format ${clau.fitxer.propietats.contrasenya} o contrasenya directament",
+            },
+            accio: {
+                new: {
+                    label: "Nou backoffice",
+                },
+                prova: {
+                    label: "Prova",
+                }
+            }
+        },
+        massiva: {
+            title: "Execucions massives globals",
+            refresh: "Refresca cada {{segons}}s.",
+            accio: {
+                detail: {
+                    label: "Detall",
+                    title: "Contingut",
+                },
+                play: {
+                    label: "Reprèn",
+                    ok: "L'acció s'ha reprès correctament",
+                },
+                pause: {
+                    label: "Pausa",
+                    ok: "L'acció s'ha pausat correctament",
+                },
+                cancel: {
+                    label: "Cancel·la",
+                    ok: "L'acció s'ha cancel·lat correctament",
+                },
+                download: {
+                    label: "Descarrega",
+                    notFound: "Document no disponible",
+                    ok: "Document descarregat correctament",
+                }
+            }
+        },
+        registre: {
+            title: "Anotacions de registre",
+            remitentEmpty: "Remitent buit",
+            arxiu: {
+                identificador: "Identificador arxiu",
+                nom: "Nom",
+                serieDocumental: "Sèrie documental",
+                eniVersio: "Versió",
+                eniIdentificador: "Identificador",
+                eniOrgans: "Òrgans",
+                eniDataObertura: "Data obertura",
+                eniClassificacio: "Classificació",
+                eniEstat: "Estat",
+            },
+            detail: {
+                unitatAdmin: {
+                    ENTRADA: "Òrgan destí",
+                    SORTIDA: "Òrgan origen",
+                }
+            },
+            dades: {
+                title: "Dades del registre",
+                success: "Les dades s'han actualitzat correctament",
+            },
+            grid: {
+                avisos: "Avisos",
+                remitent: "Remitent",
+                isCopia: "Registre actual",
+                backProcesData: "Data processada",
+                backRebutjData: "Data rebutjada",
+                backErrorData: "Data error",
+                darrerMoviment: {
+                    createdDate: "Data posada en bústia",
+                    createdBy: "Processada per",
+                },
+            },
+            estat: {
+                regla: "L'anotació està pendent de regla sense regla, cal reprocessar-la",
+                maxReintents: "S'han realitzat {{num}} intents d'un màxim de {{max}}",
+            },
+            avisos: {
+                sobreescriure: "Marcat per a sobreescriure",
+                enviatPerEmail: "Enviat per correu electrònic",
+                documentacio: {
+                    _1: "Documentació adjunta en suport PAPER (o altres suports)",
+                    _2: "Documentació adjunta digitalitzada i complementàriament en paper",
+                    _3: "Documentació adjunta digitalitzada",
+                },
+                estatEsborrany: "L'anotació té annexos en estat d'esborrany a l'Arxiu",
+                alerta: "Aquest registre s'ha distribuït amb regles",
+                procesError: {
+                    ARXIU_PENDENT: "Error en desar l'anotació de registre a l'Arxiu",
+                    REGLA_PENDENT: "Error en aplicar la regla de distribució",
+                    BACK_PENDENT: "Error en enviar l'anotació al backoffice",
+                    BACK_ERROR: "Processada al backoffice amb errors",
+                    default: "Anotació amb error",
+                },
+                pendentExecucioMassiva: "Inclosa en una acció massiva pendent d'execució",
+            },
+            accio: {
+                classifica: {
+                    label: "Classifíca...",
+                    title: "Classificació de l'anotació de registre",
+                    warning: "La classificació d'una anotació de registre pot disparar l'execució de regles, la qual cosa pot provocar que l'anotació desaparegui de la bústia actual.",
+                    ok: {
+                        PROCEDIMENT: "L'anotació de registre '{{numero}}' s'ha classificat correctament dins del procediment '{{sia}}'",
+                        SERVEI: "L'anotació de registre '{{numero}}' s'ha classificat correctament dins del servei '{{sia}}'",
+                    },
+                },
+                email: {
+                    label: "Envía via email...",
+                    title: "Enviar via email",
+                    titleMassive: "Enviar via email {{num}} anotacions",
+                    ok: "La anotación \"{{numero}}\" se ha enviado correctamente",
+                    form: {
+                        destinatari: "Introduïu els destinataris separats per coma o per espai",
+                    }
+                },
+                reenviar: {
+                    label: "Reenvía...",
+                    title: "Reenviar",
+                    titleMassive: "Reenviar {{num}} anotacions",
+                    ok: "La anotación \"{{numero}}\" se ha reenviat correctamente",
+                },
+                marcarProcessada: {
+                    label: "Marca com a processada...",
+                    title: "Marcar com a processada",
+                    titleMassive: "Marcar com a processades {{num}} anotacions",
+                    ok: "L'anotació \"{{numero}}\" s'ha marcat com a processada",
+                },
+                marcarPendent: {
+                    label: "Marca com a pendent...",
+                    title: "Marcar com a pendent",
+                    titleMassive: "Marcar com a pendents {{num}} anotacions",
+                    ok: "L'anotació \"{{numero}}\" s'ha marcat com a pendent",
+                },
+                tornarProcessar: {
+                    label: "Torna a processar...",
+                    title: "Torna a processar",
+                    titleMassive: "Torna a processar {{num}} anotacions",
+                },
+                justificant: {
+                    label: "Justificant",
+                    ok: "El justificant s'ha descarregat correctament",
+                },
+                sobreescriure: {
+                    label: "Marca per a sobreescriure...",
+                    title: "Marcar per a sobreescriure",
+                    titleMassive: "Marcar per a sobreescriure {{num}} anotacions",
+                    ok: "L'anotació amb número \"{{numero}}\" s'ha marcat per a sobreescriure correctament",
+                },
+                reenviarBackoffice: {
+                    label: "Reintenta l'enviament al backoffice",
+                    titleMassive: "Reintentar l'enviament al backoffice de {{num}} anotacions",
+                    ok: "L'anotació \"{{numero}}\" s'ha processat correctament",
+                },
+                descargaMassiva: {
+                    label: "Descarrega el justificant i els annexos...",
+                    titleMassive: "Exportar el contingut de les {{num}} anotacions seleccionades",
+                },
+                export: {
+                    ODS: "Exporta ODS",
+                    CSV: "Exporta CSV",
+                    ok: "Les anotacions s'han exportat a {{format}} correctament",
+                },
+                enviaMarca: {
+                    destinatari: "Introduïu els destinataris separats per coma o per espai",
+                    label: "Enviar i marcar com a processades...",
+                    titleMassive: "Enviar per correu electrònic i marcar com a processades {{num}} anotacions",
+                },
+                descargaOriginal: {
+                    label: "Versió original de justificant i annexos",
+                    ok: "La versió original de justificant i annexos s'ha descarregat correctament",
+                },
+                descargaAutentica: {
+                    label: "Còpia autèntica imprimible",
+                    ok: "La còpia autèntica imprimible s'ha descarregat correctament",
+                },
+            },
+        },
+        alerta: {
+            label: "Llistat d'alertes",
+            title: "Llistat d'alertes",
+            accio: {
+                llegida: {
+                    label: "Llegida",
+                    ok: "L'alerta s'ha marcat com a llegida",
+                    confirm: {
+                        message: "Segur que vol marcar l'alerta com a llegida?"
+                    }
+                }
+            }
+        },
+        vistaMoviments: {
+            title: "Vista de moviments",
+            grid: {
+                enviatPerEmail: "Enviat via email",
+                bustiaInactiva: "La bústia està inactiva",
+            },
+            accio: {
+                detalls: {
+                    label: "Detalls",
+                },
+                reenviar: {
+                    label: "Reenvia...",
+                    title: "Reenvia",
+                    titleMassive: "Reenvia {{num}} moviments",
+                    ok: "El moviment \"{{numero}}\" s'ha reenviat correctament",
+                    okMassiu: "S'han reenviat {{count}} de {{total}} moviments correctament",
+                    okMassiuAmbErrors: "S'han reenviat {{count}} de {{total}} moviments correctament. Errors: {{errors}}",
+                },
+                email: {
+                    label: "Envia via email...",
+                    titleMassive: "Envia via email {{num}} moviments",
+                    ok: "El moviment \"{{numero}}\" s'ha enviat correctament",
+                    okMassiu: "S'han enviat {{count}} de {{total}} moviments correctament",
+                    okMassiuAmbErrors: "S'han enviat {{count}} de {{total}} moviments correctament. Errors: {{errors}}",
+                },
+                descarregarOriginal: {
+                    label: "Versió original de justificant i annexos",
+                },
+                descarregarCai: {
+                    label: "Còpia autèntica imprimible",
+                },
+            },
+        },
+        metadada: {
+            title: "Meta-dades",
+            accio: {
+                new: {
+                    label: "Nova meta-dada",
+                    ok: "La meta-dada s'ha creat correctament",
+                },
+                update: {
+                    ok: "La meta-dada s'ha modificat correctament",
+                },
+                delete: {
+                    ok: "La meta-dada s'ha esborrat correctament",
+                },
+                activar: {
+                    label: "Activa",
+                    ok: "La meta-dada s'ha activat correctament",
+                },
+                desactivar: {
+                    label: "Desactiva",
+                    ok: "La meta-dada s'ha desactivat correctament",
+                },
+            },
+        },
+        domini: {
+            title: "Dominis",
+            accio: {
+                cache: {
+                    label: "Buida cache",
+                    title: "Buida la cache dels dominis",
+                    ok: "La cache s'ha buidat correctament",
+                },
+                new: {
+                    label: "Afegeix domini",
+                    ok: "El domini s'ha creat correctament",
+                },
+                update: {
+                    ok: "El domini s'ha modificat correctament",
+                },
+                delete: {
+                    ok: "El domini s'ha esborrat correctament",
+                },
+            },
+        },
+    },
+    component: {
+        Offline: {
+            message: 'No s\'ha pogut connectar amb el servidor',
+            retry: 'Torna-ho a provar',
+        },
+        UserProfile: {
+            perfil: 'El meu perfil',
+            seccioDades: 'Dades',
+            seccioConfig: 'Configuració',
+            rols: 'Rols',
+            entitatPerDefecte: 'Entitat per defecte',
+            bustiaPerDefecte: 'Bústia per defecte',
+            interficieUsuari: {
+                // Etiqueta de l'opció buida: sense valor mana la propietat del sistema.
+                perDefecte: 'Per defecte del sistema',
+            },
+            tema: {
+                label: 'Tema',
+                clar: 'Clar',
+                obscur: 'Obscur',
+                dracula: 'Dracula',
+                sistema: 'Sistema',
+                fils: "Fils d'execució",
+            },
+            estilMenu: {
+                label: 'Estil del menú',
+                tema: 'Tema',
+                temaInvertit: 'Tema invertit',
+                peu: 'Fix',
+            },
+        },
+        EntitatRolSelector: {
+            rol: {
+                DIS_SUPER: 'Superusuari',
+                DIS_ADMIN: 'Administrador Entitat',
+                DIS_ADMIN_LECTURA: 'Admin (Lectura)',
+                tothom: 'Usuari',
+            },
+        },
+        AclPermissionManager: {
+            title: "Permisos",
+            resourceTitle: "permís",
+        },
+        MassiveActionSelector: {
+            options: "Opcions",
+            all: "Selecciona-ho tot",
+            clear: "Neteja la selecció",
+        },
+        RegistreEstat: {
+            processadaPer: "Processada per",
+        },
+        ProcesEstatLegend: {
+            title: "Llegenda dels estats del processament de les anotacions de registre",
+            tanca: "Tanca",
+            estat: {
+                ARXIU_PENDENT: {
+                    label: "Pendent de guardar annexos",
+                    info: "S'ha rebut l'anotació e registre i es troba pendent de guardar els annexos a l'Arxiu. En aquest punt  no es té la informació de les firmes.",
+                },
+                REGLA_PENDENT: {
+                    label: "Pendent de processar regla",
+                    info: "L'anotació està pendent de que es processi la regla que reenvia o processa l'anotació del registre",
+                },
+                BUSTIA_PENDENT: {
+                    label: "Pendent de l'usuari",
+                    info: "L'anotació està pendent del processament per part de l'usuari",
+                },
+                BUSTIA_PROCESSADA: {
+                    label: "Processada a la bústia",
+                    info: "L'anotació ha estat processada per l'usuari",
+                },
+                BACK_PENDENT: {
+                    label: "Pendent de comunicar backoffice",
+                    info: "L'anotació està pendent de comunicar al backoffice de Distribució",
+                },
+                BACK_COMUNICADA: {
+                    label: "Comunicada al backoffice",
+                    info: "L'anotació s'ha comunicat al backoffice i està pendent de que el backoffice la rebi i processi. El canvi d'estat ja depén del backoffice",
+                },
+                BACK_REBUDA: {
+                    label: "Rebuda al backoffice",
+                    info: "L'anotació ha estat rebuda pel backoffice de Distribució",
+                },
+                BACK_PROCESSADA: {
+                    label: "Processada pel backoffice",
+                    info: "L'anotació ha estat processada pel backoffice de Distribució",
+                },
+                BACK_REBUTJADA: {
+                    label: "Rebutjada pel backoffice",
+                    info: "L'anotació ha estat processada i rebutjada pel backoffice de Distribució",
+                },
+                BACK_ERROR: {
+                    label: "Processada al backoffice amb errors",
+                    info: "L'anotació ha estat processada amb error pel backoffice de Distribució",
+                },
+            },
+        },
+        CommentDialog: {
+            title: "Comentaris del contingut: {{name}}",
+            label: "Comentaris",
+            envia: "Envia",
+        },
+        RecordNavigation: {
+            prev: "Anterior",
+            next: "Següent",
+            error: "No s'ha pogut carregar el registre",
+        },
+        RegistreSelector:{
+            title: "Anotacions seleccionades",
+        },
+        RegistreReenviar: {
+            quickfilter: "Bústia destí",
+            favoritfilter: "Mostrar només bústies favorites",
+            busties: "Bústies seleccionades",
+            todosContinguts: "Quan només s'envia per coneixement, cal deixar una còpia a la bústia actual",
+            grid: {
+                userCodi: "Codi usuari",
+                userNom: "Nom usuari",
+                empty: "Sense permisos",
+            },
+            coneixement: {
+                marcar: "Afegir a coneixement",
+                desmarcar: "Llevar de coneixement",
+            },
+            favorit: {
+                marcar: "Afegir a favorits",
+                desmarcar: "Llevar de favorits",
+            },
+        },
+        RegistreDetail: {
+            avancar: "Avançar pàgina al reenviar",
+            titles: {
+                representant: "Representant",
+                original: "Original",
+                justificant: "Justificant",
+                obligatori: "Dades obligatòries",
+                opcional: "Dades opcionals",
+                seguiment: "Dades de seguiment",
+            },
+            tabs: {
+                resum: "Resum",
+                info: "Informació de registre",
+                interessats: "Interessats",
+                annexos: "Annexos",
+                arxiu: "Arxiu info.",
+                procesBack: "Processament backoffice",
+                dades: "Dades",
+                copia: "Còpies",
+            }
+        },
+        BustiaObsoleta: {
+            unitat: "La unitat està obsoleta",
+            title: "La unitat d'aquesta bústia està obsoleta",
+            alert: "La unitat: {{unitat}} de la bústia: {{bustia}}",
+            newUnitats: "Noves unitats",
+            afectedBusties: "Altres bústies afectades",
+        },
+    },
+};
+
+export default translationCa;

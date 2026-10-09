@@ -178,8 +178,8 @@ public class DominiServiceImpl implements DominiService {
 	public DominiDto findByCodiAndEntitat(String codi, Long entitatId) throws NotFoundException {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
+                true,
 				false,
-				true,
 				false);
 
 		DominiEntity tipusDocumental = dominiRepository.findByCodiAndEntitat(
@@ -201,8 +201,8 @@ public class DominiServiceImpl implements DominiService {
 			int resultCount) throws NotFoundException, DominiException {
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
-				false,
-				true,
+                true,
+                false,
 				false);
 		
 		if (domini == null) {

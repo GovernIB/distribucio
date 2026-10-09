@@ -1,0 +1,787 @@
+import {
+    useBaseAppContext,
+    useDetailContext,
+    MuiDetail,
+    useResourceApiService,
+    MuiDialog,
+    useMuiContentDialog
+} from "reactlib";
+import {alpha, Badge, Box, CircularProgress, Grid, Icon, IconButton, Tooltip, Typography} from "@mui/material";
+import TabComponent from "../../../components/TabComponent.tsx";
+import React, {useEffect, useMemo, useRef, useState} from "react";
+import {useCommentDialog} from "../../CommentDialog.tsx";
+import {DetailCard, DetailCardContent, DetailExpandCard, DetailField} from "../../../components/CardData.tsx";
+import {formatDate} from "../../../util/dateUtils.ts";
+import StyledMuiGrid, {ToolbarButton} from "../../../components/StyledMuiGrid.tsx";
+import * as builder from '../../../util/springFilterUtils';
+import Load from "../../../components/Load.tsx";
+import AnnexDetailContent from "../../annex/actions/AnnexDetailContent.tsx";
+import {useTranslation} from "react-i18next";
+import {ErrorArea} from "../../../components/ErrorArea.tsx";
+import {useConfig} from "../../../components/ConfigProvider.tsx";
+import useVisualitzar from "../../annex/actions/AnnexVisualitzar.tsx";
+import {MetaDadesForm} from "./MetaDadesForm.tsx";
+import {ROLE_ADMIN, ROLE_ADMIN_LECTURA, useDistribucioContext} from "../../../components/DistribucioContext.ts";
+import Button from "@mui/material/Button";
+import {MenuActionButton} from "../../../components/MenuButton.tsx";
+import {useActions, useRegistreActions} from "./RegistreActions.tsx";
+import {useSession} from "../../../components/SessionStorageContext.tsx";
+import {useRecordNavigation} from "../../../components/RecordNavigation.tsx";
+import {REPORT_DESCARREGAR_IMPRIMIBLE, useDescarregarAnnex} from "../../annex/AnnexAccions.tsx";
+
+const AnnexTab = ({entity}:any) => {
+    const { isReady: apiIsReady, find: apiFind } = useResourceApiService('registreAnnexResource');
+    const [annexos, setAnnexos] = React.useState<any>();
+
+    const refresh = () => {
+        apiFind({ filter: builder.and(
+                builder.eq('registre.id', entity.id),
+                builder.neq('id', `'${entity.justificant?.id}'`),
+            ),perspectives: annexPerspectives, sorts: ['id,asc'], unpaged: true })
+            .then((response => setAnnexos(response.rows)));
+    };
+
+    React.useEffect(() => {
+        if (apiIsReady && entity) {
+            refresh();
+        }
+    }, [apiIsReady, entity]);
+
+    return <Grid container columnSpacing={1} rowSpacing={1}>
+        <Load value={annexos}>
+            {annexos?.map((annex:any) => <>
+                <DetailExpandCard key={annex.id} title={annex.titol} headerProps={{backgroundColor: 'greyBackground'}}>
+                    <AnnexDetailContent annex={annex}/>
+                </DetailExpandCard>
+            </>)}
+        </Load>
+    </Grid>
+}
+
+const annexColumns = [
+    { field: 'titol', flex: 1 },
+    { field: 'ntiTipusDocument', flex: 1 },
+    { field: 'observacions', flex: 1 },
+    { field: 'dataCaptura', flex: 1 },
+    { field: 'origenCiutadaAdmin', flex: 1 },
+    { field: 'ntiElaboracioEstat', flex: 1 },
+]
+const annexPerspectives = ['FIRMES']
+const annexSortModel:any = [{ field: 'id', sort: 'asc' }]
+const AnnexGrid = ({entity}:any) => {
+    const { t } = useTranslation();
+
+    const descarregar = useDescarregarAnnex();
+
+    const {handleOpen, component} = useVisualitzar()
+
+    const actions = [
+        {
+            label: t('page.annex.accio.descarregarImprimible'),
+            icon: 'download',
+            report: REPORT_DESCARREGAR_IMPRIMIBLE,
+            showInMenu: false,
+            onClick: (id:any) => descarregar(id, REPORT_DESCARREGAR_IMPRIMIBLE)
+        },
+    ]
+
+    return (<>
+        <StyledMuiGrid
+            resourceName={'registreAnnexResource'}
+            columns={annexColumns}
+            filter={builder.and(
+                builder.eq('registre.id', entity.id),
+                builder.neq('id', `'${entity.justificant?.id}'`),
+            )}
+            perspectives={annexPerspectives}
+            fixedSortModel={annexSortModel}
+
+            rowAdditionalActions={actions}
+            onRowClick={(params) => handleOpen(params.row)}
+
+            getDetailPanelHeight={() => 'auto'}
+            getDetailPanelContent={(params) => {
+                let index = 0;
+                return (
+                    <Box p={1}>
+                        {params.row.firmes?.map((firma: any) => <>
+                            {firma?.detalls?.map((detall: any) =>
+                                <DetailExpandCard title={t('page.annex.detall.camp.firma')} variant={'body1'}
+                                                  headerProps={{backgroundColor: 'greyBackground'}} expanded>
+                                    <DetailCardContent size={3} title={t('page.annex.detall.camp.firma')}>
+                                        {t('page.annex.detall.camp.firma')} {++index}
+                                        {firma.autofirma && <Box display={'flex'} alignItems={'center'}>
+                                            ({t('page.annex.detall.gestioDocumental.column.autofirma')}
+                                            <Tooltip title={t('page.annex.detall.firmes.autofirma.info')}>
+                                                <Icon fontSize={'small'}>info</Icon>
+                                            </Tooltip>)
+                                        </Box>}
+                                    </DetailCardContent>
+                                    <DetailCardContent size={3} title={t('page.annex.detall.firmes.column.nom')}>{detall.responsableNom}</DetailCardContent>
+                                    <DetailCardContent size={3} title={t('page.annex.detall.firmes.column.nif')}>{detall.responsableNif}</DetailCardContent>
+                                    <DetailCardContent size={3} title={t('page.annex.detall.firmes.column.data')}>{formatDate(detall.data) || t('page.annex.firmes.data.nd')}</DetailCardContent>
+                                    {/*<DetailCardContent title={"Emisor"}>{detall.emissorCertificat}</DetailCardContent>*/}
+                                    {firma.tipus != 'PADES' && firma.tipus != 'CADES_ATT' && firma.tipus != 'XADES_ENV' && firma.tipus !='XADES_DET'
+                                        && <DetailCardContent size={6} title={t('page.annex.detall.firmes.column.fitxerNom')}>{firma.fitxerNom}</DetailCardContent>}
+                                    <DetailCardContent size={6} title={t('page.annex.detall.firmes.column.csvRegulacio')} hidden={!firma.csvRegulacio}>{firma.csvRegulacio}</DetailCardContent>
+                                    {/*<DetailCardContent title={"Tipus firma"}>{firma.tipus}</DetailCardContent>*/}
+                                    {/*<DetailCardContent title={"Perfil"}>{firma.perfil}</DetailCardContent>*/}
+                                </DetailExpandCard>
+                            )}
+                        </>)}
+                    </Box>
+                )
+            }}
+            toolbarHide
+            readOnly
+        />
+        {component}
+    </>)
+}
+
+const InteressatDetail = () => {
+    const { t } = useBaseAppContext();
+    const {data} = useDetailContext()
+    return (<>
+        <DetailCard>
+            <DetailField name={"pais"} size={6} formatterValue={(_v:any, data:any) => <>{data.pais} ({data.paisCodi})</>} inline/>
+            <DetailField name={"email"} size={6} inline/>
+            <DetailField name={"provincia"} size={6} formatterValue={(_v:any, data:any) => <>{data.provincia} ({data.provinciaCodi})</>} inline/>
+            <DetailField name={"telefon"} size={6} inline/>
+            <DetailField name={"municipi"} size={6} formatterValue={(_v:any, data:any) => <>{data.municipi} ({data.municipiCodi})</>} inline/>
+            <DetailField name={"emailHabilitat"} size={6} inline/>
+            <DetailField name={"adresa"} size={6} inline/>
+            <DetailField name={"canalPreferent"} size={6} inline/>
+            <DetailField name={"codiPostal"} size={6} inline/>
+            <DetailField name={"observacions"} size={6} inline/>
+            <DetailField name={"codiDire"} size={6} inline/>
+        </DetailCard>
+
+        {data?.representant &&
+            <DetailExpandCard title={t('component.RegistreDetail.titles.representant')} headerProps={{backgroundColor: 'greyBackground'}}>
+                <MuiDetail
+                    id={data?.representant?.id}
+                    resourceName={'registreInteressatResource'}
+                    hiddenToolbar
+                    componentProps={{ sx: { mt: 0 } }}
+                >
+                    <Grid container>
+                        <DetailField name={"tipus"} size={4}/>
+                        <DetailField name={"documentTipus"}
+                                     formatterValue={(formattedValue:any, data:any) => <>
+                                         {formattedValue}: {data.documentNum}</>}
+                                     size={4}/>
+                        <DetailField name={"nomComplet"} size={4}/>
+                        <InteressatDetail/>
+                    </Grid>
+                </MuiDetail>
+            </DetailExpandCard>}
+    </>);
+}
+
+const interessatColumns = [
+    { field: 'tipus', flex: 1 },
+    { field: 'documentTipus', flex: 1,
+        renderCell: (params:any) => <>
+            {params.formattedValue}: {params.row.documentNum}
+        </>
+    },
+    { field: 'nomComplet', flex: 1},
+]
+const InteressatsGrid = ({id}:any) => {
+    return (<>
+        <StyledMuiGrid
+            resourceName={'registreInteressatResource'}
+            columns={interessatColumns}
+            filter={builder.and(
+                builder.eq('registre.id', id),
+                builder.eq('representat', null),
+            )}
+
+            getDetailPanelHeight={() => 'auto'}
+            getDetailPanelContent={(params) => (
+                <MuiDetail
+                    id={params?.id}
+                    resourceName={'registreInteressatResource'}
+                    hiddenToolbar
+                    componentProps={{ sx: { mt: 0, p:1 } }}
+                >
+                    <Grid container columnSpacing={1} rowSpacing={1}>
+                        <InteressatDetail/>
+                    </Grid>
+                </MuiDetail>
+            )}
+            toolbarHide
+            autoHeight
+            readOnly
+        />
+    </>)
+}
+
+const ProcessBack = ({entity, refresh}:any) => {
+    const { t } = useBaseAppContext();
+
+    const { reenviarBackoffice } = useActions(refresh)
+
+    return <Grid container columnSpacing={1} rowSpacing={1}>
+        {entity.potModificar && (entity.procesEstat == 'BACK_COMUNICADA' || entity.procesEstat == 'BACK_REBUTJADA' || entity.procesEstat == 'BACK_ERROR') && <>
+            <Grid size={12} sx={{ textAlign: 'end' }}>
+                <ToolbarButton icon={'refresh'} onClick={() => reenviarBackoffice(entity.id)} >
+                    {t('page.registre.accio.reenviarBackoffice.label')}</ToolbarButton>
+            </Grid>
+        </>}
+
+        <DetailCard>
+            <DetailField name={"procesEstat"} inline/>
+            <DetailField name={"backCodi"} inline/>
+            <DetailField name={"backPendentData"} inline/>
+            <DetailField name={"backRebudaData"} inline/>
+
+            {entity.procesEstat == 'BACK_PROCESSADA' && <DetailField name={"backProcesRebutjErrorData"}
+                             title={t('page.registre.grid.backProcesData')} inline/>}
+
+            {entity.procesEstat == 'BACK_REBUTJADA' && <DetailField name={"backProcesRebutjErrorData"}
+                             title={t('page.registre.grid.backRebutjData')} inline/>}
+
+            {entity.procesEstat == 'BACK_ERROR' && <DetailField name={"backProcesRebutjErrorData"}
+                             title={t('page.registre.grid.backErrorData')} inline/>}
+        </DetailCard>
+
+        <Grid size={12}>
+            {entity.procesError &&
+                <ErrorArea sx={{backgroundColor: 'customBackground', fontSize: 12}}>{entity.procesError}</ErrorArea>}
+            {entity.backObservacions &&
+                <ErrorArea sx={{backgroundColor: 'customBackground', fontSize: 12}}>{entity.backObservacions}</ErrorArea>}
+        </Grid>
+    </Grid>
+}
+
+const copiesColumns = (t:any, id:any) => [
+    { field: 'numero', flex: 1 },
+    { field: 'darrerMovimentResource.createdDate', flex: 1, headerName: t('page.registre.grid.darrerMoviment.createdDate'),
+        renderCell: (params:any) => formatDate(params.formattedValue)
+    },
+    { field: 'procesEstat', flex: 1 },
+    { field: 'darrerMovimentResource.createdBy', flex: 1, headerName: t('page.registre.grid.darrerMoviment.createdBy'),
+        renderCell: (params:any) => <>
+            {params.row.procesEstat == 'BUSTIA_PROCESSADA' && params.formattedValue}
+        </>
+    },
+    { field: 'pare', flex: 2,
+        renderCell: (params:any) => <Tooltip title={` / ${params.row.unitatAdministrativaDescripcio} / ${params.formattedValue}`} >
+            <Box>/ <Icon>account_tree</Icon> {params.row.unitatAdministrativaDescripcio} / <Icon>inbox</Icon> {params.formattedValue}</Box>
+        </Tooltip>
+    },
+    { field: 'numeroCopia', flex: 0.5,
+        renderCell: (params:any) => <>
+            {params.row.numeroCopia == 0 ?t('component.RegistreDetail.titles.original') :params.formattedValue}
+        </>
+    },
+    { field: 'id', flex: 0.5, headerName: t('page.registre.grid.isCopia'),
+        renderCell: (params:any) => <>
+            {params.id == id
+                ? <IconButton disabled><Icon color={"success"} >check_circle</Icon></IconButton>
+                : <IconButton><Icon>open_in_new</Icon></IconButton>
+            }
+        </>
+    },
+]
+const copiesPerspectives = ['DARRER_MOVIMENT']
+const Copies = ({entity}:any) => {
+    const { t } = useBaseAppContext();
+    return <>
+        <StyledMuiGrid
+            resourceName="registreResource"
+            columns={copiesColumns(t, entity.id)}
+            filter={builder.eq("numero", `'${entity.numero}'`)}
+            perspectives={copiesPerspectives}
+            toolbarHide
+            autoHeight
+            readOnly
+        />
+    </>
+}
+
+const ArxiuDetall = ({entity}:any) => {
+    const { t } = useBaseAppContext();
+    return <Load value={entity}>
+        <Grid container columnSpacing={1} rowSpacing={1}>
+            <DetailCard>
+                <DetailCardContent titleSize={4} textSize={8} title={t('page.registre.arxiu.identificador')}>{entity.identificador}</DetailCardContent>
+                <DetailCardContent titleSize={4} textSize={8} title={t('page.registre.arxiu.nom')}>{entity.nom}</DetailCardContent>
+                <DetailCardContent titleSize={4} textSize={8} title={t('page.registre.arxiu.serieDocumental')}>{entity.serieDocumental}</DetailCardContent>
+            </DetailCard>
+            <DetailCard>
+                <DetailCardContent size={6} title={t('page.registre.arxiu.eniVersio')}>{entity.eniVersio}</DetailCardContent>
+                <DetailCardContent size={6} title={t('page.registre.arxiu.eniIdentificador')}>{entity.eniIdentificador}</DetailCardContent>
+                <DetailCardContent size={6} title={t('page.registre.arxiu.eniOrgans')}>{entity.eniOrgans}</DetailCardContent>
+                <DetailCardContent size={6} title={t('page.registre.arxiu.eniDataObertura')}>{formatDate(entity.eniDataObertura)}</DetailCardContent>
+                <DetailCardContent size={6} title={t('page.registre.arxiu.eniClassificacio')}>{entity.eniClassificacio}</DetailCardContent>
+                <DetailCardContent size={6} title={t('page.registre.arxiu.eniEstat')}>{entity.eniEstat}</DetailCardContent>
+            </DetailCard>
+        </Grid>
+    </Load>
+}
+
+const InformacioRegistre = ({entity}:any) => {
+    const { t } = useBaseAppContext();
+    const {currentRole} = useDistribucioContext()
+    const isAdmin = currentRole == ROLE_ADMIN || currentRole == ROLE_ADMIN_LECTURA
+
+    const {justificant} = useActions()
+
+    return (<Grid container columnSpacing={1} rowSpacing={1}>
+        <DetailCard>
+            <DetailField name={"registreTipus"} inline/>
+            <DetailField name={"nom"} inline hidden={!isAdmin}/>
+            <DetailField name={isAdmin ?"identificador" :"numero"} inline/>
+            <DetailField name={"data"} inline/>
+            <DetailField name={"procesEstat"} formatterValue={(v:any) => <Box display={'flex'} alignItems={'center'}>
+                {v}
+                {(entity.procesEstat?.includes('BACK_')) && entity.backCodi && <> - {entity.backCodi}</>}
+                {entity.procesEstat == 'REGLA_PENDENT' && entity.regla && <> - {entity.regla?.description}</>}
+                {entity.procesError && <Icon title={entity.procesError} color={'error'} fontSize={'small'}>warning</Icon>}
+            </Box>} inline></DetailField>
+            <DetailField name={"presencial"} inline>{t(`common.boolean.${entity.presencial}`)}</DetailField>
+        </DetailCard>
+
+
+        <DetailCard title={t('component.RegistreDetail.titles.obligatori')} headerProps={{backgroundColor: 'greyBackground'}} size={6}>
+            <DetailField name={"oficinaDescripcio"} inline>{entity.oficinaDescripcio} ({entity.oficinaCodi})</DetailField>
+            <DetailField name={"llibreDescripcio"} inline>{entity.llibreDescripcio} ({entity.llibreCodi})</DetailField>
+            <DetailField name={"extracte"} inline/>
+            <DetailField name={"documentacioFisicaDescripcio"} inline>{entity.documentacioFisicaDescripcio} ({entity.documentacioFisicaCodi})</DetailField>
+            <DetailField name={"unitatAdministrativaDescripcio"} label={t(`page.registre.detail.unitatAdmin.${entity.registreTipus}`)} inline
+            >{entity.unitatAdministrativaDescripcio} ({entity.unitatAdministrativaCodi})</DetailField>
+            <DetailField name={"assumpteTipusDescripcio"} inline>{entity.assumpteTipusDescripcio} ({entity.assumpteTipusCodi})</DetailField>
+            <DetailField name={"idiomaDescripcio"} inline>{entity.idiomaDescripcio} ({entity.idiomaCodi})</DetailField>
+        </DetailCard>
+
+        <DetailCard title={t('component.RegistreDetail.titles.opcional')} headerProps={{backgroundColor: 'greyBackground'}} size={6}>
+            <DetailField name={"procediment"} inline hidden={entity.serveiCodi}/>
+            <DetailField name={"servei"} inline hidden={!entity.serveiCodi}/>
+            <DetailField name={"tramitNom"} inline>{entity.tramitCodi} - {entity.tramitNom}</DetailField>
+            <DetailField size={6} name={"referencia"} inline/>
+            <DetailField size={6} name={"expedientNumero"} inline/>
+            <DetailField size={6} name={"transportTipusDescripcio"} inline>{entity.transportTipusDescripcio} ({entity.transportTipusCodi})</DetailField>
+            <DetailField size={6} name={"transportNumero"} inline/>
+            <DetailField size={6} name={"oficinaOrigenDescripcio"} inline>{entity.oficinaOrigenDescripcio} ({entity.oficinaOrigenCodi})</DetailField>
+            <DetailField size={6} name={"assumpteDescripcio"} inline>({entity.assumpteCodi})</DetailField>
+            <DetailField size={6} name={"numeroOrigen"} inline/>
+            <DetailField size={6} name={"dataOrigen"} inline/>
+            <DetailField name={"observacions"} inline/>
+        </DetailCard>
+
+        <DetailExpandCard title={t('component.RegistreDetail.titles.seguiment')} headerProps={{backgroundColor: 'greyBackground'}}>
+            <DetailField name={"entitat"} inline/>
+            <DetailField name={"aplicacioCodi"} inline>{entity.aplicacioCodi} {entity.aplicacioVersio}</DetailField>
+            <DetailField name={"usuariNom"} inline hidden={!entity.usuariCodi}>{entity.usuariNom} ({entity.usuariCodi})</DetailField>
+            <DetailField name={"createdDate"} inline/>
+        </DetailExpandCard>
+
+        <Load value={entity.justificant?.id} noEffect>
+            <DetailExpandCard title={t('component.RegistreDetail.titles.justificant')} headerProps={{backgroundColor: 'greyBackground'}}>
+                <Grid size={12}>
+                <MuiDetail
+                    id={entity.justificant?.id}
+                    resourceName={'registreAnnexResource'}
+                    hiddenToolbar
+                    componentProps={{ sx: { mt: 0 } }}
+                >
+                    <DetailField name={"dataCaptura"} inline/>
+                    <DetailField name={"origenCiutadaAdmin"} inline/>
+                    <DetailField name={"ntiElaboracioEstat"} inline/>
+                    <DetailField name={"ntiTipusDocument"} inline/>
+                    <DetailField name={"fitxerNom"} formatterValue={(v:any, data:any) =>
+                        <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+                            <>{v} ({data.fitxerTamany} bytes)</>
+                            <IconButton
+                                title={t('page.registre.accio.justificant.label')}
+                                onClick={() => justificant(entity.id)}
+                                sx={{ m:0, p:0 }}>
+                                <Icon fontSize={'small'}>download</Icon>
+                            </IconButton>
+                        </Box>} inline/>
+                </MuiDetail>
+                </Grid>
+            </DetailExpandCard>
+        </Load>
+    </Grid>)
+}
+
+const Resum = ({entity}:any) => {
+    const { t } = useBaseAppContext();
+    const {currentRole} = useDistribucioContext()
+    const isAdmin = currentRole == ROLE_ADMIN || currentRole == ROLE_ADMIN_LECTURA
+    const senseCodi = ['ARXIU_PENDENT', 'REGLA_PENDENT', 'BUSTIA_PENDENT', 'BUSTIA_PROCESSADA'].includes(entity.procesEstat);
+
+    const {justificant} = useActions()
+
+    return (<Grid container columnSpacing={1} rowSpacing={1}>
+        <DetailCard>
+            <DetailField size={6} name={isAdmin ?"identificador" :"numero"}
+                         formatterValue={(v:any) =>
+                             <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
+                                 <Typography variant="inherit" color="textSecondary">
+                                     {v}
+                                 </Typography>
+                                 <IconButton
+                                     title={t('page.registre.accio.justificant.label')}
+                                     onClick={() => justificant(entity.id)}
+                                     sx={{ m:0, p:0 }}>
+                                     <Icon fontSize={'small'}>download</Icon>
+                                 </IconButton>
+                             </Box>
+                         } isObject inline/>
+            <DetailField size={6} name={"data"} inline/>
+            <DetailField size={6} name={"oficinaDescripcio"} inline>{entity.oficinaDescripcio}({entity.oficinaCodi})</DetailField>
+            <DetailField size={6} name={"presencial"} inline>{t(`common.boolean.${entity.presencial}`)}</DetailField>
+            <DetailField size={12} name={"extracte"} inline/>
+            <DetailField size={6} name={"procediment"} isObject inline hidden={entity.serveiCodi}>
+                <Box display={'flex'}>
+                    <Typography variant="inherit" color="textSecondary">
+                        {entity.procediment?.description}
+                    </Typography>
+                    {entity.siaExtingit && <Icon title={t('page.procediments.extingit')} fontSize={'small'} color={'warning'}>warning</Icon>}
+                </Box>
+            </DetailField>
+            <DetailField size={6} name={"servei"} isObject inline hidden={!entity.serveiCodi}>
+                <Box display={'flex'} >
+                    <Typography variant="inherit" color="textSecondary">
+                        {entity.servei?.description}
+                    </Typography>
+                    {entity.siaExtingit && <Icon title={t('page.serveis.extingit')} fontSize={'small'} color={'warning'}>warning</Icon>}
+                </Box>
+            </DetailField>
+            <DetailField size={6} name={"expedientNumero"} inline/>
+            <DetailField size={12} name={"tramitNom"} inline>{entity.tramitCodi} - {entity.tramitNom}</DetailField>
+            <DetailField size={12} name={"observacions"} inline/>
+            <DetailField size={12} name={"regla"} inline hidden={entity.procesEstat != 'REGLA_PENDENT' || !entity.regla}/>
+            <DetailField size={12} name={"backCodi"} inline hidden={senseCodi}/>
+            <DetailField size={4} name={"numeroOrigen"} inline/>
+            <DetailField size={4} name={"dataOrigen"} inline/>
+            <DetailField size={4} name={"oficinaOrigenDescripcio"} inline>{entity.oficinaOrigenDescripcio}({entity.oficinaOrigenCodi})</DetailField>
+        </DetailCard>
+
+        <DetailExpandCard title={t('component.RegistreDetail.tabs.interessats')} variant={'body1'} headerProps={{backgroundColor: 'greyBackground'}}>
+            <InteressatsGrid id={entity.id}/>
+        </DetailExpandCard>
+
+        <DetailExpandCard title={t('component.RegistreDetail.tabs.annexos')} variant={'body1'} headerProps={{backgroundColor: 'greyBackground'}}>
+            <AnnexGrid entity={entity}/>
+        </DetailExpandCard>
+
+    </Grid>)
+}
+
+const RegistreDetail = (props:any) => {
+    const { t } = useBaseAppContext();
+    const {data} = useDetailContext()
+    const { refresh, onLoaded } = props
+
+    // MuiDetail manté les dades velles mentre carrega un altre id: quan arriben les noves, ho notifiquem
+    useEffect(() => {
+        if (data) onLoaded?.()
+    }, [data]);
+
+    const { getByName } = useConfig()
+    const metadadesActives = getByName("es.caib.distribucio.permetre.metadades.registre")
+
+    const [avanzarPagina, setAvanzarPagina] = useState<boolean>(true)
+    const {save} = useSession('avanzarPagina');
+    useEffect(() => {
+        save(avanzarPagina)
+    }, [avanzarPagina]);
+
+    const { handleOpen, component } = useCommentDialog();
+    const {actions, components: actionComponents} = useRegistreActions(refresh)
+
+    const tabs = useMemo(() => [
+        {
+            value: 'resum',
+            label: t('component.RegistreDetail.tabs.resum'),
+            content: <Resum entity={data}/>
+        },
+        {
+            value: 'info',
+            label: t('component.RegistreDetail.tabs.info'),
+            content: <InformacioRegistre entity={data}/>
+        },
+        {
+            value: 'interessats',
+            label: t('component.RegistreDetail.tabs.interessats'),
+            content: <InteressatsGrid id={data.id}/>,
+            badge: data.numInteressats,
+            showZero: true,
+        },
+        {
+            value: 'annexos',
+            label: t('component.RegistreDetail.tabs.annexos'),
+            content: <AnnexTab entity={data}/>,
+            badge: data.numAnnexos,
+            showZero: true,
+        },
+        {
+            value: 'arxiu',
+            label: t('component.RegistreDetail.tabs.arxiu'),
+            content: <ArxiuDetall entity={data.arxiuDetall}/>
+        },
+        {
+            value: 'procesBack',
+            label: t('component.RegistreDetail.tabs.procesBack'),
+            content: <ProcessBack entity={data} refresh={refresh}/>,
+            hidden: data.procesEstat == 'BACK_PENDENT' || !(data.procesEstat?.includes('BACK_'))
+        },
+        {
+            value: "dades",
+            label: t('component.RegistreDetail.tabs.dades'),
+            content: <MetaDadesForm entity={data}/>,
+            badge: data.numDada,
+            showZero: true,
+            hidden: !metadadesActives,
+        },
+        {
+            value: 'copia',
+            label: t('component.RegistreDetail.tabs.copia'),
+            content: <Copies entity={data}/>,
+            badge: data.numCopies,
+        },
+    ], [data, metadadesActives])
+
+    return (<>
+        <Box display={'flex'} alignItems={'center'} flexWrap={'wrap'} bgcolor={'greyBackground'} p={1}>
+            &nbsp;/&nbsp; <Icon fontSize={'small'} >account_tree</Icon> {data.unitatAdministrativaDescripcio}
+            &nbsp;/&nbsp; <Icon fontSize={'small'} >inbox</Icon> {data.pare?.description}
+            &nbsp;/&nbsp; {data.nom}
+        </Box>
+
+        <TabComponent
+            variant="scrollable"
+            headerAdditionalData={<Box display={'flex'} justifyContent={'end'} gap={1}>
+                <Button
+                    title={t('component.RegistreDetail.avancar')}
+                    variant={avanzarPagina ?'contained' :'outlined'}
+                    onClick={() => setAvanzarPagina(prev => !prev)}
+                >
+                    <Icon>fast_forward</Icon>
+                </Button>
+                <IconButton
+                    title={t('component.CommentDialog.label')}
+                    onClick={() => handleOpen(data.id, data.nom) }
+                >
+                    <Badge badgeContent={data.numComentaris} color="primary" showZero>
+                        <Icon>forum</Icon>
+                    </Badge>
+                </IconButton>
+
+                <MenuActionButton
+                    id={data.id}
+                    entity={data}
+                    buttonLabel={<><Icon sx={{ mr: 1 }}>settings</Icon>{t('common.actions')}</>}
+                    actions={actions}
+                    buttonProps={{ variant: 'contained' }}
+                />
+            </Box>}
+            tabs={tabs}
+        />
+        {component}
+        {actionComponents}
+    </>);
+}
+
+const perspectives = ['ARXIU_DETALL', 'DARRER_MOVIMENT', 'COMMENT_NUM', 'DETAIL_INFO']
+export const useBasicDetail = (props:any = {}) => {
+    const { t } = useBaseAppContext();
+    const { perspectives: customPersp = [] } = props
+    const [dialogShow, dialogComponent] = useMuiContentDialog();
+
+    const additionalPersp = useMemo(() => [
+        ...perspectives,
+        ...customPersp,
+    ], [perspectives])
+
+    const handleOpen = (id:any, _row:any) => {
+        dialogShow(
+            t('page.contingut.accio.detalls.title'),
+            <MuiDetail
+                id={id}
+                resourceName={'registreResource'}
+                perspectives={additionalPersp}
+                hiddenToolbar
+                componentProps={{ sx: { mt: 0 } }}
+            >
+                <RegistreDetail/>
+            </MuiDetail>,
+            [],
+            { maxWidth: 'xl', fullWidth: true }
+        );
+    };
+
+    return {
+        handleOpen,
+        dialog: dialogComponent
+    };
+}
+
+type RegistreDetailOptions = {
+    /** Api del grid des del qual es navega. */
+    gridApiRef: any
+    /** Filtre (Spring filter) aplicat al grid. */
+    filter?: any
+    /** Named queries aplicades al grid. */
+    namedQueries?: any[]
+    /** Recurs del grid des del qual es navega (per defecte, el propi registre). */
+    resourceName?: string
+    /** Id de l'anotació a mostrar a partir de la fila del grid (per defecte, l'id de la fila). */
+    getDetailId?: (row: any) => any
+    /** S'invoca en tancar el diàleg (p. ex. per refrescar el grid). */
+    onClose?: () => void
+    /** Perspectives addicionals a les per defecte en carregar l'anotació. */
+    perspectives?: string[]
+}
+
+export const useRegistreDetail = (options:RegistreDetailOptions) => {
+    const { t, temporalMessageShow } = useBaseAppContext();
+    const { gridApiRef, filter, namedQueries, resourceName = 'registreResource', getDetailId, onClose, perspectives: customPersp } = options
+    const detailPerspectives = useMemo(
+        () => [...perspectives, ...(customPersp ?? [])],
+        [customPersp?.join(',')]
+    )
+
+    const [open, setOpen] = useState(false);
+    const [entityId, setEntityId] = useState<any>(); // id de la fila del grid (navegació); 
+    const [detailId, setDetailId] = useState<any>(); // id de l'anotació mostrada
+    // Càrrega d'una nova anotació en navegar (anterior/següent): es mostra un indicador sobre el detall
+    const [navigating, setNavigating] = useState(false);
+    // setRow el captura el useCallback de useRecordNavigation: cal un ref per llegir el valor actual
+    const detailIdRef = useRef<any>(undefined);
+
+    const setRow = (rowId:any, row?:any) => {
+        const newDetailId = rowId === undefined ? undefined : (getDetailId && row ? getDetailId(row) : rowId)
+        // Si l'anotació no canvia (p. ex. dos annexos seguits del mateix registre) MuiDetail no la
+        // tornarà a carregar i mai avisaria que ha acabat
+        if (newDetailId === undefined || newDetailId === detailIdRef.current) {
+            setNavigating(false)
+        }
+        detailIdRef.current = newDetailId
+        setEntityId(rowId)
+        setDetailId(newDetailId)
+    }
+
+    const { apiIsReady, index, totalElem, prev, next, reset } = useRecordNavigation({
+        id: entityId, setId: setRow, gridApiRef, filter, namedQueries, resourceName
+    })
+
+    const navigate = (move: () => Promise<boolean>) => {
+        if (!apiIsReady || navigating) return
+        setNavigating(true)
+        move()
+            .then((moved) => { if (!moved) setNavigating(false) })
+            .catch(() => {
+                setNavigating(false)
+                temporalMessageShow(null, t('component.RecordNavigation.error'), 'error')
+            })
+    }
+
+    const { value: avanzarPagina } = useSession('avanzarPagina');
+    const refresh = (code?:string) => {
+        if (code == 'REENVIAR' && avanzarPagina && index < totalElem) {
+            navigate(next)
+        }
+    }
+
+    const handleOpen = (id:any, row?:any) => {
+        setRow(id, row)
+        setOpen(true)
+    };
+
+    const handleClose = (reason?: string) => {
+        if(reason !== 'backdropClick') {
+            setEntityId(undefined);
+            setDetailId(undefined);
+            detailIdRef.current = undefined;
+            setNavigating(false);
+            reset();
+            setOpen(false);
+            onClose?.();
+        }
+    };
+
+    const buttons:any = useMemo(() => [
+        {
+            value: 'prev',
+            text: t('component.RecordNavigation.prev'),
+            icon: 'keyboard_double_arrow_left',
+            componentProps: { variant: 'outlined', disabled: index == 1 || navigating },
+        },
+        {
+            text: `${index} / ${totalElem}`,
+            componentProps: {
+                disabled: true,
+                sx: {
+                    '&.Mui-disabled': {
+                        color: 'primary.main',
+                        opacity: 1,
+                        cursor: 'not-allowed',
+                    }
+                }
+            },
+        },
+        {
+            value: 'next',
+            text: <>{t('component.RecordNavigation.next')}<Icon sx={{ ml: 1 }}>keyboard_double_arrow_right</Icon></>,
+            componentProps: { variant: 'outlined', sx: { mr: 'auto' }, disabled: index == totalElem || navigating },
+        },
+        {
+            value: 'close',
+            text: t('common.close'),
+            icon: 'close',
+            componentProps: { variant: 'outlined' },
+        },
+    ], [t, apiIsReady, index, totalElem, navigating])
+
+    const dialog = (
+        <MuiDialog
+            open={open}
+            closeCallback={handleClose}
+            title={t('page.contingut.accio.detalls.title')}
+            componentProps={{ fullWidth: true, maxWidth: 'xl' }}
+            buttons={buttons}
+            buttonCallback={(value:string) => {
+                switch (value) {
+                    case 'prev':navigate(prev);break;
+                    case 'next':navigate(next);break;
+                    case 'close':handleClose();break;
+                }
+            }}
+        >
+            <Load value={detailId}>
+                <Box sx={{ position: 'relative' }}>
+                    <MuiDetail
+                        id={detailId}
+                        resourceName={'registreResource'}
+                        perspectives={detailPerspectives}
+                        hiddenToolbar
+                        componentProps={{ sx: { mt: 0 } }}
+                    >
+                        <RegistreDetail refresh={refresh} onLoaded={() => setNavigating(false)}/>
+                    </MuiDetail>
+                    {navigating &&
+                        <Box sx={{
+                            position: 'absolute', inset: 0, zIndex: 10,
+                            display: 'flex', justifyContent: 'center', alignItems: 'flex-start',
+                            bgcolor: (theme) => alpha(theme.palette.background.paper, 0.7),
+                        }}>
+                            <CircularProgress sx={{ position: 'sticky', top: '30vh' }}/>
+                        </Box>}
+                </Box>
+            </Load>
+        </MuiDialog>
+    )
+
+    return {
+        handleOpen,
+        handleClose,
+        dialog
+    }
+}

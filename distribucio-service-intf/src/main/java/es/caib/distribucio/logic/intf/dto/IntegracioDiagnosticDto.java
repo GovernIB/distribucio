@@ -5,6 +5,7 @@ public class IntegracioDiagnosticDto {
 	private boolean correcte;
 	private String errMsg;
 	private String prova;
+	private String excepcioStacktrace;
 	
 		
 	public String getProva() {
@@ -26,6 +27,12 @@ public class IntegracioDiagnosticDto {
 	}
 	public void setErrMsg(String errMsg) {
 		this.errMsg = errMsg;
+	}
+	public String getExcepcioStacktrace() {
+		return excepcioStacktrace;
+	}
+	public void setExcepcioStacktrace(String excepcioStacktrace) {
+		this.excepcioStacktrace = excepcioStacktrace;
 	}
 	
 	

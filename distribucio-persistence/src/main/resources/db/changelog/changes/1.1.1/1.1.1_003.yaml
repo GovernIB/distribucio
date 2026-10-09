@@ -1,0 +1,138 @@
+databaseChangeLog:
+- changeSet:
+    id: 1.1.1_003
+    author: limit
+    comment: Log d'excepcions a base de dades (abans es guardava en memòria i es perdia en reiniciar) i propietats de la tasca d'esborrat de les excepcions antigues
+    changes:
+    - createTable:
+        tableName: ${app_prefix}excepcio_log
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: ${app_prefix}excepcio_log_pk
+            name: id
+            type: ${pk_type}
+        - column:
+            constraints:
+              nullable: false
+            name: data
+            type: TIMESTAMP
+        - column:
+            name: tipus
+            type: VARCHAR(512)
+        - column:
+            name: object_id
+            type: VARCHAR(512)
+        - column:
+            name: object_class
+            type: VARCHAR(512)
+        - column:
+            name: uri
+            type: VARCHAR(1024)
+        - column:
+            name: origen
+            type: VARCHAR(512)
+        - column:
+            name: param1
+            type: VARCHAR(512)
+        - column:
+            name: param2
+            type: VARCHAR(512)
+        - column:
+            name: message
+            type: VARCHAR(4000)
+        - column:
+            name: stacktrace
+            type: CLOB
+        - column:
+            name: entitat_codi
+            type: VARCHAR(64)
+        - column:
+            name: createdby_codi
+            type: VARCHAR(64)
+        - column:
+            name: createddate
+            type: TIMESTAMP
+        - column:
+            name: lastmodifiedby_codi
+            type: VARCHAR(64)
+        - column:
+            name: lastmodifieddate
+            type: TIMESTAMP
+    - createIndex:
+        indexName: ${app_prefix}excepcio_log_data_i
+        tableName: ${app_prefix}excepcio_log
+        columns:
+        - column:
+            name: data
+    - insert:
+        tableName: ${app_prefix}config_group
+        columns:
+        - column:
+            name: code
+            value: SCHEDULLED_EXCEPCIONS
+        - column:
+            name: parent_code
+            value: SCHEDULLED
+        - column:
+            name: position
+            valueNumeric: 23
+        - column:
+            name: description
+            value: Tasca periòdica d'esborrat de les excepcions antigues
+    - insert:
+        tableName: ${app_prefix}config
+        columns:
+        - column:
+            name: key
+            value: es.caib.distribucio.tasca.excepcions.esborrar.antics.cron
+        - column:
+            name: value
+            value: 0 0 3 * * *
+        - column:
+            name: description
+            value: Expressió cron de la tasca d'esborrat de les excepcions antigues. Per defecte cada dia a les 3:00 (0 0 3 * * *)
+        - column:
+            name: group_code
+            value: SCHEDULLED_EXCEPCIONS
+        - column:
+            name: position
+            valueNumeric: 0
+        - column:
+            name: jboss_property
+            valueBoolean: false
+        - column:
+            name: type_code
+            value: CRON
+        - column:
+            name: configurable
+            valueBoolean: false
+    - insert:
+        tableName: ${app_prefix}config
+        columns:
+        - column:
+            name: key
+            value: es.caib.distribucio.tasca.excepcions.esborrar.antics.dies
+        - column:
+            name: value
+            value: 45
+        - column:
+            name: description
+            value: Dies màxim d'antiguitat de les excepcions guardades. Per defecte 45 dies
+        - column:
+            name: group_code
+            value: SCHEDULLED_EXCEPCIONS
+        - column:
+            name: position
+            valueNumeric: 1
+        - column:
+            name: jboss_property
+            valueBoolean: false
+        - column:
+            name: type_code
+            value: INT
+        - column:
+            name: configurable
+            valueBoolean: false

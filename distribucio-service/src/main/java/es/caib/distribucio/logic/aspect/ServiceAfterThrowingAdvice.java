@@ -28,7 +28,10 @@ public class ServiceAfterThrowingAdvice {
 	
 	@AfterThrowing(pointcut="execution(* es.caib.distribucio.logic.service.*Service*.*(..))", throwing="exception")
 	public void doAfterThrowing(JoinPoint joinPoint, Throwable exception) {
-		aplicacioService.excepcioSave(exception, "Main application service");
+		aplicacioService.excepcioSave(
+				null,
+				exception,
+				"Main application service (" + joinPoint.getSignature().toShortString() + ")");
 	}
 	
 }

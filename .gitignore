@@ -6,6 +6,10 @@ target/
 .classpath
 .project
 /docker-compose.yml
+/.env
 /.idea/
+/application.properties
 /CLAUDE.md
+/.playwright-mcp
 /distribucio_credentials.json
+/distribucio-back/src/main/webapp/reactapp/

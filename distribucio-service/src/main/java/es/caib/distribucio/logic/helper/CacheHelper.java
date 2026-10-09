@@ -70,8 +70,19 @@ public class CacheHelper {
 	@Autowired
 	private EntitatHelper entitatHelper;
 
-	@Cacheable(value = "entitatsUsuari", key="#usuariCodi")
-	public List<EntitatDto> findEntitatsAccessiblesUsuari(String usuariCodi) {
+	/**
+	 * Consulta les entitats accessibles per a un usuari.
+	 *
+	 * @param usuariCodi codi de l'usuari.
+	 * @param rolsUsuari rols amb els quals opera l'usuari. Nomes s'utilitza com a part de la clau
+	 *                   de la cache: els permisos sobre l'entitat es poden haver concedit a un rol
+	 *                   (PrincipalTipusEnumDto.ROL), de manera que el resultat depen dels rols de
+	 *                   l'autenticacio, i la interficie REACT els restringeix al rol amb que
+	 *                   s'esta operant (veure RolSeleccionatFilter). Sense aquest tros de clau,
+	 *                   el llistat calculat amb un rol es reaprofitaria per als altres.
+	 */
+	@Cacheable(value = "entitatsUsuari", key="#usuariCodi + '#' + #rolsUsuari")
+	public List<EntitatDto> findEntitatsAccessiblesUsuari(String usuariCodi, String rolsUsuari) {
 		logger.trace("Consulta entitats accessibles (usuariCodi=" + usuariCodi + ")");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		List<EntitatEntity> entitats = entitatRepository.findByActiva(true);
@@ -109,7 +120,14 @@ public class CacheHelper {
     public void evictAllEntitatsUsuariCache() {
     }
 
-	@CacheEvict(value = "entitatsUsuari", key="#usuariCodi")
+	/**
+	 * Esborra la cache d'entitats accessibles. La clau inclou els rols amb els quals s'opera
+	 * (veure {@link #findEntitatsAccessiblesUsuari(String, String)}), i Spring no permet esborrar
+	 * per prefix, aixi que s'esborren totes les entrades i no nomes les de l'usuari indicat.
+	 *
+	 * @param usuariCodi codi de l'usuari que ha motivat l'esborrat.
+	 */
+	@CacheEvict(value = "entitatsUsuari", allEntries = true)
 	public void evictEntitatsAccessiblesUsuari(String usuariCodi) {
 	}
 

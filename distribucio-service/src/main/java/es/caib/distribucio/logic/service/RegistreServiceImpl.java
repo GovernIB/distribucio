@@ -79,7 +79,6 @@ import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
 import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto.ClassificacioResultatEnumDto;
 import es.caib.distribucio.logic.intf.dto.ContingutDto;
 import es.caib.distribucio.logic.intf.dto.DadaDto;
-import es.caib.distribucio.logic.intf.dto.DocumentEniRegistrableDto;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
 import es.caib.distribucio.logic.intf.dto.ExpedientEstatEnumDto;
 import es.caib.distribucio.logic.intf.dto.FitxerDto;
@@ -102,7 +101,6 @@ import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexNtiTipusDocumentEnum;
@@ -157,8 +155,6 @@ import es.caib.distribucio.persist.repository.RegistreRepository;
 import es.caib.distribucio.persist.repository.ServeiRepository;
 import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.persist.repository.VistaMovimentRepository;
-import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnnex;
-import es.caib.distribucio.plugin.distribucio.DistribucioRegistreAnotacio;
 import es.caib.pluginsib.arxiu.api.ContingutArxiu;
 import es.caib.pluginsib.arxiu.api.Document;
 import es.caib.pluginsib.arxiu.api.DocumentContingut;
@@ -925,15 +921,14 @@ public class RegistreServiceImpl implements RegistreService {
 		ContingutMovimentEntity moviment = contingutMovimentRepository.findFirstByContingutOrderByCreatedDateAsc(registre); 
 		if (moviment != null) {
 			Optional<LocalDateTime> localDateTime = moviment.getCreatedDate();
-			Optional<UsuariEntity> createdBy = moviment.getCreatedBy();
+			Optional<String> createdBy = moviment.getCreatedBy();
  			if (localDateTime.isPresent()) {
 				registreDto.setDataPosadaBustia(java.sql.Timestamp.valueOf(localDateTime.get()));
 			}
 			if (RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(registre.getProcesEstat()) && createdBy.isPresent()) {
 				registreDto.setProcessadaPer(
-						conversioTipusHelper.convertir(
-								createdBy.get(), 
-								UsuariDto.class));
+						conversioTipusHelper.usuariDtoPerCodi(
+								createdBy.get()));
 			}
 		}
 	}
@@ -2001,8 +1996,9 @@ public class RegistreServiceImpl implements RegistreService {
 							entitat,
 							unitat.getId(),
 							bustia.getId(),
-							anotacio.getProcedimentCodi(),
-							anotacio.getServeiCodi(),
+							anotacio.getProcedimentCodi() != null
+                                    ?anotacio.getProcedimentCodi()
+                                    :anotacio.getServeiCodi(),
 							anotacio.getTramitCodi(),
 							anotacio.getAssumpteCodi(),
 							presencial);
@@ -2173,46 +2169,7 @@ public class RegistreServiceImpl implements RegistreService {
 	public FitxerDto getAnnexFirmaFitxer(
 			Long annexId,
 			int indexFirma) {
-		
-		FitxerDto fitxerDto = new FitxerDto();
-		
-		RegistreAnnexEntity registreAnnexEntity = registreAnnexRepository.getReferenceById(annexId);
-		RegistreAnnexFirmaEntity firmaEntity = registreAnnexEntity.getFirmes().get(indexFirma);
-		RegistreEntity registre = registreAnnexEntity.getRegistre();
-
-		// if annex is already created in arxiu take firma content from arxiu
-		if (registreAnnexEntity.getFitxerArxiuUuid() != null 
-				&& !registreAnnexEntity.getFitxerArxiuUuid().isEmpty()
-				&& firmaEntity != null) {
-
-			Firma firma = registreHelper.getFirma(registreAnnexEntity, indexFirma);
-			if (firma != null) {
-				fitxerDto.setNom(firmaEntity.getFitxerNom());
-				fitxerDto.setContentType(firmaEntity.getTipusMime());
-				fitxerDto.setContingut(firma.getContingut());
-				fitxerDto.setTamany(firma.getContingut().length);
-			}
-		
-		// if annex is not yet created in arxiu take firma content from gestio documental
-		} else {
-			if (firmaEntity.getGesdocFirmaId() != null) {
-				ByteArrayOutputStream streamAnnexFirma = new ByteArrayOutputStream();
-				gestioDocumentalHelper.gestioDocumentalGet(
-						firmaEntity.getGesdocFirmaId(),
-                        firmaEntity.getFitxerNom(),
-						GestioDocumentalHelper.GESDOC_AGRUPACIO_ANOTACIONS_REGISTRE_FIR_TMP, 
-						streamAnnexFirma,
-						registre.getNumero());
-				byte[] firmaContingut = streamAnnexFirma.toByteArray();
-				
-				fitxerDto.setNom(firmaEntity.getFitxerNom());
-				fitxerDto.setContentType(firmaEntity.getTipusMime());
-				fitxerDto.setContingut(firmaContingut);
-				fitxerDto.setTamany(firmaContingut.length);
-			} 
-		}
-		
-		return fitxerDto;
+		return registreHelper.getAnnexFirmaFitxer(annexId, indexFirma);
 	}
 
 
@@ -2741,8 +2698,9 @@ public class RegistreServiceImpl implements RegistreService {
 				bustia.getUnitatOrganitzativa().getId(),
 				registre.getPare() != null? registre.getPare().getId() : null,
 				registre.getProcedimentCodi(),
-				registre.getServeiCodi(),
-				registre.getTramitCodi(),
+				registre.getProcedimentCodi() != null
+                        ?registre.getServeiCodi()
+                        :registre.getTramitCodi(),
 				registre.getAssumpteCodi(),
 				registre.getPresencial());
 		ClassificacioResultatDto classificacioResultat = new ClassificacioResultatDto();
@@ -3046,65 +3004,14 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional
 	@Override
 	public void custodiarAnnex(Long entitatId, Long registreId, Long annexId) {
-
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
 				false,
 				false);
-
-        RegistreEntity registre = registreRepository.getReferenceById(registreId);
-		RegistreAnnexEntity annex = registreAnnexRepository.getReferenceById(annexId);
-
-		try {
-			logger.debug("Custodiar annex a l'Arxiu (" + "entitatId=" + entitatId + ", " + "registreId=" + registreId + ", annexId=" + annexId + ", usuari=" + auth.getName() + ")");
-
-            DistribucioRegistreAnnex distribucioRegistreAnnex = conversioTipusHelper.convertir(
-                    annex, DistribucioRegistreAnnex.class);
-            DistribucioRegistreAnotacio distribucioRegistreAnotacio =
-                    registreHelper.getDistribucioRegistreAnotacio(registreId);
-
-            DocumentEniRegistrableDto documentEniRegistrableDto = new DocumentEniRegistrableDto();
-            documentEniRegistrableDto.setNumero(registre.getNumero());
-            documentEniRegistrableDto.setData(registre.getData());
-            documentEniRegistrableDto.setOficinaDescripcio(registre.getOficinaDescripcio());
-            documentEniRegistrableDto.setOficinaCodi(registre.getOficinaCodi());
-
-            registreHelper.crearAnnexInArxiu(
-            		annexId, 
-            		distribucioRegistreAnnex,  
-            		distribucioRegistreAnotacio.getUnitatOrganitzativaCodi(), 
-            		distribucioRegistreAnotacio.getExpedientArxiuUuid(), 
-            		distribucioRegistreAnotacio.getProcedimentCodi());                
-
-			// Actualitza el recompte d'esborranys
-			List<RegistreAnnexEntity> registreAnnex = registreRepository.getDadesRegistreAnnex( registreId);
-			int numEsborrany = 0;
-			for(RegistreAnnexEntity annexList: registreAnnex) {
-				if(annexList.getArxiuEstat()== AnnexEstat.ESBORRANY) {
-					numEsborrany++;
-				}
-			}
-            registre.setAnnexosEstatEsborrany(numEsborrany);
-
-			// Modificar 
-			if (annex.getFitxerArxiuUuid() != null) {
-                pluginHelper.arxiuDocumentSetDefinitiu(annex);
-                annex.setArxiuEstat(AnnexEstat.DEFINITIU);
-                registre.setAnnexosEstatEsborrany(numEsborrany-1);
-                registreRepository.saveAndFlush(registre);
-                registreAnnexRepository.saveAndFlush(annex);
-                entityManager.flush();
-			}
-			// Finalment si està a l'arxiu com a definitiu i no s'han carregat els detalls de la firma els carrega
-			if (annex.getFitxerArxiuUuid() != null 
-					&& AnnexEstat.DEFINITIU.compareTo(annex.getArxiuEstat()) == 0) {
-                registreHelper.loadSignaturaDetallsToDB(annex);
-			}
-		} catch (Exception e) {
-			logger.error("Error no controlat custodiant l'annex amb id:  "+ annexId +" de l'anotació amb id:  "+ registreId + " a l'Arxiu: " + e.getMessage(), e) ;
-		}
+		logger.debug("Custodiar annex a l'Arxiu (" + "entitatId=" + entitatId + ", " + "registreId=" + registreId + ", annexId=" + annexId + ", usuari=" + auth.getName() + ")");
+		registreHelper.custodiarAnnex(annexId);
 	}
 	
 	/** Obté els registres per identificador i data de registre.

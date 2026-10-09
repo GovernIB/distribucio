@@ -1,0 +1,85 @@
+package es.caib.distribucio.persist.resourceentity;
+
+import es.caib.distribucio.logic.intf.model.EntitatResource;
+import es.caib.distribucio.persist.base.entity.BaseAuditableEntity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Version;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+/**
+ * Entitat de base de dades del recurs {@link EntitatResource}.
+ * <p>
+ * Mapeja la mateixa taula que l'entitat de negoci {@link es.caib.distribucio.persist.entity.EntitatEntity},
+ * dedicada exclusivament al mapeig genèric per reflexió del recurs REST.
+ *
+ * @author Límit Tecnologies
+ */
+@Entity
+@Table(name = "dis_entitat")
+@Getter
+@Setter
+@NoArgsConstructor
+public class EntitatResourceEntity extends BaseAuditableEntity<EntitatResource, Long> implements Serializable {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "default_seq")
+	@SequenceGenerator(name = "default_seq", sequenceName = "dis_hibernate_seq", allocationSize = 1)
+	private Long id;
+
+	@Column(name = "codi", length = 64, nullable = false, unique = true)
+	private String codi;
+
+	@Column(name = "nom", length = 256, nullable = false)
+	private String nom;
+
+	@Column(name = "descripcio", length = 1024)
+	private String descripcio;
+
+	@Column(name = "cif", length = 9, nullable = false)
+	private String cif;
+
+	@Column(name = "codi_dir3", length = 9, nullable = false, unique = true)
+	private String codiDir3;
+
+	@Column(name = "color_fons", length = 32)
+	private String colorFons;
+
+	@Column(name = "color_lletra", length = 32)
+	private String colorLletra;
+
+	@Column(name = "logo_cap")
+	private byte[] logoImgBytes;
+
+	@Column(name = "activa")
+	private boolean activa = true;
+
+	@Column(name = "color_fons_dark", length = 32)
+	private String colorFonsDark;
+
+	@Column(name = "color_lletra_dark", length = 32)
+	private String colorLletraDark;
+
+	@Column(name = "logo_cap_dark")
+	private byte[] logoImgBytesDark;
+
+    @Column(name = "fecha_actualizacion")
+    private LocalDateTime fechaActualizacion;
+
+    @Column(name = "fecha_sincronizacion")
+    private LocalDateTime fechaSincronizacion;
+
+	@Version
+	private long version = 0;
+
+}

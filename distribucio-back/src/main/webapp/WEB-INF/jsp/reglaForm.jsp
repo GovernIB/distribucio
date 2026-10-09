@@ -72,14 +72,14 @@ $(document).ready(function() {
 		$('div#camps_tipus_' + $(this).val()).css('display', '');
 		if ($(this).val() == 'BACKOFFICE') {
 // 			$('#unitatFiltreId').val('');
-			$('#bustiaFiltreId').parent().closest('.form-group').css('display', 'none');
-			$('#bustiaFiltreId').val('');
+// 			$('#bustiaFiltreId').parent().closest('.form-group').css('display', 'none');
+// 			$('#bustiaFiltreId').val('');
 			$('#assumpteCodiFiltre').parent().closest('.form-group').css('display', 'none');
 			$('#assumpteCodiFiltre').val('');
 			$('#procedimentCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk1">*</span>');
 			$('#serveiCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk2">*</span>');
 		} else {
-			$('#bustiaFiltreId').parent().closest('.form-group').css('display', '');
+			// $('#bustiaFiltreId').parent().closest('.form-group').css('display', '');
 			$('#assumpteCodiFiltre').parent().closest('.form-group').css('display', '');
 			$('#asterisk1').remove();
 			$('#asterisk2').remove();

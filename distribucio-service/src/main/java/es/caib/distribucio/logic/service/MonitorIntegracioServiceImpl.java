@@ -22,6 +22,7 @@ import java.util.Random;
 import javax.annotation.Resource;
 
 import es.caib.distribucio.logic.intf.dto.*;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -347,6 +348,7 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 			err.append("Error amb la integració ").append(codiIntegracio).append(". Excepció: ").append(e.getMessage());
 			diagnostic.setCorrecte(false); 
 			diagnostic.setErrMsg(err.toString());
+			diagnostic.setExcepcioStacktrace(ExceptionUtils.getStackTrace(e));
 		}
 		return diagnostic;
 	}

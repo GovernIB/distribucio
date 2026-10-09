@@ -16,17 +16,17 @@
 	<script src="<c:url value="/js/webutil.modal.js"/>"></script>
 </head>
 <body>
-	<table id="excepcions" data-toggle="datatable" data-url="<c:url value="/excepcio/datatable"/>" data-search-enabled="false" class="table table-striped table-bordered" style="width:100%">
+	<table id="excepcions" data-toggle="datatable" data-url="<c:url value="/excepcio/datatable"/>" data-search-enabled="false" data-default-order="0" data-default-dir="desc" class="table table-striped table-bordered" style="width:100%">
 		<thead>
 			<tr>
-				<th data-col-name="data" data-orderable="false" data-converter="datetime"><spring:message code="excepcio.list.columna.data"/></th>
-				<th data-col-name="tipus" data-orderable="false"><spring:message code="excepcio.list.columna.tipus"/></th>
-				<th data-col-name="objectId" data-orderable="false"><spring:message code="excepcio.list.columna.objecte.id"/></th>
-				<th data-col-name="objectClass" data-orderable="false"><spring:message code="excepcio.list.columna.objecte.class"/></th>
-				<th data-col-name="message" data-orderable="false"><spring:message code="excepcio.list.columna.message"/></th>
-				<th data-col-name="index" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
+				<th data-col-name="data" data-converter="datetime"><spring:message code="excepcio.list.columna.data"/></th>
+				<th data-col-name="tipus"><spring:message code="excepcio.list.columna.tipus"/></th>
+				<th data-col-name="objectId"><spring:message code="excepcio.list.columna.objecte.id"/></th>
+				<th data-col-name="objectClass"><spring:message code="excepcio.list.columna.objecte.class"/></th>
+				<th data-col-name="message"><spring:message code="excepcio.list.columna.message"/></th>
+				<th data-col-name="id" data-template="#cellAccionsTemplate" data-orderable="false" width="10%">
 					<script id="cellAccionsTemplate" type="text/x-jsrender">
-						<a href="excepcio/{{:index}}" class="btn btn-default" data-toggle="modal"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="comu.boto.detalls"/></a>
+						<a href="excepcio/{{:id}}" class="btn btn-default" data-toggle="modal"><span class="fa fa-info-circle"></span>&nbsp;&nbsp;<spring:message code="comu.boto.detalls"/></a>
 					</script>
 				</th>
 			</tr>

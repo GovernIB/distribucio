@@ -291,17 +291,15 @@ public class ContingutHelper {
 			}
 			// AUDITORIA
 			contingutDto.setCreatedBy(
-					conversioTipusHelper.convertir(
-							contingut.getCreatedBy().orElse(null),
-							UsuariDto.class));
+					conversioTipusHelper.usuariDtoPerCodi(
+							contingut.getCreatedBy().orElse(null)));
 			if (contingut.getCreatedDate().isPresent()) {
 				contingutDto.setCreatedDate(
 						java.sql.Timestamp.valueOf(contingut.getCreatedDate().get()));
 			}
 			contingutDto.setLastModifiedBy(
-					conversioTipusHelper.convertir(
-							contingut.getLastModifiedBy().orElse(null),
-							UsuariDto.class));
+					conversioTipusHelper.usuariDtoPerCodi(
+							contingut.getLastModifiedBy().orElse(null)));
 			if (contingut.getLastModifiedDate().isPresent()) {
 				contingutDto.setLastModifiedDate(
 						java.sql.Timestamp.valueOf(contingut.getLastModifiedDate().get()));
@@ -457,17 +455,15 @@ public class ContingutHelper {
 		}
 		// AUDITORIA
 		contingutDto.setCreatedBy(
-				conversioTipusHelper.convertir(
-						registreEntity.getCreatedBy().orElse(null),
-						UsuariDto.class));
+				conversioTipusHelper.usuariDtoPerCodi(
+						registreEntity.getCreatedBy().orElse(null)));
 		if (registreEntity.getCreatedDate().isPresent()) {
 			contingutDto.setCreatedDate(
 					java.sql.Timestamp.valueOf(registreEntity.getCreatedDate().get()));
 		}
 		contingutDto.setLastModifiedBy(
-				conversioTipusHelper.convertir(
-						registreEntity.getLastModifiedBy().orElse(null),
-						UsuariDto.class));
+				conversioTipusHelper.usuariDtoPerCodi(
+						registreEntity.getLastModifiedBy().orElse(null)));
 		if (registreEntity.getLastModifiedDate().isPresent()) {
 			contingutDto.setLastModifiedDate(
 					java.sql.Timestamp.valueOf(registreEntity.getLastModifiedDate().get()));

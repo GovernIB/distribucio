@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,8 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+
+import java.util.function.BiConsumer;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -32,6 +35,8 @@ import es.caib.distribucio.logic.intf.dto.RegistreSimulatDto;
 import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.logic.intf.exception.AplicarReglaException;
+import es.caib.distribucio.logic.intf.exception.NotFoundException;
+import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.logic.intf.exception.ScheduledTaskException;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.persist.entity.BustiaEntity;
@@ -41,7 +46,10 @@ import es.caib.distribucio.persist.entity.EntitatEntity;
 import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
 import es.caib.distribucio.persist.entity.RegistreEntity;
 import es.caib.distribucio.persist.entity.ReglaEntity;
+import es.caib.distribucio.persist.entity.UnitatOrganitzativaEntity;
+import es.caib.distribucio.persist.repository.BustiaRepository;
 import es.caib.distribucio.persist.repository.ReglaRepository;
+import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 
 /**
  * Mètodes comuns per a aplicar regles.
@@ -53,6 +61,10 @@ public class ReglaHelper {
 
 	@Autowired
 	private ReglaRepository reglaRepository;
+	@Autowired
+	private BustiaRepository bustiaRepository;
+	@Autowired
+	private UnitatOrganitzativaRepository unitatOrganitzativaRepository;
 	@Autowired
 	private ContingutHelper contingutHelper;
 	@Autowired
@@ -85,8 +97,7 @@ public class ReglaHelper {
 			ReglaEntity reglaActual,
 			Long unitatId,
 			Long bustiaId,
-			String procedimentCodi,
-			String serveiCodi,
+			String codiSia,
 			String tramitCodi,
 			String assumpteCodi,
 			Boolean presencial) {
@@ -101,8 +112,7 @@ public class ReglaHelper {
 				entitat,
 				unitatId,
 				bustiaId,
-				procedimentCodi != null ? procedimentCodi : "",
-				serveiCodi != null ? serveiCodi : "",
+                codiSia != null ? codiSia : "",
 				tramitCodi != null ? tramitCodi : "",
 				assumpteCodi != null ? assumpteCodi : "",
 				esPresencial == null,
@@ -135,8 +145,7 @@ public class ReglaHelper {
 			EntitatEntity entitat,
 			Long unitatId,
 			Long bustiaId,
-			String procedimentCodi,
-			String serveiCodi,
+			String codiSia,
 			String tramitCodi,
 			String assumpteCodi,
 			Boolean presencial) {
@@ -150,8 +159,7 @@ public class ReglaHelper {
 					entitat,
 					unitatId,
 					bustiaId,
-					procedimentCodi != null ? procedimentCodi : "",
-					serveiCodi != null ? serveiCodi : "",
+                    codiSia != null ? codiSia : "",
 					tramitCodi != null ? tramitCodi : "",
 					assumpteCodi != null ? assumpteCodi : "",
 					esPresencial == null,
@@ -169,6 +177,76 @@ public class ReglaHelper {
 		cipher.init(Cipher.ENCRYPT_MODE, skey);
 		crypted = cipher.doFinal(input.getBytes());
 		return new String(Base64.getEncoder().encode(crypted));
+	}
+
+	/** Anotacions pendents de bústia (sense regla assignada) que compleixen el filtre de la regla, és a dir, a les quals
+	 * "Aplicar manualment" pot assignar-la. Compartit per la previsualització i per l'aplicació real perquè coincideixin.
+	 * <p>
+	 * Es manté el comportament històric de la consulta: una regla sense codi de procediment ni de servei no troba
+	 * cap anotació (s'usa el placeholder "-") i el filtre de tràmit s'ignora.
+	 */
+	public List<RegistreEntity> findRegistresAplicables(
+			EntitatEntity entitat,
+			ReglaEntity regla) {
+		List<String> codisProcediments;
+		if (regla.getProcedimentCodiFiltre() != null && !regla.getProcedimentCodiFiltre().trim().isEmpty()) {
+			codisProcediments = Arrays.asList(regla.getProcedimentCodiFiltre().split(" "));
+		} else {
+			codisProcediments = new ArrayList<>();
+			codisProcediments.add("-");
+		}
+		List<String> codisServei = new ArrayList<>();
+		if (regla.getServeiCodiFiltre() != null && !regla.getServeiCodiFiltre().trim().isEmpty()) {
+			codisServei.addAll(Arrays.asList(regla.getServeiCodiFiltre().split(" ")));
+		} else {
+			codisServei.add("-");
+		}
+		List<Long> bustiesUnitatOrganitzativaIds = new ArrayList<>();
+		if (regla.getUnitatOrganitzativaFiltre() != null) {
+			for (BustiaEntity bustia : bustiaRepository.findByEntitatAndUnitatOrganitzativaAndPareNotNull(
+					entitat,
+					regla.getUnitatOrganitzativaFiltre())) {
+				bustiesUnitatOrganitzativaIds.add(bustia.getId());
+			}
+		}
+		if (bustiesUnitatOrganitzativaIds.isEmpty()) {
+			bustiesUnitatOrganitzativaIds.add(0L);
+		}
+		Boolean registrePresencial = null;
+		if (regla.getPresencial() != null) {
+			registrePresencial = ReglaPresencialEnumDto.SI.equals(regla.getPresencial());
+		}
+		return reglaRepository.findRegistres(
+				entitat,
+				regla.getUnitatOrganitzativaFiltre() == null,
+				bustiesUnitatOrganitzativaIds,
+				registrePresencial == null,
+				registrePresencial != null ? registrePresencial.booleanValue() : false,
+				regla.getBustiaFiltre() == null,
+				regla.getBustiaFiltre() != null ? regla.getBustiaFiltre().getId() : 0L,
+				codisProcediments,
+				codisServei,
+				regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(),
+				regla.getAssumpteCodiFiltre() != null && !regla.getAssumpteCodiFiltre().trim().isEmpty() ?
+						regla.getAssumpteCodiFiltre() : "-");
+	}
+
+	/** 
+	 * Assigna la regla a les anotacions que compleixen el seu filtre perquè es processin en segon pla.
+	 *
+	 * @return Números de les anotacions afectades.
+	 */
+	public List<String> aplicarManualment(
+			EntitatEntity entitat,
+			ReglaEntity regla) {
+		List<String> numerosRegistres = new ArrayList<>();
+		for (RegistreEntity registre : findRegistresAplicables(entitat, regla)) {
+			// S'assigna la regla per a que es processi en segon pla
+			registre.updateRegla(regla);
+			numerosRegistres.add(registre.getNumero());
+			logger.debug("Regla " + regla.getId() + " \"" + regla.getNom() + "\" aplicada manualment a l'anotació " + registre.getNumero());
+		}
+		return numerosRegistres;
 	}
 
 	public Exception aplicarControlantException(
@@ -274,15 +352,89 @@ public class ReglaHelper {
 		return isPerConeixement;
 	}
 
+	/**
+	 * Indica si s'han d'avaluar totes les regles (cadena per ordre) o només la primera coincident.
+	 * <p>
+	 * Font única per a l'execució real ({@link #aplicar}) i per a la simulació, perquè el simulador mostri
+	 * sempre la mateixa cadena de regles que s'executarà de veritat. L'execució real avalua sempre totes
+	 * les regles; la propietat es.caib.distribucio.tasca.aplicar.regles.avaluar.totes ja no s'hi consulta.
+	 */
+	public boolean isAvaluarTotesLesRegles() {
+		return true;
+	}
+
+	/**
+	 * Simula l'aplicació de les regles a una anotació hipotètica, sense modificar cap dada.
+	 *
+	 * @param entitat entitat sobre la qual es simula (la unitat i la bústia n'han de ser).
+	 * @param dto dades de l'anotació simulada (no es modifica).
+	 * @return les accions que es farien, en ordre.
+	 */
+	public List<RegistreSimulatAccionDto> simular(
+			EntitatEntity entitat,
+			RegistreSimulatDto dto) {
+		// El bucle de simulació modifica unitat i bústia: es treballa amb una còpia.
+		RegistreSimulatDto simulat = new RegistreSimulatDto();
+		simulat.setUnitatId(dto.getUnitatId());
+		simulat.setBustiaId(dto.getBustiaId());
+		simulat.setAssumpteCodi(dto.getAssumpteCodi());
+		simulat.setProcedimentCodi(dto.getProcedimentCodi());
+		simulat.setServeiCodi(dto.getServeiCodi());
+		simulat.setTramitCodi(dto.getTramitCodi());
+		simulat.setPresencial(dto.getPresencial());
+
+		UnitatOrganitzativaEntity unitat = unitatOrganitzativaRepository.findById(simulat.getUnitatId()).orElse(null);
+		if (unitat == null) {
+			throw new NotFoundException(simulat.getUnitatId(), UnitatOrganitzativaEntity.class);
+		}
+		if (!Objects.equals(unitat.getCodiDir3Entitat(), entitat.getCodiDir3())) {
+			throw new ValidationException(
+					simulat.getUnitatId(),
+					UnitatOrganitzativaEntity.class,
+					"La unitat organitzativa no pertany a l'entitat actual");
+		}
+		List<RegistreSimulatAccionDto> simulatAccions = new ArrayList<>();
+		BustiaEntity bustiaDesti;
+		if (simulat.getBustiaId() == null) {
+			bustiaDesti = bustiaHelper.findBustiaDesti(entitat, unitat.getCodi());
+			simulatAccions.add(new RegistreSimulatAccionDto(
+					RegistreSimulatAccionEnumDto.BUSTIA_PER_DEFECTE,
+					bustiaDesti.getNom(),
+					null));
+		} else {
+			bustiaDesti = bustiaRepository.findById(simulat.getBustiaId()).orElse(null);
+			if (bustiaDesti == null) {
+				throw new NotFoundException(simulat.getBustiaId(), BustiaEntity.class);
+			}
+			if (bustiaDesti.getEntitat() == null || !Objects.equals(bustiaDesti.getEntitat().getId(), entitat.getId())) {
+				throw new ValidationException(
+						simulat.getBustiaId(),
+						BustiaEntity.class,
+						"La bústia no pertany a l'entitat actual");
+			}
+		}
+		Boolean presencial = null;
+		if (simulat.getPresencial() != null) {
+			presencial = ReglaPresencialEnumDto.SI.equals(simulat.getPresencial());
+		}
+		simulat.setUnitatId(unitat.getId());
+		simulat.setBustiaId(bustiaDesti.getId());
+		aplicarSimulation(
+				entitat,
+				simulat,
+				new ArrayList<ReglaEntity>(),
+				simulatAccions,
+				presencial);
+		return simulatAccions;
+	}
+
 	public void aplicarSimulation(
 			EntitatEntity entitatEntity,
 			RegistreSimulatDto registreSimulatDto,
 			List<ReglaEntity> reglasApplied,
 			List<RegistreSimulatAccionDto> simulatAccions, 
 			Boolean presencial) {
-		// Consulta la  propietat per avaluar totes les regles o només la 1a coincident com fins ara
-		boolean avaluarTotesLesRegles = 
-				configHelper.getAsBoolean("es.caib.distribucio.tasca.aplicar.regles.avaluar.totes", false);
+		boolean avaluarTotesLesRegles = isAvaluarTotesLesRegles();
 
 		ReglaEntity reglaToApply = null;
 		boolean reglaAplicada = false;
@@ -306,8 +458,9 @@ public class ReglaHelper {
 						reglaToApply, 
 						registreSimulatDto.getUnitatId(),
 						registreSimulatDto.getBustiaId(),
-						registreSimulatDto.getProcedimentCodi(),
-						registreSimulatDto.getServeiCodi(),
+						registreSimulatDto.getProcedimentCodi() != null
+                                ?registreSimulatDto.getProcedimentCodi()
+                                :registreSimulatDto.getServeiCodi(),
 						registreSimulatDto.getTramitCodi(),
 						registreSimulatDto.getAssumpteCodi(),
 						presencial);
@@ -317,8 +470,9 @@ public class ReglaHelper {
 						entitatEntity,
 						registreSimulatDto.getUnitatId(),
 						registreSimulatDto.getBustiaId(),
-						registreSimulatDto.getProcedimentCodi(),
-						registreSimulatDto.getServeiCodi(),
+                        registreSimulatDto.getProcedimentCodi() != null
+                                ?registreSimulatDto.getProcedimentCodi()
+                                :registreSimulatDto.getServeiCodi(),
                         registreSimulatDto.getTramitCodi(),
 						registreSimulatDto.getAssumpteCodi(), 
 						presencial);
@@ -382,7 +536,7 @@ public class ReglaHelper {
 	public void aplicar(
 			RegistreEntity registre,
 			List<ReglaEntity> reglesApplied) {
-		boolean avaluarTotesLesRegles = true;
+		boolean avaluarTotesLesRegles = isAvaluarTotesLesRegles();
 		boolean reglaAplicada = false;
 		boolean reglaBackoffice = false;
 		boolean reglaJaAplicada = false;
@@ -497,8 +651,9 @@ public class ReglaHelper {
 							regla, 
 							bustia.getUnitatOrganitzativa().getId(),
 							bustia.getId(),
-							registre.getProcedimentCodi(),
-							registre.getServeiCodi(),
+                            registre.getProcedimentCodi() != null
+                                    ?registre.getProcedimentCodi()
+                                    :registre.getServeiCodi(),
 							registre.getTramitCodi(),
 							registre.getAssumpteCodi(),
 							presencial);
@@ -508,8 +663,9 @@ public class ReglaHelper {
 							registre.getEntitat(),
 							bustia.getUnitatOrganitzativa().getId(),
 							bustia.getId(),
-							registre.getProcedimentCodi(),
-							registre.getServeiCodi(),
+                            registre.getProcedimentCodi() != null
+                                    ?registre.getProcedimentCodi()
+                                    :registre.getServeiCodi(),
 							registre.getTramitCodi(),
 							registre.getAssumpteCodi(),
 							presencial);
@@ -591,6 +747,40 @@ public class ReglaHelper {
 	
 	private boolean isPermesSobreescriureAnotacions() {
 		return configHelper.getAsBoolean("es.caib.distribucio.sobreescriure.anotacions.duplicades");
+	}
+
+	/**
+	 * Recalcula l'ordre d'una llista de regles (ja ordenada per <code>ordre</code> ascendent) en moure'n
+	 * una a una nova posició. Reutilitzat tant per {@link es.caib.distribucio.logic.service.ReglaServiceImpl}
+	 * (interfície antiga JSF) com pels {@code ActionExecutor} d'{@code AMUNT}/{@code AVALL}/{@code MOURE}
+	 * de {@code ReglaResourceServiceImpl} (interfície nova React), ja que l'entitat legacy
+	 * <code>ReglaEntity</code> i la nova <code>ReglaResourceEntity</code> mapegen la mateixa taula amb
+	 * classes JPA diferents.
+	 * <p>
+	 * <code>posicioDesti</code> es limita a <code>[0, elements.size() - 1]</code>: la implementació
+	 * original no ho feia i un valor fora de rang provocava una {@code IndexOutOfBoundsException}.
+	 *
+	 * @param elements llista de totes les regles de l'entitat, ordenades per <code>ordre</code> ascendent.
+	 * @param element la regla que es mou (ha de ser una instància present a <code>elements</code>).
+	 * @param posicioDesti posició nova (0-based) dins de <code>elements</code>.
+	 * @param ordreSetter setter de l'entitat concreta (p. ex. <code>ReglaEntity::updateOrdre</code> o
+	 *            <code>ReglaResourceEntity::setOrdre</code>) usat per reassignar l'<code>ordre</code>.
+	 */
+	public static <T> void canviPosicio(
+			List<T> elements,
+			T element,
+			int posicioDesti,
+			BiConsumer<T, Integer> ordreSetter) {
+		int posicioActual = elements.indexOf(element);
+		int posicioValida = Math.max(0, Math.min(elements.size() - 1, posicioDesti));
+		if (posicioValida != posicioActual) {
+			elements.remove(element);
+			elements.add(posicioValida, element);
+			int i = 0;
+			for (T e : elements) {
+				ordreSetter.accept(e, i++);
+			}
+		}
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ReglaHelper.class);

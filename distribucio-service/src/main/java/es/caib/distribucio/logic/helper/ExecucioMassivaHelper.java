@@ -324,7 +324,7 @@ public class ExecucioMassivaHelper {
         List<String> errors = new ArrayList<>();
 
         try {
-            if (em.getParametres() != null && !em.getParametres().isEmpty()) {
+            if (em.getParametres() != null && !em.getParametres().isEmpty() && !"{}".equals(em.getParametres())) {
                 boolean estructuraCarpetes = getValorParametre(em.getParametres(), "estructuraCarpetes", Boolean.class);
                 boolean versioImprimible = getValorParametre(em.getParametres(), "versioImprimible", Boolean.class);
                 FileNameOption tipusNomDocument = FileNameOption.valueOf(getValorParametre(em.getParametres(), "nomDocument", String.class));
@@ -395,7 +395,16 @@ public class ExecucioMassivaHelper {
                 throw new Exception("Empty params");
             }
         } catch(Exception e) {
-            throw new RuntimeException("Error no controlat executant l'acció massvia: " + e.getMessage(), e);
+            for (ExecucioMassivaContingutEntity emc: em.getContinguts()) {
+                if (this.isEmcDisponibleNewTransaction(emc)) {
+                    this.updateErrorNewTransaction(
+                            emc,
+                            new Date(),
+                            e.getMessage());
+                }
+            }
+            this.updateFinalitzatNewTransaction(em, new Date());
+            throw new RuntimeException("Error no controlat executant l'acció massiva: " + e.getMessage(), e);
         }
     }
 

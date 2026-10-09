@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.BustiaDto;
 import es.caib.distribucio.logic.intf.dto.ExcepcioLogDto;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 
@@ -103,33 +105,39 @@ public interface AplicacioService {
 	public List<UsuariDto> findUsuariAmbCodiAndNom(String text);
 	
 	/**
-	 * Emmagatzema una excepció llençada per un servei.
-	 * 
+	 * Emmagatzema una excepció al log d'excepcions. No llança mai cap excepció: si no es
+	 * pot guardar, només ho deixa escrit al log de l'aplicació.
+	 *
+	 * @param uri
+	 *             URI de la petició on s'ha produït l'excepció (pot ser null).
 	 * @param exception
 	 *             L'excepció a emmagatzemar.
-	 *             
-	 * @param source
-	 *             
+	 * @param origen
+	 *             Descripció del punt on s'ha capturat l'excepció.
 	 */
-	public void excepcioSave(Throwable exception, String source);
+	public void excepcioSave(String uri, Throwable exception, String origen);
 
 	/**
-	 * Consulta la informació d'una excepció donat el seu índex.
-	 * 
-	 * @param index
-	 *             L'index de l'excepció.
+	 * Consulta la informació d'una excepció donat el seu identificador.
+	 *
+	 * @param id
+	 *             L'identificador de l'excepció.
 	 * @return L'excepció.
+	 * @throws NotFoundException
+	 *             Si no existeix l'excepció (p. ex. perquè ja s'ha esborrat per antiga).
 	 */
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
-	public ExcepcioLogDto excepcioFindOne(Long index);
+	public ExcepcioLogDto excepcioFindOne(Long id) throws NotFoundException;
 
 	/**
-	 * Retorna una llista amb les darreres excepcions emmagatzemades.
-	 * 
-	 * @return La llista amb les darreres excepcions.
+	 * Retorna una pàgina de les excepcions emmagatzemades.
+	 *
+	 * @param paginacioParams
+	 *             Paràmetres de paginació i ordenació.
+	 * @return La pàgina d'excepcions.
 	 */
 	@PreAuthorize("hasRole('" + BaseConfig.ROLE_SUPER + "')")
-	public List<ExcepcioLogDto> excepcioFindAll();
+	public PaginaDto<ExcepcioLogDto> excepcioFindPage(PaginacioParamsDto paginacioParams);
 
 	/**
 	 * Retorna una llista amb els diferents rols els quals

@@ -104,7 +104,7 @@ public class PaginacioParamsDto implements Serializable {
 		ASCENDENT,
 		DESCENDENT
 	}
-	public class OrdreDto implements Serializable {
+	public static class OrdreDto implements Serializable {
 		private String camp;
 		private OrdreDireccioDto direccio;
 		public OrdreDto(

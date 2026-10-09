@@ -42,6 +42,14 @@
 				<dt><spring:message code="excepcio.detall.camp.origen"/></dt>
 				<dd>${excepcio.origen}</dd>
 			</c:if>
+			<c:if test="${not empty excepcio.uri}">
+				<dt><spring:message code="excepcio.detall.camp.uri"/></dt>
+				<dd>${excepcio.uri}</dd>
+			</c:if>
+			<c:if test="${not empty excepcio.entitatCodi}">
+				<dt><spring:message code="excepcio.detall.camp.entitat"/></dt>
+				<dd>${excepcio.entitatCodi}</dd>
+			</c:if>
 		</dl>
 		<c:if test="${not empty excepcio.stacktrace}">
 			<div class="panel-body" >

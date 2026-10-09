@@ -1,0 +1,67 @@
+import Grid from "@mui/material/Grid";
+import GridFormField from "../../components/GridFormField.tsx";
+import React from "react";
+import {useTranslation} from "react-i18next";
+import {MuiDataFormDialogApi, MuiForm, MuiFormDialog} from "reactlib";
+import {BustiaPermisosForm, useBustiaPermisosColumns} from "./BustiaPermisosForm.tsx";
+import {AclPermissionGrid} from "../../components/AclPermissionManager.tsx";
+import Box from "@mui/material/Box";
+import {BustiaObsoleta} from "./detail/BustiaObsoleta.tsx";
+
+export const BustiaForm = () => {
+    return <Grid container direction={"row"} columnSpacing={1} rowSpacing={1}>
+        <GridFormField size={12} name="unitatOrganitzativa" componentProps={{ size: "small" }} />
+        <GridFormField size={12} name="nom" componentProps={{ size: "small" }} />
+    </Grid>
+}
+
+export const BustiaFormDialog: React.FC<{
+    formDialogApiRef: React.RefObject<MuiDataFormDialogApi | null>;
+}> = ({formDialogApiRef}) => {
+    const { t } = useTranslation();
+
+    return <MuiFormDialog
+        resourceName="bustiaResource"
+        resourceTitle={t('page.bustia.title')}
+        apiRef={formDialogApiRef}
+        dialogComponentProps={{ fullWidth: true, maxWidth: 'md' }}
+        formComponentProps={{ commonFieldComponentProps: { size: 'small' } }}
+    >
+        <BustiaForm />
+    </MuiFormDialog>
+}
+
+export const BustiaOrganigramaForm = ({entity, ...other}:any) => {
+    const { t } = useTranslation();
+
+    return (
+        <MuiForm
+            key={entity.id}
+            id={entity.id}
+            title={t('page.bustia.accio.update.title')}
+            resourceName={'bustiaResource'}
+
+            hiddenBackButton
+            hiddenRevertButton
+            hiddenSaveButton
+            hiddenDeleteButton
+            sx={{ backgroundColor: 'red' }}
+            {...other}
+        >
+            {entity?.pendent && <Box mb={2}>
+                <BustiaObsoleta id={entity.id}/>
+            </Box>}
+
+            <BustiaForm />
+
+            <AclPermissionGrid
+                resourceId={entity.id}
+                resourceType={'BUSTIA'}
+                title={t('component.AclPermissionManager.title')}
+                columns={useBustiaPermisosColumns()}
+                formContent={<BustiaPermisosForm/>}
+                autoHeight
+            />
+        </MuiForm>
+    );
+}

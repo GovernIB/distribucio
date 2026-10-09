@@ -1,10 +1,15 @@
 package es.caib.distribucio.logic.helper;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Monitor.
@@ -207,5 +212,77 @@ public class MonitorHelper {
 				time += (tc - tu);
 		}
 		return time;
+	}
+
+	/** Informacio d'un fil d'execucio de la JVM. */
+	@Getter
+	@AllArgsConstructor
+	public static class FilInfo {
+		private final long id;
+		private final String nom;
+		private final Thread.State estat;
+		/** Percentatge de temps de CPU respecte del fil amb mes temps de CPU (0-100). */
+		private final long tempsCpuPercent;
+		/** Temps d'espera en nanosegons. */
+		private final long tempsEsperaNs;
+		/** Temps de bloqueig en nanosegons. */
+		private final long tempsBloqueigNs;
+	}
+
+	/**
+	 * Retorna els fils d'execucio de la JVM (excepte el fil "main"), amb el nom del lock si n'esperen algun.
+	 * Buida si la JVM no permet mesurar el temps de CPU dels fils.
+	 */
+	public static List<FilInfo> getFils() {
+
+		List<FilInfo> fils = new ArrayList<>();
+		if (!bean.isThreadCpuTimeSupported()) {
+			return fils;
+		}
+		long[] ids = getThreadsIds();
+		ThreadInfo[] infos = bean.getThreadInfo(ids);
+		long cpuMaxim = 0;
+		for (long id : ids) {
+			cpuMaxim = Math.max(cpuMaxim, bean.getThreadCpuTime(id));
+		}
+		for (var i = 0; i < ids.length; i++) {
+			// Un fil pot haver acabat entre la consulta dels identificadors i la de la seva informacio
+			if (infos[i] == null) {
+				continue;
+			}
+			var nom = infos[i].getLockName() != null ? infos[i].getLockName() : infos[i].getThreadName();
+			if ("main".equals(nom)) {
+				continue;
+			}
+			var cpuPercent = cpuMaxim > 0 ? (long) (100 * ((float) bean.getThreadCpuTime(ids[i]) / (float) cpuMaxim)) : 0L;
+			fils.add(new FilInfo(
+					infos[i].getThreadId(),
+					nom,
+					infos[i].getThreadState(),
+					Math.min(cpuPercent, 100L),
+					Math.max(infos[i].getWaitedTime(), 0L),
+					Math.max(infos[i].getBlockedTime(), 0L)));
+		}
+		return fils;
+	}
+
+	/** Nombre de fils en deadlock (monitors). */
+	public static int getFilsDeadlock() {
+
+		var ids = bean.findMonitorDeadlockedThreads();
+		return ids != null ? ids.length : 0;
+	}
+
+	/** Nombre de fils daemon. */
+	public static int getFilsDaemon() {
+
+		return bean.getDaemonThreadCount();
+	}
+
+	/** Memoria maxima de la JVM en bytes, o -1 si no te limit. */
+	public static long getMemoriaMaxima() {
+
+		var maxima = Runtime.getRuntime().maxMemory();
+		return maxima == Long.MAX_VALUE ? -1L : maxima;
 	}
 }

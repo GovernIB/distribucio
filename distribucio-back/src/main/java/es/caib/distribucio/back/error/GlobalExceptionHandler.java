@@ -21,12 +21,20 @@ import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Tractament global de les excepcions en els controladors.
- * 
+ * Tractament global de les excepcions en els controladors de la interfície JSP.
+ *
+ * Només s'aplica als paquets dels controladors JSP i REST antics: retorna la vista
+ * {@code util/error} (HTML) i, si s'apliqués també als {@code back.resourcecontroller}
+ * de la interfície REACT, taparia el {@link es.caib.distribucio.back.base.error.ResourceGlobalExceptionHandler},
+ * que és el que retorna els errors en {@code application/problem+json} que espera el front.
+ * Els dos {@code @ControllerAdvice} no tenen {@code @Order}, així que l'única manera de
+ * garantir qui tracta cada excepció és que els seus {@code basePackages} siguin disjunts
+ * (mateixa solució que a RIPEA amb {@code RipeaJspExceptionHandler}).
+ *
  * @author Límit Tecnologies
  */
 @Slf4j
-@ControllerAdvice
+@ControllerAdvice(basePackages = { "es.caib.distribucio.back.controller", "es.caib.distribucio.back.rest" })
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(NotFoundException.class)

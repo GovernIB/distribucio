@@ -273,4 +273,7 @@ public interface ReglaService {
     @PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
     public List<ReglaDto> findReglaBackofficeByCodiSiaAndTramit(String sia, String tramit);
 
+    @PreAuthorize("hasRole('" + BaseConfig.ROLE_ADMIN + "') or hasRole('" + BaseConfig.ROLE_REGLA + "')")
+    public RegistreClassificarTipusEnum getTipusSiaByCodi(Long entitatId, String codiSia);
+
 }

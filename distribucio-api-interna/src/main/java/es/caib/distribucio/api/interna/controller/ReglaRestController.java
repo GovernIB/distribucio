@@ -68,7 +68,7 @@ public class ReglaRestController {
 			@Parameter(name = "sia", description = "Codi SIA de la regla pel filtre per procediment.")
 			@RequestParam(required = true) String sia,
 			@Parameter(name = "tipusSia", description = "Codi per indicar si la regla aplica al codi SIA del procediment o del servei. Els possibles valors són 'PROCEDIMENT' i 'SERVEI'.")
-			@RequestParam(required = false, defaultValue = "PROCEDIMENT") String tipusSia,
+			@RequestParam(required = false) String tipusSia,
             @Parameter(name = "tramit", description = "Codi del tramit associat al procediment o servei. Si s'informa només aplicarà la regla a les anotacions amb el mateix codi de tràmit. Paràmetre opcional.")
             @RequestParam(required = false) String tramit,
 			@Parameter(name = "backoffice", description = "Codi Backoffice per la regla al qual s'enviaran les anotacions.")
@@ -79,23 +79,48 @@ public class ReglaRestController {
 		String msg = "";
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		String dataAra = sdf.format(new Date());
+        // Validar que la entitat existeix
+        EntitatDto entitatDto = entitatService.findByCodiDir3(entitat);
+        if (entitatDto == null ) {
+            return new ResponseEntity<Object>("No s'ha trobat l'entitat " + entitat, HttpStatus.NOT_FOUND);
+        }
+
+        RegistreClassificarTipusEnum tipSiaActual = reglaService.getTipusSiaByCodi(entitatDto.getId(), sia);
+        RegistreClassificarTipusEnum tipSiaNou = null;
+        boolean alertaSia = false;
+
+        if (tipusSia != null && !tipusSia.trim().isEmpty()) {
+            try {
+                tipSiaNou = RegistreClassificarTipusEnum.valueOf(tipusSia.trim());
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>(
+                        "Els valors per a tipusSia només poden ser 'PROCEDIMENT' o 'SERVEI'. Valor rebut: '" + tipusSia + "'.",
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+        }
+
+        RegistreClassificarTipusEnum tipSiaFinal = (tipSiaActual != null) ? tipSiaActual
+                : (tipSiaNou != null) ? tipSiaNou
+                  : RegistreClassificarTipusEnum.PROCEDIMENT;
+
+        if (tipSiaNou != null && !tipSiaNou.equals(tipSiaActual)) {
+            alertaSia = true;
+        }
+
 		// Definim els valors que no hi son als paràmetres
 		String nom = backoffice + " " + sia + (tramit!=null ?("-" + tramit) :"");
 		String descripcio = "Creació de regla en data de " + dataAra + " pel backoffice amb codi " + backoffice;
-        if (RegistreClassificarTipusEnum.PROCEDIMENT.name().equals(tipusSia)) {
+        if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(tipSiaFinal)) {
             descripcio += " i codi de procediment " + sia;
-        } else if (RegistreClassificarTipusEnum.SERVEI.name().equals(tipusSia)) {
+            if (alertaSia)
+                descripcio += " (Es canvia el tipusSIA de SERVEI a PROCEDIMENT per coincidir amb el tipus del SIA a Distribucio) ";
+        } else if (RegistreClassificarTipusEnum.SERVEI.equals(tipSiaFinal)) {
             descripcio += " i codi de servei " + sia;
-        } else {
-			return new ResponseEntity<Object>("Els valors pel tipusSia només poden ser 'PROCEDIMENT' o 'SERVEI'. El valor '" + tipusSia + "' no està reconegut.",
-					HttpStatus.BAD_REQUEST);
+            if (alertaSia)
+                descripcio += " (Es canvia el tipusSIA de PROCEDIMENT a SERVEI per coincidir amb el tipus del SIA a Distribucio) ";
         }
-		ReglaTipusEnumDto tipus = ReglaTipusEnumDto.BACKOFFICE;		
-		// Validar que la entitat existeix
-		EntitatDto entitatDto = entitatService.findByCodiDir3(entitat);
-		if (entitatDto == null ) {
-			return new ResponseEntity<Object>("No s'ha trobat l'entitat " + entitat, HttpStatus.NOT_FOUND);
-		}
+		ReglaTipusEnumDto tipus = ReglaTipusEnumDto.BACKOFFICE;
 		// Validar que es troba el backoffice
 		BackofficeDto backofficeDto = backofficeService.findByCodi(entitatDto.getId(), backoffice);
 		if (backofficeDto == null) {
@@ -109,9 +134,10 @@ public class ReglaRestController {
 		novaReglaDto.setTipus(tipus);
 		novaReglaDto.setBackofficeDestiId(backofficeDto.getId());
 		novaReglaDto.setBackofficeDestiNom(backoffice);
-        if (RegistreClassificarTipusEnum.PROCEDIMENT.name().equals(tipusSia)) {
+
+        if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(tipSiaFinal)) {
             novaReglaDto.setProcedimentCodiFiltre(sia);
-        } else if (RegistreClassificarTipusEnum.SERVEI.name().equals(tipusSia)) {
+        } else if (RegistreClassificarTipusEnum.SERVEI.equals(tipSiaFinal)) {
             novaReglaDto.setServeiCodiFiltre(sia);
         }
         novaReglaDto.setTramitCodiFiltre(tramit);
@@ -140,7 +166,7 @@ public class ReglaRestController {
 		}
 		try {
 			novaReglaDto = reglaService.create(entitatDto.getId(), novaReglaDto);
-            if (RegistreClassificarTipusEnum.PROCEDIMENT.name().equals(tipusSia)) {
+            if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(tipSiaFinal)) {
                 ProcedimentDto procediment = procedimentService.findByCodiSia(entitatDto.getId(), sia);
                 if (procediment != null) {
                     msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
@@ -152,7 +178,7 @@ public class ReglaRestController {
                             + "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia
                             + "(Procediment no trobat)" + " a l'entitat " + entitat;
                 }
-            } else if (RegistreClassificarTipusEnum.SERVEI.name().equals(tipusSia)) {
+            } else if (RegistreClassificarTipusEnum.SERVEI.equals(tipSiaFinal)) {
                 ServeiDto servei = serveiService.findByCodiSia(entitatDto.getId(), sia);
                 if (servei != null) {
                     msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()

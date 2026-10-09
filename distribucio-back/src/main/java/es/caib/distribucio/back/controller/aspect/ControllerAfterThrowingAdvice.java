@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import es.caib.distribucio.logic.intf.service.AplicacioService;
 
@@ -42,10 +45,26 @@ public class ControllerAfterThrowingAdvice {
 			}
 		}
 		if (aplicacioService != null) {
-			aplicacioService.excepcioSave(exception, "Main application controller");			
+			// En mode EAR la crida passa per l'EJB: si falla, l'error no pot substituir l'excepció original
+			try {
+				aplicacioService.excepcioSave(
+						getRequestUri(),
+						exception,
+						"Main application controller (" + joinPoint.getSignature().toShortString() + ")");
+			} catch (Exception e) {
+				System.err.println("Error guardant l'excepció al log d'excepcions des de l'advice ControllerAfterThrowingAdvice: " + e.getMessage());
+			}
 		} else {
 			System.out.println("aplicacioService.excepcioSave(exception, \"Main application controller\"");
 		}
 	}
-	
+
+	private static String getRequestUri() {
+		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+		if (requestAttributes instanceof ServletRequestAttributes) {
+			return ((ServletRequestAttributes)requestAttributes).getRequest().getRequestURI();
+		}
+		return null;
+	}
+
 }
