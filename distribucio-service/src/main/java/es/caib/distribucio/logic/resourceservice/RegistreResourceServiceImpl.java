@@ -425,13 +425,14 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         );
 
         if (resource.getPotModificar() == null) {
-            resource.setPotModificar( aclResourceHelper.anyPermissionGranted(
-                    ResourceType.BUSTIA,
-                    resource.getPare().getId(),
-                    List.of(PermissionEnum.WRITE),
-                    authenticationHelper.getCurrentUserName(),
-                    new ArrayList<>(List.of(authenticationHelper.getCurrentUserRoles()))
-            ));
+//            resource.setPotModificar( aclResourceHelper.anyPermissionGranted(
+//                    ResourceType.BUSTIA,
+//                    resource.getPare().getId(),
+//                    List.of(PermissionEnum.WRITE),
+//                    authenticationHelper.getCurrentUserName(),
+//                    new ArrayList<>(List.of(authenticationHelper.getCurrentUserRoles()))
+//            ));
+            this.afterConversion(List.of(entity), List.of(resource));
         }
 
         resource.setPendentExecucioMassiva(execucioMassivaPendent != null);
@@ -1130,21 +1131,39 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
         @Override
         public Serializable exec(String code, RegistreResourceEntity entity, RegistreResource.MassiveWarningForm params) throws ActionExecutionException {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
             if (params.isMassive()) {
                 List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
 
-                try {
-                    execucioMassivaResourceHelper.executarAccioMassivaRegistres(
-                            ExecucioMassivaTipusDto.PROCESSAR,
-                            registreList,
-                            null);
-                } catch (Exception e) {
-                    throw new ActionExecutionException(
-                            RegistreResource.class,
-                            null,
-                            code,
-                            e.getMessage()
-                    );
+                if (params.isMassive()) {
+                    try {
+                        execucioMassivaResourceHelper.executarAccioMassivaRegistres(
+                                ExecucioMassivaTipusDto.PROCESSAR,
+                                registreList,
+                                null);
+                    } catch (Exception e) {
+                        throw new ActionExecutionException(
+                                RegistreResource.class,
+                                null,
+                                code,
+                                e.getMessage()
+                        );
+                    }
+                } else {
+                    RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
+                    boolean processatOk = registreService.reintentarProcessamentUser(
+                            entitatActualId,
+                            registre.getId());
+
+                    if (!processatOk) {
+                        throw new ActionExecutionException(
+                                RegistreResource.class,
+                                registre.getId(),
+                                code,
+                                I18nUtil.getInstance().getI18nMessage("contingut.admin.controller.registre.reintentat.error")
+                        );
+                    }
+                    return objectMappingHelper.newInstanceMap(registre, RegistreResource.class);
                 }
             }
             return null;

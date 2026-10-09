@@ -51,17 +51,15 @@ public class ConfigResourceServiceImpl extends BaseMutableResourceService<Config
 
         @Override
         public void applySingle(String code, ConfigResourceEntity entity, ConfigResource resource) {
-            if (resource.getValue() == null) {
-                if (resource.getEntitatCodi() != null) {
-                    resource.setAlternativeValue( configHelper.getConfigForEntitat(
-                            resource.getEntitatCodi(), getKeyBase(resource.getKey(), resource.getEntitatCodi()) ) );
-                } else {
-                    resource.setAlternativeValue( configHelper.getConfig( resource.getKey() ) );
-                }
+            if (resource.getEntitatCodi() != null) {
+                resource.setAlternativeValue( configHelper.getConfigForEntitat(
+                        resource.getEntitatCodi(), getKeyBase(resource.getKey(), resource.getEntitatCodi()) ) );
+            } else {
+                resource.setAlternativeValue( configHelper.getConfig( resource.getKey() ) );
+            }
 
-                if ("CREDENTIALS".equals(resource.getType().getId()) && resource.getAlternativeValue() != null) {
-                    resource.setAlternativeValue( "********" );
-                }
+            if ("CREDENTIALS".equals(resource.getType().getId()) && resource.getAlternativeValue() != null) {
+                resource.setAlternativeValue( "********" );
             }
         }
 

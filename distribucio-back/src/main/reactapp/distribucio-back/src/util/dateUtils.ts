@@ -11,6 +11,14 @@ import dayjs from 'dayjs';
 export const formatDate = (date: string, format: string = 'DD/MM/YYYY HH:mm:ss'): string | null => {
     if (!date || !format) return null;
 
+    if (typeof date !== 'string') {
+        return null;
+    }
+
+    if (/^\d+$/.test(date)) {
+        return null;
+    }
+
     const parsed = dayjs(date);
     if (!parsed.isValid()) return null;
 
