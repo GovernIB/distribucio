@@ -216,7 +216,7 @@ public class ReglaService extends AbstractService<es.caib.distribucio.logic.intf
     @Override
     @RolesAllowed({ BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_REGLA })
     public RegistreClassificarTipusEnum getTipusSiaByCodi(Long entitatId, String codiSia) {
-        return delegateService.getTipusSiaByCodi(entitatId, codiSia);
+        return getDelegateService().getTipusSiaByCodi(entitatId, codiSia);
     }
 
 	@Override

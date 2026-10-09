@@ -4,7 +4,7 @@ import es.caib.distribucio.ejb.base.AbstractServiceEjb;
 import es.caib.distribucio.logic.intf.base.exception.*;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException.AnswerValue;
 import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
-import es.caib.distribucio.logic.intf.resourceservice.VistaMovimentResourceService;
+import es.caib.distribucio.logic.intf.resourceservice.AclEntryResourceService;
 import lombok.experimental.Delegate;
 
 import javax.annotation.security.RolesAllowed;
@@ -15,32 +15,30 @@ import java.util.Map;
 
 @Stateless
 @RolesAllowed("**")
-public class VistaMovimentResourceServiceEjb extends AbstractServiceEjb<VistaMovimentResourceService> implements VistaMovimentResourceService {
+public class AclEntryResourceServiceEjb extends AbstractServiceEjb<AclEntryResourceService> implements AclEntryResourceService {
 
-    @Delegate
-    private VistaMovimentResourceService delegate = null;
+	@Delegate private AclEntryResourceService delegateService;
 
-    @Override
-    protected void setDelegateService(VistaMovimentResourceService delegate) {
-        this.delegate = delegate;
-    }
+	protected void setDelegateService(AclEntryResourceService delegateService) {
+		this.delegateService = delegateService;
+	}
 
 	@Override
 	public <P extends Serializable> Serializable artifactActionExec(String id, String code, P params)
 			throws ArtifactNotFoundException, ActionExecutionException {
-		return delegate.artifactActionExec(id, code, params);
+		return delegateService.artifactActionExec(id, code, params);
 	}
 
 	@Override
 	public <P extends Serializable> Map<String, Object> artifactOnChange(ResourceArtifactType type, String code,
 			String id, P previous, String fieldName, Object fieldValue, Map<String, AnswerValue> answers)
 			throws ArtifactNotFoundException, ResourceFieldNotFoundException, AnswerRequiredException {
-		return delegate.artifactOnChange(type, code, id, previous, fieldName, fieldValue, answers);
+		return delegateService.artifactOnChange(type, code, id, previous, fieldName, fieldValue, answers);
 	}
 
 	@Override
 	public <P extends Serializable> List<?> artifactReportGenerateData(String id, String code, P params)
 			throws ArtifactNotFoundException, ReportGenerationException {
-		return delegate.artifactReportGenerateData(id, code, params);
+		return delegateService.artifactReportGenerateData(id, code, params);
 	}
 }

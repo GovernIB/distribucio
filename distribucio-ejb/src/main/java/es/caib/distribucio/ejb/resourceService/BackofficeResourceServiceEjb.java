@@ -7,12 +7,16 @@ import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.resourceservice.BackofficeResourceService;
 import lombok.experimental.Delegate;
 
+import javax.ejb.Stateless;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+@Stateless
+@RolesAllowed("**")
 public class BackofficeResourceServiceEjb extends AbstractServiceEjb<BackofficeResourceService> implements BackofficeResourceService {
 
 	@Delegate private BackofficeResourceService delegateService;

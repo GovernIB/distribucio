@@ -7,12 +7,16 @@ import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.resourceservice.ExecucioMassivaResourceService;
 import lombok.experimental.Delegate;
 
+import javax.ejb.Stateless;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+@Stateless
+@RolesAllowed("**")
 public class ExecucioMassivaResourceServiceEjb extends AbstractServiceEjb<ExecucioMassivaResourceService> implements ExecucioMassivaResourceService {
 
 	@Delegate private ExecucioMassivaResourceService delegateService;

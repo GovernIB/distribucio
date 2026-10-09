@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.autoconfigure.websocket.servlet.WebSocketServletAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -43,7 +44,10 @@ import lombok.extern.slf4j.Slf4j;
 		LiquibaseAutoConfiguration.class,
 		FreeMarkerAutoConfiguration.class,
 		WebSocketServletAutoConfiguration.class,
-		JerseyServerMetricsAutoConfiguration.class
+		JerseyServerMetricsAutoConfiguration.class,
+		// L'usuari l'autentica el contenidor (Keycloak): sense aquesta exclusió Spring Boot crea
+		// un usuari "user" en memòria i escriu la contrasenya generada al log.
+		UserDetailsServiceAutoConfiguration.class
 })
 @ComponentScan(
 		basePackages = { BaseConfig.BASE_PACKAGE },

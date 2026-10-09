@@ -7,10 +7,14 @@ import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.resourceservice.ContingutComentariResourceService;
 import lombok.experimental.Delegate;
 
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.Stateless;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+@Stateless
+@RolesAllowed("**")
 public class ContingutComentariResourceServiceEjb extends AbstractServiceEjb<ContingutComentariResourceService> implements ContingutComentariResourceService {
 
 	@Delegate private ContingutComentariResourceService delegateService;

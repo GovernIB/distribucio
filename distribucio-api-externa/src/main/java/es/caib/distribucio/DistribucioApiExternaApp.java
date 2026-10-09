@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWarDeployment;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
+import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
@@ -46,6 +47,9 @@ import lombok.extern.slf4j.Slf4j;
 		FreeMarkerAutoConfiguration.class,
 		WebSocketServletAutoConfiguration.class,
 		JerseyServerMetricsAutoConfiguration.class,
+		// A JBoss Artemis és a EAR/lib: sense aquesta exclusió cada API arrencaria un altre broker vm://0
+		// que xoca amb el de JmsConfig (context EJB). L'API no fa servir JMS.
+		ArtemisAutoConfiguration.class,
 })
 @ComponentScan(
 		basePackages = { BaseConfig.BASE_PACKAGE },
@@ -55,7 +59,9 @@ import lombok.extern.slf4j.Slf4j;
 						pattern = {
 								"es\\.caib\\." + BaseConfig.APP_NAME + "\\.logic\\..*",
 								"es\\.caib\\." + BaseConfig.APP_NAME + "\\.persist\\..*",
-								"es\\.caib\\." + BaseConfig.APP_NAME + "\\.ejb\\..*" })
+								"es\\.caib\\." + BaseConfig.APP_NAME + "\\.ejb\\..*",
+								// base-boot de la UI (distribucio-backend): a JBoss és a EAR/lib i l'API no l'ha de carregar
+								"es\\.caib\\." + BaseConfig.APP_NAME + "\\.back\\..*" })
 		})
 @PropertySource(
 		ignoreResourceNotFound = true,

@@ -36,6 +36,7 @@ public class EjbClientConfig {
 
 	static final String EJB_JNDI_PREFIX = "java:app/" + BaseConfig.APP_NAME + "-ejb/";
 	static final String EJB_JNDI_SUFFIX = "Ejb";
+	static final String CLASSIC_SERVICE_PACKAGE = BaseConfig.BASE_PACKAGE + ".logic.intf.service";
 
 	@Bean
 	@ConditionalOnWarDeployment
@@ -132,7 +133,10 @@ public class EjbClientConfig {
 	}
 
 	private String jndiServiceName(Class<?> serviceClass, boolean addServiceClassName) {
-		return EJB_JNDI_PREFIX + serviceClass.getSimpleName() + EJB_JNDI_SUFFIX + (addServiceClassName ? "!" + serviceClass.getName() : "");
+		// Els EJB dels serveis clàssics (logic.intf.service) es diuen igual que la interfície;
+		// la resta (WS, ResourceService) duen el sufix "Ejb".
+		boolean addSuffix = !CLASSIC_SERVICE_PACKAGE.equals(serviceClass.getPackage().getName());
+		return EJB_JNDI_PREFIX + serviceClass.getSimpleName() + (addSuffix ? EJB_JNDI_SUFFIX : "") + (addServiceClassName ? "!" + serviceClass.getName() : "");
 	}
 
 }

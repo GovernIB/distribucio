@@ -1,15 +1,94 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2" 
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2"
 							xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!--
+	Jackson: el subsistema jaxrs afegeix a TOTS els desplegaments els mòduls de Jackson 2.9 de JBoss
+	(directament i a través de resteasy-jackson2-provider, que els exporta). Com que els mòduls
+	del servidor tenen prioritat sobre EAR/lib, Spring Boot 2.7 acabaria amb el jackson-databind 2.9
+	de JBoss barrejat amb la resta de jars 2.13 de l'EAR (NoSuchMethodError a XmlMapper en arrencar
+	el context de distribucio-ejb.jar).
+	Les exclusions s'han de posar amb el nom complet del mòdul i per a cada sub-deployment: les de
+	<deployment> només afecten el mòdul arrel de l'EAR.
+	Mateixa solució que ConCSV (concsv-ear/.../jboss-deployment-structure.xml).
+	-->
 	<deployment>
 		<dependencies>
-			<module name="org.keycloak.keycloak-core" export="TRUE"/>
+			<!-- Sense org.keycloak.keycloak-core: a l'arrel de l'EAR (context EJB i plugins) s'ha de fer
+			     servir el keycloak-core d'EAR/lib, coherent amb el Jackson 2.13 d'EAR/lib. El del mòdul
+			     de JBoss du anotacions de Jackson 2.9 que el databind 2.13 no reconeix, i el plugin
+			     d'usuaris de Keycloak fallava amb UnrecognizedPropertyException "access_token".
+			     Els WAR protegits amb Keycloak ja reben el mòdul pel subsistema (KeycloakDependencyProcessor),
+			     que és el que necessita el "instanceof KeycloakPrincipal" de les configuracions de seguretat. -->
 			<module name="jdk.management" export="TRUE"/>
 			<module name="org.apache.cxf"/>
 			<module name="org.apache.cxf.impl"/>
 			<module name="org.apache.ws.security"/>
 			<module name="org.bouncycastle"/>
 		</dependencies>
+		<exclusions>
+			<module name="org.jboss.resteasy.resteasy-jackson2-provider"/>
+			<module name="com.fasterxml.jackson.core.jackson-annotations"/>
+			<module name="com.fasterxml.jackson.core.jackson-core"/>
+			<module name="com.fasterxml.jackson.core.jackson-databind"/>
+			<module name="com.fasterxml.jackson.datatype.jackson-datatype-jdk8"/>
+			<module name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310"/>
+			<module name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider"/>
+		</exclusions>
 	</deployment>
+	<sub-deployment name="distribucio-ejb.jar">
+		<exclusions>
+			<module name="org.jboss.resteasy.resteasy-jackson2-provider"/>
+			<module name="com.fasterxml.jackson.core.jackson-annotations"/>
+			<module name="com.fasterxml.jackson.core.jackson-core"/>
+			<module name="com.fasterxml.jackson.core.jackson-databind"/>
+			<module name="com.fasterxml.jackson.datatype.jackson-datatype-jdk8"/>
+			<module name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310"/>
+			<module name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider"/>
+		</exclusions>
+	</sub-deployment>
+	<sub-deployment name="distribucio-back.war">
+		<exclusions>
+			<module name="org.jboss.resteasy.resteasy-jackson2-provider"/>
+			<module name="com.fasterxml.jackson.core.jackson-annotations"/>
+			<module name="com.fasterxml.jackson.core.jackson-core"/>
+			<module name="com.fasterxml.jackson.core.jackson-databind"/>
+			<module name="com.fasterxml.jackson.datatype.jackson-datatype-jdk8"/>
+			<module name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310"/>
+			<module name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider"/>
+		</exclusions>
+	</sub-deployment>
+	<sub-deployment name="distribucio-api-interna.war">
+		<exclusions>
+			<module name="org.jboss.resteasy.resteasy-jackson2-provider"/>
+			<module name="com.fasterxml.jackson.core.jackson-annotations"/>
+			<module name="com.fasterxml.jackson.core.jackson-core"/>
+			<module name="com.fasterxml.jackson.core.jackson-databind"/>
+			<module name="com.fasterxml.jackson.datatype.jackson-datatype-jdk8"/>
+			<module name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310"/>
+			<module name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider"/>
+		</exclusions>
+	</sub-deployment>
+	<sub-deployment name="distribucio-api-externa.war">
+		<exclusions>
+			<module name="org.jboss.resteasy.resteasy-jackson2-provider"/>
+			<module name="com.fasterxml.jackson.core.jackson-annotations"/>
+			<module name="com.fasterxml.jackson.core.jackson-core"/>
+			<module name="com.fasterxml.jackson.core.jackson-databind"/>
+			<module name="com.fasterxml.jackson.datatype.jackson-datatype-jdk8"/>
+			<module name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310"/>
+			<module name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider"/>
+		</exclusions>
+	</sub-deployment>
+	<sub-deployment name="distribucio-ws.war">
+		<exclusions>
+			<module name="org.jboss.resteasy.resteasy-jackson2-provider"/>
+			<module name="com.fasterxml.jackson.core.jackson-annotations"/>
+			<module name="com.fasterxml.jackson.core.jackson-core"/>
+			<module name="com.fasterxml.jackson.core.jackson-databind"/>
+			<module name="com.fasterxml.jackson.datatype.jackson-datatype-jdk8"/>
+			<module name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310"/>
+			<module name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider"/>
+		</exclusions>
+	</sub-deployment>
 	<ear-subdeployments-isolated>false</ear-subdeployments-isolated>
 </jboss-deployment-structure>

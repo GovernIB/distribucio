@@ -14,6 +14,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean;
 
+import es.caib.distribucio.logic.intf.base.service.PermissionEvaluatorService;
+import es.caib.distribucio.logic.intf.base.service.ResourceApiService;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.service.AlertaService;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
@@ -51,6 +53,7 @@ public class EjbClientConfig {
 
 	static final String EJB_JNDI_PREFIX = "java:app/" + BaseConfig.APP_NAME + "-ejb/";
 	static final String EJB_JNDI_SUFFIX = "Ejb";
+	static final String CLASSIC_SERVICE_PACKAGE = BaseConfig.BASE_PACKAGE + ".logic.intf.service";
 
 	@Bean
 	@ConditionalOnWarDeployment
@@ -276,6 +279,30 @@ public class EjbClientConfig {
 
 	@Bean
 	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean permissionEvaluatorService() {
+		return getLocalEjbFactoyBean(PermissionEvaluatorService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean resourceApiService() {
+		return getLocalEjbFactoyBean(ResourceApiService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean monitorIntegracioResourceService() {
+		return getLocalEjbFactoyBean(MonitorIntegracioResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean registreAnnexResourceService() {
+		return getLocalEjbFactoyBean(RegistreAnnexResourceService.class);
+	}
+
+	@Bean
+	@ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean configResourceService() {
 		return getLocalEjbFactoyBean(ConfigResourceService.class);
 	}
@@ -405,7 +432,9 @@ public class EjbClientConfig {
 	}
 
 	private String jndiServiceName(Class<?> serviceClass) {
-		boolean addSuffix = serviceClass.getSimpleName().endsWith("ResourceService");
+		// Els EJB dels serveis clàssics (logic.intf.service) es diuen igual que la interfície;
+		// la resta (ResourceService i els de base-boot) duen el sufix "Ejb".
+		boolean addSuffix = !CLASSIC_SERVICE_PACKAGE.equals(serviceClass.getPackage().getName());
 		return EJB_JNDI_PREFIX + serviceClass.getSimpleName() + (addSuffix ? EJB_JNDI_SUFFIX : "");
 	}
 

@@ -18,6 +18,11 @@ import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.resourceservice.UsuariResourceService;
 import lombok.experimental.Delegate;
 
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.Stateless;
+
+@Stateless
+@RolesAllowed("**")
 public class UsuariResourceServiceEjb  extends AbstractServiceEjb<UsuariResourceService> implements UsuariResourceService {
 
     @Delegate
