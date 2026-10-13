@@ -80,7 +80,17 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 
 	@Override
 	protected void customHttpSecurityConfiguration(HttpSecurity http) throws Exception {
-		if (!isJboss()) {
+		if (isJboss()) {
+			// Sobre JBoss la sessió és la del contenidor (adaptador Keycloak): el logout el fa
+			// HttpServletRequest.logout(), com a RIPEA (JBossWebSecurityConfig). Sense això ningú
+			// atén LOGOUT_URL i l'enllaç de tancar la sessió (JSP i REACT) respon 404.
+			http.logout(lo -> lo.
+					addLogoutHandler(getContenidorLogoutHandler()).
+					logoutRequestMatcher(new AntPathRequestMatcher(LOGOUT_URL)).
+					invalidateHttpSession(true).
+					logoutSuccessUrl("/").
+					permitAll(false));
+		} else {
 			OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler = new OidcClientInitiatedLogoutSuccessHandler(
 					clientRegistrationRepository);
 			oidcLogoutSuccessHandler.setPostLogoutRedirectUri("{baseUrl}/");
@@ -134,6 +144,16 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 				new AntPathRequestMatcher("/img/**/*"),
 				new AntPathRequestMatcher("/js/**/*"),
 				new AntPathRequestMatcher("/webjars/**/*"),
+		};
+	}
+
+	private LogoutHandler getContenidorLogoutHandler() {
+		return (request, response, authentication) -> {
+			try {
+				request.logout();
+			} catch (ServletException ex) {
+				log.error("Error en el logout", ex);
+			}
 		};
 	}
 

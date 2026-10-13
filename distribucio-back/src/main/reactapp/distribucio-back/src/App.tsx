@@ -39,8 +39,12 @@ export const getEnvApiUrl = () => {
         if (envApiBaseUrl) {
             return envApiBaseUrl + envApiSuffix;
         } else {
-            const port = window.location.port ? ':' + window.location.port : '';
-            return window.location.protocol + '//' + window.location.hostname + port + envApiSuffix;
+            // Sense cap URL configurada, l'API és al mateix servidor que serveix la pàgina i sota
+            // el mateix context path: el pare del base path del SPA ("/distribucioback/reactapp"
+            // -> "/distribucioback"). Així el build no depèn del nom ni del port del servidor on
+            // es desplega.
+            const contextPath = import.meta.env.BASE_URL.replace(/\/+$/, '').replace(/\/[^/]*$/, '');
+            return window.location.origin + contextPath + envApiSuffix;
         }
     }
 };
