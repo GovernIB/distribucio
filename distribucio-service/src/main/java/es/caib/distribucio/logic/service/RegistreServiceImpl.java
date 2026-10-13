@@ -2741,10 +2741,10 @@ public class RegistreServiceImpl implements RegistreService {
 				entitat,
 				bustia.getUnitatOrganitzativa().getId(),
 				registre.getPare() != null? registre.getPare().getId() : null,
-				registre.getProcedimentCodi(),
-				registre.getProcedimentCodi() != null
-                        ?registre.getServeiCodi()
-                        :registre.getTramitCodi(),
+				registre.getProcedimentCodi() != null ?
+                        registre.getProcedimentCodi()
+                        :registre.getServeiCodi(),
+                registre.getTramitCodi(),
 				registre.getAssumpteCodi(),
 				registre.getPresencial());
 		ClassificacioResultatDto classificacioResultat = new ClassificacioResultatDto();
