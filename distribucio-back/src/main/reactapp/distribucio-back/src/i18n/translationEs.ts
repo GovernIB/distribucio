@@ -976,6 +976,8 @@ const translationEs = {
             },
             grid: {
                 avisos: "Avisos",
+                procesEstat: "Estado",
+                agafatPer: "Asignado a",
                 remitent: "Remitente",
                 isCopia: "Registro actual",
                 backProcesData: "Fecha de procesamiento",
@@ -1087,6 +1089,20 @@ const translationEs = {
                 descargaAutentica: {
                     label: "Copia auténtica imprimible",
                     ok: "La copia auténtica imprimible se ha descargado correctamente",
+                },
+                reservar: {
+                    label: "Bloquea",
+                    ok: "La anotación {{numero}} se ha bloqueado correctamente",
+                },
+                alliberar: {
+                    label: "Libera",
+                    ok: "La anotación {{numero}} se ha liberado correctamente",
+                },
+                assignar: {
+                    label: "Asigna...",
+                    reassignaLabel: "Reasigna...",
+                    title: "Asignación de la anotación de registro a un usuario",
+                    ok: "La anotación {{numero}} se ha asignado correctamente",
                 },
             },
         },
@@ -1339,6 +1355,55 @@ const translationEs = {
             newUnitats: "Nuevas unidades",
             afectedBusties: "Otros buzones afectados",
         },
+        EstatDetail: {
+            title: "Leyenda de los estados del procesamiento de las anotaciones de registro",
+            content: `
+                <ul>
+                    <li>
+                        <strong>Pendiente de guardar los anexos:</strong><br/>
+                        Se ha recibido la anotación de registro y está pendiente de guardar los anexos en el Archivo. En este punto no se dispone de la información de las firmas.
+                    </li>
+                    <li>
+                        <strong>Pendiente de procesar la regla:</strong><br/>
+                        La anotación está pendiente de que se procese la regla que reenvía o procesa la anotación de registro.
+                    </li>
+                    <li>
+                        <strong>Pendiente del usuario:</strong><br/>
+                        La anotación está pendiente de ser procesada por el usuario.
+                    </li>
+                    <li>
+                        <strong>Procesada en el buzón:</strong><br/>
+                        La anotación ha sido procesada por el usuario.
+                    </li>
+                    <li>
+                        <strong>Pendiente de comunicar al backoffice:</strong><br/>
+                    </li>
+                    <li>
+                        <strong>La anotación está pendiente de comunicarse al backoffice de Distribución.</strong><br/>
+                    </li>
+                    <li>
+                        <strong>Comunicada al backoffice:</strong><br/>
+                        La anotación se ha comunicado al backoffice y está pendiente de que este la reciba y la procese. El cambio de estado ya depende del backoffice.
+                    </li>
+                    <li>
+                        <strong>Recibida en el backoffice:</strong><br/>
+                        La anotación ha sido recibida por el backoffice de Distribución.
+                    </li>
+                    <li>
+                        <strong>Procesada por el backoffice:</strong><br/>
+                        La anotación ha sido procesada por el backoffice de Distribución.
+                    </li>
+                    <li>
+                        <strong>Rechazada por el backoffice:</strong><br/>
+                        La anotación ha sido procesada y rechazada por el backoffice de Distribución.
+                    </li>
+                    <li>
+                        <strong>Procesada en el backoffice con errores:</strong><br/>
+                        La anotación ha sido procesada con errores por el backoffice de Distribución.
+                    </li>
+                </ul>
+            `
+        }
     },
 };
 

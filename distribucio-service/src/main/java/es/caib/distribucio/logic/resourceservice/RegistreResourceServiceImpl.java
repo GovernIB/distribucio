@@ -76,6 +76,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private static final ThreadLocal<Boolean> LECTURA_PER_MOVIMENTS = new ThreadLocal<>();
     private final DominiResourceRepository dominiResourceRepository;
     private final DominiService dominiService;
+    private final ContingutLogResourceRepository contingutLogResourceRepository;
 
     @PostConstruct
     public void init() {
@@ -84,6 +85,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(RegistreResource.PERSPECTIVE_DETAIL_INFO_CODE, new DetailInfoPerspectiveApplicator());
         register(ContingutResource.PERSPECTIVE_COMMENT_NUM_CODE, new CommentNumPerspectiveApplicator());
         register(RegistreResource.PERSPECTIVE_VISTA_MOVIMENTS_CODE, new VistaMovimentsPerspectiveApplicator());
+        register(RegistreResource.PERSPECTIVE_ENVIAT_EMAIL_CODE, new EnviatEmailPerspectiveApplicator());
 
         register(RegistreResource.REPORT_INFORME_LOGS_CODE, new InformeLogsReportGenerator());
         register(RegistreResource.REPORT_JUSTIFICANT_CODE, new JustificantReportGenerator());
@@ -101,6 +103,9 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(RegistreResource.ACTION_DESCARREGAR_MASSIU_CODE, new DescarregarMassiuActionExecutor());
         register(RegistreResource.ACTION_REENVIAR_BACKOFFICE_CODE, new ReenviarBackofficeActionExecutor());
         register(RegistreResource.ACTION_ENVIAR_MARCAR_CODE, new EnviarMarcarActionExecutor());
+        register(RegistreResource.ACTION_RESERVAR_CODE, new ReservarActionExecutor());
+        register(RegistreResource.ACTION_ALLIBERAR_CODE, new AlliberarActionExecutor());
+        register(RegistreResource.ACTION_ASSIGNAR_CODE, new AssignarActionExecutor());
     }
 
     @Override
@@ -479,7 +484,12 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 resource.setReintentsEsgotat(true);
             }
 
-            resource.setPotModificar(isAdmin || permesesIds.contains(new BigDecimal(resource.getPare().getId())));
+            if (resource.getAgafatPer() != null) {
+                resource.setPotModificar(isAdmin ||
+                        Objects.equals(resource.getAgafatPer().getId(), authenticationHelper.getCurrentUserName()) );
+            } else {
+                resource.setPotModificar( isAdmin || permesesIds.contains(new BigDecimal(resource.getPare().getId())) );
+            }
         }
 
         super.afterConversion(entities, resources);
@@ -547,6 +557,25 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                         .ifPresent(s -> resource.setSiaExtingit(
                                 ServeiEstatEnumDto.EXTINGIT.equals(s.getEstat())
                         ));
+            }
+        }
+    }
+    protected class EnviatEmailPerspectiveApplicator implements PerspectiveApplicator<RegistreResourceEntity, RegistreResource> {
+        @Override
+        public void applySingle(String code, RegistreResourceEntity entity, RegistreResource resource) {
+            if (resource.isEnviatPerEmail()) {
+                List<ContingutLogResourceEntity> logs = contingutLogResourceRepository.findAllByContingutIdOrderByCreatedDateAsc(resource.getId());
+
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                for(ContingutLogResourceEntity log : logs ) {
+                    if (LogTipusEnumDto.ENVIAMENT_EMAIL.equals(log.getTipus()) ) {
+                        // Cadena tipus dd/MM/yyyy HH:mm:ss Destinataris: email@email.com
+                        if (log.getCreatedDate() != null) {
+                            resource.getEnviamentsPerEmail().add(sdf.format(
+                                    java.sql.Timestamp.valueOf(log.getCreatedDate())) + " " + log.getParams().get(1).getValor());
+                        }
+                    }
+                }
             }
         }
     }
@@ -1438,6 +1467,92 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             if (fieldName == null) {
                 target.setWarning( getAdvertencies(previous.getIds()) );
             }
+        }
+    }
+    protected class ReservarActionExecutor implements ActionExecutor<RegistreResourceEntity, Serializable, RegistreResource> {
+        @Override
+        public RegistreResource exec(String code, RegistreResourceEntity entity, Serializable params) throws ActionExecutionException {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
+            try {
+                registreService.bloquejar(
+                        entitatActualId,
+                        entity.getId());
+                return objectMappingHelper.newInstanceMap(entity, RegistreResource.class);
+            } catch (Exception e) {
+                throw new ActionExecutionException(
+                        RegistreResource.class,
+                        entity.getId(),
+                        code,
+                        e.getMessage()
+                );
+            }
+        }
+
+        @Override
+        public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
+        }
+    }
+    protected class AlliberarActionExecutor implements ActionExecutor<RegistreResourceEntity, Serializable, RegistreResource> {
+        @Override
+        public RegistreResource exec(String code, RegistreResourceEntity entity, Serializable params) throws ActionExecutionException {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
+            try {
+                registreService.alliberar(
+                        entitatActualId,
+                        entity.getId());
+                return objectMappingHelper.newInstanceMap(entity, RegistreResource.class);
+            } catch (Exception e) {
+                throw new ActionExecutionException(
+                        RegistreResource.class,
+                        entity.getId(),
+                        code,
+                        e.getMessage()
+                );
+            }
+        }
+
+        @Override
+        public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
+        }
+    }
+    protected class AssignarActionExecutor implements ActionExecutor<RegistreResourceEntity, RegistreResource.AssignarForm, RegistreResource> {
+        @Override
+        public List<FieldOption> getOptions(String fieldName, Map<String, String[]> requestParameterMap) {
+            if (RegistreResource.AssignarForm.Fields.usuari.equals(fieldName)) {
+                RegistreResourceEntity registre = registreResourceRepository.findById(Long.valueOf(requestParameterMap.get("registreId")[0])).get();
+                List<UsuariPermisDto> usuarisPerAssignar = bustiaService.getUsuarisPerBustia(registre.getPare().getId());
+                return usuarisPerAssignar.stream()
+                        .map(u -> new FieldOption(u.getCodi(), u.getNom()))
+                        .collect(Collectors.toList());
+            }
+            return ActionExecutor.super.getOptions(fieldName, requestParameterMap);
+        }
+
+        @Override
+        public RegistreResource exec(String code, RegistreResourceEntity entity, RegistreResource.AssignarForm params) throws ActionExecutionException {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
+            try {
+                registreService.assignar(
+                        entitatActualId,
+                        entity.getId(),
+                        params.getUsuari(),
+                        params.getMotiu()
+                );
+                RegistreResource resource = objectMappingHelper.newInstanceMap(entity, RegistreResource.class);
+                resource.setAgafatPer(ResourceReference.toResourceReference( params.getUsuari() ));
+                return resource;
+            } catch (Exception e) {
+                throw new ActionExecutionException(
+                        RegistreResource.class,
+                        entity.getId(),
+                        code,
+                        e.getMessage()
+                );
+            }
+        }
+
+        @Override
+        public void onChange(Serializable id, RegistreResource.AssignarForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.AssignarForm target) {
         }
     }
 

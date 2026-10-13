@@ -78,6 +78,9 @@ import java.util.*;
                         type = ResourceArtifactType.PERSPECTIVE,
                         code = RegistreResource.PERSPECTIVE_DETAIL_INFO_CODE),
                 @ResourceArtifact(
+                        type = ResourceArtifactType.PERSPECTIVE,
+                        code = RegistreResource.PERSPECTIVE_ENVIAT_EMAIL_CODE),
+                @ResourceArtifact(
                         type = ResourceArtifactType.REPORT,
                         code = RegistreResource.REPORT_INFORME_LOGS_CODE,
                         requiresId = true),
@@ -221,6 +224,43 @@ import java.util.*;
                                 ),
                         }
                 ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_RESERVAR_CODE,
+                        requiresId = true,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.CUSTOM,
+                                        roles = { BaseConfig.ROLE_USER },
+                                        grantedPermissions = {PermissionEnum.WRITE}
+                                ),
+                        }
+                ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_ALLIBERAR_CODE,
+                        requiresId = true,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.CUSTOM,
+                                        roles = { BaseConfig.ROLE_USER },
+                                        grantedPermissions = {PermissionEnum.WRITE}
+                                ),
+                        }
+                ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_ASSIGNAR_CODE,
+                        requiresId = true,
+                        formClass = RegistreResource.AssignarForm.class,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.CUSTOM,
+                                        roles = { BaseConfig.ROLE_USER },
+                                        grantedPermissions = {PermissionEnum.WRITE}
+                                ),
+                        }
+                ),
         }
 )
 public class RegistreResource extends ContingutResource {
@@ -230,6 +270,7 @@ public class RegistreResource extends ContingutResource {
     public static final String PERSPECTIVE_ARXIU_DETALL_CODE = "ARXIU_DETALL";
     public static final String PERSPECTIVE_VISTA_MOVIMENTS_CODE = "VISTA_MOVIMENTS";
     public static final String PERSPECTIVE_DETAIL_INFO_CODE = "DETAIL_INFO";
+    public static final String PERSPECTIVE_ENVIAT_EMAIL_CODE = "ENVIAT_EMAIL";
 
     public static final String REPORT_INFORME_LOGS_CODE = "INFORME_LOGS";
     public static final String REPORT_JUSTIFICANT_CODE = "JUSTIFICANT";
@@ -247,6 +288,9 @@ public class RegistreResource extends ContingutResource {
     public static final String ACTION_DESCARREGAR_MASSIU_CODE = "DESCARREGAR_MASSIU";
     public static final String ACTION_REENVIAR_BACKOFFICE_CODE = "REENVIAR_BACKOFFICE";
     public static final String ACTION_ENVIAR_MARCAR_CODE = "ENVIAR_MARCAR";
+    public static final String ACTION_RESERVAR_CODE = "RESERVAR";
+    public static final String ACTION_ALLIBERAR_CODE = "ALLIBERAR";
+    public static final String ACTION_ASSIGNAR_CODE = "ASSIGNAR";
 
     private RegistreTipusEnum registreTipus;
     private String numero;
@@ -322,6 +366,8 @@ public class RegistreResource extends ContingutResource {
 
     @Transient private ResourceReference<ProcedimentResource, Long> procediment;
     @Transient private ResourceReference<ServeiResource, Long> servei;
+
+    @Transient private List<String> enviamentsPerEmail = new ArrayList<>();
 
     private ResourceReference<RegistreAnnexResource, Long>  justificant;
 //    private List<ResourceReference<RegistreInteressatResource, Long>> interessats = new ArrayList<>();
@@ -511,6 +557,15 @@ public class RegistreResource extends ContingutResource {
         @EmailValid
         private String destinatari;
         @NotBlank
+        private String motiu;
+    }
+
+    @Getter
+    @Setter
+    @FieldNameConstants
+    public static class AssignarForm implements Serializable {
+        @NotNull @ResourceField(enumType = true)
+        private String usuari;
         private String motiu;
     }
 

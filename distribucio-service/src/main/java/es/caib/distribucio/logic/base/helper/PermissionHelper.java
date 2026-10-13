@@ -13,6 +13,7 @@ import es.caib.distribucio.logic.intf.model.ResourceType;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.persist.resourceentity.ContingutResourceEntity;
 import es.caib.distribucio.persist.resourceentity.RegistreResourceEntity;
+import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.RegistreResourceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.acls.domain.BasePermission;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +37,7 @@ public class PermissionHelper extends BasePermissionHelper {
     private final RegistreResourceRepository registreResourceRepository;
     private final AclResourceHelper aclResourceHelper;
     private final AplicacioService aplicacioService;
+    private final EntitatResourceRepository entitatResourceRepository;
 
     @Override
 	protected boolean checkCustomResourceAccessConstraint(
@@ -56,15 +59,20 @@ public class PermissionHelper extends BasePermissionHelper {
 
                 if ( roles.contains(BaseConfig.ROLE_USER) ) {
                     RegistreResourceEntity registre = registreResourceRepository.findById((Long) resourceId).get();
-                    ContingutResourceEntity<?> pare = registre.getPare();
-                    if (pare.getTipus() == ContingutTipusEnumDto.BUSTIA) {
-                        return aclResourceHelper.anyPermissionGranted(
-                                ResourceType.BUSTIA,
-                                pare.getId(),
-                                List.of(PermissionEnum.WRITE),
-                                auth.getName(),
-                                roles
-                        );
+
+                    if (registre.getAgafatPer() != null) {
+                        return Objects.equals(registre.getAgafatPer().getId(), auth.getName());
+                    } else {
+                        ContingutResourceEntity<?> pare = registre.getPare();
+                        if (pare.getTipus() == ContingutTipusEnumDto.BUSTIA) {
+                            return aclResourceHelper.anyPermissionGranted(
+                                    ResourceType.BUSTIA,
+                                    pare.getId(),
+                                    List.of(PermissionEnum.WRITE),
+                                    auth.getName(),
+                                    roles
+                            );
+                        }
                     }
                 }
             }
@@ -80,6 +88,16 @@ public class PermissionHelper extends BasePermissionHelper {
 			ResourceArtifactType type,
 			String code,
 			ResourceAccessConstraint resourceAccessConstraint) {
+        if (RegistreResource.class.isAssignableFrom(resourceClass)) {
+            if (RegistreResource.ACTION_RESERVAR_CODE.equals(code) || RegistreResource.ACTION_ALLIBERAR_CODE.equals(code)) {
+                return Boolean.parseBoolean( aplicacioService.propertyFindByNom("es.caib.distribucio.anotacions.permetre.reservar") );
+            }
+            if (RegistreResource.ACTION_ASSIGNAR_CODE.equals(code)) {
+                return Boolean.parseBoolean( aplicacioService.propertyFindByNom("es.caib.distribucio.anotacions.permetre.reservar") )
+                        && Boolean.parseBoolean( aplicacioService.propertyFindByNom("es.caib.distribucio.assignar.anotacions") );
+            }
+        }
+
 		return false;
 	}
 

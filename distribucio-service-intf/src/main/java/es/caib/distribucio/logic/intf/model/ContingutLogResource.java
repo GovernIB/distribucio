@@ -38,11 +38,8 @@ import org.springframework.data.annotation.Transient;
 @ResourceConfig(
         descriptionField = ContingutLogResource.Fields.tipus,
         accessConstraints = {
-                // Recurs de només lectura: encara que el controller és Mutable (motor genèric), no es
-                // concedeix cap permís d'escriptura, només READ.
                 @ResourceAccessConstraint(
-                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-                        roles = { BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA },
+                        type = ResourceAccessConstraint.ResourceAccessConstraintType.AUTHENTICATED,
                         grantedPermissions = { PermissionEnum.READ }
                 )
         },

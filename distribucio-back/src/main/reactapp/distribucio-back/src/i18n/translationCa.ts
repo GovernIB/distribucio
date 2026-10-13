@@ -979,6 +979,8 @@ const translationCa = {
             },
             grid: {
                 avisos: "Avisos",
+                procesEstat: "Estat",
+                agafatPer: "Agafat per",
                 remitent: "Remitent",
                 isCopia: "Registre actual",
                 backProcesData: "Data processada",
@@ -1090,6 +1092,20 @@ const translationCa = {
                 descargaAutentica: {
                     label: "Còpia autèntica imprimible",
                     ok: "La còpia autèntica imprimible s'ha descarregat correctament",
+                },
+                reservar: {
+                    label: "Bloqueja",
+                    ok: "L'anotació {{numero}} s'ha bloquejat correctament",
+                },
+                alliberar: {
+                    label: "Allibera",
+                    ok: "L'anotació {{numero}} s'ha alliberat correctament",
+                },
+                assignar: {
+                    label: "Assigna...",
+                    reassignaLabel: "Reassigna...",
+                    title: "Assignació de l'anotació de registre a un usuari",
+                    ok: "L'anotació {{numero}} s'ha assignat correctament",
                 },
             },
         },
@@ -1342,6 +1358,55 @@ const translationCa = {
             newUnitats: "Noves unitats",
             afectedBusties: "Altres bústies afectades",
         },
+        EstatDetail: {
+            title: "Llegenda dels estats del processament de les anotacions de registre",
+            content: `
+                <ul>
+                    <li>
+                        <strong>Pendent de guardar annexos :</strong><br/>
+                        S'ha rebut l'anotació e registre i es troba pendent de guardar els annexos a l'Arxiu. En aquest punt no es té la informació de les firmes.
+                    </li>
+                    <li>
+                        <strong>Pendent de processar regla :</strong><br/>
+                        L'anotació està pendent de que es processi la regla que reenvia o processa l'anotació del registre
+                    </li>
+                    <li>
+                        <strong>Pendent de l'usuari :</strong><br/>
+                        L'anotació està pendent del processament per part de l'usuari
+                    </li>
+                    <li>
+                        <strong>Processada a la bústia :</strong><br/>
+                        L'anotació ha estat processada per l'usuari
+                    </li>
+                    <li>
+                        <strong>Pendent de comunicar backoffice :</strong><br/>
+                    </li>
+                    <li>
+                        <strong>L'anotació està pendent de comunicar al backoffice de Distribució</strong><br/>
+                    </li>
+                    <li>
+                        <strong>Comunicada al backoffice :</strong><br/>
+                        L'anotació s'ha comunicat al backoffice i està pendent de que el backoffice la rebi i processi. El canvi d'estat ja depén del backoffice
+                    </li>
+                    <li>
+                        <strong>Rebuda al backoffice :</strong><br/>
+                        L'anotació ha estat rebuda pel backoffice de Distribució
+                    </li>
+                    <li>
+                        <strong>Processada pel backoffice :</strong><br/>
+                        L'anotació ha estat processada pel backoffice de Distribució
+                    </li>
+                    <li>
+                        <strong>Rebutjada pel backoffice :</strong><br/>
+                        L'anotació ha estat processada i rebutjada pel backoffice de Distribució
+                    </li>
+                    <li>
+                        <strong>Processada al backoffice amb errors :</strong><br/>
+                        L'anotació ha estat processada amb error pel backoffice de Distribució
+                    </li>
+                </ul>
+            `
+        }
     },
 };
 

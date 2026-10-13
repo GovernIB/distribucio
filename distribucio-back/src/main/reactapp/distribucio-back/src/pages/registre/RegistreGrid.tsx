@@ -1,22 +1,31 @@
-import {useTranslation} from "react-i18next";
-import {GridPage, useMuiDataGridApiRef} from "reactlib";
+import {Trans, useTranslation} from "react-i18next";
+import {GridPage, useBaseAppContext, useMuiContentDialog, useMuiDataGridApiRef} from "reactlib";
 import {CardPage} from "../../components/CardData.tsx";
 import StyledMuiGrid from "../../components/StyledMuiGrid.tsx";
 import RegistreFilter from "./RegistreFilter.tsx";
 import React, {useMemo} from "react";
-import { Icon } from "@mui/material";
+import {Icon, Tooltip} from "@mui/material";
 import {useCommentsColumn} from "../../components/CommentsColumn.tsx";
 import {RegistreEstat} from "../../components/RegistreEstat.tsx";
 import {useRegistreActions, useRegistreMassiveActions} from "./detail/RegistreActions.tsx";
 import {useGridApiRef} from "@mui/x-data-grid-pro";
 import {useRegistreDetail} from "./detail/RegistreDetail.tsx";
 import Load from "../../components/Load.tsx";
+import IconButton from "@mui/material/IconButton";
+import {useConfig} from "../../components/ConfigProvider.tsx";
 
 const RegistreAvisos = ({entity}:any) => {
     const { t } = useTranslation();
     return <>
         {entity.sobreescriure && <Icon title={t('page.registre.avisos.sobreescriure')}>history</Icon>}
-        {entity.enviatPerEmail && <Icon title={t('page.registre.avisos.enviatPerEmail')}>mail</Icon>} {/*enviamentsPerEmail*/}
+        {entity.enviatPerEmail &&
+            <Tooltip title={<>
+                {t('page.registre.avisos.enviatPerEmail')}
+                {entity.enviamentsPerEmail.map?.((e:string) => <><br/> {">"} {e}</>)}
+            </>}>
+            <Icon title={t('page.registre.avisos.enviatPerEmail')}>mail</Icon>
+            </Tooltip>
+        }
         {entity.documentacioFisicaCodi == '1' && <Icon title={t('page.registre.avisos.documentacio._1')} sx={{color: '#D9534F'}}>inventory_2</Icon>}
         {entity.documentacioFisicaCodi == '2' && <>
             <Icon title={t('page.registre.avisos.documentacio._2')} sx={{color: '#F0AD4E'}}>code_xml</Icon>
@@ -46,21 +55,48 @@ const RegistreRemitent = ({entity}:any) => {
                     {entity.darrerMovimentResource.remitent.description}</>
                 :<><Icon>home</Icon>{entity.oficinaDescripcio} ({entity.darrerMovimentResource.remitent.description})</>
         )
-        :<Icon title={t('page.registre.remitentEmpty')} >block</Icon>
+        :<Icon title={t('page.registre.remitentEmpty')}>block</Icon>
 }
 
-const columns = (t:any) => [
+const useEstatDetail = () => {
+    const { t } = useBaseAppContext();
+    const [dialogShow, dialogComponent] = useMuiContentDialog();
+
+    const handleOpen = () => {
+        dialogShow(
+            t('component.EstatDetail.title'),
+            <Trans
+                i18nKey={"component.EstatDetail.content"}
+                components={{
+                    ul: <ul/>,
+                    li: <li/>,
+                    br: <br/>,
+                    strong: <strong/>,
+                }}
+            />,
+            [],
+            { maxWidth: 'md', fullWidth: true }
+        );
+    };
+
+    return {
+        handleOpen,
+        component: dialogComponent
+    };
+}
+
+const columns = (t:any, handleEstat: () => void) => [
     { field: 'numero', flex: 2 },
     { field: 'extracte', flex: 2 },
     { field: 'numeroOrigen', flex: 1 },
-    { field: 'oficinaDescripcio', headerName: t('page.registre.grid.remitent'), flex: 1.5,
+    { field: 'remitent', headerName: t('page.registre.grid.remitent'), flex: 1.5,
         renderCell: (params:any) => <RegistreRemitent entity={params.row} />
     },
     // { field: 'createdDate', flex: 1 },
     // L'amplada mínima és la que necessita la part "dd/mm/aaaa" (76px) més el padding de la cel·la
     // (2 x 10px): per sota, la data quedava tallada. L'hora passa a la línia de sota.
     { field: 'data', flex: 1, minWidth: 100 },
-    { field: 'procesEstat', flex: 2,
+    { field: 'procesEstat', flex: 2, headerName: <>{t('page.registre.grid.procesEstat')} <IconButton onClick={handleEstat}><Icon>list</Icon></IconButton></>,
         renderCell: (params:any) => <RegistreEstat entity={params.row}>{params.formattedValue}</RegistreEstat>
     },
     { field: 'avisos', headerName: t('page.registre.grid.avisos'), flex: 1, sortable: false,
@@ -91,10 +127,16 @@ export const RegistreGrid = () => {
     // dades" fins que arribés la bona.
     const [filtreLlest, setFiltreLlest] = React.useState(false);
 
+    const {handleOpen, component} = useEstatDetail();
     const { column: commentsColumn, component: dialogComponent } = useCommentsColumn();
 
-    const additionalColumns = [
-        ...columns(t),
+    const { getByName } = useConfig()
+
+    const isPermesAssignarAnotacions = getByName("es.caib.distribucio.assignar.anotacions")
+
+    const additionalColumns:any[] = [
+        ...columns(t, handleOpen),
+        ...(isPermesAssignarAnotacions ?[{ field: 'agafatPer', flex: 2 }] :[]),
         commentsColumn,
     ]
 
@@ -159,6 +201,7 @@ export const RegistreGrid = () => {
                 {components}
                 {massiveComponents}
                 {dialogDetail}
+                {component}
             </CardPage>
         </GridPage>
     )

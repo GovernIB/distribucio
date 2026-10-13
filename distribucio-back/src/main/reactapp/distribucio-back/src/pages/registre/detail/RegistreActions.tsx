@@ -16,6 +16,8 @@ import useMarcarSobreescriure from "../actions/MarcarSobreescriure.tsx";
 import useDescargaMassiva from "../actions/DescargaMassiva.tsx";
 import useReenviarBackoffice from "../actions/ReenviarBackoffice.tsx";
 import useEnviarMarcar from "../actions/EnviarMarcar.tsx";
+import useAssignar from "../actions/Assignar.tsx";
+import {useDistribucioContext} from "../../../components/DistribucioContext.ts";
 
 export const useActions = (refresh?: () => void) => {
     const { t } = useTranslation();
@@ -59,6 +61,32 @@ export const useActions = (refresh?: () => void) => {
                 .then((response) => {
                     refresh?.()
                     temporalMessageShow(null, t('page.registre.accio.tornarProcessar.ok', {numero: response.numero}), 'success');
+                })
+                .catch((error) => {
+                    temporalMessageShow(null, error?.message, 'error');
+                });
+        }
+    }
+
+    const bloquejar = (id:any) => {
+        if (apiIsReady) {
+            apiAction(id, {code: "RESERVAR" })
+                .then((response) => {
+                    refresh?.()
+                    temporalMessageShow(null, t('page.registre.accio.reservar.ok', {numero: response.numero}), 'success');
+                })
+                .catch((error) => {
+                    temporalMessageShow(null, error?.message, 'error');
+                });
+        }
+    }
+
+    const alliberar = (id:any) => {
+        if (apiIsReady) {
+            apiAction(id, {code: "ALLIBERAR" })
+                .then((response) => {
+                    refresh?.()
+                    temporalMessageShow(null, t('page.registre.accio.alliberar.ok', {numero: response.numero}), 'success');
                 })
                 .catch((error) => {
                     temporalMessageShow(null, error?.message, 'error');
@@ -129,6 +157,8 @@ export const useActions = (refresh?: () => void) => {
         exportRegistre,
         reenviarBackoffice,
         tornarProcessar,
+        bloquejar,
+        alliberar
     }
 }
 
@@ -136,8 +166,9 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
     const { t } = useTranslation();
     const {temporalMessageShow} = useBaseAppContext();
     const { enqueueSnackbar } = useSnackbar();
+    const { currentUser } = useDistribucioContext()
 
-    const {marcarSobreescriure, descarregarDoc} = useActions(refresh)
+    const {marcarSobreescriure, descarregarDoc, bloquejar, alliberar} = useActions(refresh)
     const {show: handleHistoric, component: componentHistoric} = useContingutHistorialDialog()
     const {handleOpen: handleAlertes, component: componentAlertes} = useAlertes();
     const { handleShow: handleClassificar, content: contentClassificar } = useClassificar((result:any) => {
@@ -162,6 +193,10 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
     const { handleShow: handlePendent, content: contentPendent } = useMarcarPendent((result:any) => {
         refresh?.()
         temporalMessageShow(null, t(`page.registre.accio.marcarPendent.ok`, {numero: result.numero}), 'success');
+    })
+    const { handleShow: handleAssignar, content: contentAssignar } = useAssignar((result:any) => {
+        refresh?.()
+        temporalMessageShow(null, t(`page.registre.accio.assignar.ok`, {numero: result.numero}), 'success');
     })
 
     const actions:any[] = [
@@ -262,6 +297,44 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
             onClick: (id:any) => descarregarDoc(id, true),
             showInMenu: true,
         },
+        {
+            label: <Divider sx={{width: '100%'}} color={"none"}/>,
+            action: 'RESERVAR',
+            showInMenu: true,
+            disabled: true,
+        },
+        {
+            label: t('page.registre.accio.reservar.label'),
+            icon: 'lock',
+            action: 'RESERVAR',
+            showInMenu: true,
+            onClick: bloquejar,
+            hidden: (row:any) => row.agafatPer != null,
+        },
+        {
+            label: t('page.registre.accio.alliberar.label'),
+            icon: 'lock_open_right',
+            action: 'ALLIBERAR',
+            showInMenu: true,
+            onClick: alliberar,
+            hidden: (row:any) => row.agafatPer == null,
+        },
+        {
+            label: (row:any) => row.agafatPer == null
+                ?t('page.registre.accio.assignar.label')
+                :t('page.registre.accio.assignar.reassignaLabel'),
+            icon: 'person_add',
+            action: 'ASSIGNAR',
+            onClick: handleAssignar,
+            showInMenu: true,
+        },
+        {
+            label: (row:any) => t('page.registre.grid.agafatPer') + ": " + row.agafatPer?.id,
+            action: 'RESERVAR',
+            showInMenu: true,
+            disabled: true,
+            hidden: (row:any) => row.agafatPer == null || row.agafatPer?.id == currentUser.id
+        }
     ]
 
     const components = <>
@@ -272,6 +345,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
         {contentReenviar}
         {contentProcessada}
         {contentPendent}
+        {contentAssignar}
     </>
 
     return {

@@ -30,8 +30,7 @@ import org.springframework.data.annotation.Transient;
         descriptionField = ContingutMovimentResource.Fields.destiNom,
         accessConstraints = {
                 @ResourceAccessConstraint(
-                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-                        roles = { BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA },
+                        type = ResourceAccessConstraint.ResourceAccessConstraintType.AUTHENTICATED,
                         grantedPermissions = { PermissionEnum.READ }
                 )
         }

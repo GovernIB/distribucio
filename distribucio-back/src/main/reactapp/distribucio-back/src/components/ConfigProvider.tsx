@@ -1,10 +1,11 @@
 import {useResourceApiService} from "reactlib";
 import {useState} from "react";
+import {useDistribucioContext} from "./DistribucioContext.ts";
 
 interface ConfigContextType {
     isConfigReady: boolean;
     getByName: (name: string) => any | undefined;
-    getByNameAndEntity: (key: string, entitat: string) => any | undefined;
+    getByNameAndEntity: (key: string, entitat?: string) => any | undefined;
 }
 
 const construirKeyEspecifica = (keyBase: string, entitat: string): string => {
@@ -19,7 +20,7 @@ const construirKeyEspecifica = (keyBase: string, entitat: string): string => {
 };
 
 const getValue = (item:any) => {
-    return (item.value != null && item.value !== "false")
+    return (item.value != null)
         ?(item.type?.id == 'BOOL' && typeof item.value == 'string')
             ? item.value === "true"
             : item.value
@@ -34,6 +35,7 @@ export const useConfig = () :ConfigContextType => {
         isReady: isConfigReady,
         getOne: apiGetOne,
     } = useResourceApiService('configResource');
+    const {currentEntitat} = useDistribucioContext()
 
     const [configCache, setConfigCache] = useState<Map<string, any>>(new Map());
 
@@ -53,7 +55,7 @@ export const useConfig = () :ConfigContextType => {
         return configCache.get(name);
     };
 
-    const getByNameAndEntity = (name:string, entitat:string): any | undefined => {
+    const getByNameAndEntity = (name:string, entitat:string = currentEntitat): any | undefined => {
         return getByName( construirKeyEspecifica(name, entitat) );
     }
 
