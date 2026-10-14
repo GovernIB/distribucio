@@ -4,7 +4,7 @@ import {
     MuiDetail,
     useResourceApiService,
     MuiDialog,
-    useMuiContentDialog
+    useMuiContentDialog, useDetailApiRef
 } from "reactlib";
 import {alpha, Badge, Box, CircularProgress, Grid, Icon, IconButton, Tooltip, Typography} from "@mui/material";
 import TabComponent from "../../../components/TabComponent.tsx";
@@ -726,6 +726,8 @@ export const useRegistreDetail = (options:RegistreDetailOptions) => {
         [customPersp?.join(',')]
     )
 
+    const apiDetialRef = useDetailApiRef()
+
     const [open, setOpen] = useState(false);
     const [entityId, setEntityId] = useState<any>(); // id de la fila del grid (navegació); 
     const [detailId, setDetailId] = useState<any>(); // id de l'anotació mostrada
@@ -765,6 +767,8 @@ export const useRegistreDetail = (options:RegistreDetailOptions) => {
     const refresh = (code?:string) => {
         if (code == 'REENVIAR' && avanzarPagina && index < totalElem) {
             navigate(next)
+        } else {
+            apiDetialRef.current?.refresh()
         }
     }
 
@@ -836,6 +840,7 @@ export const useRegistreDetail = (options:RegistreDetailOptions) => {
             <Load value={detailId}>
                 <Box sx={{ position: 'relative' }}>
                     <MuiDetail
+                        apiRef={apiDetialRef}
                         id={detailId}
                         resourceName={'registreResource'}
                         perspectives={detailPerspectives}
