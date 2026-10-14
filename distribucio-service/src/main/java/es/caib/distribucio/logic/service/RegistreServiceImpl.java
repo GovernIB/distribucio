@@ -1685,7 +1685,10 @@ public class RegistreServiceImpl implements RegistreService {
 			anotacioPerBackoffice.setAssumpteTipusCodi(registreEntity.getAssumpteTipusCodi());
 			anotacioPerBackoffice.setAssumpteTipusDescripcio(registreEntity.getAssumpteTipusDescripcio());
 			anotacioPerBackoffice.setAssumpteCodiCodi(registreEntity.getAssumpteCodi());
-			anotacioPerBackoffice.setProcedimentCodi(registreEntity.getProcedimentCodi());
+			// Per evitar problemes als backoffices se seguirá informant en el codi de procediment el codi SIA del servei
+			anotacioPerBackoffice.setProcedimentCodi(registreEntity.getProcedimentCodi() != null ? 
+					registreEntity.getProcedimentCodi()
+					:registreEntity.getServeiCodi());
 			anotacioPerBackoffice.setServeiCodi(registreEntity.getServeiCodi());
 			anotacioPerBackoffice.setAssumpteCodiDescripcio(registreEntity.getAssumpteDescripcio());
 			anotacioPerBackoffice.setTransportTipusCodi(registreEntity.getTransportTipusCodi());
