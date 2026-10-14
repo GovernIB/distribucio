@@ -193,7 +193,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
                 	ConfigHelper.setEntitatActualCodi(em.getEntitat().getCodi());
 					execucioMassivaHelper.updateProcessantNewTransaction(em, new Date());
 
-                    String minuts = configHelper.getConfig("es.caib.distribucio.segonpla.timeout.execucio.massiva");
+                    String minuts = configHelper.getConfig("es.caib.distribucio.segonpla.timeout.execucio.massiva", "10");
 
 					for (ExecucioMassivaContingutEntity emc: em.getContinguts()) {
 						if (execucioMassivaHelper.isEmcDisponibleNewTransaction(emc)) {
