@@ -1,0 +1,2 @@
+INSERT INTO DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE,CONFIGURABLE) VALUES
+    (0,'SCHEDULLED_EXECUCIONS_MASSIVES','es.caib.distribucio.segonpla.timeout.execucio.massiva', 10,'Temps màxim en minuts per executar cada acció individual (per defecte 10)',1,'INT',0);

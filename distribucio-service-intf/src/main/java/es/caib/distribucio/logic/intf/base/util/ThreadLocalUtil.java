@@ -2,6 +2,9 @@ package es.caib.distribucio.logic.intf.base.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Helper per a gestionar informació del TreadLocal. La llibreria base-boot
@@ -41,5 +44,20 @@ public class ThreadLocalUtil {
 			map.clear();
 		}
 	}
+
+    public static ScheduledExecutorService setTimeout(int timeout, TimeUnit format) {
+        // Programa l'interrupció del thrad actual
+        final Thread currentThread = Thread.currentThread();
+        ScheduledExecutorService scheduler =
+                Executors.newSingleThreadScheduledExecutor();
+
+        scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                currentThread.interrupt();
+            }
+        }, timeout, format);
+        return scheduler;
+    }
 
 }

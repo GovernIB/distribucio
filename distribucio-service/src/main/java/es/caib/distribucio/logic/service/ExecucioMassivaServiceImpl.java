@@ -11,9 +11,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
-import java.util.zip.ZipOutputStream;
+import java.util.concurrent.TimeUnit;
 
+import es.caib.distribucio.logic.intf.base.util.ThreadLocalUtil;
 import es.caib.distribucio.logic.intf.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,7 +175,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 		return dtos;
 	}
 
-	@Transactional
+	@Transactional(noRollbackFor = InterruptedException.class)
 	@Override
 	public void executeNextMassiveScheduledTask(Long entitatId) {
 		logger.trace("Execució tasca periòdica: Execucions massives");
@@ -182,7 +184,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 			EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(entitatId, false, false, false);
 			List<ExecucioMassivaEntity> ems = execucioMassivaRepository.findMassivesAmbPendentsByEntitatPerProcessar(new Date(), entitatId);
 			String missatge = null;
-			
+
 			if (ems != null && ems.size() > 0) {
 				ExecucioMassivaEntity em = ems.get(0);
                 if (ExecucioMassivaTipusDto.DESCARREGAR.equals(em.getTipus())) {
@@ -191,12 +193,15 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
                 	ConfigHelper.setEntitatActualCodi(em.getEntitat().getCodi());
 					execucioMassivaHelper.updateProcessantNewTransaction(em, new Date());
 
+                    String minuts = configHelper.getConfig("es.caib.distribucio.segonpla.timeout.execucio.massiva");
+
 					for (ExecucioMassivaContingutEntity emc: em.getContinguts()) {
 						if (execucioMassivaHelper.isEmcDisponibleNewTransaction(emc)) {
                             setAuthentication(emc);
                             execucioMassivaHelper.updateProcessantNewTransaction(emc, new Date());
 
 							entrarSemafor(emc.getElementId());
+                            ScheduledExecutorService scheduler = ThreadLocalUtil.setTimeout(Integer.parseInt(minuts), TimeUnit.MINUTES);
 
 							try {
 								switch (em.getTipus()) {
@@ -271,6 +276,10 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 									break;
 								}
 							} catch (Exception e) {
+                                if (InterruptedException.class.isAssignableFrom(e.getClass())) {
+                                    e = new Exception("L'execució massiva s'ha interromput després de superar el temps màxim de " + minuts + " minuts.", e);
+                                }
+
 								StringBuilder errMsg = new StringBuilder("Hi ha hagut un error executant el contingut de l'acció massiva [id=" + emc.getId());
 								Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 								errMsg.append(", tipus=" + em.getTipus());
@@ -292,6 +301,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 							} finally {
 								sortirSemafor(emc.getElementId());
 								removeAuthentication();
+                                scheduler.shutdownNow();
 							}
                             execucioMassivaHelper.updateFinalitzatNewTransaction(emc, new Date());
 						}
