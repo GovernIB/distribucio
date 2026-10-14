@@ -16,6 +16,19 @@ const RUTES_SENSE_EQUIVALENT_JSP = ['/', '/home'];
 // la REACT per defecte no en podria sortir. Veure DistribucioController.getInterficieEfectiva().
 const PARAM_INTERFICIE_JSP = '?interficie=JSP';
 
+const RUTE_MAPPING_JSP = {
+    '/': PARAM_INTERFICIE_JSP,
+    '/home': PARAM_INTERFICIE_JSP,
+    '/massiva': PARAM_INTERFICIE_JSP,
+    '/metriques': PARAM_INTERFICIE_JSP,
+    '/monitor': PARAM_INTERFICIE_JSP,
+    '/registre': 'registreUser',
+    '/vistaMoviments': 'registreUser/moviments',
+    '/contingut': 'contingutAdmin',
+    '/usuariCanviCodis': 'usernames/change',
+    '/pendentsArxiu': 'registreUser/anotacionsPendentArxiu',
+}
+
 /**
  * Enllaç cap a la interfície JSP. La URL del back antic surt de l'apiUrl del context de
  * recursos: n'hi ha prou de treure-li el sufix "/api". Així funciona igual desplegat (mateix
@@ -28,8 +41,8 @@ export const useInterficieClassica = () => {
     const baseUrl = apiUrl.replace(/\/api\/?$/, '/');
     const { pathname } = useLocation();
     const getUrl = React.useCallback(() => {
-        if (RUTES_SENSE_EQUIVALENT_JSP.includes(pathname)) {
-            return baseUrl + PARAM_INTERFICIE_JSP;
+        if (pathname && RUTE_MAPPING_JSP.hasOwnProperty(pathname)) {
+            return baseUrl + RUTE_MAPPING_JSP[pathname];
         }
         return baseUrl + pathname.replace(/^\//, '');
     }, [baseUrl, pathname]);
