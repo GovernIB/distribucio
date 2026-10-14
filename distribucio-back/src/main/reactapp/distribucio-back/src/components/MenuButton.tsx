@@ -99,7 +99,7 @@ export const actionToItem = (entity: any, actions: any[]) => {
                         disabled={typeof action?.disabled === 'function' ? action?.disabled(entity) : action?.disabled}
                     >
                         {action.icon && <Icon sx={{ mr: 1 }}>{action.icon}</Icon>}
-                        {action.label}
+                        {typeof action.label == 'function' ? action.label?.(entity) : action.label}
                     </MenuItem>
                 </div>
             )

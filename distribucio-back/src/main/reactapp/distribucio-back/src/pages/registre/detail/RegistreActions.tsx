@@ -287,15 +287,15 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
             label: t('page.registre.accio.descargaOriginal.label'),
             icon: 'download',
             report: 'DESCARREGAR_DOC',
-            onClick: (id:any) => descarregarDoc(id, false),
             showInMenu: true,
+            onClick: (id:any) => descarregarDoc(id, false),
         },
         {
             label: t('page.registre.accio.descargaAutentica.label'),
             icon: 'download',
             report: 'DESCARREGAR_DOC',
-            onClick: (id:any) => descarregarDoc(id, true),
             showInMenu: true,
+            onClick: (id:any) => descarregarDoc(id, true),
         },
         {
             label: <Divider sx={{width: '100%'}} color={"none"}/>,
@@ -325,8 +325,8 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
                 :t('page.registre.accio.assignar.reassignaLabel'),
             icon: 'person_add',
             action: 'ASSIGNAR',
-            onClick: handleAssignar,
             showInMenu: true,
+            onClick: handleAssignar,
         },
         {
             label: (row:any) => t('page.registre.grid.agafatPer') + ": " + row.agafatPer?.id,
