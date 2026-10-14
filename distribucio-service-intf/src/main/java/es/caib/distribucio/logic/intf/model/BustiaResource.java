@@ -63,7 +63,8 @@ import java.util.List;
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = BustiaResource.ACTION_DESACTIVAR_CODE,
-                        requiresId = true),
+                        requiresId = true,
+                        formClass = BustiaResource.DesactivarForm.class),
                 @ResourceArtifact(
                         type = ResourceArtifactType.ACTION,
                         code = BustiaResource.ACTION_PRINCIPAL_CODE,
@@ -153,6 +154,12 @@ public class BustiaResource extends ContingutResource {
         private String filter;
         private String[] namedQueries;
 
+    }
+
+    @Getter
+    @Setter
+    public static class DesactivarForm implements Serializable {
+        private ResourceReference<BustiaResource, Long> bustia;
     }
 
 }

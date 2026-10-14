@@ -49,7 +49,7 @@ export const BustiaOrganigramaForm = ({entity, ...other}:any) => {
             {...other}
         >
             {entity?.pendent && <Box mb={2}>
-                <BustiaObsoleta id={entity.id}/>
+                <BustiaObsoleta id={entity.id} uoId={entity.unitatOrganitzativa?.id}/>
             </Box>}
 
             <BustiaForm />

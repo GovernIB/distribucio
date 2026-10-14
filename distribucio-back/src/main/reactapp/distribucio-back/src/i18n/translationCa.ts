@@ -885,6 +885,7 @@ const translationCa = {
                 },
                 desactivar: {
                     label: 'Desactiva',
+                    title: "Seleccionar altre bústia principal",
                     ok: "La bústia s'ha desactivat correctament",
                 },
                 usuarisBustia: {

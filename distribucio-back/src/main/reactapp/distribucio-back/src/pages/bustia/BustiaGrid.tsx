@@ -14,9 +14,11 @@ import {Link} from "../../components/BaseApp.tsx";
 import {BustiaPermisosForm, useBustiaPermisosColumns} from "./BustiaPermisosForm.tsx";
 import {useActions, useBustiaActions} from "./detail/BustiaActions.tsx";
 import {useBustiaObsoleta} from "./detail/BustiaObsoleta.tsx";
+import {GridSortDirection} from "@mui/x-data-grid-pro";
 
 const columns: MuiDataGridColDef[] = [
-    { field: 'unitatOrganitzativa', flex: 4 },
+    { field: 'unitatOrganitzativa', flex: 4,
+        sortProcessor: (_field: string, sort: GridSortDirection) => [{ field: 'unitatOrganitzativa.denominacio', sort }] },
     { field: 'perDefecte', flex: 1, type: 'boolean' },
     { field: 'activa', flex: 1, type: 'boolean' },
 ];
@@ -37,7 +39,7 @@ export const BustiaGrid = () => {
         { field: 'nom', flex: 4,
             renderCell: (params) => (<>
                 {params.formattedValue}
-                {params.row.pendent && <IconButton onClick={() => handleObsoleta(params.id, params.row)}>
+                {params.row.pendent && <IconButton sx={{ ml: 'auto' }} onClick={() => handleObsoleta(params.id, params.row)}>
                     <Icon title={t('component.BustiaObsoleta.unitat')} color={'error'} sx={{ marginLeft: 'auto' }}>warning</Icon>
                 </IconButton>}
             </>)

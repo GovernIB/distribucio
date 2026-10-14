@@ -6,6 +6,7 @@ import es.caib.distribucio.logic.intf.base.annotation.ResourceConfig;
 import es.caib.distribucio.logic.intf.base.model.*;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.dto.TipusTransicioEnumDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganizzativaEstatEnumDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -78,6 +79,7 @@ public class UnitatOrganitzativaResource implements Resource<Long> {
     private Long id;
     private String codi;
     private String denominacio;
+    private TipusTransicioEnumDto tipusTransicio;
     private String nifCif;
     private String nivellAdministracio;
     private String tipusEntitatPublica;

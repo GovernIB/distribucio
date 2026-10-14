@@ -17,10 +17,7 @@ import es.caib.distribucio.logic.intf.base.model.FieldOption;
 import es.caib.distribucio.logic.intf.base.model.ReportFileType;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.BustiaDto;
-import es.caib.distribucio.logic.intf.dto.PermisDto;
-import es.caib.distribucio.logic.intf.dto.PrincipalTipusEnumDto;
-import es.caib.distribucio.logic.intf.dto.UnitatOrganizzativaEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.model.BustiaResource;
 import es.caib.distribucio.logic.intf.model.ResourceType;
 import es.caib.distribucio.logic.intf.resourceservice.BustiaResourceService;
@@ -268,13 +265,19 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
             );
         }
     }
-    private class ActivaActionExecutor implements ActionExecutor<BustiaResourceEntity, Serializable, Serializable> {
+    private class ActivaActionExecutor implements ActionExecutor<BustiaResourceEntity, BustiaResource.DesactivarForm, Serializable> {
 
         @Override
-        public Serializable exec(String code, BustiaResourceEntity entity, Serializable params) throws ActionExecutionException {
+        public Serializable exec(String code, BustiaResourceEntity entity, BustiaResource.DesactivarForm params) throws ActionExecutionException {
             boolean activa = BustiaResource.ACTION_ACTIVAR_CODE.equals(code);
             Long entitatActualId = SessioActualUtil.getEntitatId();
             try {
+                if (!activa && params.getBustia() != null) {
+                    bustiaService.marcarPerDefecte(
+                            entitatActualId,
+                            params.getBustia().getId());
+                }
+
                 bustiaService.updateActiva(entitatActualId, entity.getId(), activa);
             } catch (Exception e) {
                 throw new ActionExecutionException(
@@ -289,7 +292,7 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
         }
 
         @Override
-        public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
+        public void onChange(Serializable id, BustiaResource.DesactivarForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, BustiaResource.DesactivarForm target) {
         }
     }
     private class PrincipalActionExecutor implements ActionExecutor<BustiaResourceEntity, Serializable, Serializable> {
@@ -484,10 +487,12 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
                     entitatActualId,
                     entity.getId());
             map.put("newUnitats",
-                unitatOrganitzativaHelper.getLastHistoricos(bustia.getUnitatOrganitzativa())
-                        .getLastHistoricosUnitats().stream()
-                        .map(h -> h.getDenominacio() + " (" + h.getCodi() + ")")
-                        .collect(Collectors.toList())
+                    Optional.ofNullable(unitatOrganitzativaHelper.getLastHistoricos(bustia.getUnitatOrganitzativa()))
+                            .map(UnitatOrganitzativaDto::getLastHistoricosUnitats)
+                            .orElse(Collections.emptyList())
+                            .stream()
+                            .map(h -> h.getDenominacio() + " (" + h.getCodi() + ")")
+                            .collect(Collectors.toList())
             );
 
             map.put("afectedBusties",

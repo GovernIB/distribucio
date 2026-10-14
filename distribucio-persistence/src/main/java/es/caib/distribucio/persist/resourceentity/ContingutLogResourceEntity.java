@@ -83,7 +83,7 @@ public class ContingutLogResourceEntity extends BaseAuditableEntity<ContingutLog
 			foreignKey = @ForeignKey(name = BaseConfig.DB_PREFIX + "cont_log_pare_fk"))
 	private ContingutLogResourceEntity pare;
 
-	@OneToMany(mappedBy = "contingutLog", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "contingutLog", fetch = FetchType.LAZY, orphanRemoval = true)
 	@OrderBy("numero ASC")
 	private List<ContingutLogParamEntity> params = new ArrayList<>();
 

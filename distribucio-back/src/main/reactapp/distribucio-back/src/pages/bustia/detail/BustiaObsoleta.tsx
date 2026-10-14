@@ -1,19 +1,33 @@
-import {useBaseAppContext, useMuiContentDialog} from "reactlib";
+import {useBaseAppContext, useMuiContentDialog, useResourceApiService} from "reactlib";
 import Alert from "@mui/material/Alert";
 import {DetailExpandCard} from "../../../components/CardData.tsx";
 import {useActions} from "./BustiaActions.tsx";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import {useSession} from "../../../components/SessionStorageContext.tsx";
+import Load from "../../../components/Load.tsx";
 
 export const BustiaObsoleta = (props:any) => {
     const { t } = useBaseAppContext();
-    const {id, title = t('component.BustiaObsoleta.title')} = props
+    const {id, uoId, title = t('component.BustiaObsoleta.title')} = props
 
-    const { value: map, save: setMap } =useSession(`transicioInfo_${id}`)
+    const {
+        isReady: apiUOIsReady,
+        getOne: apiGetOne,
+    } = useResourceApiService('unitatOrganitzativaResource');
+
+    const [uo, setUo] = useState<any>()
+    const { value: map, save: setMap } = useSession(`transicioInfo_${id}`)
 
     const { apiIsReady, transicioInfo } = useActions();
+
+    useEffect(() => {
+        if (apiUOIsReady && uoId) {
+            apiGetOne(uoId)
+                .then((response:any) => setUo(response))
+        }
+    }, [apiUOIsReady]);
 
     useEffect(() => {
         if (apiIsReady && !map) {
@@ -22,7 +36,7 @@ export const BustiaObsoleta = (props:any) => {
         }
     }, [apiIsReady]);
 
-    return (<>
+    return (<Load value={uo?.tipusTransicio} noEffect>
         <DetailExpandCard
             header={
                 <Alert severity={'error'} sx={{ width: '100%' }}>{title}</Alert>
@@ -56,7 +70,7 @@ export const BustiaObsoleta = (props:any) => {
                 </>}
             </Grid>
         </DetailExpandCard>
-    </>)
+    </Load>)
 }
 
 export const useBustiaObsoleta = () => {
@@ -66,7 +80,7 @@ export const useBustiaObsoleta = () => {
     const handleOpen = (id:any, row:any) => {
         dialogShow(
             t('component.BustiaObsoleta.title'),
-            <BustiaObsoleta id={id} title={t('component.BustiaObsoleta.alert',
+            <BustiaObsoleta id={id} uoId={row.unitatOrganitzativa?.id} title={t('component.BustiaObsoleta.alert',
                 { unitat: row.unitatOrganitzativa?.description, bustia: row.nom })}/>,
             [],
             { maxWidth: 'md', fullWidth: true }

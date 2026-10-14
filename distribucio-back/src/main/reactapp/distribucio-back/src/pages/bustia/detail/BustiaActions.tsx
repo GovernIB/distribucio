@@ -2,6 +2,7 @@ import {useBaseAppContext, useResourceApiService} from "reactlib";
 import {useTranslation} from "react-i18next";
 import {useMoureAnotacions} from "../actions/MoureAnotacions.tsx";
 import {iniciaDescargaBlob} from "../../../util/downloadUtils.ts";
+import {useDesactivar} from "../actions/Desactivar.tsx";
 
 export const useActions = (refresh?: () => void) => {
     const { t } = useTranslation();
@@ -76,28 +77,34 @@ export const useBustiaActions = (refresh?: () => void) => {
 
     const { perDefecte, activar, desactivar } = useActions(refresh)
     const {handleShow, content} = useMoureAnotacions(refresh)
+    const {handleShow: handleDesactivarDialog, content: contentDesactivarDialog} = useDesactivar(refresh)
 
     const actions:any[] = [
         {
             label: t('page.bustia.accio.perDefecte.label'),
             icon: 'check_box',
+            action: 'PRINCIPAL',
+            showInMenu: true,
             onClick: perDefecte,
             hidden: (row:any) => row.perDefecte,
-            showInMenu: true,
         },
         {
             label: t('page.bustia.accio.activar.label'),
             icon: 'check',
-            hidden: (row:any) => row.activa,
-            onClick: activar,
+            action: 'ACTIVAR',
             showInMenu: true,
+            onClick: activar,
+            hidden: (row:any) => row.activa,
         },
         {
             label: t('page.bustia.accio.desactivar.label'),
             icon: 'close',
-            onClick: desactivar,
-            hidden: (row:any) => !row.activa,
+            action: 'DESACTIVAR',
             showInMenu: true,
+            onClick: (id:any, row:any) => row.perDefecte
+                ?handleDesactivarDialog(id, row)
+                :desactivar(id),
+            hidden: (row:any) => !row.activa,
         },
         {
             label: t('page.bustia.accio.moureAnotacions.label'),
@@ -109,6 +116,7 @@ export const useBustiaActions = (refresh?: () => void) => {
 
     const components = <>
         {content}
+        {contentDesactivarDialog}
     </>
 
     return {

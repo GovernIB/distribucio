@@ -882,6 +882,7 @@ const translationEs = {
                 },
                 desactivar: {
                     label: "Desactiva",
+                    title: "Seleccionar otro buzón principal",
                     ok: "El buzón se ha desactivado correctamente",
                 },
                 usuarisBustia: {
