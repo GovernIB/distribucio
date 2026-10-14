@@ -43,6 +43,24 @@ const rowArtifactShowCheck = (
     }
 };
 
+export const rowArtifactFilter = (resourceName:string, actions:any[]) :any[] => {
+    const { isReady: apiIsReady, artifacts: apiArtifacts } = useResourceApiService(resourceName);
+    const [artifacts, setArtifacts] = React.useState<any[]>();
+
+    React.useEffect(() => {
+        if (apiIsReady) {
+            apiArtifacts({})
+                .then((artifacts) => {
+                    setArtifacts(artifacts);
+                })
+        }
+    }, [apiIsReady]);
+
+    return useMemo(() => actions
+            .filter((action) => rowArtifactShowCheck(action?.action, action?.report, artifacts) )
+        , [actions, artifacts])
+}
+
 const MassiveActionSelector: React.FC<MassiveActionSelectorProps> = (props: MassiveActionSelectorProps) => {
     const {
         resourceName,
@@ -57,17 +75,7 @@ const MassiveActionSelector: React.FC<MassiveActionSelectorProps> = (props: Mass
     } = props;
     const { t } = useTranslation();
 
-    const { isReady: apiIsReady, find: apiFindAll, artifacts: apiArtifacts } = useResourceApiService(resourceName);
-    const [artifacts, setArtifacts] = React.useState<any[]>();
-
-    React.useEffect(() => {
-        if (apiIsReady) {
-            apiArtifacts({})
-                .then((artifacts) => {
-                    setArtifacts(artifacts);
-                })
-        }
-    }, [apiIsReady]);
+    const { isReady: apiIsReady, find: apiFindAll } = useResourceApiService(resourceName);
 
     // Handle selection actions
     const handleSelectAll = () => {
@@ -85,9 +93,7 @@ const MassiveActionSelector: React.FC<MassiveActionSelectorProps> = (props: Mass
         setSelectedRows([]);
     };
 
-    const actions = useMemo(() => actionProps
-        .filter((action) => rowArtifactShowCheck(action?.action, action?.report, artifacts) )
-        , [actionProps, artifacts])
+    const actions = rowArtifactFilter(resourceName, actionProps)
 
     const iconActions = actions
         .filter((action) => !action?.showInMenu )

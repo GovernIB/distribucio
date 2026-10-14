@@ -652,6 +652,7 @@ const RegistreDetail = (props:any) => {
                 </IconButton>
 
                 <MenuActionButton
+                    resourceName={'registreResource'}
                     id={data.id}
                     entity={data}
                     buttonLabel={<><Icon sx={{ mr: 1 }}>settings</Icon>{t('common.actions')}</>}

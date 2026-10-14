@@ -33,6 +33,7 @@ const useAssignar = (onSuccess?: (result?: any) => void) => {
     // const {temporalMessageShow} = useBaseAppContext();
 
     const handleShow = (id:any) :void => {
+        // console.log("AAAAAAAAA", id)
         apiRef.current?.show?.(id, {id})
     }
     // const onSuccess = () :void => {

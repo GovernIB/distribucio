@@ -13,7 +13,6 @@ import es.caib.distribucio.logic.intf.model.ResourceType;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
 import es.caib.distribucio.persist.resourceentity.ContingutResourceEntity;
 import es.caib.distribucio.persist.resourceentity.RegistreResourceEntity;
-import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.RegistreResourceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.acls.domain.BasePermission;
@@ -21,8 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -37,7 +35,6 @@ public class PermissionHelper extends BasePermissionHelper {
     private final RegistreResourceRepository registreResourceRepository;
     private final AclResourceHelper aclResourceHelper;
     private final AplicacioService aplicacioService;
-    private final EntitatResourceRepository entitatResourceRepository;
 
     @Override
 	protected boolean checkCustomResourceAccessConstraint(
@@ -88,6 +85,12 @@ public class PermissionHelper extends BasePermissionHelper {
 			ResourceArtifactType type,
 			String code,
 			ResourceAccessConstraint resourceAccessConstraint) {
+        List<String> roles = auth.getAuthorities().stream()
+                .map(a -> a.getAuthority())
+                .collect(Collectors.toList());
+        if (!anyRol(roles.toArray(), resourceAccessConstraint.roles())) {
+            return false;
+        }
         if (RegistreResource.class.isAssignableFrom(resourceClass)) {
             if (RegistreResource.ACTION_RESERVAR_CODE.equals(code) || RegistreResource.ACTION_ALLIBERAR_CODE.equals(code)) {
                 return Boolean.parseBoolean( aplicacioService.propertyFindByNom("es.caib.distribucio.anotacions.permetre.reservar") );
@@ -100,5 +103,24 @@ public class PermissionHelper extends BasePermissionHelper {
 
 		return false;
 	}
+
+    public static <T> boolean anyRol(T[] array1, T[] array2) {
+        if (array1 == null || array2 == null || array1.length == 0 || array2.length == 0) {
+            return false;
+        }
+
+        // Ponemos el array más pequeño en el Set para optimizar memoria
+        T[] menor = array1.length <= array2.length ? array1 : array2;
+        T[] mayor = array1.length <= array2.length ? array2 : array1;
+
+        Set<T> set = new HashSet<>(Arrays.asList(menor));
+
+        for (T elemento : mayor) {
+            if (set.contains(elemento)) {
+                return true; // Encontramos coincidencia, salimos rápido
+            }
+        }
+        return false;
+    }
 
 }

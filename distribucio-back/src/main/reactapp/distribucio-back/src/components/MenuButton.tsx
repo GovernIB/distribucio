@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Box, Button, Icon, Menu, MenuItem } from '@mui/material';
+import {rowArtifactFilter} from "./MassiveActionSelector.tsx";
 
 type MenuButtonProps = {
     id: string;
@@ -81,6 +82,7 @@ const MenuButton = (props: MenuButtonProps) => {
 };
 
 type MenuActionButtonProps = MenuButtonProps & {
+    resourceName?:string;
     actions: any[];
     entity?: any;
 };
@@ -106,7 +108,8 @@ export const actionToItem = (entity: any, actions: any[]) => {
     );
 };
 export const MenuActionButton = (props: MenuActionButtonProps) => {
-    const { entity, actions, children, ...other } = props;
+    const { resourceName, entity, actions: actionProp, children, ...other } = props;
+    const actions = resourceName ?rowArtifactFilter(resourceName, actionProp) :actionProp;
 
     return (
         <MenuButton {...other}>

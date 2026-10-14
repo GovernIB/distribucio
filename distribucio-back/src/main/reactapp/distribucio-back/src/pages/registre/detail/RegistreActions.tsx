@@ -200,7 +200,6 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
     })
 
     const actions:any[] = [
-
         {
             label: t('page.contingut.accio.historial.label'),
             icon: 'list',

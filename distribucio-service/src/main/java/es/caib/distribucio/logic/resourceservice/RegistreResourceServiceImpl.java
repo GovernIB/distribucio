@@ -511,7 +511,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         @Override
         public void applySingle(String code, RegistreResourceEntity entity, RegistreResource resource) throws PerspectiveApplicationException {
             try {
-                ConfigHelper.setEntitatActualCodi(entity.getEntitatCodi());
+                ConfigHelper.setEntitatActualCodi(entity.getEntitat().getCodi());
                 ArxiuDetallDto arxiuDetall = registreService.getArxiuDetall(entity.getId());
                 resource.setArxiuDetall( arxiuDetall );
             } catch (Exception ignore) {}
@@ -668,7 +668,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
         @Override
         public List<RegistreResource> generateData(String code, RegistreResourceEntity entity, Serializable params) throws ReportGenerationException {
-            ConfigHelper.setEntitatActualCodi(entity.getEntitatCodi());
+            ConfigHelper.setEntitatActualCodi(entity.getEntitat().getCodi());
             return List.of(objectMappingHelper.newInstanceMap(entity, RegistreResource.class));
         }
 
