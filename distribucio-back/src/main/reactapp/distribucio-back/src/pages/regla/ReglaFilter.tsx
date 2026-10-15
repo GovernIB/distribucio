@@ -57,9 +57,9 @@ const springFilterBuilder = (data: any) =>
         data?.activa && builder.equals('activa', true, data.activa === 'ACTIVES'),
         builder.eq('presencial', data?.presencial ? `'${data.presencial}'` : undefined),
         builder.eq('tipus', data?.tipus ? `'${data.tipus}'` : undefined),
-        builder.eq('unitatDesti.id', data?.unitatDesti?.id),
-        builder.eq('bustiaDesti.id', data?.bustiaDesti?.id),
-        builder.eq('backofficeDesti.id', data?.backoffice?.id)
+        data?.tipus === 'UNITAT' && builder.eq('unitatDesti.id', data?.unitatDesti?.id),
+        data?.tipus === 'BUSTIA' && builder.eq('bustiaDesti.id', data?.bustiaDesti?.id),
+        data?.tipus === 'BACKOFFICE' && builder.eq('backofficeDesti.id', data?.backoffice?.id)
     );
 
 export const ReglaFilter: React.FC<any> = (props) => {

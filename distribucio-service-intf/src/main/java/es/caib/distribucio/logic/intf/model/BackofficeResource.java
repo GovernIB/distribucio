@@ -63,6 +63,7 @@ public class BackofficeResource extends BaseResource<Long> {
     private Integer intents;
     private Integer tempsEntreIntents;
 
+    @NotNull
     private BackofficeTipusEnumDto tipus;
 
     private Boolean enviamentEmail;

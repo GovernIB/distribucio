@@ -49,11 +49,12 @@ public class ReglaResourceValidValidator implements ConstraintValidator<ReglaRes
                 && isBlank(resource.getServeiCodiFiltre())
                 && resource.getUnitatOrganitzativaFiltre() == null
                 && resource.getBustiaFiltre() == null) {
-            notNullViolation(context, ReglaResource.Fields.assumpteCodiFiltre);
-            notNullViolation(context, ReglaResource.Fields.procedimentCodiFiltre);
-            notNullViolation(context, ReglaResource.Fields.serveiCodiFiltre);
-            notNullViolation(context, ReglaResource.Fields.unitatOrganitzativaFiltre);
-            notNullViolation(context, ReglaResource.Fields.bustiaFiltre);
+            String message = i18n("regla.validacio.codi.buit");
+            addViolation(context, ReglaResource.Fields.assumpteCodiFiltre, message);
+            addViolation(context, ReglaResource.Fields.procedimentCodiFiltre, message);
+            addViolation(context, ReglaResource.Fields.serveiCodiFiltre, message);
+            addViolation(context, ReglaResource.Fields.unitatOrganitzativaFiltre, message);
+            addViolation(context, ReglaResource.Fields.bustiaFiltre, message);
             valid = false;
         }
 

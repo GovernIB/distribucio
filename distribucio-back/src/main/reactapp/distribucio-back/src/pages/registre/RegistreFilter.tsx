@@ -1,12 +1,16 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import StyledMuiFilter from '../../components/StyledMuiFilter';
 import GridFormField, {GridButtonField} from '../../components/GridFormField';
 import * as builder from '../../util/springFilterUtils';
 import {useFormContext} from "reactlib";
-import {ROLE_ADMIN, useDistribucioContext} from "../../components/DistribucioContext.ts";
+import {ROLE_ADMIN, ROLE_ADMIN_LECTURA, useDistribucioContext} from "../../components/DistribucioContext.ts";
 
-const RegistreFilterForm: React.FC = () => {
+const RegistreFilterForm: React.FC<any> = ({isAdmin}:any) => {
     const {data} = useFormContext()
+
+    const bustiaFilter = useMemo(() => !data.inactives ?builder.eq('activa', true) :undefined, [data.inactives]);
+    const bustiaQueries = useMemo(() => !isAdmin ?['WITH_PERMISION'] :undefined, [isAdmin]);
+
     return (
         <>
             {(!data?.advanced) && <>
@@ -26,17 +30,17 @@ const RegistreFilterForm: React.FC = () => {
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="dataRecepcioInici" />
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="dataRecepcioFi" />
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="unitatOrganitzativa" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="bustia" filter={builder.eq('activa', true)} />
+                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="bustia" filter={bustiaFilter} namedQueries={bustiaQueries} />
                 <GridButtonField icon={'inbox'} size={{ xs: 12, sm: 1, md: 1 }} name="inactives" />
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="enviatPerEmail" />
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="documentacio" />
                 <GridButtonField icon={'warning'} size={{ xs: 12, sm: 1, md: 1 }} name="ambEsborranys" />
-                <GridButtonField icon={'visibility'} size={{ xs: 12, sm: 1, md: 1 }} name="annexosInterns" hidden={!data?.isAdmin} />
+                <GridButtonField icon={'visibility'} size={{ xs: 12, sm: 1, md: 1 }} name="annexosInterns" hidden={!isAdmin} />
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="backoffice" valueField={"codi"} />
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="estat" />
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="procesEstat" />
                 <GridButtonField icon={'error'} size={{ xs: 12, sm: 1, md: 1 }} name="ambErrors" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="sobreescriure" hidden={!data?.isAdmin} />
+                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="sobreescriure" hidden={!isAdmin} />
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="nombreAnnexes" />
                 <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="procediment" valueField={"codiSia"}
                                additionalOpctions={(q) => q ?[{ id: q, description: `${q} - (No trobat)` }] :[]}/>
@@ -54,10 +58,6 @@ const springFilterBuilder = (data: any, setNamedQuery?: (value:string[]) => void
     // UNITAT_ORGANITZATIVA -> builder.eq('pare.unitatOrganitzativa.id', data?.unitatOrganitzativa?.id),
     if (data?.unitatOrganitzativa)
         namedQueries.push(`UNITAT_ORGANITZATIVA#${data?.unitatOrganitzativa?.id}`)
-
-    // ACTIVES -> builder.eq('pare.activa', false),
-    if (!data?.inactives)
-        namedQueries.push(`ACTIVES`)
 
     if (data?.nombreAnnexes)
         namedQueries.push(`NOMBRE_ANNEXOS#${data?.nombreAnnexes}`)
@@ -124,18 +124,16 @@ const springFilterBuilder = (data: any, setNamedQuery?: (value:string[]) => void
 
 export const RegistreFilter: React.FC<any> = (props) => {
     const { currentRole } = useDistribucioContext()
+    const isAdmin = currentRole == ROLE_ADMIN || currentRole == ROLE_ADMIN_LECTURA
     return (
         <StyledMuiFilter
             resourceName="registreResource"
             code="FILTER"
-            springFilterBuilder={(data:any) => springFilterBuilder(data, props.onNamedQueriesChange)}
+            springFilterBuilder={(data:any) => springFilterBuilder({...data, isAdmin}, props.onNamedQueriesChange)}
             advancedSearch
-            defaultData={{
-                isAdmin: currentRole == ROLE_ADMIN
-            }}
             {...props}
         >
-            <RegistreFilterForm />
+            <RegistreFilterForm isAdmin={isAdmin} />
         </StyledMuiFilter>
     );
 };

@@ -8,8 +8,8 @@ import StyledMuiGrid, { ToolbarButton } from '../../components/StyledMuiGrid';
 import { ReglaFilter } from './ReglaFilter';
 import ReglaFormContent from './ReglaFormContent';
 import { useReglaAccions, useReglaMassiveAccions, useReglaRowOrderChange } from './ReglaAccions';
-import { useAplicarManualment } from './ReglaAplicarManualment';
 import { useReglaSimulador } from './ReglaSimulador';
+import {ROLE_ADMIN, useDistribucioContext} from "../../components/DistribucioContext.ts";
 
 /** Nom: mostra un avís si la unitat organitzativa de filtre ha quedat obsoleta (reglaList.jsp: nomTemplate). */
 const ReglaNomCell = ({ row }: any) => {
@@ -125,15 +125,16 @@ export const ReglaGrid: React.FC = () => {
     const datagridApiRef = useGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
 
+    const {currentRole} = useDistribucioContext();
+    const isAdmin = currentRole == ROLE_ADMIN
+
     const refresh = () => apiRef.current?.refresh?.();
-    const { handleShow: handleAplicarManualment, component: aplicarManualmentComponent } =
-        useAplicarManualment(refresh);
     const {
         handleShow: handleSimular,
         disponible: simularDisponible,
         component: simuladorComponent,
     } = useReglaSimulador();
-    const accions = useReglaAccions(refresh, handleAplicarManualment);
+    const {actions, components} = useReglaAccions(refresh);
     const { actions: massiveActions, components: massiveComponents } = useReglaMassiveAccions(refresh);
     const handleRowOrderChange = useReglaRowOrderChange(refresh, datagridApiRef);
 
@@ -168,7 +169,7 @@ export const ReglaGrid: React.FC = () => {
                     ]}
                     paginationActive
                     fixedSortModel={fixedSortModel}
-                    rowReordering
+                    rowReordering={isAdmin}
                     onRowOrderChange={handleRowOrderChange}
                     popupEditActive
                     popupEditFormContent={<ReglaFormContent />}
@@ -181,12 +182,12 @@ export const ReglaGrid: React.FC = () => {
                     }}
                     rowHideUpdateButton
                     rowHideDeleteButton
-                    rowAdditionalActions={accions}
+                    rowAdditionalActions={actions}
                     toolbarMassiveActions={massiveActions}
-                    selectionActive
+                    selectionActive={isAdmin || undefined}
                 />
                 {massiveComponents}
-                {aplicarManualmentComponent}
+                {components}
                 {simuladorComponent}
             </CardPage>
         </GridPage>

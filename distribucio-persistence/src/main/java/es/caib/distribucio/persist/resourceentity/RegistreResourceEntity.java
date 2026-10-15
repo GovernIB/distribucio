@@ -198,7 +198,7 @@ public class RegistreResourceEntity extends ContingutResourceEntity<RegistreReso
 
     @Column(name = "unitat_adm", length = 21, nullable = false)
     private String unitatAdministrativaCodi;
-    @Column(name = "unitat_adm_desc", length = 300)
+    @Column(name = "unitat_adm_desc", length = 300, insertable = false, updatable = false)
     private String unitatAdministrativaDescripcio;
 
     @Column(name = "back_codi", length = 20)

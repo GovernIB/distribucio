@@ -208,7 +208,7 @@ public class RegistreAnnexResource extends BaseResource<Long> {
 		private String numero;
 		private RegistreNumeroCopiaEnumDto numeroCopia;
 		private ArxiuFirmaTipusEnumDto tipusFirma;
-		private Date dataAnotacioInici = Date.from(LocalDate.now().minusMonths(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
+		private LocalDate dataAnotacioInici = LocalDate.from(LocalDate.now().minusMonths(3).atStartOfDay(ZoneId.systemDefault()));
 		private Date dataAnotacioFi;
 	}
 

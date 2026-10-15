@@ -7,7 +7,6 @@ import es.caib.distribucio.logic.intf.base.model.BaseAuditableResource;
 import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
-import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaAccioDto;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaEstatDto;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaTipusDto;
@@ -30,8 +29,7 @@ import java.util.List;
         descriptionField = "parametres",
         accessConstraints = {
                 @ResourceAccessConstraint(
-                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-                        roles = { BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER },
+                        type = ResourceAccessConstraint.ResourceAccessConstraintType.AUTHENTICATED,
                         grantedPermissions = { PermissionEnum.READ, PermissionEnum.WRITE, PermissionEnum.CREATE }
                 )
         },

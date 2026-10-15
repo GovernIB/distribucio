@@ -10,11 +10,11 @@ export const useBustiaPermisosColumns = () => {
     return [
         {
             field: 'subjectType',
-            sortable: false,
+            // sortable: false,
             flex: 2
         }, {
             field: 'subjectValue',
-            sortable: false,
+            // sortable: false,
             flex: 4
         }, {
             field: 'writeAllowed',

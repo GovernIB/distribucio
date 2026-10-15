@@ -9,12 +9,15 @@ import {ROLE_ADMIN, useDistribucioContext} from "../../components/DistribucioCon
 import {useSincronitzar} from "./actions/Sincronitzar.tsx";
 import {Icon, Tooltip} from "@mui/material";
 import {formatDate} from "../../util/dateUtils.ts";
+import {GridSortDirection} from "@mui/x-data-grid-pro";
 
 const columns: MuiDataGridColDef[] = [
     { field: 'codi', flex: 1 },
     { field: 'denominacio', flex: 3 },
-    { field: 'unitatSuperior', flex: 2 },
-    { field: 'unitatArrel', flex: 2 },
+    { field: 'unitatSuperior', flex: 2,
+        sortProcessor: (_field: string, sort: GridSortDirection) => [{ field: 'unitatSuperior.denominacio', sort }] },
+    { field: 'unitatArrel', flex: 2,
+        sortProcessor: (_field: string, sort: GridSortDirection) => [{ field: 'unitatArrel.denominacio', sort }] },
     { field: 'estat', flex: 1 },
 ];
 

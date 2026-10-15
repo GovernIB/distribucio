@@ -109,6 +109,7 @@ export const useBustiaActions = (refresh?: () => void) => {
         {
             label: t('page.bustia.accio.moureAnotacions.label'),
             icon: 'turn_right',
+            action: 'MOURE_ANOTACIO',
             showInMenu: true,
             onClick: handleShow,
         },

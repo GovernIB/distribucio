@@ -204,9 +204,6 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
                 String code,
                 List<BustiaResourceEntity> entities,
                 List<BustiaResource> resources) {
-            if (!authenticationHelper.isCurrentUserInRole(BaseConfig.ROLE_ADMIN)) {
-                return true;
-            }
             List<Long> ids = entities.stream().
                     map(BustiaResourceEntity::getId).
                     collect(Collectors.toList());

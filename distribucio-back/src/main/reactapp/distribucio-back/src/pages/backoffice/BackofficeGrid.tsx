@@ -4,7 +4,7 @@ import {useTranslation} from "react-i18next";
 import StyledMuiGrid from "../../components/StyledMuiGrid.tsx";
 import BackofficeFilter from "./BackofficeFilter.tsx";
 import React from "react";
-import {useDistribucioContext} from "../../components/DistribucioContext.ts";
+import {ROLE_ADMIN, useDistribucioContext} from "../../components/DistribucioContext.ts";
 import Grid from "@mui/material/Grid";
 import GridFormField from "../../components/GridFormField.tsx";
 import {useBackofficeActions, useBackofficeMassiveActions} from "./detail/BackofficeActions.tsx";
@@ -38,6 +38,9 @@ export const BackofficeGrid = () => {
     const apiRef = useMuiDataGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
 
+    const {currentRole} = useDistribucioContext();
+    const isAdmin = currentRole == ROLE_ADMIN
+
     const refresh = () => {
         apiRef.current?.refresh()
     }
@@ -68,7 +71,7 @@ export const BackofficeGrid = () => {
 
                     rowAdditionalActions={actions}
                     toolbarMassiveActions={massiveActions}
-                    selectionActive
+                    selectionActive={isAdmin || undefined}
                     paginationActive
                 />
                 {components}

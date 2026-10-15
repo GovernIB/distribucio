@@ -24,8 +24,7 @@ import java.util.Date;
         descriptionField = "elementNom",
         accessConstraints = {
                 @ResourceAccessConstraint(
-                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-                        roles = { BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER },
+                        type = ResourceAccessConstraint.ResourceAccessConstraintType.AUTHENTICATED,
                         grantedPermissions = { PermissionEnum.READ, PermissionEnum.CREATE }
                 )
         }

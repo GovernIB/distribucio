@@ -23,11 +23,11 @@ const AclEntryForm: React.FC = () => {
 }
 const defaultColumns = [{
     field: 'subjectType',
-    sortable: false,
+    // sortable: false,
     flex: 2
 }, {
     field: 'subjectValue',
-    sortable: false,
+    // sortable: false,
     flex: 5
 }, {
     field: 'readAllowed',

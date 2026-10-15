@@ -110,7 +110,7 @@ const EMGrid = () => {
             onClick: handleOpen,
         },
         ...actions,
-    ], [t])
+    ], [t, actions])
 
     const intervalTime = 5;
     const {isRunning, handleToggle} = useToogleInterval(intervalTime * 1000, refresh)

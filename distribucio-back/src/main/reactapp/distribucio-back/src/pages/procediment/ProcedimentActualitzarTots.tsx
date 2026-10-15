@@ -15,7 +15,7 @@ const usePolling = () => {
     const [progres, setProgres] = useState<UpdateProgressDto | undefined>(undefined);
     const [finished, setFinished] = useState(true);
 
-    const { startPolling } = usePollingArtifactAction('serveiResource', {
+    const { startPolling } = usePollingArtifactAction('procedimentResource', {
         intervalMs: TEMPS_REFRES_PROGRES,
         stopCondition: (data: UpdateProgressDto) =>
             data?.estat === 'FINALITZAT' || data?.estat === 'ERROR',
@@ -105,7 +105,7 @@ const useProcedimentActualitzarTots = (refresh?: () => void) => {
         <>
             <FormActionDialog
                 apiRef={apiRef}
-                resourceName="serveiResource"
+                resourceName="procedimentResource"
                 action="ACTUALITZAR"
                 title={t('page.procediments.accio.actualitzarTots.title')}
                 buttons={[

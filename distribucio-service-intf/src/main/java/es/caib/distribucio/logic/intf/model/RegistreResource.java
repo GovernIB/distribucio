@@ -195,7 +195,7 @@ import java.util.*;
                         accessConstraints = {
                                 @ResourceAccessConstraint(
                                         type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-                                        roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER},
+                                        roles = {BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_USER},
                                         grantedPermissions = {PermissionEnum.WRITE}
                                 ),
                         }
@@ -361,6 +361,7 @@ public class RegistreResource extends ContingutResource {
 
     @Transient private RegistreProcesEstatSimpleEnumDto procesEstatSimple;
     @Transient private boolean reintentsEsgotat;
+    @Transient private boolean bustiaActiva;
     @Transient private int maxReintents;
     @Transient private ArxiuDetallDto arxiuDetall;
 
@@ -433,7 +434,7 @@ public class RegistreResource extends ContingutResource {
         private Date dataRecepcioFi;
         private ResourceReference<UnitatOrganitzativaResource, Long> unitatOrganitzativa;
         private ResourceReference<BustiaResource, Long> bustia;
-        private boolean inactives = true;
+        private boolean inactives;
         private boolean enviatPerEmail;
         private RegistreTipusDocFisicaEnumDto documentacio;
         private boolean ambEsborranys;
@@ -533,11 +534,12 @@ public class RegistreResource extends ContingutResource {
     @Getter
     @Setter
     @FieldNameConstants
-    public static class DescarregarMassiu extends MassiveForm {
+    public static class DescarregarMassiu implements Serializable {
 
         @NotEmpty
         @ResourceField(onChangeActive = true)
         private List<Long> ids;
+        private boolean massive;
 
         private boolean estructuraCarpetes;
         private boolean versioImprimible;

@@ -184,7 +184,12 @@ public class ExecucioMassivaResourceServiceImpl extends BaseMutableResourceServi
                     resultat.setName(nomDocument);
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new ReportGenerationException(
+                        ExecucioMassivaResource.class,
+                        execucioMassiva.getId(),
+                        code,
+                        e.getMessage()
+                );
             }
             return resultat;
         }

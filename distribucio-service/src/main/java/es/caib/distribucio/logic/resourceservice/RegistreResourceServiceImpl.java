@@ -170,6 +170,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             List<Predicate> predicates = new ArrayList<>();
             Join<BustiaResourceEntity, ContingutResourceEntity<?>> pareJoin = root.join("pare", JoinType.LEFT);
             Join<BustiaResourceEntity, BustiaResourceEntity> pareBustia = cb.treat(pareJoin, BustiaResourceEntity.class);
+            boolean isUser = List.of(authenticationHelper.getCurrentUserRoles()).contains(BaseConfig.ROLE_USER);
 
             /// Entitat
             if (entitatActualId != null) {
@@ -177,13 +178,12 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             }
 
             /// Permisos
-            boolean isUser = List.of(authenticationHelper.getCurrentUserRoles()).contains(BaseConfig.ROLE_USER);
-            if ( isUser ) {
+            if (mapaNamedQueries.containsKey("WITH_PERMISION")) {
                 Set<Serializable> ids = aclResourceHelper.findIdsWithAnyPermission(
                         ResourceType.BUSTIA,
                         List.of(PermissionEnum.READ),
                         authenticationHelper.getCurrentUserName(),
-                        new ArrayList<>(List.of(BaseConfig.ROLE_USER))
+                        new ArrayList<>(List.of(authenticationHelper.getCurrentUserRoles()))
                 );
 
                 if (ids.isEmpty()) {
@@ -275,7 +275,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                     ));
                 }
             }
-            /// INACTIVES
+            /// NOMBRE_ANNEXOS
             if (mapaNamedQueries.containsKey("NOMBRE_ANNEXOS")) {
                 Subquery<Long> subquery = query.subquery(Long.class);
                 Root<RegistreAnnexResourceEntity> annex = subquery.from(RegistreAnnexResourceEntity.class);
@@ -428,6 +428,17 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                                 ExecucioMassivaContingutEstatDto.PAUSADA)
                 )
         );
+
+        if (entity.getPare() != null && ContingutTipusEnumDto.BUSTIA.equals(entity.getPare().getTipus())) {
+            BustiaResourceEntity bustia = (BustiaResourceEntity) entity.getPare();
+            resource.setBustiaActiva(bustia.isActiva());
+
+            if (bustia.getUnitatOrganitzativa() != null
+                    && Objects.equals(bustia.getUnitatOrganitzativa().getCodi(), bustia.getUnitatOrganitzativa().getCodi())) {
+                entity.setUnitatAdministrativaDescripcio(
+                        bustia.getUnitatOrganitzativa().getDenominacio());
+            }
+        }
 
         if (resource.getPotModificar() == null) {
 //            resource.setPotModificar( aclResourceHelper.anyPermissionGranted(

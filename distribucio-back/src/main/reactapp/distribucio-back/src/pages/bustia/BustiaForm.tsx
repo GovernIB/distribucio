@@ -45,7 +45,6 @@ export const BustiaOrganigramaForm = ({entity, ...other}:any) => {
             hiddenRevertButton
             hiddenSaveButton
             hiddenDeleteButton
-            sx={{ backgroundColor: 'red' }}
             {...other}
         >
             {entity?.pendent && <Box mb={2}>
@@ -60,6 +59,7 @@ export const BustiaOrganigramaForm = ({entity, ...other}:any) => {
                 title={t('component.AclPermissionManager.title')}
                 columns={useBustiaPermisosColumns()}
                 formContent={<BustiaPermisosForm/>}
+                additionalData={{ readAllowed: true }}
                 autoHeight
             />
         </MuiForm>

@@ -9,6 +9,7 @@ import ContingutFilter from './ContingutFilter';
 import useContingutAccions from './ContingutAccions';
 import useContingutHistorialDialog from './actions/ContingutHistorialDialog';
 import useContingutDetailDialog from './actions/ContingutDetailDialog';
+import {GridSortDirection} from "@mui/x-data-grid-pro";
 
 const ContingutNomCell: React.FC<{ params: any }> = ({ params }) => {
     const { t } = useTranslation();
@@ -105,7 +106,8 @@ const ContingutPathCell: React.FC<{ params: any }> = ({ params }) => {
 
 const columns: MuiDataGridColDef[] = [
     { field: 'nom', flex: 3, renderCell: (params: any) => <ContingutNomCell params={params} /> },
-    { field: 'createdByFullName', flex: 1.5 },
+    { field: 'createdByFullName', flex: 1.5,
+        sortProcessor: (_field: string, sort: GridSortDirection) => [{ field: 'createdBy', sort }] },
     {
         field: 'createdDate',
         flex: 1,

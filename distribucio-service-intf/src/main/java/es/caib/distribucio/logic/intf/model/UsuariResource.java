@@ -79,6 +79,7 @@ public class UsuariResource extends BaseResource<String> {
 	 * {@code FieldOptionsProvider} registrat a {@code UsuariResourceServiceImpl} amb els mateixos
 	 * valors que el desplegable de la JSP.
 	 */
+    @NotNull
 	@Size(max = 2)
 	@ResourceField(enumType = true)
 	private String idioma;

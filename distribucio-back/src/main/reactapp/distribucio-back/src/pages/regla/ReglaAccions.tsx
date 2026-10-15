@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useBaseAppContext, useConfirmDialogButtons, useResourceApiService, type MuiDataGridProps } from 'reactlib';
+import { useBaseAppContext, useConfirmDialogButtons, useResourceApiService } from 'reactlib';
 import type { MassiveActionProps } from '../../components/MassiveActionSelector';
+import useAplicarManualment from "./ReglaAplicarManualment.tsx";
 
 const ACCIO_ACTIVAR = 'ACTIVAR';
 const ACCIO_DESACTIVAR = 'DESACTIVAR';
@@ -11,9 +12,7 @@ const ACCIO_AVALL = 'AVALL';
 const ACCIO_MOURE = 'MOURE';
 const ACCIO_APLICAR_MANUALMENT = 'APLICAR_MANUALMENT';
 
-type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
-
-export const useReglaAccions = (refresh: () => void, aplicarManualment: (id: any) => void): AccionsFila => {
+export const useReglaAccions = (refresh: () => void) => {
     const { t } = useTranslation();
     const { temporalMessageShow } = useBaseAppContext();
     const { isReady: apiIsReady, artifactAction: apiArtifactAction } = useResourceApiService('reglaResource');
@@ -31,8 +30,9 @@ export const useReglaAccions = (refresh: () => void, aplicarManualment: (id: any
                 temporalMessageShow(t('page.regla.accio.error'), error?.description ?? error?.message, 'error')
             );
     };
+    const { handleShow: handleAplicarManualment, component: aplicarManualmentComponent } = useAplicarManualment(refresh);
 
-    return [
+    const actions = [
         {
             label: t('page.regla.accio.modificar'),
             icon: 'edit',
@@ -46,7 +46,7 @@ export const useReglaAccions = (refresh: () => void, aplicarManualment: (id: any
             showInMenu: true,
             action: ACCIO_APLICAR_MANUALMENT,
             disabled: (row: any) => !row?.activa,
-            onClick: (id: any) => aplicarManualment(id),
+            onClick: (id: any) => handleAplicarManualment(id),
         },
         {
             label: t('page.regla.accio.amunt'),
@@ -88,6 +88,12 @@ export const useReglaAccions = (refresh: () => void, aplicarManualment: (id: any
             clickTriggerDelete: true,
         },
     ];
+
+    const components = <>
+        {aplicarManualmentComponent}
+    </>
+
+    return { actions, components };
 };
 
 /** Accions massives del manteniment de regles: activar/desactivar/esborrar sobre les regles seleccionades. */

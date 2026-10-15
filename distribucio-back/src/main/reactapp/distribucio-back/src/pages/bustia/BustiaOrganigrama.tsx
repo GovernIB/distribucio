@@ -2,7 +2,7 @@ import Load from "../../components/Load.tsx";
 import React, {useEffect, useMemo, useState} from "react";
 import {FormApi, GridPage, useBaseAppContext, useMuiFormDialogApiRef, useResourceApiService} from "reactlib";
 import {useTranslation} from "react-i18next";
-import {useDistribucioContext} from "../../components/DistribucioContext.ts";
+import {ROLE_ADMIN, useDistribucioContext} from "../../components/DistribucioContext.ts";
 import {TreeView} from "../../components/TreeView.tsx";
 import {CardPage} from "../../components/CardData.tsx";
 import BustiaFilter from "./BustiaFilter.tsx";
@@ -140,7 +140,8 @@ export const useOrganigrama = (props:any) => {
 
 export const BustiaOrganigrama = () => {
     const { t } = useTranslation();
-    const { currentEntitatId } = useDistribucioContext();
+    const { currentEntitatId, currentRole } = useDistribucioContext();
+    const isAdmin = currentRole == ROLE_ADMIN
 
     const [entity, setEntity] = useState<any>();
     const [springFilter, setSpringFilter] = React.useState<string>();
@@ -250,6 +251,7 @@ export const BustiaOrganigrama = () => {
                                 icon={'add'}
                                 onClick={create}
                                 color={'primary'}
+                                hidden={!isAdmin}
                             >
                                 {t('page.bustia.accio.new.label')}
                             </ToolbarButton>
@@ -262,7 +264,7 @@ export const BustiaOrganigrama = () => {
                     </Grid>
                     <Grid size={8}>
                         <Load value={entity} noEffect>
-                            <BustiaOrganigramaForm apiRef={formApiRef} entity={entity} toolbarElementsWithPositions={[
+                            <BustiaOrganigramaForm apiRef={formApiRef} entity={entity} toolbarElementsWithPositions={isAdmin?[
                                 {
                                     position: 2,
                                     element: <IconButton title={t('common.update')} onClick={update}><Icon>save</Icon></IconButton>,
@@ -277,7 +279,7 @@ export const BustiaOrganigrama = () => {
                                         actions={additionalActions}
                                     />,
                                 }
-                            ]}/>
+                            ]:[]}/>
                         </Load>
                         {components}
                     </Grid>
