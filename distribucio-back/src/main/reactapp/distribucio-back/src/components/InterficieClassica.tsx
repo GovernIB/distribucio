@@ -5,10 +5,6 @@ import Icon from '@mui/material/Icon';
 import { useLocation } from 'react-router-dom';
 import { useResourceApiContext } from 'reactlib';
 
-// Rutes del SPA que no tenen pantalla equivalent al JSP. Per a aquestes anem a l'arrel de
-// l'aplicació antiga i deixem que DistribucioController.get() decideixi on aterrar segons el
-// rol actual (integracio / registreAdmin / registreUser).
-const RUTES_SENSE_EQUIVALENT_JSP = ['/', '/home'];
 
 // L'arrel del back antic decideix la interfície (perfil de l'usuari o la propietat
 // es.caib.distribucio.interface.defecte) i, si és la REACT, hi torna a redirigir. Amb aquest
@@ -16,7 +12,9 @@ const RUTES_SENSE_EQUIVALENT_JSP = ['/', '/home'];
 // la REACT per defecte no en podria sortir. Veure DistribucioController.getInterficieEfectiva().
 const PARAM_INTERFICIE_JSP = '?interficie=JSP';
 
-const RUTE_MAPPING_JSP = {
+// Les rutes sense pantalla equivalent al JSP van a l'arrel de l'aplicació antiga, i
+// DistribucioController.get() decideix on aterrar segons el rol actual.
+const RUTE_MAPPING_JSP: Record<string, string> = {
     '/': PARAM_INTERFICIE_JSP,
     '/home': PARAM_INTERFICIE_JSP,
     '/massiva': PARAM_INTERFICIE_JSP,
