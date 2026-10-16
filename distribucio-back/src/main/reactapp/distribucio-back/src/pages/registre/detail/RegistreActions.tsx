@@ -239,6 +239,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
             icon: 'mail',
             action: 'ENVIAR_EMAIL',
             showInMenu: true,
+            disabled: (row:any) => row.pendentExecucioMassiva,
             onClick: (id:any) => handleEnviarEmail([id], false),
         },
         {
@@ -247,6 +248,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
             action: 'REENVIAR',
             showInMenu: true,
             onClick: (id:any) => handleReenviar([id], false),
+            disabled: (row:any) => row.pendentExecucioMassiva,
             hidden: (row:any) => !row.potModificar,
         },
         {

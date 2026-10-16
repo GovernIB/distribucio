@@ -6,6 +6,7 @@ import StyledMuiGrid, { ToolbarButton } from '../../components/StyledMuiGrid';
 import ProcedimentFilter from './ProcedimentFilter';
 import useProcedimentAccions from './ProcedimentAccions';
 import useProcedimentActualitzarTots from './ProcedimentActualitzarTots';
+import {ROLE_ADMIN, useDistribucioContext} from "../../components/DistribucioContext.ts";
 
 const columns: MuiDataGridColDef[] = [
     { field: 'codiSia', flex: 1 },
@@ -20,7 +21,11 @@ const sortModel: any = [{ field: 'codiSia', sort: 'desc' }];
 export const ProcedimentGrid: React.FC = () => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
+
+    const { currentRole } = useDistribucioContext();
+    const isAdmin = currentRole == ROLE_ADMIN
     const [springFilter, setSpringFilter] = React.useState<string>();
+
     const refresh = () => apiRef.current?.refresh?.();
     const accions = useProcedimentAccions(refresh);
     const { handleShow: handleActualitzarTots, content: contentActualitzarTots } =
@@ -46,6 +51,7 @@ export const ProcedimentGrid: React.FC = () => {
                                     icon={'sync'}
                                     onClick={handleActualitzarTots}
                                     color={'primary'}
+                                    hidden={!isAdmin}
                                 >
                                     {t('page.procediments.accio.actualitzarTots.title')}
                                 </ToolbarButton>

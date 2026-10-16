@@ -497,6 +497,9 @@ public class RegistreResource extends ContingutResource {
         @NotEmpty
         private List<Long> busties = new ArrayList<>();
         private List<Long> coneixement = new ArrayList<>();
+
+        private boolean vistaMoviments = false;
+        private Long destiLogic;
     }
 
     @Getter

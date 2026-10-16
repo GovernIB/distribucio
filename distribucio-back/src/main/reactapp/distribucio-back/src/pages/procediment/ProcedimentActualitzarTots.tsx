@@ -99,6 +99,7 @@ const useProcedimentActualitzarTots = (refresh?: () => void) => {
 
     const handleCloseBackdrop = () => {
         setShowBackdrop(false);
+        apiRef.current?.close();
     };
 
     const content = (

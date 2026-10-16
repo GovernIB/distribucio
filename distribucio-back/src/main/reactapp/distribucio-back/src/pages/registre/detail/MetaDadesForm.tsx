@@ -7,6 +7,7 @@ import Icon from "@mui/material/Icon";
 import Load from "../../../components/Load.tsx";
 import * as builder from '../../../util/springFilterUtils';
 import {fieldType} from "../../metadada/MetaDadaGrid.tsx";
+import Box from "@mui/material/Box";
 
 const DadaField = ({ index, metaDada, value, onChange, required, ...other }: any) => {
     const { fields } = useFormContext()
@@ -169,12 +170,13 @@ export const MetaDadesForm = ({entity}:any) => {
     ], [])
 
     return (<>
-        <style>{`
-            .MuiToolbar-root.MuiToolbar-regular.css-1hfy7f0-MuiToolbar-root {
-                top: 0
-            }
-        `}</style>
-
+        <Box
+            sx={{
+                '.MuiToolbar-root.MuiToolbar-regular': {
+                    top: 0
+                }
+            }}
+        >
         <Load value={entity} noEffect>
         <MuiForm
             apiRef={apiRef}
@@ -211,5 +213,7 @@ export const MetaDadesForm = ({entity}:any) => {
             />
         </MuiForm>
         </Load>
+
+        </Box>
     </>)
 }

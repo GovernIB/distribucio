@@ -1,15 +1,21 @@
 import {Grid} from "@mui/material";
-import {useMuiFormDialogApiRef} from "reactlib";
+import {useFormContext, useMuiFormDialogApiRef} from "reactlib";
 import {useTranslation} from "react-i18next";
 import GridFormField from "../../../components/GridFormField.tsx";
 import FormActionDialog from "../../../components/FormActionDialog.tsx";
 import {RegistreSelector} from "./RegistreSelector.tsx";
+import Alert from "@mui/material/Alert";
 
 const EnviarViaEmailForm = () => {
     const { t } = useTranslation();
+    const {data} = useFormContext();
 
     return <Grid container direction={"row"} columnSpacing={1} rowSpacing={1}>
         <RegistreSelector disabled />
+
+        {data.massive && data.vistaMoviments && <Grid size={12}>
+            <Alert severity={'warning'}>L'enviament via email es farà dels registres diferents a partir de la selecció de moviments</Alert>
+        </Grid>}
 
         <GridFormField size={12} name="destinatari" type={'textarea'} componentProps={{ helperText: t('page.registre.accio.email.form.destinatari') }}/>
         <GridFormField size={12} name="motiu" type={'textarea'}/>
@@ -38,8 +44,8 @@ const useEnviarViaEmail = (onSuccess?: (result?: any) => void) => {
     const apiRef = useMuiFormDialogApiRef();
     // const {temporalMessageShow} = useBaseAppContext();
 
-    const handleShow = (ids:any[], massive?:boolean) :void => {
-        apiRef.current?.show?.(undefined, {ids, massive, tempIds: ids})
+    const handleShow = (ids:any[], massive?:boolean, additionalProps:any = {}) :void => {
+        apiRef.current?.show?.(undefined, {ids, massive, tempIds: ids, ...additionalProps})
     }
     // const onSuccess = () :void => {
     //     refresh?.()

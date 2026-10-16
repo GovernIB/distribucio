@@ -25,15 +25,15 @@ export const ContingutAuditoriaTab: React.FC<ContingutAuditoriaTabProps> = ({ co
                     <Typography sx={{ fontWeight: 'bold' }}>
                         {t('page.contingut.historial.auditoria.usuari')}:{' '}
                         <Typography component={'span'}>
-                            {contingutRow?.lastModifiedByFullName ??
-                                contingutRow?.lastModifiedBy ??
+                            {contingutRow?.createdByFullName ??
+                                contingutRow?.createdBy ??
                                 '-'}
                         </Typography>
                     </Typography>
                     <Typography sx={{ fontWeight: 'bold' }}>
                         {t('page.contingut.historial.auditoria.data')}:{' '}
                         <Typography component={'span'}>
-                            {data(contingutRow?.lastModifiedDate)}
+                            {data(contingutRow?.createdDate)}
                         </Typography>
                     </Typography>
                 </Box>

@@ -269,6 +269,7 @@ public class ProcedimentHelper {
 		}
 
 		EntitatEntity entitat = entitatRepository.getReferenceById(entitatId);
+        ConfigHelper.setEntitatActualCodi(entitat.getCodi());
 		msgInfo = "Inici del procés d'actualització de procediments de l'entitat " + entitat.getCodi() + " " + entitat.getNom();
 		progres.setEstat(UpdateProgressDto.Estat.INICIALITZANT);
 		logger.info(msgInfo);

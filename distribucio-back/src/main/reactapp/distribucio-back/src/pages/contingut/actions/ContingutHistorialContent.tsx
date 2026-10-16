@@ -4,18 +4,12 @@ import TabComponent from '../../../components/TabComponent';
 import ContingutLogGrid from './ContingutLogGrid';
 import ContingutMovimentGrid from './ContingutMovimentGrid';
 import ContingutAuditoriaTab from './ContingutAuditoriaTab';
-
-type ContingutHistorialContentProps = {
-    contingutId: any;
-    contingutRow: any;
-};
+import {useDetailContext} from "reactlib";
 
 /** Contingut del diàleg "Historial": les 3 pestanyes (Accions/Moviments/Auditoria). */
-export const ContingutHistorialContent: React.FC<ContingutHistorialContentProps> = ({
-    contingutId,
-    contingutRow,
-}) => {
+export const ContingutHistorialContent: React.FC = () => {
     const { t } = useTranslation();
+    const { data: contingutRow } = useDetailContext()
 
     const tabs = [
         {
@@ -26,7 +20,7 @@ export const ContingutHistorialContent: React.FC<ContingutHistorialContentProps>
         {
             value: 'moviments',
             label: t('page.contingut.historial.tab.moviments'),
-            content: <ContingutMovimentGrid contingutId={contingutId} />,
+            content: <ContingutMovimentGrid contingutId={contingutRow.id} />,
         },
         {
             value: 'auditoria',

@@ -296,7 +296,7 @@ export const ReenviarForm = ({ hideAmbCopia }: { hideAmbCopia?: boolean } = {}) 
             <Grid size={12}><BustiaGrid/></Grid>
             {!hideAmbCopia && <GridFormField size={12} name="ambCopia" type={'checkbox'}
                                              componentProps={{ helperText: todosContinguts ?t('component.RegistreReenviar.todosContinguts') :undefined }}
-                                             disabled={todosContinguts} />}
+                                             disabled={todosContinguts} hidden={!!data.destiLogic} />}
             <GridFormField size={12} name="comentari" type={'textarea'}/>
         </Grid>
     </Grid>
@@ -324,8 +324,8 @@ const useReenviar = (onSuccess?: (result?: any) => void) => {
     const apiRef = useMuiFormDialogApiRef();
     // const {temporalMessageShow} = useBaseAppContext();
 
-    const handleShow = (ids:any[], massive?:boolean) :void => {
-        apiRef.current?.show?.(undefined, {ids, massive, tempIds: ids})
+    const handleShow = (ids:any[], massive?:boolean, additionalProps:any = {}) :void => {
+        apiRef.current?.show?.(undefined, {ids, massive, tempIds: ids, ...additionalProps})
     }
     // const onSuccess = () :void => {
     //     refresh?.()

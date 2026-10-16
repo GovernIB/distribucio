@@ -178,7 +178,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             }
 
             /// Permisos
-            if (mapaNamedQueries.containsKey("WITH_PERMISION")) {
+            if ( isUser ) {
                 Set<Serializable> ids = aclResourceHelper.findIdsWithAnyPermission(
                         ResourceType.BUSTIA,
                         List.of(PermissionEnum.READ),
@@ -435,7 +435,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
             if (bustia.getUnitatOrganitzativa() != null
                     && Objects.equals(bustia.getUnitatOrganitzativa().getCodi(), bustia.getUnitatOrganitzativa().getCodi())) {
-                entity.setUnitatAdministrativaDescripcio(
+                resource.setUnitatAdministrativaDescripcio(
                         bustia.getUnitatOrganitzativa().getDenominacio());
             }
         }
@@ -499,7 +499,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 resource.setPotModificar(isAdmin ||
                         Objects.equals(resource.getAgafatPer().getId(), authenticationHelper.getCurrentUserName()) );
             } else {
-                resource.setPotModificar( isAdmin || permesesIds.contains(new BigDecimal(resource.getPare().getId())) );
+                resource.setPotModificar( isAdmin || ( resource.getPare() != null && permesesIds.contains(new BigDecimal(resource.getPare().getId()))) );
             }
         }
 
@@ -954,7 +954,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                             params.getIds().get(0),
                             adreces,
                             params.getMotiu(),
-                            false,
+                            params.isVistaMoviments(),
                             authenticationHelper.getCurrentUserRoles()[0]
                     );
 
@@ -1011,7 +1011,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             if (params.isMassive()) {
                 List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
                 Map<String, Object> map = new HashMap<>();
-                map.put("isVistaMoviments", false);
+                map.put("isVistaMoviments", params.isVistaMoviments());
                 map.put("destins", params.getBusties());
                 map.put("destinsUsuari", destinsUsuari);
                 map.put("deixarCopia", params.isAmbCopia());
@@ -1042,7 +1042,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                         params.getComentari(),
                         params.getConeixement().toArray(Long[]::new),
                         destinsUsuari,
-                        null);
+                        params.getDestiLogic());
 
                 Map<String, String> map = new HashMap<>();
                 map.put("numero", registre.getNumero());

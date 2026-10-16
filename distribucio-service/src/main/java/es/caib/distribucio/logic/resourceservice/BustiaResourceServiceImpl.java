@@ -120,8 +120,7 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
             }
 
             /// Permisos
-            boolean isUser = List.of(authenticationHelper.getCurrentUserRoles()).contains(BaseConfig.ROLE_USER);
-            if ( isUser ) {
+            if ( mapaNamedQueries.containsKey("WITH_PERMISION") ) {
                 Set<Serializable> ids = aclResourceHelper.findIdsWithAnyPermission(
                         ResourceType.BUSTIA,
                         List.of(PermissionEnum.READ),

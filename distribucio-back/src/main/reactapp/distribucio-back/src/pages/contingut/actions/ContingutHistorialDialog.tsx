@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import Box from '@mui/material/Box';
-import { MuiDialog, useCloseDialogButtons } from 'reactlib';
+import {MuiDetail, MuiDialog, useCloseDialogButtons} from 'reactlib';
 import ContingutHistorialContent from './ContingutHistorialContent';
 
 export const useContingutHistorialDialog = () => {
@@ -30,9 +29,9 @@ export const useContingutHistorialDialog = () => {
             buttons={closeButtons}
             buttonCallback={() => handleClose()}
         >
-            <Box>
-                <ContingutHistorialContent contingutId={contingut?.id} contingutRow={contingut} />
-            </Box>
+            <MuiDetail hiddenToolbar id={contingut?.id} resourceName={'registreResource'} >
+                <ContingutHistorialContent />
+            </MuiDetail>
         </MuiDialog>
     );
 
