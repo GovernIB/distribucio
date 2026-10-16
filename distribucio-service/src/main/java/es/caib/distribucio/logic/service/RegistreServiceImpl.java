@@ -1680,7 +1680,10 @@ public class RegistreServiceImpl implements RegistreService {
 			anotacioPerBackoffice.setAssumpteTipusCodi(registreEntity.getAssumpteTipusCodi());
 			anotacioPerBackoffice.setAssumpteTipusDescripcio(registreEntity.getAssumpteTipusDescripcio());
 			anotacioPerBackoffice.setAssumpteCodiCodi(registreEntity.getAssumpteCodi());
-			anotacioPerBackoffice.setProcedimentCodi(registreEntity.getProcedimentCodi());
+			// Per evitar problemes als backoffices se seguirá informant en el codi de procediment el codi SIA del servei
+			anotacioPerBackoffice.setProcedimentCodi(registreEntity.getProcedimentCodi() != null ? 
+					registreEntity.getProcedimentCodi()
+					:registreEntity.getServeiCodi());
 			anotacioPerBackoffice.setServeiCodi(registreEntity.getServeiCodi());
 			anotacioPerBackoffice.setAssumpteCodiDescripcio(registreEntity.getAssumpteDescripcio());
 			anotacioPerBackoffice.setTransportTipusCodi(registreEntity.getTransportTipusCodi());
@@ -2697,10 +2700,10 @@ public class RegistreServiceImpl implements RegistreService {
 				entitat,
 				bustia.getUnitatOrganitzativa().getId(),
 				registre.getPare() != null? registre.getPare().getId() : null,
-				registre.getProcedimentCodi(),
-				registre.getProcedimentCodi() != null
-                        ?registre.getServeiCodi()
-                        :registre.getTramitCodi(),
+				registre.getProcedimentCodi() != null ?
+                        registre.getProcedimentCodi()
+                        :registre.getServeiCodi(),
+                registre.getTramitCodi(),
 				registre.getAssumpteCodi(),
 				registre.getPresencial());
 		ClassificacioResultatDto classificacioResultat = new ClassificacioResultatDto();
