@@ -308,7 +308,10 @@ const useOpcions = (href?: string, hrefParams?: any): OptionItem[] => {
             setOptions([]);
             return;
         }
-        requestHref(apiUrl + href, hrefParams)
+        // L'apiUrl pot arribar amb barra final o sense (amb Vite ve de VITE_API_URL, '.../api/'; a
+        // l'app desplegada es construeix com a '<base>/api'): s'uneixen sempre amb una sola barra.
+        const base = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+        requestHref(base + '/' + href, hrefParams)
             .then((state) => {
                 // Ketting tria com interpretar la resposta pel content-type: si no arriba JSON
                 // (p. ex. una pàgina HTML després d'una redirecció) `data` és un text, i passar-lo
