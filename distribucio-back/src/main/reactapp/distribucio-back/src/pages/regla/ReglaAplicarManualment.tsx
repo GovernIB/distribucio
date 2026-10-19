@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert, Box } from '@mui/material';
 import { useBaseAppContext, useConfirmDialogButtons, useMuiContentDialog, useResourceApiService } from 'reactlib';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
+import { icons } from '../../util/icons';
 
 const ACCIO_APLICAR_MANUALMENT = 'APLICAR_MANUALMENT';
 
@@ -87,7 +88,7 @@ export const useAplicarManualment = (refresh: () => void) => {
                 {
                     value: true,
                     text: t('page.regla.accio.aplicarManualment'),
-                    icon: 'settings',
+                    icon: icons.configuracio,
                     componentProps: { variant: 'contained' },
                 },
                 confirmDialogButtons[0],

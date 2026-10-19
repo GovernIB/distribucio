@@ -14,11 +14,11 @@ import * as builder from '../../util/springFilterUtils';
 const EntitatFilterForm: React.FC = () => {
     return (
         <>
-            <GridFormField size={{ xs: 12, sm: 6, md: 1.8 }} name="codi" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.8 }} name="nom" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 1.8 }} name="cif" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 1.8 }} name="codiDir3" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 1.4 }} name="activa" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 2.1 }} name="codi" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 3.4 }} name="nom" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 2.1 }} name="cif" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 2.1 }} name="codiDir3" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 1.55 }} name="activa" />
         </>
     );
 };

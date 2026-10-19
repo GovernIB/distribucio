@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { useResourceApiService } from 'reactlib';
 import { useDistribucioContext, ROLE_SUPER, ROLE_ADMIN } from './DistribucioContext';
 import { rutaInicialPerRol } from '../util/pantalles';
+import { icons } from '../util/icons';
 
 // Icona de distintiu sobre l'avatar de l'usuari segons el rol actual (cap distintiu per a la
 // resta de rols). S'usa a headerAuthBadgeIcon de MuiBaseApp.
@@ -37,7 +38,7 @@ export const EntitatSelector: React.FC = () => {
     if (entitats.length === 1) {
         return (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, px: 1 }}>
-                <Icon fontSize="small">domain</Icon>
+                <Icon fontSize="small">{icons.domini}</Icon>
                 <Typography variant="body2">{entitats[0].nom}</Typography>
             </Box>
         );
@@ -49,7 +50,7 @@ export const EntitatSelector: React.FC = () => {
             onChange={(event) => setCurrentEntitatId(Number(event.target.value))}
             renderValue={(value) => (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Icon fontSize="small">domain</Icon>
+                    <Icon fontSize="small">{icons.domini}</Icon>
                     {entitats.find((entitat) => entitat.id === value)?.nom ?? ''}
                 </Box>
             )}
@@ -99,7 +100,7 @@ export const RolSelector: React.FC = () => {
                 sx={{ '&.MuiButtonBase-root:hover': { bgcolor: 'transparent', cursor: 'default' } }}
             >
                 <ListItemIcon>
-                    <Icon fontSize="small">badge</Icon>
+                    <Icon fontSize="small">{icons.rol}</Icon>
                 </ListItemIcon>
                 <ListItemText>{label(currentRole)}</ListItemText>
             </MenuItem>
@@ -109,7 +110,7 @@ export const RolSelector: React.FC = () => {
         <>
             <MenuItem onClick={() => setExpanded((prev) => !prev)}>
                 <ListItemIcon>
-                    <Icon fontSize="small">badge</Icon>
+                    <Icon fontSize="small">{icons.rol}</Icon>
                 </ListItemIcon>
                 <ListItemText>{label(currentRole)}</ListItemText>
                 <Icon fontSize="small">{expanded ? 'expand_less' : 'expand_more'}</Icon>

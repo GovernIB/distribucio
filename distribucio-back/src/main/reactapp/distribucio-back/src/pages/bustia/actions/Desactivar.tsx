@@ -4,6 +4,7 @@ import {useTranslation} from "react-i18next";
 import FormActionDialog from "../../../components/FormActionDialog.tsx";
 import GridFormField from "../../../components/GridFormField.tsx";
 import * as builder from '../../../util/springFilterUtils';
+import { icons } from '../../../util/icons';
 
 const DesactivarForm = () => {
     const { data } = useFormContext();
@@ -26,7 +27,7 @@ export const Desactivar = (props: any) => {
         title={t('page.bustia.accio.desactivar.title')}
         action={"DESACTIVAR"}
         buttons={[
-            {icon: 'save', text: t('common.save'), componentProps: { variant: 'contained' }, value: true },
+            {icon: icons.desa, text: t('common.save'), componentProps: { variant: 'contained' }, value: true },
             {text: t('common.cancel'), componentProps: { variant: 'outlined' }, value: false },
         ]}
         dialogComponentProps={{ fullWidth: true, maxWidth: 'sm' }}

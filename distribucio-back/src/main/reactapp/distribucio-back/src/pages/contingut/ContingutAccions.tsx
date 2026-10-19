@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import type { MuiDataGridProps } from 'reactlib';
+import { icons } from '../../util/icons';
 
 type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
 
@@ -12,13 +13,13 @@ export const useContingutAccions = (
     return [
         {
             label: t('page.contingut.accio.detalls.label'),
-            icon: 'info',
+            icon: icons.detall,
             showInMenu: true,
             onClick: (id: any, row: any) => mostrarDetall(id, row),
         },
         {
             label: t('page.contingut.accio.historial.label'),
-            icon: 'format_list_bulleted',
+            icon: icons.llistaPunts,
             showInMenu: true,
             onClick: (id: any, row: any) => mostrarHistorial(id, row),
         },

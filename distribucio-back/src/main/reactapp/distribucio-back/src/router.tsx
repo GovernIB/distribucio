@@ -104,7 +104,7 @@ export const router = createBrowserRouter(
                         {
                             path: 'procediment',
                             element: <ProcedimentGrid />,
-                            handle: { titol: 'page.procediment.grid.title' },
+                            handle: { titol: 'page.procediments.grid.title' },
                         },
                     ],
                 },
@@ -319,7 +319,7 @@ export const router = createBrowserRouter(
                         {
                             path: 'metaDada',
                             element: <MetaDadaGrid/>,
-                            handle: { titol: 'page.metaDada.title' },
+                            handle: { titol: 'page.metadada.title' },
                         },
                     ],
                 },

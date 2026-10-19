@@ -34,6 +34,7 @@ import {useSession} from "../../../components/SessionStorageContext.tsx";
 import {useRecordNavigation} from "../../../components/RecordNavigation.tsx";
 import {REPORT_DESCARREGAR_IMPRIMIBLE, useDescarregarAnnex} from "../../annex/AnnexAccions.tsx";
 import Alert from "@mui/material/Alert";
+import { icons } from '../../../util/icons';
 
 const AnnexTab = ({entity}:any) => {
     const { isReady: apiIsReady, find: apiFind } = useResourceApiService('registreAnnexResource');
@@ -84,7 +85,7 @@ const AnnexGrid = ({entity}:any) => {
     const actions = [
         {
             label: t('page.annex.accio.descarregarImprimible'),
-            icon: 'download',
+            icon: icons.descarrega,
             report: REPORT_DESCARREGAR_IMPRIMIBLE,
             showInMenu: false,
             onClick: (id:any) => descarregar(id, REPORT_DESCARREGAR_IMPRIMIBLE)
@@ -119,7 +120,7 @@ const AnnexGrid = ({entity}:any) => {
                                         {firma.autofirma && <Box display={'flex'} alignItems={'center'}>
                                             ({t('page.annex.detall.gestioDocumental.column.autofirma')}
                                             <Tooltip title={t('page.annex.detall.firmes.autofirma.info')}>
-                                                <Icon fontSize={'small'}>info</Icon>
+                                                <Icon fontSize={'small'}>{icons.detall}</Icon>
                                             </Tooltip>)
                                         </Box>}
                                     </DetailCardContent>
@@ -232,7 +233,7 @@ const ProcessBack = ({entity, refresh}:any) => {
     return <Grid container columnSpacing={1} rowSpacing={1}>
         {entity.potModificar && (entity.procesEstat == 'BACK_COMUNICADA' || entity.procesEstat == 'BACK_REBUTJADA' || entity.procesEstat == 'BACK_ERROR') && <>
             <Grid size={12} sx={{ textAlign: 'end' }}>
-                <ToolbarButton icon={'refresh'} onClick={() => reenviarBackoffice(entity.id)} >
+                <ToolbarButton icon={icons.refresca} onClick={() => reenviarBackoffice(entity.id)} >
                     {t('page.registre.accio.reenviarBackoffice.label')}</ToolbarButton>
             </Grid>
         </>}
@@ -271,7 +272,7 @@ const ProcessAuto = ({entity, refresh}:any) => {
     const reenviar = <>
         {entity.potModificar && (entity.procesEstat == 'BACK_PENDENT') && <>
             <Grid size={12} sx={{ textAlign: 'end' }}>
-                <ToolbarButton icon={'refresh'} onClick={() => reenviarBackoffice(entity.id)} >
+                <ToolbarButton icon={icons.refresca} onClick={() => reenviarBackoffice(entity.id)} >
                     {t('page.registre.accio.reenviarBackoffice.label')}</ToolbarButton>
             </Grid>
         </>}
@@ -284,7 +285,7 @@ const ProcessAuto = ({entity, refresh}:any) => {
                    action={<>
                        {isAdmin && (entity.procesEstat == 'ARXIU_PENDENT' || entity.procesEstat == 'REGLA_PENDENT' || entity.procesEstat == 'BUSTIA_PROCESSADA') && <>
                            <Grid size={12} sx={{ textAlign: 'end' }}>
-                               <ToolbarButton icon={'refresh'} onClick={() => tornarProcessar(entity.id)} >
+                               <ToolbarButton icon={icons.refresca} onClick={() => tornarProcessar(entity.id)} >
                                    {t('page.registre.accio.tornarProcessar.label')}</ToolbarButton>
                            </Grid>
                        </>}
@@ -323,7 +324,7 @@ const copiesColumns = (t:any, id:any) => [
     },
     { field: 'pare', flex: 2,
         renderCell: (params:any) => <Tooltip title={` / ${params.row.unitatAdministrativaDescripcio} / ${params.formattedValue}`} >
-            <Box>/ <Icon>account_tree</Icon> {params.row.unitatAdministrativaDescripcio} / <Icon>inbox</Icon> {params.formattedValue}</Box>
+            <Box>/ <Icon>{icons.unitatOrganitzativa}</Icon> {params.row.unitatAdministrativaDescripcio} / <Icon>{icons.bustia}</Icon> {params.formattedValue}</Box>
         </Tooltip>
     },
     { field: 'numeroCopia', flex: 0.5,
@@ -334,8 +335,8 @@ const copiesColumns = (t:any, id:any) => [
     { field: 'id', flex: 0.5, headerName: t('page.registre.grid.isCopia'),
         renderCell: (params:any) => <>
             {params.id == id
-                ? <IconButton disabled><Icon color={"success"} >check_circle</Icon></IconButton>
-                : <IconButton><Icon>open_in_new</Icon></IconButton>
+                ? <IconButton disabled><Icon color={"success"} >{icons.correcte}</Icon></IconButton>
+                : <IconButton><Icon>{icons.obreNovaFinestra}</Icon></IconButton>
             }
         </>
     },
@@ -394,7 +395,7 @@ const InformacioRegistre = ({entity}:any) => {
                 {v}
                 {(entity.procesEstat?.includes('BACK_')) && entity.backCodi && <> - {entity.backCodi}</>}
                 {entity.procesEstat == 'REGLA_PENDENT' && entity.regla && <> - {entity.regla?.description}</>}
-                {entity.procesError && <Icon title={entity.procesError} color={'error'} fontSize={'small'}>warning</Icon>}
+                {entity.procesError && <Icon title={entity.procesError} color={'error'} fontSize={'small'}>{icons.advertencia}</Icon>}
             </Box>} inline></DetailField>
             <DetailField name={"presencial"} inline>{t(`common.boolean.${entity.presencial}`)}</DetailField>
         </DetailCard>
@@ -453,7 +454,7 @@ const InformacioRegistre = ({entity}:any) => {
                                 title={t('page.registre.accio.justificant.label')}
                                 onClick={() => justificant(entity.id)}
                                 sx={{ m:0, p:0 }}>
-                                <Icon fontSize={'small'}>download</Icon>
+                                <Icon fontSize={'small'}>{icons.descarrega}</Icon>
                             </IconButton>
                         </Box>} inline/>
                 </MuiDetail>
@@ -483,7 +484,7 @@ const Resum = ({entity}:any) => {
                                      title={t('page.registre.accio.justificant.label')}
                                      onClick={() => justificant(entity.id)}
                                      sx={{ m:0, p:0 }}>
-                                     <Icon fontSize={'small'}>download</Icon>
+                                     <Icon fontSize={'small'}>{icons.descarrega}</Icon>
                                  </IconButton>
                              </Box>
                          } isObject inline/>
@@ -496,7 +497,7 @@ const Resum = ({entity}:any) => {
                     <Typography variant="inherit" color="textSecondary">
                         {entity.procediment?.description}
                     </Typography>
-                    {entity.siaExtingit && <Icon title={t('page.procediments.extingit')} fontSize={'small'} color={'warning'}>warning</Icon>}
+                    {entity.siaExtingit && <Icon title={t('page.procediments.extingit')} fontSize={'small'} color={'warning'}>{icons.advertencia}</Icon>}
                 </Box>
             </DetailField>
             <DetailField size={6} name={"servei"} isObject inline hidden={!entity.serveiCodi}>
@@ -504,7 +505,7 @@ const Resum = ({entity}:any) => {
                     <Typography variant="inherit" color="textSecondary">
                         {entity.servei?.description}
                     </Typography>
-                    {entity.siaExtingit && <Icon title={t('page.serveis.extingit')} fontSize={'small'} color={'warning'}>warning</Icon>}
+                    {entity.siaExtingit && <Icon title={t('page.serveis.extingit')} fontSize={'small'} color={'warning'}>{icons.advertencia}</Icon>}
                 </Box>
             </DetailField>
             <DetailField size={6} name={"expedientNumero"} inline/>
@@ -587,7 +588,7 @@ const RegistreDetail = (props:any) => {
         {
             value: 'procesAuto',
             label: t('component.RegistreDetail.tabs.procesAuto'),
-            icon: 'warning',
+            icon: icons.advertencia,
             content: <ProcessAuto entity={data} refresh={refresh}/>,
             error: true,
             hidden: !(data.procesEstat == 'ARXIU_PENDENT' || data.procesEstat == 'REGLA_PENDENT' || data.procesEstat == 'BACK_PENDENT' || (data.procesEstat == 'BUSTIA_PROCESSADA' && data.procesError != null))
@@ -616,8 +617,8 @@ const RegistreDetail = (props:any) => {
 
     return (<>
         <Box display={'flex'} alignItems={'center'} flexWrap={'wrap'} bgcolor={'greyBackground'} p={1}>
-            &nbsp;/&nbsp; <Icon fontSize={'small'} >account_tree</Icon> {data.unitatAdministrativaDescripcio}
-            &nbsp;/&nbsp; <Icon fontSize={'small'} >inbox</Icon> {data.pare?.description}
+            &nbsp;/&nbsp; <Icon fontSize={'small'} >{icons.unitatOrganitzativa}</Icon> {data.unitatAdministrativaDescripcio}
+            &nbsp;/&nbsp; <Icon fontSize={'small'} >{icons.bustia}</Icon> {data.pare?.description}
             &nbsp;/&nbsp; {data.nom}
         </Box>
 
@@ -634,20 +635,20 @@ const RegistreDetail = (props:any) => {
                             :t('page.registre.detail.tramit')}
                     </Typography>
                 </Button>}
-                {data.pendentExecucioMassiva && <Icon title={t('page.registre.avisos.pendentExecucioMassiva')} color={'warning'}>schedule</Icon>}
+                {data.pendentExecucioMassiva && <Icon title={t('page.registre.avisos.pendentExecucioMassiva')} color={'warning'}>{icons.programat}</Icon>}
                 <Button
                     title={t('component.RegistreDetail.avancar')}
                     variant={avanzarPagina ?'contained' :'outlined'}
                     onClick={() => setAvanzarPagina(prev => !prev)}
                 >
-                    <Icon>fast_forward</Icon>
+                    <Icon>{icons.avanca}</Icon>
                 </Button>
                 <IconButton
                     title={t('component.CommentDialog.label')}
                     onClick={() => handleOpen(data.id, data.nom) }
                 >
                     <Badge badgeContent={data.numComentaris} color="primary" showZero>
-                        <Icon>forum</Icon>
+                        <Icon>{icons.comentaris}</Icon>
                     </Badge>
                 </IconButton>
 
@@ -655,7 +656,7 @@ const RegistreDetail = (props:any) => {
                     resourceName={'registreResource'}
                     id={data.id}
                     entity={data}
-                    buttonLabel={<><Icon sx={{ mr: 1 }}>settings</Icon>{t('common.actions')}</>}
+                    buttonLabel={<><Icon sx={{ mr: 1 }}>{icons.configuracio}</Icon>{t('common.actions')}</>}
                     actions={actions}
                     buttonProps={{ variant: 'contained' }}
                 />
@@ -793,7 +794,7 @@ export const useRegistreDetail = (options:RegistreDetailOptions) => {
         {
             value: 'prev',
             text: t('component.RecordNavigation.prev'),
-            icon: 'keyboard_double_arrow_left',
+            icon: icons.anterior,
             componentProps: { variant: 'outlined', disabled: index == 1 || navigating },
         },
         {
@@ -811,13 +812,13 @@ export const useRegistreDetail = (options:RegistreDetailOptions) => {
         },
         {
             value: 'next',
-            text: <>{t('component.RecordNavigation.next')}<Icon sx={{ ml: 1 }}>keyboard_double_arrow_right</Icon></>,
+            text: <>{t('component.RecordNavigation.next')}<Icon sx={{ ml: 1 }}>{icons.seguent}</Icon></>,
             componentProps: { variant: 'outlined', sx: { mr: 'auto' }, disabled: index == totalElem || navigating },
         },
         {
             value: 'close',
             text: t('common.close'),
-            icon: 'close',
+            icon: icons.cancela,
             componentProps: { variant: 'outlined' },
         },
     ], [t, apiIsReady, index, totalElem, navigating])

@@ -12,6 +12,7 @@ import Box from '@mui/material/Box';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
 import type { MassiveActionProps } from '../../components/MassiveActionSelector';
 import { EMPTY_SELECTION_MODEL } from '../../util/selectionModelUtils';
+import { icons } from '../../util/icons';
 
 const ACCIO_REINICIAR = 'REINICIAR_TASCA';
 
@@ -56,7 +57,7 @@ export const MonitorSistemaTasques: React.FC = () => {
     const accions: AccionsFila = [
         {
             label: t('page.monitorSistema.accio.reiniciar.label'),
-            icon: 'cached',
+            icon: icons.sincronitza,
             showInMenu: false,
             action: ACCIO_REINICIAR,
             onClick: (id: string) => reiniciar([id], 'page.monitorSistema.accio.reiniciar.ok'),
@@ -66,7 +67,7 @@ export const MonitorSistemaTasques: React.FC = () => {
     const accionsMassives: MassiveActionProps[] = [
         {
             title: t('page.monitorSistema.accio.reiniciarTotes.label'),
-            icon: 'cached',
+            icon: icons.sincronitza,
             showInMenu: false,
             action: ACCIO_REINICIAR,
             onClick: (ids: string[]) => reiniciar(ids, 'page.monitorSistema.accio.reiniciarTotes.ok'),

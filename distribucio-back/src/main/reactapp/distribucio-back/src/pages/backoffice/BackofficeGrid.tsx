@@ -1,5 +1,6 @@
 import {GridPage, useFormContext, useMuiDataGridApiRef} from "reactlib";
-import {CardPage} from "../../components/CardData.tsx";
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import {useTranslation} from "react-i18next";
 import StyledMuiGrid from "../../components/StyledMuiGrid.tsx";
 import BackofficeFilter from "./BackofficeFilter.tsx";
@@ -50,7 +51,7 @@ export const BackofficeGrid = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.backoffice.title')}>
+            <ScreenFrame icon={icons.backoffice} title={t('page.backoffice.title')}>
                 <BackofficeFilter onSpringFilterChange={setSpringFilter} />
 
                 <StyledMuiGrid
@@ -76,7 +77,7 @@ export const BackofficeGrid = () => {
                 />
                 {components}
                 {massiveComponents}
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     )
 }

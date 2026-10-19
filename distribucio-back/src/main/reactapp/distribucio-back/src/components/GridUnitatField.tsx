@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon, Tooltip } from '@mui/material';
 import { useFormContext } from 'reactlib';
 import GridFormField from './GridFormField';
+import { icons } from '../util/icons';
 
 type GridUnitatFieldProps = React.ComponentProps<typeof GridFormField> & {
     /** Estat de la unitat quan el valor no ve d'una selecció (p. ex. un valor ja desat): 'V' = vigent. */
@@ -37,9 +38,7 @@ export const GridUnitatField: React.FC<GridUnitatFieldProps> = (props) => {
                         {option.description}
                         {isObsoleta(option.data?.estat) && (
                             <Tooltip title={avis}>
-                                <Icon fontSize="small" color="inherit" sx={ICONA_OBSOLETA_SX}>
-                                    warning
-                                </Icon>
+                                <Icon fontSize="small" color="inherit" sx={ICONA_OBSOLETA_SX}>{icons.advertencia}</Icon>
                             </Tooltip>
                         )}
                     </li>
@@ -51,9 +50,7 @@ export const GridUnitatField: React.FC<GridUnitatFieldProps> = (props) => {
                         endAdornment:
                             data?.[props.name] != null && isObsoleta(estatSeleccionat) ? (
                                 <Tooltip title={avis}>
-                                    <Icon fontSize="small" color="warning">
-                                        warning
-                                    </Icon>
+                                    <Icon fontSize="small" color="warning">{icons.advertencia}</Icon>
                                 </Tooltip>
                             ) : (
                                 componentProps?.slotProps?.input?.endAdornment

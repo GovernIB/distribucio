@@ -8,7 +8,8 @@ import EntitatFilter from './EntitatFilter';
 import EntitatFormContent from './EntitatFormContent';
 import { useEntitatAccions } from './EntitatAccions';
 import { useEntitatPermisosDialog } from './EntitatPermisos';
-import { CardPage } from '../../components/CardData';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
 
 /** Perspectiva d'EntitatResource que omple el comptador de permisos de cada fila. */
@@ -71,7 +72,7 @@ export const EntitatGrid: React.FC = () => {
                             color="primary"
                             showZero
                         >
-                            <Icon>key</Icon>
+                            <Icon>{icons.permis}</Icon>
                         </Badge>
                     </IconButton>
                 ),
@@ -83,7 +84,7 @@ export const EntitatGrid: React.FC = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.entitats.grid.title')}>
+            <ScreenFrame icon={icons.entitat} title={t('page.entitats.grid.title')}>
                 <EntitatFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid
                     // title={''}
@@ -112,7 +113,7 @@ export const EntitatGrid: React.FC = () => {
                     rowAdditionalActions={accions}
                 />
                 {permisosDialog}
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

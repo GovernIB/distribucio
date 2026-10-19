@@ -25,6 +25,7 @@ import {
 import CampDetall from '../../../components/CampDetall';
 import { ROLE_ADMIN, useDistribucioContext } from '../../../components/DistribucioContext';
 import { Typography } from '@mui/material';
+import { icons } from '../../../util/icons';
 
 /**
  * Claus de metadades ENI/NTI (`annex.metaDadesMap`) -&gt; sufix de la clau d'i18n, portat de
@@ -71,10 +72,10 @@ const ENI_METADATA_LABELS: Record<string, string> = {
 
 /** Estats de {@code validacioFirmaEstat}, veure ValidacioFirmaEnum al backend. */
 const VALIDACIO_FIRMA_ICON: Record<string, { icon: string; color?: 'success' | 'error' | 'warning' }> = {
-    SENSE_FIRMES: { icon: 'block' },
-    FIRMA_VALIDA: { icon: 'edit', color: 'success' },
-    FIRMA_INVALIDA: { icon: 'edit', color: 'error' },
-    ERROR_VALIDANT: { icon: 'error', color: 'error' },
+    SENSE_FIRMES: { icon: icons.senseDades },
+    FIRMA_VALIDA: { icon: icons.modifica, color: 'success' },
+    FIRMA_INVALIDA: { icon: icons.modifica, color: 'error' },
+    ERROR_VALIDANT: { icon: icons.error, color: 'error' },
 };
 
 type AnnexDetailContentProps = {
@@ -204,7 +205,7 @@ const ValidacioFirma: React.FC<{ annex: any; onRefresh?: () => void }> = ({ anne
                         <Button
                             size="small"
                             variant="outlined"
-                            startIcon={<Icon>sync</Icon>}
+                            startIcon={<Icon>{icons.sincronitza}</Icon>}
                             onClick={validarFirmes}
                             loading={loading}
                             loadingPosition="start"
@@ -250,7 +251,7 @@ const Fitxer: React.FC<{ annex: any }> = ({ annex }) => {
                         <Button
                             size="small"
                             variant="outlined"
-                            startIcon={<Icon>download</Icon>}
+                            startIcon={<Icon>{icons.descarrega}</Icon>}
                             loading={loadingOriginal}
                             loadingPosition="start"
                             onClick={() =>
@@ -263,7 +264,7 @@ const Fitxer: React.FC<{ annex: any }> = ({ annex }) => {
                             <Button
                                 size="small"
                                 variant="outlined"
-                                startIcon={<Icon>print</Icon>}
+                                startIcon={<Icon>{icons.imprimeix}</Icon>}
                                 loading={loadingImprimible}
                                 loadingPosition="start"
                                 onClick={() =>
@@ -307,7 +308,7 @@ const Firmes: React.FC<{ annex: any }> = ({ annex }) => {
         <TableRow>
             <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'none' }}>
                 <Accordion disableGutters elevation={1} sx={{ px: 1, '&:before': { display: 'none' } }}>
-                    <AccordionSummary expandIcon={<Icon>expand_more</Icon>} sx={{ px: 0, minHeight: 0 }}>
+                    <AccordionSummary expandIcon={<Icon>{icons.desplega}</Icon>} sx={{ px: 0, minHeight: 0 }}>
                         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                             <Icon fontSize="small" sx={{ fontSize: '16px' }}>
                                 verified
@@ -371,9 +372,7 @@ const Firmes: React.FC<{ annex: any }> = ({ annex }) => {
                                                         <Icon
                                                             fontSize="small"
                                                             sx={{ verticalAlign: 'middle', ml: 0.5, fontSize: '16px' }}
-                                                        >
-                                                            info
-                                                        </Icon>
+                                                        >{icons.detall}</Icon>
                                                     </Tooltip>
                                                 )}
                                             </TableCell>
@@ -405,7 +404,7 @@ const Firmes: React.FC<{ annex: any }> = ({ annex }) => {
                                                                     })
                                                                 }
                                                             >
-                                                                <Icon fontSize="small">download</Icon>
+                                                                <Icon fontSize="small">{icons.descarrega}</Icon>
                                                             </IconButton>
                                                         </Tooltip>
                                                     </Box>
@@ -484,9 +483,7 @@ export const AnnexDetailContent: React.FC<AnnexDetailContentProps> = ({ annex, o
                     value={
                         annex?.fitxerArxiuUuid ?? (
                             <Tooltip title={t('page.annex.grid.arxiuEstat.buitAvis')}>
-                                <Icon fontSize="small" color="warning" sx={{ verticalAlign: 'middle' }}>
-                                    warning
-                                </Icon>
+                                <Icon fontSize="small" color="warning" sx={{ verticalAlign: 'middle' }}>{icons.advertencia}</Icon>
                             </Tooltip>
                         )
                     }
@@ -500,9 +497,7 @@ export const AnnexDetailContent: React.FC<AnnexDetailContentProps> = ({ annex, o
                                 {annex.concsvUrl && (
                                     <Tooltip title={t('page.annex.detall.camp.concsvUrl')}>
                                         <Link href={annex.concsvUrl} target="_blank" rel="noopener">
-                                            <Icon fontSize="small" sx={{ verticalAlign: 'middle' }}>
-                                                open_in_new
-                                            </Icon>
+                                            <Icon fontSize="small" sx={{ verticalAlign: 'middle' }}>{icons.obreNovaFinestra}</Icon>
                                         </Link>
                                     </Tooltip>
                                 )}

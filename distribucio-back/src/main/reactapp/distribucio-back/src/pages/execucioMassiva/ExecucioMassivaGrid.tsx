@@ -1,6 +1,7 @@
 import {useTranslation} from "react-i18next";
 import {GridPage, useBaseAppContext, useMuiContentDialog, useMuiDataGridApiRef} from "reactlib";
-import {CardPage} from "../../components/CardData.tsx";
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid, {ToolbarButton} from "../../components/StyledMuiGrid.tsx";
 import {Box, Chip, LinearProgress} from "@mui/material";
 import {useEMContent} from "./ExecucioMassivaContingutGrid.tsx";
@@ -89,7 +90,9 @@ const columns = [
 ]
 const sortModel:any = [{ field: 'createdDate', sort: 'desc' }]
 
-const EMGrid = () => {
+// `autoHeight`: la graella creix amb el contingut (diàleg d'execucions massives). A la pantalla pròpia
+// s'hi passa `false` perquè ocupi l'alçada de ScreenFrame i la seva barra d'eines vagi a la barra de títol.
+const EMGrid = ({ autoHeight = true }: { autoHeight?: boolean }) => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
@@ -105,7 +108,7 @@ const EMGrid = () => {
     const additionalActions = useMemo(() => [
         {
             label: t('page.massiva.accio.detail.label'),
-            icon: 'info',
+            icon: icons.detall,
             showInMenu: true,
             onClick: handleOpen,
         },
@@ -115,40 +118,43 @@ const EMGrid = () => {
     const intervalTime = 5;
     const {isRunning, handleToggle} = useToogleInterval(intervalTime * 1000, refresh)
 
-    return (<>
-        <ExecucioMassivaFilter onSpringFilterChange={setSpringFilter} />
-
-        <StyledMuiGrid
-            apiRef={apiRef}
-            resourceName="execucioMassivaResource"
-            columns={columns}
-            filter={springFilter}
-            fixedSortModel={sortModel}
-            disableColumnSorting
-            toolbarShowFilterCount
-
-            rowAdditionalActions={additionalActions}
-
-            toolbarHideRefresh
-            toolbarElementsWithPositions={[
-                {
-                    position: 2,
-                    element: <ToolbarButton
-                        // title={t('page.massiva.refresh', {segons: intervalTime})}
-                        icon={"cached"}
-                        variant={isRunning ?"contained" :"outlined"}
-                        onClick={handleToggle}
-                    >{t('page.massiva.refresh', {segons: intervalTime})}</ToolbarButton>
-                }
-            ]}
-
-            paginationActive
-            autoHeight
-            readOnly
-        />
-        {component}
-        {components}
-    </>)
+    return (
+        <>
+            <ExecucioMassivaFilter onSpringFilterChange={setSpringFilter} />
+            {isRunning}
+            <StyledMuiGrid
+                apiRef={apiRef}
+                resourceName="execucioMassivaResource"
+                columns={columns}
+                filter={springFilter}
+                fixedSortModel={sortModel}
+                disableColumnSorting
+                toolbarShowFilterCount
+                rowAdditionalActions={additionalActions}
+                toolbarHideRefresh
+                toolbarElementsWithPositions={[
+                    {
+                        position: 2,
+                        element: (
+                            <ToolbarButton
+                                // title={t('page.massiva.refresh', {segons: intervalTime})}
+                                icon={isRunning ? icons.opcioMarcada : icons.opcioDesmarcada}
+                                aria-pressed={isRunning}
+                                onClick={handleToggle}
+                            >
+                                {t('page.massiva.refresh', { segons: intervalTime })}
+                            </ToolbarButton>
+                        ),
+                    },
+                ]}
+                paginationActive
+                autoHeight={autoHeight}
+                readOnly
+            />
+            {component}
+            {components}
+        </>
+    );
 }
 
 export const ExecucioMassivaGrid = () => {
@@ -156,9 +162,9 @@ export const ExecucioMassivaGrid = () => {
 
     return (<>
          <GridPage>
-             <CardPage title={t('page.massiva.title')}>
-                <EMGrid/>
-             </CardPage>
+             <ScreenFrame icon={icons.massiva} title={t('page.massiva.title')}>
+                <EMGrid autoHeight={false}/>
+             </ScreenFrame>
          </GridPage>
     </>)
 }

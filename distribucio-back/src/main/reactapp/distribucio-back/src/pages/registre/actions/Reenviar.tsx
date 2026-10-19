@@ -12,6 +12,7 @@ import {useActions} from "../../bustia/detail/BustiaActions.tsx";
 import * as builder from "../../../util/springFilterUtils.ts";
 import StyledMuiGrid from "../../../components/StyledMuiGrid.tsx";
 import Load from "../../../components/Load.tsx";
+import { icons } from '../../../util/icons';
 
 const UsuarisPermis = ({rows}:any) => {
     const { t } = useTranslation();
@@ -40,9 +41,7 @@ const UsuarisPermis = ({rows}:any) => {
                             <TableRow>
                                 <TableCell colSpan={2}>
                                     <Box sx={{ width: '100%', textAlign: 'center', p: 2 }}>
-                                        <Icon fontSize="large" color="disabled">
-                                            block
-                                        </Icon>
+                                        <Icon fontSize="large" color="disabled">{icons.senseDades}</Icon>
                                         <Typography component="div" variant="h6" color="text.secondary">
                                             {t('component.RegistreReenviar.grid.empty')}
                                         </Typography>
@@ -84,7 +83,7 @@ const UsuarisPermis = ({rows}:any) => {
             }}
         >
             <IconButton color="primary">
-                <Icon>group</Icon>
+                <Icon>{icons.grup}</Icon>
             </IconButton>
         </Tooltip>
     );
@@ -153,7 +152,7 @@ const BustiaGrid = () => {
     const actions = [
         {
             label: t('common.delete'),
-            icon: 'delete',
+            icon: icons.esborra,
             showInMenu: false,
             onClick: (id:any) => {
                 formRef.current?.setFieldValue("busties",
@@ -234,14 +233,14 @@ const Organig = ({quickFilter, favoriteSearch}:any) => {
                                     apiRef.current?.setFieldValue("coneixement", [...data.coneixement, item.id])
                                 }
                             } }
-                        ><Icon color={coneixement ?'info' :'disabled'} >info</Icon></IconButton>}
+                        ><Icon color={coneixement ?'info' :'disabled'} >{icons.detall}</Icon></IconButton>}
 
                         {data.favoritaActiva && <IconButton
                             title={item.data.favorita
                                 ? t('component.RegistreReenviar.favorit.desmarcar')
                                 : t('component.RegistreReenviar.favorit.marcar')}
                             onClick={() => favorite(item.id, !item.data.favorita)}
-                        ><Icon color={item.data.favorita ? 'warning' : 'disabled'} >star</Icon></IconButton>}
+                        ><Icon color={item.data.favorita ? 'warning' : 'disabled'} >{icons.favorit}</Icon></IconButton>}
 
                         {data.permisActiva && <UsuarisPermis rows={item.data.usuarisPermis}/>}
                     </Box>
@@ -287,7 +286,7 @@ export const ReenviarForm = () => {
             <Grid size={6}><FormControlLabel
                 control={<Checkbox value={favoriteSearch} onChange={() => setFavoriteSearch(prev => !prev)} />}
                 label={<Box display={'flex'} justifyContent={'center'}>
-                    <Icon color={'warning'}>star</Icon>{t('component.RegistreReenviar.favoritfilter')}
+                    <Icon color={'warning'}>{icons.favorit}</Icon>{t('component.RegistreReenviar.favoritfilter')}
                 </Box>} /></Grid>
             <Grid size={12}><Organig quickFilter={quickFilter} favoriteSearch={favoriteSearch} /></Grid>
         </Grid>

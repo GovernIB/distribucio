@@ -4,6 +4,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { toolbarBackgroundStyle } from 'reactlib';
 import drassanaLogo from '../assets/drassana.png';
+import { FOOTER_HEIGHT } from '../util/layout';
 
 type DrassanaFooterProps = {
     title: string;
@@ -59,16 +60,18 @@ export const DrassanaFooter: React.FC<DrassanaFooterProps> = (props) => {
                 ...backgroundStyle,
             }}
             sx={{
-                minHeight: '36px !important',
+                minHeight: FOOTER_HEIGHT + 'px !important',
                 lineHeight: '0.5em',
                 zIndex: (theme) => theme.zIndex.drawer + 100,
             }}>
             <Typography
                 variant="caption"
                 component="div"
+                noWrap
                 title={title + (comandaVersion ? ' v' + comandaVersion : '')}
                 sx={{
                     flexGrow: 1,
+                    minWidth: 0,
                     alignSelf: 'flex-start',
                     fontSize: '14px',
                     fontWeight: 'bold',
@@ -80,8 +83,8 @@ export const DrassanaFooter: React.FC<DrassanaFooterProps> = (props) => {
                     ({buildTimestamp} | Revisió: {scmRevision})
                 </span>
             </Typography>
-            <Box sx={{ mr: 0, pt: 0, pr: 0, height: '36px', cursor: 'pointer' }}>
-                <img src={drassanaLogo} alt="foot_logo" style={{ maxHeight: '36px' }} />
+            <Box sx={{ mr: 0, pt: 0, pr: 0, height: FOOTER_HEIGHT + 'px', cursor: 'pointer' }}>
+                <img src={drassanaLogo} alt="foot_logo" style={{ maxHeight: FOOTER_HEIGHT + 'px' }} />
             </Box>
         </Toolbar>
     );

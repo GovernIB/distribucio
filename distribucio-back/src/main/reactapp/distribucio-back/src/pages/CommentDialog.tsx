@@ -4,6 +4,7 @@ import React, { useRef } from 'react';
 import { Button, Grid, Typography, Icon } from '@mui/material';
 import { formatDate } from '../util/dateUtils';
 import { useDistribucioContext } from '../components/DistribucioContext.ts';
+import { icons } from '../util/icons';
 
 const commentProps = {
     padding: '8px 16px',
@@ -110,7 +111,7 @@ const Comments = (props: any) => {
                         <Grid container columnSpacing={1} rowSpacing={1}>
                             <Grid size={12} sx={{ display: 'flex' }}>
                                 <FormField name="text" />
-                                <Button onClick={handleButtonClick} startIcon={<Icon>send</Icon>} variant="contained">
+                                <Button onClick={handleButtonClick} startIcon={<Icon>{icons.envia}</Icon>} variant="contained">
                                     {t('component.CommentDialog.envia')}
                                 </Button>
                             </Grid>

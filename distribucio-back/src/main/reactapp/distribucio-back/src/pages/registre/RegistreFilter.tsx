@@ -3,51 +3,80 @@ import StyledMuiFilter from '../../components/StyledMuiFilter';
 import GridFormField, {GridButtonField} from '../../components/GridFormField';
 import * as builder from '../../util/springFilterUtils';
 import {useFormContext} from "reactlib";
+import {useTranslation} from 'react-i18next';
 import {ROLE_ADMIN, ROLE_ADMIN_LECTURA, useDistribucioContext} from "../../components/DistribucioContext.ts";
+import { icons } from '../../util/icons';
 
-const RegistreFilterForm: React.FC<any> = ({isAdmin}:any) => {
-    const {data} = useFormContext()
+const RegistreFilterForm: React.FC<any> = ({ isAdmin }: any) => {
+    const { t } = useTranslation();
+    const { data } = useFormContext();
 
-    const bustiaFilter = useMemo(() => !data.inactives ?builder.eq('activa', true) :undefined, [data.inactives]);
-    const bustiaQueries = useMemo(() => !isAdmin ?['WITH_PERMISION'] :undefined, [isAdmin]);
+    const bustiaFilter = useMemo(() => (!data.inactives ? builder.eq('activa', true) : undefined), [data.inactives]);
+    const bustiaQueries = useMemo(() => (!isAdmin ? ['WITH_PERMISION'] : undefined), [isAdmin]);
 
     return (
         <>
-            {(!data?.advanced) && <>
-                <GridFormField size={{ xs: 12, sm: 6, md: 4 }} name="numero" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 4 }} name="titol" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 4 }} name="interessat" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 4 }} name="dataRecepcioInici" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 4 }} name="dataRecepcioFi" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 4 }} name="estat" />
-            </>}
-            {(data?.advanced) && <>
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="numero" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="titol" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="numeroOrigen" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="remitent" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="interessat" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="dataRecepcioInici" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="dataRecepcioFi" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="unitatOrganitzativa" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="bustia" filter={bustiaFilter} namedQueries={bustiaQueries} />
-                <GridButtonField icon={'inbox'} size={{ xs: 12, sm: 1, md: 1 }} name="inactives" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="enviatPerEmail" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="documentacio" />
-                <GridButtonField icon={'warning'} size={{ xs: 12, sm: 1, md: 1 }} name="ambEsborranys" />
-                <GridButtonField icon={'visibility'} size={{ xs: 12, sm: 1, md: 1 }} name="annexosInterns" hidden={!isAdmin} />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="backoffice" valueField={"codi"} />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="estat" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="procesEstat" />
-                <GridButtonField icon={'error'} size={{ xs: 12, sm: 1, md: 1 }} name="ambErrors" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="sobreescriure" hidden={!isAdmin} />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="nombreAnnexes" />
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="procediment" valueField={"codiSia"}
-                               additionalOpctions={(q) => q ?[{ id: q, description: `${q} - (No trobat)` }] :[]}/>
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="servei" valueField={"codiSia"}
-                               additionalOpctions={(q) => q ?[{ id: q, description: `${q} - (No trobat)` }] :[]}/>
-                <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="reintents" />
-            </>}
+            {!data?.advanced && (
+                <>
+                    <GridFormField size={{ xs: 12, sm: 6, md: 4 }} name="numero" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 4 }} name="titol" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 4 }} name="interessat" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="dataRecepcioInici" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="dataRecepcioFi" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="estat" />
+                </>
+            )}
+            {data?.advanced && (
+                <>
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="numero" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="titol" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="numeroOrigen" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="remitent" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="interessat" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="dataRecepcioInici" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="dataRecepcioFi" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="unitatOrganitzativa" />
+                    <GridFormField
+                        size={{ xs: 12, sm: 6, md: 3 }}
+                        name="bustia"
+                        filter={bustiaFilter}
+                        namedQueries={bustiaQueries}
+                    />
+                    <GridButtonField icon={icons.bustia} size={{ xs: 12, sm: 1, md: 1 }} name="inactives" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="enviatPerEmail" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="documentacio" />
+                    <GridButtonField icon={icons.advertencia} size={{ xs: 12, sm: 1, md: 1 }} name="ambEsborranys" />
+                    <GridButtonField
+                        icon={icons.mostra}
+                        size={{ xs: 12, sm: 1, md: 1 }}
+                        name="annexosInterns"
+                        hidden={!isAdmin}
+                    />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="backoffice" valueField={'codi'} />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="estat" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="procesEstat" />
+                    <GridButtonField icon={icons.error} size={{ xs: 12, sm: 1, md: 1 }} name="ambErrors" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="sobreescriure" hidden={!isAdmin} />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="nombreAnnexes" />
+                    <GridFormField
+                        size={{ xs: 12, sm: 6, md: 3 }}
+                        name="procediment"
+                        valueField={'codiSia'}
+                        additionalOpctions={(q) =>
+                            q ? [{ id: q, description: t('common.optionNotFound', { value: q }) }] : []
+                        }
+                    />
+                    <GridFormField
+                        size={{ xs: 12, sm: 6, md: 3 }}
+                        name="servei"
+                        valueField={'codiSia'}
+                        additionalOpctions={(q) =>
+                            q ? [{ id: q, description: t('common.optionNotFound', { value: q }) }] : []
+                        }
+                    />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="reintents" />
+                </>
+            )}
         </>
     );
 };

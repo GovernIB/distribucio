@@ -14,6 +14,15 @@ import { DistribucioAuthProvider } from './components/DistribucioAuthProvider';
 import { useDistribucioContext } from './components/DistribucioContext';
 import { filtrarEntradesMenu, type MenuEntryAmbPantalla } from './util/pantalles';
 import { icons } from './util/icons';
+import {
+    APPBAR_PADDING_LEFT,
+    FOOTER_HEIGHT,
+    HEADER_HEIGHT,
+    LOGO_BOX_LEFT,
+    LOGO_HEIGHT,
+    LOGO_SEPARATOR_GAP,
+    MENU_WIDTH,
+} from './util/layout';
 import { SessionStorageProvider } from './components/SessionStorageContext';
 import TitolPagina from './components/TitolPagina';
 import {SnackbarProvider} from "notistack";
@@ -51,12 +60,9 @@ export const getEnvApiUrl = () => {
 
 const version = import.meta.env.VITE_APP_VERSION ?? '0.0.0';
 
-// Mides de la capçalera. MENU_WIDTH és l'amplada del menú lateral obert (el valor per defecte
-// del Drawer de la llibreria); APPBAR_PADDING_LEFT desplaça el botó de menú fins a la columna
-// de les icones del menú, i LOGO_BOX_LEFT és on comença la caixa del logo amb aquest padding.
-const MENU_WIDTH = 240;
-const APPBAR_PADDING_LEFT = 30;
-const LOGO_BOX_LEFT = 82;
+// Les mides de la capçalera, del menú i del peu són a util/layout.ts: MENU_WIDTH és l'amplada del
+// menú lateral obert, APPBAR_PADDING_LEFT desplaça el botó de menú fins a la columna de les icones
+// del menú, i LOGO_BOX_LEFT és on comença la caixa del logo amb aquest padding.
 
 const InnerApp: React.FC = () => {
     const { t } = useTranslation();
@@ -66,8 +72,7 @@ const InnerApp: React.FC = () => {
     const { currentRole } = useDistribucioContext();
     // La pantalla de cada entrada determina a quins rols es mostra (veure PANTALLA_ROLS a
     // util/pantalles.ts): el menú i les guardes de ruta surten de la mateixa declaració.
-    // Icones a util/icons.ts. Les entrades de submenú que també ho són a RIPEA (propietats
-    // configurables i integracions) van sense icona, com allà.
+    // Icones a util/icons.ts: la mateixa icona que fa servir el títol de cada pantalla (ScreenFrame).
     const menuEntries: MenuEntryAmbPantalla[] = [
         {
             id: 'home',
@@ -156,7 +161,7 @@ const InnerApp: React.FC = () => {
         {
             id: 'configurar',
             title: t('app.menu.configurar'),
-            icon: icons.configuracio,
+            icon: icons.ajustos,
             children: [
                 {
                     id: 'config',
@@ -287,19 +292,31 @@ const InnerApp: React.FC = () => {
             code="DISTRIBUCIO"
             logo={mode === 'light' ? goibLogoLight : goibLogoDark}
             logoStyle={{
-                '& img': { height: '49px' },
-                pl: 1,
-                // El separador vertical ha de caure sobre la vora dreta del menú obert. El botó
-                // de menú duu un marge esquerre de -12, així que ocupa de 18 a 66, i amb els seus
-                // 16 de marge dret la caixa del logo arrenca a LOGO_BOX_LEFT. Fixant-ne l'amplada
-                // (en comptes de deixar que la mida del logo mani) la vora cau sempre a MENU_WIDTH.
+                '& img': { height: LOGO_HEIGHT + 'px', display: 'block' },
+                // El separador vertical ha de caure sobre la vora dreta del menú obert, i omplir
+                // l'alçada de la capçalera. El botó de menú duu un marge esquerre de -12 i un dret de
+                // 16, així que la caixa del logo arrenca a LOGO_BOX_LEFT. Fixant-ne l'amplada (en
+                // comptes de deixar que la mida del logo mani) la vora cau sempre a MENU_WIDTH.
                 width: MENU_WIDTH - LOGO_BOX_LEFT + 'px',
                 boxSizing: 'border-box',
+                alignSelf: 'stretch',
                 borderRight: `1px solid ${theme.palette.divider}`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                // Substitueix el mr/pt/pr de la llibreria (l'sx s'hi fusiona al final).
+                mr: 0,
+                pt: 0,
+                pl: 0,
+                pr: LOGO_SEPARATOR_GAP + 'px',
             }}
             title={
                 <img
-                    style={{ marginLeft: '8px', height: '49px', verticalAlign: 'middle' }}
+                    style={{
+                        marginLeft: LOGO_SEPARATOR_GAP + 'px',
+                        height: LOGO_HEIGHT + 'px',
+                        verticalAlign: 'middle',
+                    }}
                     src={logoColor}
                     alt="Distribucio"
                 />
@@ -308,17 +325,20 @@ const InnerApp: React.FC = () => {
             menuEntries={filtrarEntradesMenu(menuEntries, currentRole)}
             menuAppearance={estilMenu}
             appbarBackgroundColor={bgColor}
-            // El botó de menú duu ml -12, així que amb 30 de padding queda centrat a 42px, la
-            // mateixa columna que les icones del menú lateral.
-            appbarStyle={{ color: textColor, paddingLeft: APPBAR_PADDING_LEFT + 'px' }}
-            footerHeight={36}
+            // El botó de menú duu ml -12, així que amb APPBAR_PADDING_LEFT queda centrat a la mateixa
+            // columna que les icones del menú lateral. L'alçada mínima substitueix els 64px que la
+            // llibreria dona a la barra.
+            appbarStyle={{
+                color: textColor,
+                paddingLeft: APPBAR_PADDING_LEFT + 'px',
+                minHeight: HEADER_HEIGHT + 'px',
+            }}
+            footerHeight={FOOTER_HEIGHT}
+            // El peu va per flux, no fixat: l'arrel de l'aplicació ocupa l'alçada de la finestra
+            // (veure frameSx a BaseApp.tsx), així que queda sempre a baix i sense tapar el contingut.
             footer={
-                <div style={{ height: '36px' }}>
-                    <DrassanaFooter
-                        title="DISTRIBUCIÓ"
-                        backgroundColor="#5F5D5D"
-                        style={{ position: 'fixed', width: '100%', bottom: 0 }}
-                    />
+                <div style={{ height: FOOTER_HEIGHT + 'px', overflow: 'hidden' }}>
+                    <DrassanaFooter title="DISTRIBUCIÓ" backgroundColor="#5F5D5D" />
                 </div>
             }
         >

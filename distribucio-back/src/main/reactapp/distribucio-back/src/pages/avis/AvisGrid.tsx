@@ -2,7 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { GridPage, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
 import { useGridApiRef } from '@mui/x-data-grid-pro';
-import { CardPage } from '../../components/CardData';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
 import AvisFormContent from './AvisFormContent';
 import { formatDate } from '../../util/dateUtils';
@@ -47,7 +48,7 @@ export const AvisGrid: React.FC = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.avisos.grid.title')}>
+            <ScreenFrame icon={icons.avis} title={t('page.avisos.grid.title')}>
                 <StyledMuiGrid
                     toolbarCreateTitle={t('page.avisos.accio.new')}
                     resourceName="avisResource"
@@ -74,7 +75,7 @@ export const AvisGrid: React.FC = () => {
                     selectionActive
                 />
                 {massiveComponents}
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

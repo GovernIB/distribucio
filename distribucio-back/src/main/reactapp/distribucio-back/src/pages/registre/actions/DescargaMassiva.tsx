@@ -6,6 +6,7 @@ import {RegistreSelector} from "./RegistreSelector.tsx";
 import GridFormField from "../../../components/GridFormField.tsx";
 import Alert from "@mui/material/Alert";
 import {useEffect, useMemo, useState} from "react";
+import { icons } from '../../../util/icons';
 
 const DescargaMassivaForm = ({setDisabled}:any) => {
     const { data } = useFormContext()
@@ -52,7 +53,7 @@ const useDescargaMassiva = (onSuccess?: (result?: any) => void) => {
         {
             value: true,
             text: t('common.download'),
-            icon: 'bolt',
+            icon: icons.executa,
             componentProps: { variant: 'contained', disabled: disabled, },
         },
         {

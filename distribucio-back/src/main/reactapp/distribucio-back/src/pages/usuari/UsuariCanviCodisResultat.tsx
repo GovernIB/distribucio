@@ -14,6 +14,7 @@ import {
     TableRow,
     Typography,
 } from '@mui/material';
+import { icons } from '../../util/icons';
 
 export type CanviCodisEstat =
     | 'OK'
@@ -54,12 +55,12 @@ const formatDurada = (ms: number): string => {
 };
 
 const ICONA_ESTAT: Record<CanviCodisEstat, { icon: string; color: 'success' | 'error' | 'warning' }> = {
-    OK: { icon: 'check_circle', color: 'success' },
-    ERROR: { icon: 'cancel', color: 'error' },
-    FORMAT_INCORRECTE: { icon: 'cancel', color: 'error' },
-    ANTIC_NO_EXISTEIX: { icon: 'cancel', color: 'error' },
-    NOU_EXISTEIX_SALTAT: { icon: 'warning', color: 'warning' },
-    DUPLICAT: { icon: 'cancel', color: 'error' },
+    OK: { icon: icons.correcte, color: 'success' },
+    ERROR: { icon: icons.incorrecte, color: 'error' },
+    FORMAT_INCORRECTE: { icon: icons.incorrecte, color: 'error' },
+    ANTIC_NO_EXISTEIX: { icon: icons.incorrecte, color: 'error' },
+    NOU_EXISTEIX_SALTAT: { icon: icons.advertencia, color: 'warning' },
+    DUPLICAT: { icon: icons.incorrecte, color: 'error' },
 };
 
 type UsuariCanviCodisResultatProps = {

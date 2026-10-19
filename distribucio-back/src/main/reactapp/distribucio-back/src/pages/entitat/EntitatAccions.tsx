@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useBaseAppContext, useResourceApiService, type MuiDataGridProps } from 'reactlib';
+import { icons } from '../../util/icons';
 
 /** Codis de les accions declarades a EntitatResource (@ResourceArtifact de tipus ACTION). */
 const ACCIO_ACTIVAR = 'ACTIVAR';
@@ -46,20 +47,20 @@ export const useEntitatAccions = (refresh: () => void): AccionsFila => {
     return [
         {
             label: t('page.entitats.accio.modificar'),
-            icon: 'edit',
+            icon: icons.modifica,
             showInMenu: true,
             rowLink: 'update',
             clickShowUpdateDialog: true,
         },
         {
             label: t('page.config.title'),
-            icon: 'settings',
+            icon: icons.configuracio,
             showInMenu: true,
             linkTo: (row) => `/config/propietatsEntitat/${row.id}`,
         },
         {
             label: t('page.entitats.accio.activar'),
-            icon: 'check',
+            icon: icons.accepta,
             showInMenu: true,
             action: ACCIO_ACTIVAR,
             hidden: (row: any) => row?.activa,
@@ -67,7 +68,7 @@ export const useEntitatAccions = (refresh: () => void): AccionsFila => {
         },
         {
             label: t('page.entitats.accio.desactivar'),
-            icon: 'close',
+            icon: icons.cancela,
             showInMenu: true,
             action: ACCIO_DESACTIVAR,
             hidden: (row: any) => !row?.activa,
@@ -76,7 +77,7 @@ export const useEntitatAccions = (refresh: () => void): AccionsFila => {
         },
         {
             label: t('page.entitats.accio.esborrar'),
-            icon: 'delete',
+            icon: icons.esborra,
             showInMenu: true,
             rowLink: 'delete',
             clickTriggerDelete: true,

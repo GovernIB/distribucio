@@ -4,6 +4,7 @@ import { useResourceApiService } from 'reactlib';
 import { useTranslation } from 'react-i18next';
 import { MenuActionButton } from './MenuButton.tsx';
 import Load from './Load.tsx';
+import { icons } from '../util/icons';
 
 export type MassiveActionProps = {
     title?: string;
@@ -112,7 +113,7 @@ const MassiveActionSelector: React.FC<MassiveActionSelectorProps> = (props: Mass
     const buttonActions = [
         {
             label: t('component.MassiveActionSelector.all'),
-            icon: 'check_box',
+            icon: icons.seleccionaTot,
             showInMenu: true,
             onClick: handleSelectAll,
             disabled: disabledDefSelector,
@@ -120,7 +121,7 @@ const MassiveActionSelector: React.FC<MassiveActionSelectorProps> = (props: Mass
         },
         {
             label: t('component.MassiveActionSelector.clear'),
-            icon: 'check_box_outline_blank',
+            icon: icons.deseleccionaTot,
             showInMenu: true,
             onClick: handleClearSelection,
             disabled: disabledDefSelector,

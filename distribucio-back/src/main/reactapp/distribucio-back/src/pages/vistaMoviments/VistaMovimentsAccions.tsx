@@ -9,6 +9,7 @@ import {Divider} from "@mui/material";
 import useReenviar from "../registre/actions/Reenviar.tsx";
 import {useExecucioMassivaGrid} from "../execucioMassiva/ExecucioMassivaGrid.tsx";
 import * as builder from '../../util/springFilterUtils';
+import { icons } from '../../util/icons';
 
 /** Menú d'accions de la "Vista de moviments" */
 export const useVistaMovimentsAccions = (options: {
@@ -45,19 +46,19 @@ export const useVistaMovimentsAccions = (options: {
     const actions: any[] = [
         {
             label: t('page.contingut.accio.detalls.label'),
-            icon: 'info',
+            icon: icons.detall,
             showInMenu: true,
             onClick: (id: any, row: any) => handleDetail(id, row),
         },
         {
             label: t('page.contingut.accio.historial.label'),
-            icon: 'list',
+            icon: icons.llista,
             showInMenu: true,
             onClick: (_id: any, row: any) => handleHistoric(row.idRegistre, { id: row.idRegistre, nom: row.numero }),
         },
         {
             label: t('page.alerta.label'),
-            icon: 'note_stack',
+            icon: icons.alertes,
             showInMenu: true,
             // Les alertes pengen de l'anotació (idRegistre)
             onClick: (_id: any, row: any) => handleAlertes(row.idRegistre),
@@ -65,7 +66,7 @@ export const useVistaMovimentsAccions = (options: {
         },
         {
             label: t('page.registre.accio.reenviar.label'),
-            icon: 'send',
+            icon: icons.envia,
             showInMenu: true,
             onClick: (_id: any, row: any) => handleReenviar([row.idRegistre], false, { destiLogic: row.destiLogic }),
         },
@@ -76,20 +77,20 @@ export const useVistaMovimentsAccions = (options: {
         },
         {
             label: t('page.registre.accio.email.label'),
-            icon: 'mail',
+            icon: icons.correu,
             showInMenu: true,
             disabled: (row: any) => row.procesEstat === 'ARXIU_PENDENT',
             onClick: (_id:any, row:any) => handleEnviarEmail([row.idRegistre], false, { vistaMoviments: true }),
         },
         {
             label: t('page.registre.accio.descargaOriginal.label'),
-            icon: 'download',
+            icon: icons.descarrega,
             showInMenu: true,
             onClick: (_id:any, row:any) => descarregarDoc(row.idRegistre, false),
         },
         {
             label: t('page.registre.accio.descargaAutentica.label'),
-            icon: 'download',
+            icon: icons.descarrega,
             showInMenu: true,
             onClick: (_id:any, row:any) => descarregarDoc(row.idRegistre, true),
         },
@@ -146,7 +147,7 @@ export const useVistaMovimentsMassiveAccions = (refresh?: () => void) => {
     const actions: any[] = [
         {
             label: t('page.registre.accio.reenviar.label'),
-            icon: 'send',
+            icon: icons.envia,
             showInMenu: true,
             onClick: (ids: any[]) => {
                 toRegistreId(ids)
@@ -155,7 +156,7 @@ export const useVistaMovimentsMassiveAccions = (refresh?: () => void) => {
         },
         {
             label: t('page.registre.accio.email.label'),
-            icon: 'mail',
+            icon: icons.correu,
             showInMenu: true,
             onClick: (ids: any[]) => {
                 toRegistreId(ids)

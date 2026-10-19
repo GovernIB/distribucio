@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge, Icon, IconButton } from '@mui/material';
 import { useCommentDialog } from '../pages/CommentDialog.tsx';
+import { icons } from '../util/icons';
 
 type CommentsColumnOptions = {
     /** Camp de la fila amb el nombre de comentaris. Per defecte `numComentaris`. */
@@ -41,7 +42,7 @@ export const useCommentsColumn = (options: CommentsColumnOptions = {}) => {
                 }
             >
                 <Badge badgeContent={params.formattedValue} color="primary" showZero>
-                    <Icon>forum</Icon>
+                    <Icon>{icons.comentaris}</Icon>
                 </Badge>
             </IconButton>
         ),

@@ -8,6 +8,7 @@ import {CardData} from "../../../components/CardData.tsx";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
+import { icons } from '../../../util/icons';
 
 const descargarPDF = async (element:HTMLElement) => {
     const canvas = await html2canvas(element, {
@@ -155,7 +156,7 @@ export const useSincronitzar = () => {
         {
             value: 'download',
             text: t('page.unitatOrganitzativa.accio.descarregarPdf.label'),
-            icon: 'download',
+            icon: icons.descarrega,
             componentProps: {
                 variant: 'outlined',
                 disabled: !info,
@@ -164,7 +165,7 @@ export const useSincronitzar = () => {
         {
             value: 'sinc',
             text: t('page.unitatOrganitzativa.accio.sincronitzar.sincronitzar'),
-            icon: 'save',
+            icon: icons.desa,
             componentProps: {
                 variant: 'contained',
                 color: 'success',
@@ -174,7 +175,7 @@ export const useSincronitzar = () => {
         {
             value: 'forzar',
             text: t('page.unitatOrganitzativa.accio.sincronitzar.forzar'),
-            icon: 'save',
+            icon: icons.desa,
             hidden: !(info?.isAllEmpty && !info?.isFirstSincronization),
             componentProps: {
                 variant: 'contained',
@@ -185,7 +186,7 @@ export const useSincronitzar = () => {
         {
             value: 'close',
             text: t('common.cancel'),
-            icon: 'close',
+            icon: icons.cancela,
             componentProps: {
                 variant: 'outlined',
             }

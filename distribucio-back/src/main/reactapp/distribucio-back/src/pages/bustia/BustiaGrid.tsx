@@ -1,5 +1,6 @@
 import {GridPage, MuiDataGridColDef, useMuiDataGridApiRef} from "reactlib";
-import {CardPage} from "../../components/CardData.tsx";
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import {useTranslation} from "react-i18next";
 import StyledMuiGrid, {ToolbarButton} from "../../components/StyledMuiGrid.tsx";
 import BustiaFilter from "./BustiaFilter.tsx";
@@ -40,7 +41,7 @@ export const BustiaGrid = () => {
             renderCell: (params) => (<>
                 {params.formattedValue}
                 {params.row.pendent && <IconButton sx={{ ml: 'auto' }} onClick={() => handleObsoleta(params.id, params.row)}>
-                    <Icon title={t('component.BustiaObsoleta.unitat')} color={'error'} sx={{ marginLeft: 'auto' }}>warning</Icon>
+                    <Icon title={t('component.BustiaObsoleta.unitat')} color={'error'} sx={{ marginLeft: 'auto' }}>{icons.advertencia}</Icon>
                 </IconButton>}
             </>)
         },
@@ -64,7 +65,7 @@ export const BustiaGrid = () => {
                         color="primary"
                         showZero
                     >
-                        <Icon>key</Icon>
+                        <Icon>{icons.permis}</Icon>
                     </Badge>
                 </IconButton>
             ),
@@ -88,7 +89,7 @@ export const BustiaGrid = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.bustia.grid.title')}>
+            <ScreenFrame icon={icons.bustia} title={t('page.bustia.grid.title')}>
                 <BustiaFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
 
                 <StyledMuiGrid
@@ -112,7 +113,7 @@ export const BustiaGrid = () => {
                         {
                             position: 1,
                             element: <ToolbarButton
-                                icon={'table'}
+                                icon={icons.taula}
                                 variant={'contained'}
                                 component={Link}
                                 to={'/bustiaAdminOrganigrama'}
@@ -121,7 +122,7 @@ export const BustiaGrid = () => {
                         {
                             position: 2,
                             element: <ToolbarButton
-                                icon={'description'}
+                                icon={icons.informe}
                                 variant={'contained'}
                                 color={'success'}
                                 onClick={() => usersBustia(springFilter, namedQueries)}
@@ -134,7 +135,7 @@ export const BustiaGrid = () => {
                 {permissionComponent}
                 {componentObsoleta}
                 {components}
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 }

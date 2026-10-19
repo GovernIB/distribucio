@@ -9,6 +9,7 @@ import StyledMuiGrid from "../../../components/StyledMuiGrid.tsx";
 import * as builder from '../../../util/springFilterUtils';
 import {useTranslation} from "react-i18next";
 import Icon from "@mui/material/Icon";
+import { icons } from '../../../util/icons';
 
 const useActions = (refresh?: () => void) => {
     const { t } = useTranslation();
@@ -53,7 +54,7 @@ const columns = [
     { field: 'text', flex: 2,
         renderCell: (params:any) => <>
             {params.formattedValue}
-            {params.row.error && <Icon title={params.row.error} color={'error'} >error</Icon>}
+            {params.row.error && <Icon title={params.row.error} color={'error'} >{icons.error}</Icon>}
         </>
     },
 ];
@@ -71,7 +72,7 @@ const Alertes = ({id}:any) => {
     const actions = [
         {
             label: t('page.alerta.accio.llegida.label'),
-            icon: 'description',
+            icon: icons.informe,
             showInMenu: false,
             onClick: llegida,
         },

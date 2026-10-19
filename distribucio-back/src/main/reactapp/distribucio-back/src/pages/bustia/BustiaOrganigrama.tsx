@@ -4,9 +4,11 @@ import {FormApi, GridPage, useBaseAppContext, useMuiFormDialogApiRef, useResourc
 import {useTranslation} from "react-i18next";
 import {ROLE_ADMIN, useDistribucioContext} from "../../components/DistribucioContext.ts";
 import {TreeView} from "../../components/TreeView.tsx";
-import {CardPage} from "../../components/CardData.tsx";
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
+import { MAIN_GAP, SCREEN_GRID_MIN_HEIGHT } from '../../util/layout';
 import BustiaFilter from "./BustiaFilter.tsx";
-import {Grid, Icon, IconButton} from "@mui/material";
+import {Icon, IconButton} from "@mui/material";
 import Box from "@mui/material/Box";
 import {BustiaFormDialog, BustiaOrganigramaForm} from "./BustiaForm.tsx";
 import {Link} from "../../components/BaseApp.tsx";
@@ -18,7 +20,8 @@ import {ResourceApiError} from "../../../lib/components/ResourceApiProvider.tsx"
 
 export const useOrganigrama = (props:any) => {
     const { t } = useTranslation();
-    const {quickFilter, filter, namedQueries, perspectives, onClick, disabled, ...other} = props
+    // `height`: alçada de l'arbre. Per defecte 56vh (diàlegs); la pantalla passa 100% per omplir l'alçada que sobra.
+    const {quickFilter, filter, namedQueries, perspectives, onClick, disabled, height = '56vh', ...other} = props
     const { currentEntitat } = useDistribucioContext();
     const apiRef = useSimpleTreeViewApiRef();
 
@@ -90,7 +93,7 @@ export const useOrganigrama = (props:any) => {
                 return {
                     id: u.id,
                     label: <>{u.nom} {u.perDefecte && <strong>({t('page.bustia.grid.principal')})</strong>}</>,
-                    icon: 'inbox',
+                    icon: icons.bustia,
                     onClick: () => onClick?.(u.id, u),
                     componentProps: {
                         sx: {
@@ -113,7 +116,7 @@ export const useOrganigrama = (props:any) => {
 
     const content = (
         <Box height={'max'} sx={{
-            height: '56vh',
+            height,
             overflow: 'auto',
             border: '1px solid #e0e0e0',
             borderRadius: 1,
@@ -158,6 +161,7 @@ export const BustiaOrganigrama = () => {
     const {apiRef, busties, content, refresh} = useOrganigrama({
         filter: springFilter,
         namedQueries: namedQueries,
+        height: '100%',
         onClick: (_id:any, row:any) => setEntity(row),
         renderCell: (item:any) => {
             if (item.class == 'unitat') {
@@ -165,7 +169,7 @@ export const BustiaOrganigrama = () => {
                     <Box display={'flex'} alignItems={'center'} gap={1} onClick={item?.onClick}>
                         <Icon>{item.icon}</Icon>{item.label}
 
-                        {item.data.estat != "V" && <Icon title={t('component.BustiaObsoleta.unitat')} color={'error'}>warning</Icon>}
+                        {item.data.estat != "V" && <Icon title={t('component.BustiaObsoleta.unitat')} color={'error'}>{icons.advertencia}</Icon>}
                     </Box>
                 </>
             }
@@ -186,7 +190,7 @@ export const BustiaOrganigrama = () => {
         ...actions,
         {
             label: t('common.delete'),
-            icon: 'delete',
+            icon: icons.esborra,
             onClick: () => {
                 apiDelete(entity.id)
                     .then(() => {
@@ -222,52 +226,49 @@ export const BustiaOrganigrama = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.bustia.grid.title')}>
+            <ScreenFrame
+                icon={icons.bustia}
+                title={t('page.bustia.grid.title')}
+                actions={
+                    <>
+                        <ToolbarButton
+                            icon={icons.llista}
+                            variant={'contained'}
+                            component={Link}
+                            to={'/bustiaAdmin'}
+                        >{t('page.bustia.vista')}</ToolbarButton>
+                        <ToolbarButton
+                            icon={icons.informe}
+                            variant={'contained'}
+                            color={'success'}
+                            onClick={() => usersBustia(springFilter, namedQueries)}
+                        >{t('page.bustia.accio.usuarisBustia.label')}</ToolbarButton>
+                        <ToolbarButton
+                            title={t('common.create')}
+                            icon={icons.crea}
+                            onClick={create}
+                            color={'primary'}
+                            hidden={!isAdmin}
+                        >
+                            {t('page.bustia.accio.new.label')}
+                        </ToolbarButton>
+                    </>
+                }
+            >
                 <BustiaFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
+                <BustiaFormDialog formDialogApiRef={formDialogApiRef} />
 
-                <Grid container>
-                    <Grid container size={4} rowSpacing={1} columnSpacing={1} pr={1}>
-                        <Grid size={4.9}>
-                            <ToolbarButton
-                                icon={'list'}
-                                variant={'contained'}
-                                component={Link}
-                                to={'/bustiaAdmin'}
-                            >{t('page.bustia.vista')}</ToolbarButton>
-                        </Grid>
-
-                        <Grid size={3} justifyContent={'end'}>
-                            <ToolbarButton
-                                icon={'description'}
-                                variant={'contained'}
-                                color={'success'}
-                                onClick={() => usersBustia(springFilter, namedQueries)}
-                            >{t('page.bustia.accio.usuarisBustia.label')}</ToolbarButton>
-                        </Grid>
-
-                        <Grid size={4.1} display={'flex'} justifyContent={'end'}>
-                            <ToolbarButton
-                                title={t('common.create')}
-                                icon={'add'}
-                                onClick={create}
-                                color={'primary'}
-                                hidden={!isAdmin}
-                            >
-                                {t('page.bustia.accio.new.label')}
-                            </ToolbarButton>
-                            <BustiaFormDialog formDialogApiRef={formDialogApiRef} />
-                        </Grid>
-
-                        <Grid size={12}>
-                            {content}
-                        </Grid>
-                    </Grid>
-                    <Grid size={8}>
+                {/* Arbre i formulari ocupen l'alçada que sobra a la pantalla (cada un fa el seu scroll per dins). */}
+                <Box sx={{ display: 'flex', gap: MAIN_GAP + 'px', flex: '1 1 0', minHeight: SCREEN_GRID_MIN_HEIGHT + 'px' }}>
+                    <Box sx={{ flex: '0 0 33%', minWidth: 0 }}>
+                        {content}
+                    </Box>
+                    <Box sx={{ flex: '1 1 0', minWidth: 0, overflow: 'auto' }}>
                         <Load value={entity} noEffect>
                             <BustiaOrganigramaForm apiRef={formApiRef} entity={entity} toolbarElementsWithPositions={isAdmin?[
                                 {
                                     position: 2,
-                                    element: <IconButton title={t('common.update')} onClick={update}><Icon>save</Icon></IconButton>,
+                                    element: <IconButton title={t('common.update')} onClick={update}><Icon>{icons.desa}</Icon></IconButton>,
                                 },
                                 {
                                     position: 2,
@@ -275,16 +276,16 @@ export const BustiaOrganigrama = () => {
                                         id={entity?.id}
                                         entity={entity}
                                         ButtonComponent={IconButton}
-                                        buttonLabel={<Icon>more_vert</Icon>}
+                                        buttonLabel={<Icon>{icons.mesAccions}</Icon>}
                                         actions={additionalActions}
                                     />,
                                 }
                             ]:[]}/>
                         </Load>
                         {components}
-                    </Grid>
-                </Grid>
-            </CardPage>
+                    </Box>
+                </Box>
+            </ScreenFrame>
         </GridPage>
     );
 }

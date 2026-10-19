@@ -2,18 +2,19 @@ import React from 'react';
 import StyledMuiFilter, { FILTER_ADVANCED_ICON_ONLY_BREAKPOINT } from '../../components/StyledMuiFilter';
 import GridFormField, { GridButtonField } from '../../components/GridFormField';
 import * as builder from '../../util/springFilterUtils';
+import { icons } from '../../util/icons';
 
 const ProcedimentFilterForm: React.FC = () => {
     return (
         <>
-            <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="codiSia" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="nom" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="unitatOrganitzativa" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="estat" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 1.8 }} name="codiSia" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 3.55 }} name="nom" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 3.6 }} name="unitatOrganitzativa" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 1.8 }} name="estat" />
             <GridButtonField
                 size={{ xs: 12, sm: 6, md: 0.5 }}
                 name={'nomesComu'}
-                icon={'report_problem'}
+                icon={icons.problema}
                 iconOnlyBreakpoint={FILTER_ADVANCED_ICON_ONLY_BREAKPOINT}
             />
         </>

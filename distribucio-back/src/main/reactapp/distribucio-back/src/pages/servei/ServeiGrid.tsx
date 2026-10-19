@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { GridPage, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
-import { CardPage } from '../../components/CardData';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid, { ToolbarButton } from '../../components/StyledMuiGrid';
 import ServeiFilter from './ServeiFilter';
 import useServeiAccions from './ServeiAccions';
@@ -34,7 +35,7 @@ export const ServeiGrid: React.FC = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.serveis.grid.title')}>
+            <ScreenFrame icon={icons.servei} title={t('page.serveis.grid.title')}>
                 <ServeiFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid
                     toolbarHideCreate
@@ -49,7 +50,7 @@ export const ServeiGrid: React.FC = () => {
                             element: (
                                 <ToolbarButton
                                     title={t('page.serveis.accio.actualitzarTots.title')}
-                                    icon={'sync'}
+                                    icon={icons.sincronitza}
                                     onClick={handleActualitzarTots}
                                     color={'primary'}
                                     hidden={!isAdmin}
@@ -68,7 +69,7 @@ export const ServeiGrid: React.FC = () => {
                     defaultSortModel={sortModel}
                 />
                 {contentActualitzarTots}
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

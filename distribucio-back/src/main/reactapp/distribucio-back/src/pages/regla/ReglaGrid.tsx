@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { GridPage, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
 import { useGridApiRef } from '@mui/x-data-grid-pro';
 import { Box, Chip, Icon, Tooltip } from '@mui/material';
-import { CardPage } from '../../components/CardData';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid, { ToolbarButton } from '../../components/StyledMuiGrid';
 import { ReglaFilter } from './ReglaFilter';
 import ReglaFormContent from './ReglaFormContent';
@@ -21,9 +22,7 @@ const ReglaNomCell = ({ row }: any) => {
             <span>{row?.nom}</span>
             {obsoleta && (
                 <Tooltip title={t('page.regla.grid.unitatObsoleta')}>
-                    <Icon fontSize="small" color="warning">
-                        warning
-                    </Icon>
+                    <Icon fontSize="small" color="warning">{icons.advertencia}</Icon>
                 </Tooltip>
             )}
         </Box>
@@ -43,9 +42,7 @@ const ReglaUnitatFiltreCell = ({ row }: any) => {
             <span>{row.unitatOrganitzativaFiltre?.description}</span>
             {obsoleta && (
                 <Tooltip title={t('page.regla.grid.unitatObsoleta')}>
-                    <Icon fontSize="small" color="warning">
-                        warning
-                    </Icon>
+                    <Icon fontSize="small" color="warning">{icons.advertencia}</Icon>
                 </Tooltip>
             )}
         </Box>
@@ -142,7 +139,7 @@ export const ReglaGrid: React.FC = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.regla.grid.title')}>
+            <ScreenFrame icon={icons.regla} title={t('page.regla.grid.title')}>
                 <ReglaFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid
                     toolbarCreateTitle={t('page.regla.accio.new')}
@@ -157,7 +154,7 @@ export const ReglaGrid: React.FC = () => {
                             position: 2,
                             element: (
                                 <ToolbarButton
-                                    icon="settings"
+                                    icon={icons.configuracio}
                                     variant="contained"
                                     hidden={!simularDisponible}
                                     onClick={handleSimular}
@@ -189,7 +186,7 @@ export const ReglaGrid: React.FC = () => {
                 {massiveComponents}
                 {components}
                 {simuladorComponent}
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

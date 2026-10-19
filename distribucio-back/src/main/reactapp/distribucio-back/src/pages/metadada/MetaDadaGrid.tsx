@@ -1,5 +1,6 @@
 import {GridPage, useBaseAppContext, useFormContext, useMuiDataGridApiRef, useResourceApiService} from "reactlib";
-import {CardPage} from "../../components/CardData.tsx";
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid from "../../components/StyledMuiGrid.tsx";
 import {Icon, Grid} from "@mui/material";
 import GridFormField from "../../components/GridFormField.tsx";
@@ -93,7 +94,7 @@ const columns = [
     { field: 'nom', flex: 1 },
     { field: 'tipus', flex: 1 },
     { field: 'activa', flex: 1,
-        renderCell: (params:any) => params.row.activa && <Icon>check</Icon>
+        renderCell: (params:any) => params.row.activa && <Icon>{icons.accepta}</Icon>
     },
 ]
 const sortModel:any = [{ field: 'ordre', sort: 'asc' }]
@@ -110,14 +111,14 @@ export const MetaDadaGrid = () => {
     const actions = [
         {
             label: t('page.metadada.accio.activar.label'),
-            icon: "check",
+            icon: icons.accepta,
             showInMenu: true,
             onClick: active,
             hidden: (row:any) => row?.activa,
         },
         {
             label: t('page.metadada.accio.desactivar.label'),
-            icon: "close",
+            icon: icons.cancela,
             showInMenu: true,
             onClick: desactive,
             hidden: (row:any) => !row?.activa,
@@ -132,7 +133,7 @@ export const MetaDadaGrid = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.metadada.title')}>
+            <ScreenFrame icon={icons.metaDada} title={t('page.metadada.title')}>
                 <StyledMuiGrid
                     apiRef={apiRef}
                     resourceName={'metaDadaResource'}
@@ -158,7 +159,7 @@ export const MetaDadaGrid = () => {
                         deleteSuccess: 'page.metadada.accio.delete.ok',
                     }}
                 />
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     )
 }
