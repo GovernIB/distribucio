@@ -19,8 +19,12 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.i18n.LocaleContext;
+import org.springframework.context.i18n.SimpleTimeZoneAwareLocaleContext;
+import org.springframework.context.i18n.TimeZoneAwareLocaleContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -35,6 +39,7 @@ import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.resource.PathResourceResolver;
+import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -364,6 +369,13 @@ public class WebMvcConfig extends BaseWebMvcConfig {
 		registry.addInterceptor(accesSuperInterceptor).addPathPatterns(SUPER_PATHS).excludePathPatterns(SUPER_EXCLUSIONS);
 	}
 
+	/**
+	 * Les pàgines JSP treballen amb l'idioma desat a la sessió (el fixa SessioHelper a partir del
+	 * perfil de l'usuari). Les peticions a l'API, en canvi, les fa la interfície REACT i sempre duen
+	 * l'idioma de l'usuari a Accept-Language: per a aquestes mana la capçalera, perquè si no, en
+	 * canviar l'idioma des del perfil REACT, l'API continuaria responent amb l'idioma que la sessió
+	 * tenia fixat (SessioInterceptor no s'executa per a l'API i no l'actualitza).
+	 */
 	public static class CustomLocaleResolver extends SessionLocaleResolver {
 
 		private final AcceptHeaderLocaleResolver acceptHeaderLocaleResolver;
@@ -372,6 +384,39 @@ public class WebMvcConfig extends BaseWebMvcConfig {
 
 			acceptHeaderLocaleResolver = new AcceptHeaderLocaleResolver();
 			acceptHeaderLocaleResolver.setSupportedLocales(supportedLocales);
+		}
+
+		@Override
+		@NotNull
+		public Locale resolveLocale(@NotNull HttpServletRequest request) {
+
+			if (isPeticioApiAmbIdioma(request)) {
+				return acceptHeaderLocaleResolver.resolveLocale(request);
+			}
+			return super.resolveLocale(request);
+		}
+
+		/** És el mètode que fa servir el DispatcherServlet per establir el LocaleContextHolder. */
+		@Override
+		@NotNull
+		public LocaleContext resolveLocaleContext(@NotNull HttpServletRequest request) {
+
+			var localeContextSessio = super.resolveLocaleContext(request);
+			if (isPeticioApiAmbIdioma(request)) {
+				return new SimpleTimeZoneAwareLocaleContext(
+						acceptHeaderLocaleResolver.resolveLocale(request),
+						((TimeZoneAwareLocaleContext) localeContextSessio).getTimeZone());
+			}
+			return localeContextSessio;
+		}
+
+		private static boolean isPeticioApiAmbIdioma(HttpServletRequest request) {
+
+			if (request.getHeader(HttpHeaders.ACCEPT_LANGUAGE) == null) {
+				return false;
+			}
+			var path = UrlPathHelper.defaultInstance.getPathWithinApplication(request);
+			return path.equals(BaseConfig.API_PATH) || path.startsWith(BaseConfig.API_PATH + "/");
 		}
 
 		@Override
