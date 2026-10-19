@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { GridPage, useMuiDataGridApiRef } from 'reactlib';
-import { CardPage } from '../../components/CardData.tsx';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid from '../../components/StyledMuiGrid.tsx';
 import { VistaMovimentsFilter } from './VistaMovimentsFilter.tsx';
 import React from 'react';
@@ -31,9 +32,7 @@ const VistaMovimentsNumeroCell = ({ row }: any) => {
             </Box>
             {!!row?.alertesPendents && (
                 <Tooltip title={t('page.registre.avisos.alerta')}>
-                    <Icon fontSize="small" color="warning" sx={{ verticalAlign: 'text-bottom', ml: 0.5 }}>
-                        warning
-                    </Icon>
+                    <Icon fontSize="small" color="warning" sx={{ verticalAlign: 'text-bottom', ml: 0.5 }}>{icons.advertencia}</Icon>
                 </Tooltip>
             )}
         </Box>
@@ -63,9 +62,7 @@ const VistaMovimentsBustiaCell = ({ path, activa }: any) => {
             ))}
             {!activa && (
                 <Tooltip title={t('page.vistaMoviments.grid.bustiaInactiva')}>
-                    <Icon fontSize="small" color="warning" sx={{ verticalAlign: 'text-bottom', ml: 0.5 }}>
-                        warning
-                    </Icon>
+                    <Icon fontSize="small" color="warning" sx={{ verticalAlign: 'text-bottom', ml: 0.5 }}>{icons.advertencia}</Icon>
                 </Tooltip>
             )}
         </Box>
@@ -94,9 +91,7 @@ const VistaMovimentsErrorCell = ({ row }: any) => {
                   : 'default';
     return (
         <Tooltip title={t(`page.registre.avisos.procesError.${key}`)}>
-            <Icon fontSize="small" color="error">
-                warning
-            </Icon>
+            <Icon fontSize="small" color="error">{icons.advertencia}</Icon>
         </Tooltip>
     );
 };
@@ -125,9 +120,7 @@ const VistaMovimentsEstatCell = ({ row, formattedValue }: any) => {
                         </>
                     }
                 >
-                    <Icon fontSize="small" sx={{ verticalAlign: 'text-bottom', mr: 0.5 }}>
-                        mail
-                    </Icon>
+                    <Icon fontSize="small" sx={{ verticalAlign: 'text-bottom', mr: 0.5 }}>{icons.correu}</Icon>
                 </Tooltip>
             )}
             <RegistreEstat entity={row} showReintents={false}>
@@ -223,7 +216,7 @@ export const VistaMovimentsGrid = () => {
                         handleLlegenda();
                     }}
                 >
-                    <Icon fontSize="small">list</Icon>
+                    <Icon fontSize="small">{icons.llista}</Icon>
                 </IconButton>
             </>
         ),
@@ -235,7 +228,7 @@ export const VistaMovimentsGrid = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.vistaMoviments.title')}>
+            <ScreenFrame icon={icons.vistaMoviments} title={t('page.vistaMoviments.title')}>
                 <VistaMovimentsFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
                 <StyledMuiGrid
                     apiRef={apiRef}
@@ -258,7 +251,7 @@ export const VistaMovimentsGrid = () => {
                 {massiveComponents}
                 {llegendaComponent}
                 {commentsComponent}
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

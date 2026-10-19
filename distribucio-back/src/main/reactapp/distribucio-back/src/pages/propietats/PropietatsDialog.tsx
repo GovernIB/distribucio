@@ -7,6 +7,7 @@ import StyledMuiGrid from "../../components/StyledMuiGrid.tsx";
 import * as builder from "../../util/springFilterUtils.ts";
 import GridFormField from "../../components/GridFormField.tsx";
 import {configTypeValueLabel, getFieldFromItem} from "./PropietatsForm.tsx";
+import { icons } from '../../util/icons';
 
 const PropietatsForm = ({item, itemField}:any) => {
     const {data, fields, apiRef} = useFormContext()
@@ -88,7 +89,7 @@ export const usePropietatsDialog = () => {
         {
             value: 'close',
             text: t('common.close'),
-            icon: 'close',
+            icon: icons.cancela,
             componentProps: { variant: 'outlined' }
         },
     ]
@@ -104,13 +105,13 @@ export const usePropietatsDialog = () => {
     const actions = [
         {
             label: t('common.update'),
-            icon: "edit",
+            icon: icons.modifica,
             showInMenu: false,
             clickShowUpdateDialog: true,
         },
         {
             label: t('common.delete'),
-            icon: "delete",
+            icon: icons.esborra,
             showInMenu: false,
             onClick: (id:any) => {
                 if (apiIsReady) {

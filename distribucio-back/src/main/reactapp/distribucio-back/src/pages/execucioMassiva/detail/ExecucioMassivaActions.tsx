@@ -2,6 +2,7 @@ import {useTranslation} from "react-i18next";
 import {useBaseAppContext, useResourceApiService} from "reactlib";
 import {iniciaDescargaBlob} from "../../../util/downloadUtils.ts";
 import {useMemo} from "react";
+import { icons } from '../../../util/icons';
 
 const useActions = (refresh?: () => void) => {
     const { t } = useTranslation();
@@ -59,7 +60,7 @@ export const useExecucioMassivaActions = (refresh?: () => void) => {
     const actions = useMemo(() => [
         {
             label: t('page.massiva.accio.play.label'),
-            icon: 'play_circle',
+            icon: icons.reprenExecucio,
             action: "CANVI_ESTAT",
             showInMenu: true,
             onClick: play,
@@ -67,7 +68,7 @@ export const useExecucioMassivaActions = (refresh?: () => void) => {
         },
         {
             label: t('page.massiva.accio.pause.label'),
-            icon: 'pause',
+            icon: icons.pausaExecucio,
             action: "CANVI_ESTAT",
             showInMenu: true,
             onClick: pause,
@@ -75,7 +76,7 @@ export const useExecucioMassivaActions = (refresh?: () => void) => {
         },
         {
             label: t('page.massiva.accio.cancel.label'),
-            icon: 'close',
+            icon: icons.cancela,
             action: "CANVI_ESTAT",
             showInMenu: true,
             onClick: cancel,
@@ -83,13 +84,13 @@ export const useExecucioMassivaActions = (refresh?: () => void) => {
         },
         {
             label: t('page.massiva.accio.download.notFound'),
-            icon: 'warning',
+            icon: icons.advertencia,
             showInMenu: false,
             hidden: (row:any) => row.tipus != "DESCARREGAR" || row.estat != "FINALITZADA" || row.nomDocument
         },
         {
             label: t('page.massiva.accio.download.label'),
-            icon: 'download',
+            icon: icons.descarrega,
             report: 'DOWNLOAD',
             showInMenu: false,
             onClick: download,

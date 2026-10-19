@@ -7,6 +7,7 @@ import Icon from "@mui/material/Icon";
 import Load from "../../../components/Load.tsx";
 import * as builder from '../../../util/springFilterUtils';
 import {fieldType} from "../../metadada/MetaDadaGrid.tsx";
+import { icons } from '../../../util/icons';
 import Box from "@mui/material/Box";
 
 const DadaField = ({ index, metaDada, value, onChange, required, ...other }: any) => {
@@ -97,7 +98,7 @@ const MetaDadaColumn = ({ metaDada }: any) => {
                     </Grid>
                     {isMultiple && <Grid size={1} sx={{display: 'flex', alignItems: 'center'}}>
                         <IconButton onClick={() => handleRemove(index)} size="small">
-                            <Icon>delete</Icon>
+                            <Icon>{icons.esborra}</Icon>
                         </IconButton>
                     </Grid>}
                 </Grid>
@@ -115,7 +116,7 @@ const MetaDadaColumn = ({ metaDada }: any) => {
                                 apiRef.current?.setFieldValue(`${metaDada.id}-new`, null)
                             }}
                             disabled={data[`${metaDada.id}-new`] == null}
-                        ><Icon>add</Icon></IconButton>
+                        ><Icon>{icons.crea}</Icon></IconButton>
                     </Grid>
                 </Grid>
             )}
@@ -190,7 +191,7 @@ export const MetaDadesForm = ({entity}:any) => {
             toolbarElementsWithPositions={[
                 {
                     position: 2,
-                    element: <IconButton onClick={save}><Icon>save</Icon></IconButton>
+                    element: <IconButton onClick={save}><Icon>{icons.desa}</Icon></IconButton>
                 }
             ]}
 

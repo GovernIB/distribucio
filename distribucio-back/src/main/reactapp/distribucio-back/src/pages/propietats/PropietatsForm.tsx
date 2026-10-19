@@ -5,6 +5,7 @@ import { usePropietatsDialog } from "./PropietatsDialog";
 import {Box, Grid, Icon, IconButton, ListItemButton} from "@mui/material";
 import {FormField, MuiForm, useFormContext} from "reactlib";
 import ListItem from "@mui/material/ListItem";
+import { icons } from '../../util/icons';
 
 // Etiqueta traduida d'un dels valors valids d'un tipus de propietat (IPA_CONFIG_TYPE). El valor
 // que es desa a la base de dades no canvia: si no hi ha traduccio definida es mostra tal qual.
@@ -114,18 +115,18 @@ const PropsListItem: React.FC<any> = ({ highlight }:any) => {
                             size="small"
                             onClick={save}
                             color={'success'}>
-                            <Icon fontSize="small">save</Icon>
+                            <Icon fontSize="small">{icons.desa}</Icon>
                         </IconButton>
                          {(item?.entitatCodi && item.value != null) &&
                              <IconButton size="small" onClick={async() => {
                                  await apiRef.current?.setFieldValue("value", null)
                                  save()
                              }} >
-                                 <Icon sx={{m:0}} fontSize="small">delete</Icon>
+                                 <Icon sx={{m:0}} fontSize="small">{icons.esborra}</Icon>
                              </IconButton>}
                          {(item?.configurable && !item?.entitatCodi) &&
                              <IconButton size="small" onClick={() => handleOpen(item.id, item)} >
-                                 <Icon sx={{m:0}} fontSize="small">settings</Icon>
+                                 <Icon sx={{m:0}} fontSize="small">{icons.configuracio}</Icon>
                              </IconButton>}
                     </>)}
                 </Box>

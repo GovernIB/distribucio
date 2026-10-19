@@ -6,6 +6,7 @@ import { ROLE_ADMIN, useDistribucioContext } from '../../components/DistribucioC
 import type { MassiveActionProps } from '../../components/MassiveActionSelector';
 import { useExecucioMassivaGrid } from '../execucioMassiva/ExecucioMassivaGrid';
 import {useRegistreDetail} from '../registre/detail/RegistreDetail';
+import { icons } from '../../util/icons';
 
 const ACTION_GUARDAR_DEFINITIU = 'GUARDAR_DEFINITIU';
 const ACTION_COMPROVAR_PENDENTS = 'COMPROVAR_PENDENTS';
@@ -76,20 +77,20 @@ export const useAnnexAccions = (
     const actions: AccionsFila = [
         {
             label: t('page.annex.accio.detallsAnotacio'),
-            icon: 'adjust',
+            icon: icons.detallAnotacio,
             showInMenu: true,
             hidden: () => !isAdmin,
             onClick: (id: any, row: any) => handleDetallAnotacio(id, row),
         },
         {
             label: t('page.annex.accio.detalls'),
-            icon: 'info',
+            icon: icons.detall,
             showInMenu: true,
             onClick: (id: any, row: any) => mostrarDetall(id, row),
         },
         {
             label: t('page.annex.accio.concsv'),
-            icon: 'open_in_new',
+            icon: icons.obreNovaFinestra,
             showInMenu: true,
             linkTo: (row: any) => row?.concsvUrl,
             linkTarget: '_blank',
@@ -97,20 +98,20 @@ export const useAnnexAccions = (
         },
         {
             label: t('page.annex.accio.descarregarOriginal'),
-            icon: 'download',
+            icon: icons.descarrega,
             showInMenu: true,
             onClick: (id: any) => descarregar(id, REPORT_DESCARREGAR_ORIGINAL),
         },
         {
             label: t('page.annex.accio.descarregarImprimible'),
-            icon: 'print',
+            icon: icons.imprimeix,
             showInMenu: true,
             onClick: (id: any) => descarregar(id, REPORT_DESCARREGAR_IMPRIMIBLE),
             hidden: (row: any) => !row?.potGenerarVersioImprimible,
         },
         {
             label: t('page.annex.accio.guardarDefinitiu.label'),
-            icon: 'edit_note',
+            icon: icons.desaDefinitiu,
             showInMenu: true,
             hidden: (row: any) => !isAdmin || row?.arxiuEstat === 'DEFINITIU',
             onClick: (id: any) => guardarDefinitiu(id),
@@ -182,7 +183,7 @@ export const useAnnexMassiveActions = (): { actions: MassiveActionProps[]; compo
     const actions: MassiveActionProps[] = [
         {
             label: t('page.annex.accio.guardarDefinitiuMultiple.label'),
-            icon: 'edit_note',
+            icon: icons.desaDefinitiu,
             showInMenu: true,
             hidden: !isAdmin,
             onClick: custodiarMassiu,

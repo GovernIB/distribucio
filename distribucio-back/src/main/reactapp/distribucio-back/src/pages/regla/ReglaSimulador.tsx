@@ -18,6 +18,7 @@ import { MuiForm, useFormApiRef, useFormContext, useMuiContentDialog, useResourc
 import GridFormField from '../../components/GridFormField';
 import GridUnitatField from '../../components/GridUnitatField';
 import * as builder from '../../util/springFilterUtils';
+import { icons } from '../../util/icons';
 
 const ACCIO_SIMULAR = 'SIMULAR';
 
@@ -43,7 +44,7 @@ const SimulaFila: React.FC<{ onSimula: () => void; loading: boolean }> = ({ onSi
             </Typography>
             <Button
                 variant="contained"
-                startIcon={<Icon sx={{ mr: 0.5 }}>settings</Icon>}
+                startIcon={<Icon sx={{ mr: 0.5 }}>{icons.configuracio}</Icon>}
                 onClick={onSimula}
                 disabled={loading}
             >

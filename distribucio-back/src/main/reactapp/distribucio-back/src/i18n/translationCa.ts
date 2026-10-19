@@ -8,7 +8,7 @@ const translationCa = {
     // nom "common" que fan servir aquests components perquè els propers ports hi encaixin
     // sense retocs.
     common: {
-        save: "Guarda",
+        save: "Desa",
         update: 'Modifica',
         delete: 'Esborra',
         actualitza: "Actualitza",
@@ -25,6 +25,7 @@ const translationCa = {
         refresh: 'Refresca',
         create: 'Crea',
         processing: 'Processant...',
+        optionNotFound: '{{value}} - (No trobat)',
         boolean: {
             true: "Si",
             false: "No",
@@ -56,7 +57,7 @@ const translationCa = {
             contingut: 'Continguts',
             annex: 'Annexos',
             config: 'Propietats configurables',
-            massiva: "Consultar accions massives",
+            massiva: "Consulta accions massives",
             monitoritzar: 'Monitoritzar',
             integracio: 'Integracions',
             monitor: 'Monitor de sistema',
@@ -354,7 +355,7 @@ const translationCa = {
                     firmes: 'Firmes',
                 },
                 firmes: {
-                    mostrar: 'Mostrar firmes',
+                    mostrar: 'Mostra firmes',
                     column: {
                         nom: 'Nom',
                         nif: 'NIF',
@@ -494,9 +495,9 @@ const translationCa = {
                     ERROR_VALIDANT: 'Error en la validació',
                 },
                 action: {
-                    validarFirmes: 'Validar firmes',
-                    validarICustodiar: 'Validar i custodiar',
-                    descarregarFirma: 'Descarregar firma',
+                    validarFirmes: 'Valida firmes',
+                    validarICustodiar: 'Valida i custodia',
+                    descarregarFirma: 'Descarrega firma',
                 },
             },
         },
@@ -504,8 +505,8 @@ const translationCa = {
             title: 'Mètriques',
             timers: 'Timers',
             accio: {
-                importar: 'Importar',
-                exportar: 'Exportar',
+                importar: 'Importa',
+                exportar: 'Exporta',
                 error: 'Error',
                 errorCarrega: 'No s’han pogut obtenir les mètriques',
                 errorImportar: 'El fitxer seleccionat no conté mètriques vàlides',
@@ -540,7 +541,7 @@ const translationCa = {
             pendents: "Número d'anotacions pendents",
             cronInactivitat: "Expressió 'cron' inactivitat",
             histograma: 'Histograma',
-            refrescar: 'Refrescar',
+            refrescar: 'Refresca',
             errorCarrega: "No s'ha pogut obtenir l'històric d'anotacions pendents",
             senseDades: 'Encara no hi ha dades de la tasca',
             serie: {
@@ -584,14 +585,14 @@ const translationCa = {
                 discos: 'Disc i CPU',
             },
             accio: {
-                refrescar: 'Refrescar',
+                refrescar: 'Refresca',
                 error: 'Error',
                 reiniciar: {
-                    label: 'Reiniciar tasca',
+                    label: 'Reinicia tasca',
                     ok: 'La tasca s’ha reiniciat correctament',
                 },
                 reiniciarTotes: {
-                    label: 'Reiniciar seleccionades',
+                    label: 'Reinicia seleccionades',
                     ok: 'Les tasques s’han reiniciat correctament',
                 },
             },
@@ -671,7 +672,7 @@ const translationCa = {
                     label: "Descarrega pdf",
                 },
                 sincronitzar: {
-                    label: "Sincronitzar",
+                    label: "Sincronitza",
                     title: "Predicció de sincronització",
                     sincronitzar: "Sincronitza",
                     forzar: "Força sincronització",
@@ -768,7 +769,7 @@ const translationCa = {
                 unitatObsoleta: 'La unitat organitzativa de filtre ha quedat obsoleta',
                 columna: {
                     destinacio: 'Destinació',
-                    aturar: 'Aturar',
+                    aturar: 'Atura',
                     icona: {
                         bustia: 'Bústia',
                         backoffice: 'BackOffice',
@@ -853,7 +854,7 @@ const translationCa = {
         },
         bustia: {
             title: "Bústia",
-            vista: "Canvi de vista",
+            vista: "Canvia de vista",
             grid: {
                 title: "Gestió de bústies",
                 writeAllowed: "Accés",
@@ -885,7 +886,7 @@ const translationCa = {
                 },
                 desactivar: {
                     label: 'Desactiva',
-                    title: "Seleccionar altre bústia principal",
+                    title: "Seleccionar una altra bústia principal",
                     ok: "La bústia s'ha desactivat correctament",
                 },
                 usuarisBustia: {
@@ -1018,7 +1019,7 @@ const translationCa = {
             },
             accio: {
                 classifica: {
-                    label: "Classifíca...",
+                    label: "Classifica...",
                     title: "Classificació de l'anotació de registre",
                     warning: "La classificació d'una anotació de registre pot disparar l'execució de regles, la qual cosa pot provocar que l'anotació desaparegui de la bústia actual.",
                     ok: {
@@ -1027,8 +1028,8 @@ const translationCa = {
                     },
                 },
                 email: {
-                    label: "Envía via email...",
-                    title: "Enviar via email",
+                    label: "Envia via email...",
+                    title: "Envia via email",
                     titleMassive: "Enviar via email {{num}} anotacions",
                     ok: "La anotación \"{{numero}}\" se ha enviado correctamente",
                     form: {
@@ -1036,20 +1037,20 @@ const translationCa = {
                     }
                 },
                 reenviar: {
-                    label: "Reenvía...",
-                    title: "Reenviar",
+                    label: "Reenvia...",
+                    title: "Reenvia",
                     titleMassive: "Reenviar {{num}} anotacions",
                     ok: "La anotación \"{{numero}}\" se ha reenviat correctamente",
                 },
                 marcarProcessada: {
                     label: "Marca com a processada...",
-                    title: "Marcar com a processada",
+                    title: "Marca com a processada",
                     titleMassive: "Marcar com a processades {{num}} anotacions",
                     ok: "L'anotació \"{{numero}}\" s'ha marcat com a processada",
                 },
                 marcarPendent: {
                     label: "Marca com a pendent...",
-                    title: "Marcar com a pendent",
+                    title: "Marca com a pendent",
                     titleMassive: "Marcar com a pendents {{num}} anotacions",
                     ok: "L'anotació \"{{numero}}\" s'ha marcat com a pendent",
                 },
@@ -1064,7 +1065,7 @@ const translationCa = {
                 },
                 sobreescriure: {
                     label: "Marca per a sobreescriure...",
-                    title: "Marcar per a sobreescriure",
+                    title: "Marca per a sobreescriure",
                     titleMassive: "Marcar per a sobreescriure {{num}} anotacions",
                     ok: "L'anotació amb número \"{{numero}}\" s'ha marcat per a sobreescriure correctament",
                 },
@@ -1296,12 +1297,12 @@ const translationCa = {
                 empty: "Sense permisos",
             },
             coneixement: {
-                marcar: "Afegir a coneixement",
-                desmarcar: "Llevar de coneixement",
+                marcar: "Afegeix a coneixement",
+                desmarcar: "Lleva de coneixement",
             },
             favorit: {
-                marcar: "Afegir a favorits",
-                desmarcar: "Llevar de favorits",
+                marcar: "Afegeix a favorits",
+                desmarcar: "Lleva de favorits",
             },
         },
         RegistreDetail: {

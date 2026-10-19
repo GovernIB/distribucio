@@ -1,6 +1,7 @@
 import {useBaseAppContext, useResourceApiService} from "reactlib";
 import useIntegracioDetail from "./IntegracioDetail.tsx";
 import {useTranslation} from "react-i18next";
+import { icons } from "../../../util/icons.ts";
 
 export const useActions = (refresh?: () => void) => {
     const {t} = useTranslation()
@@ -48,7 +49,7 @@ export const useIntegracioActions = () => {
     const actions:any[] = [
         {
             label: t('page.integracio.detail.title'),
-            icon: 'info',
+            icon: icons.detall,
             showInMenu: false,
             onClick: (id: any, row: any) => mostrarDetall(id, row),
         },

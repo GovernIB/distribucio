@@ -4,6 +4,7 @@ import {useTranslation} from "react-i18next";
 import FormActionDialog from "../../../components/FormActionDialog.tsx";
 import GridFormField from "../../../components/GridFormField.tsx";
 import {useOrganigrama} from "../BustiaOrganigrama.tsx";
+import { icons } from '../../../util/icons';
 
 const MoureAnotacionsForm = () => {
     const { apiRef } = useFormContext();
@@ -28,7 +29,7 @@ export const MoureAnotacions = (props: any) => {
         title={(dades) => t('page.bustia.accio.moureAnotacions.title', {nom: dades?.nom})}
         action={"MOURE_ANOTACIO"}
         buttons={[
-            {icon: 'turn_right', text: t('page.bustia.accio.moureAnotacions.label'), componentProps: { variant: 'contained' }, value: true },
+            {icon: icons.mou, text: t('page.bustia.accio.moureAnotacions.label'), componentProps: { variant: 'contained' }, value: true },
             {text: t('common.cancel'), componentProps: { variant: 'outlined' }, value: false },
         ]}
         {...props}

@@ -2,8 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Icon, Tooltip } from '@mui/material';
 import { GridPage, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
-import { CardPage } from '../../components/CardData';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
+import BustiaPathCell from '../../components/BustiaPathCell';
 import { formatDate } from '../../util/dateUtils';
 import ContingutFilter from './ContingutFilter';
 import useContingutAccions from './ContingutAccions';
@@ -56,50 +58,16 @@ const ContingutNomCell: React.FC<{ params: any }> = ({ params }) => {
                 >
                     {!!row?.esborrat && (
                         <Tooltip title={t('page.contingut.grid.icona.esborrat')}>
-                            <Icon fontSize="small" sx={{ fontSize: '18px' }}>
-                                delete
-                            </Icon>
+                            <Icon fontSize="small" sx={{ fontSize: '18px' }}>{icons.esborra}</Icon>
                         </Tooltip>
                     )}
                     {row?.alerta && (
                         <Tooltip title={t('page.contingut.grid.icona.alerta')}>
-                            <Icon fontSize="small" color="warning" sx={{ fontSize: '18px' }}>
-                                warning
-                            </Icon>
+                            <Icon fontSize="small" color="warning" sx={{ fontSize: '18px' }}>{icons.advertencia}</Icon>
                         </Tooltip>
                     )}
                 </Box>
             )}
-        </Box>
-    );
-};
-
-const ContingutPathCell: React.FC<{ params: any }> = ({ params }) => {
-    const { t } = useTranslation();
-    const path: string[] = params?.row?.path ?? [];
-
-    return (
-        <Box sx={{ whiteSpace: 'normal', lineHeight: 1.4 }}>
-            {path.map((nom, index) => (
-                <React.Fragment key={index}>
-                    {index > 0 && ' / '}
-                    <Tooltip
-                        title={
-                            index === 0
-                                ? t('page.contingut.grid.icona.unitat')
-                                : t('page.contingut.grid.icona.bustia')
-                        }
-                    >
-                        <Icon
-                            fontSize="small"
-                            sx={{ fontSize: '18px', verticalAlign: 'text-bottom', mr: 0.5 }}
-                        >
-                            {index === 0 ? 'account_tree' : 'inbox'}
-                        </Icon>
-                    </Tooltip>
-                    {nom}
-                </React.Fragment>
-            ))}
         </Box>
     );
 };
@@ -118,7 +86,7 @@ const columns: MuiDataGridColDef[] = [
         flex: 3,
         sortable: false,
         filterable: false,
-        renderCell: (params: any) => <ContingutPathCell params={params} />,
+        renderCell: (params: any) => <BustiaPathCell path={params?.row?.path} />,
     },
 ];
 
@@ -132,7 +100,7 @@ export const ContingutGrid: React.FC = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.contingut.grid.title')}>
+            <ScreenFrame icon={icons.contingut} title={t('page.contingut.grid.title')}>
                 <ContingutFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid
                     toolbarHideCreate
@@ -149,7 +117,7 @@ export const ContingutGrid: React.FC = () => {
                 />
                 {historialDialog}
                 {detailDialog}
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

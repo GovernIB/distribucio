@@ -9,9 +9,12 @@ import Typography from '@mui/material/Typography';
 import {DetailCard} from "../../components/CardData.tsx";
 import Load from "../../components/Load.tsx";
 import {PropietatsForm} from "./PropietatsForm.tsx";
+import { icons } from '../../util/icons';
 
-export const PropietatsProps: React.FC<{ groupId?: any, grups: any[], configs: any[], highlight?: string }> = (props) => {
-    const { groupId, grups, configs, highlight } = props;
+export const PropietatsProps: React.FC<{ groupId?: any, grups: any[], configs: any[], highlight?: string, root?: boolean }> = (props) => {
+    // root: grup de nivell superior; ocupa tota l'alçada, amb la capçalera fixa i només el contingut amb scroll.
+    // Els subgrups no ho són i flueixen dins el contingut del pare.
+    const { groupId, grups, configs, highlight, root = false } = props;
     const { t } = useTranslation();
 
     const group = useMemo(() => grups?.find((g:any) => g.id === groupId ), [groupId, grups])
@@ -20,7 +23,12 @@ export const PropietatsProps: React.FC<{ groupId?: any, grups: any[], configs: a
 
     return (
         <Load value={group} noEffect>
-            <DetailCard title={group?.description} variant={'h6'} headerProps={{ color: 'white', backgroundColor: 'primary.main' }}>
+            <DetailCard title={group?.description} variant={'h6'} headerProps={{ color: 'white', backgroundColor: 'primary.main' }}
+                {...(root && {
+                    gridProps: { sx: { height: '100%' } },
+                    cardProps: { height: '100%', display: 'flex', flexDirection: 'column' },
+                    contentProps: { flex: 1, minHeight: 0, overflow: 'auto' },
+                })}>
                 <Grid size={12}>
                 <List component={Paper}>
                     {(confProps?.length || children?.length) ? (<>
@@ -38,9 +46,7 @@ export const PropietatsProps: React.FC<{ groupId?: any, grups: any[], configs: a
                                 px: 2,
                                 py: 4,
                             }}>
-                            <Icon fontSize="large" color="disabled">
-                                block
-                            </Icon>
+                            <Icon fontSize="large" color="disabled">{icons.senseDades}</Icon>
                             <Typography variant="h5" color="text.secondary">
                                 {t('page.propietats.empty')}
                             </Typography>

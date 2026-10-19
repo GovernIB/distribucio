@@ -18,6 +18,7 @@ import useReenviarBackoffice from "../actions/ReenviarBackoffice.tsx";
 import useEnviarMarcar from "../actions/EnviarMarcar.tsx";
 import useAssignar from "../actions/Assignar.tsx";
 import {useDistribucioContext} from "../../../components/DistribucioContext.ts";
+import { icons } from '../../../util/icons';
 
 export const useActions = (refresh?: () => void) => {
     const { t } = useTranslation();
@@ -202,13 +203,13 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
     const actions:any[] = [
         {
             label: t('page.contingut.accio.historial.label'),
-            icon: 'list',
+            icon: icons.llista,
             showInMenu: true,
             onClick: handleHistoric,
         },
         {
             label: t('page.alerta.label'),
-            icon: 'note_stack',
+            icon: icons.alertes,
             showInMenu: true,
             onClick: handleAlertes,
             hidden: (row:any) => !row.alerta,
@@ -220,7 +221,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
         },
         {
             label: t('page.registre.accio.classifica.label'),
-            icon: 'inbox',
+            icon: icons.bustia,
             action: 'CLASSIFICAR',
             showInMenu: true,
             onClick: (id:any) => handleClassificar([id], false),
@@ -236,7 +237,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
         },
         {
             label: t('page.registre.accio.email.label'),
-            icon: 'mail',
+            icon: icons.correu,
             action: 'ENVIAR_EMAIL',
             showInMenu: true,
             disabled: (row:any) => row.pendentExecucioMassiva,
@@ -244,7 +245,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
         },
         {
             label: t('page.registre.accio.reenviar.label'),
-            icon: 'send',
+            icon: icons.envia,
             action: 'REENVIAR',
             showInMenu: true,
             onClick: (id:any) => handleReenviar([id], false),
@@ -253,7 +254,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
         },
         {
             label: t('page.registre.accio.marcarProcessada.label'),
-            icon: 'check_circle',
+            icon: icons.correcte,
             action: 'MARCAR_PROCESSADA',
             showInMenu: true,
             onClick: (id:any) => handleProcessada([id], false),
@@ -269,7 +270,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
         },
         {
             label: t('page.registre.accio.marcarPendent.label'),
-            icon: 'undo',
+            icon: icons.desfes,
             action: 'MARCAR_PENDENT',
             showInMenu: true,
             onClick: (id:any) => handlePendent([id], false),
@@ -278,7 +279,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
         },
         {
             label: t('page.registre.accio.sobreescriure.label'),
-            icon: 'history',
+            icon: icons.historial,
             action: 'MARCAR_SOBREESCRIURE',
             showInMenu: true,
             onClick: marcarSobreescriure,
@@ -286,14 +287,14 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
         },
         {
             label: t('page.registre.accio.descargaOriginal.label'),
-            icon: 'download',
+            icon: icons.descarrega,
             report: 'DESCARREGAR_DOC',
             showInMenu: true,
             onClick: (id:any) => descarregarDoc(id, false),
         },
         {
             label: t('page.registre.accio.descargaAutentica.label'),
-            icon: 'download',
+            icon: icons.descarrega,
             report: 'DESCARREGAR_DOC',
             showInMenu: true,
             onClick: (id:any) => descarregarDoc(id, true),
@@ -306,7 +307,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
         },
         {
             label: t('page.registre.accio.reservar.label'),
-            icon: 'lock',
+            icon: icons.bloqueja,
             action: 'RESERVAR',
             showInMenu: true,
             onClick: bloquejar,
@@ -314,7 +315,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
         },
         {
             label: t('page.registre.accio.alliberar.label'),
-            icon: 'lock_open_right',
+            icon: icons.desbloqueja,
             action: 'ALLIBERAR',
             showInMenu: true,
             onClick: alliberar,
@@ -324,7 +325,7 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
             label: (row:any) => row.agafatPer == null
                 ?t('page.registre.accio.assignar.label')
                 :t('page.registre.accio.assignar.reassignaLabel'),
-            icon: 'person_add',
+            icon: icons.afegeixUsuari,
             action: 'ASSIGNAR',
             showInMenu: true,
             onClick: handleAssignar,
@@ -405,21 +406,21 @@ export const useRegistreMassiveActions = () => {
     const actions:any[] = [
         {
             label: t('page.registre.accio.reenviarBackoffice.label'),
-            icon: 'settings',
+            icon: icons.configuracio,
             action: 'REENVIAR_BACKOFFICE',
             showInMenu: true,
             onClick: (ids:any) => handleReenviarBackoffice(ids, true),
         },
         {
             label: t('page.registre.accio.tornarProcessar.label'),
-            icon: 'settings',
+            icon: icons.configuracio,
             action: 'TORNAR_PROCESSAR',
             showInMenu: true,
             onClick: (ids:any) => handleTornarProcessar(ids, true),
         },
         {
             label: t('page.registre.accio.sobreescriure.label'),
-            icon: 'history',
+            icon: icons.historial,
             action: 'MARCAR_SOBREESCRIURE',
             showInMenu: true,
             onClick: (ids:any) => handleSobreescriure(ids, true),
@@ -432,63 +433,63 @@ export const useRegistreMassiveActions = () => {
         },
         {
             label: t('page.registre.accio.classifica.label'),
-            icon: 'inbox',
+            icon: icons.bustia,
             action: 'CLASSIFICAR',
             showInMenu: true,
             onClick: (ids:any) => handleClassificar(ids, true),
         },
         {
             label: t('page.registre.accio.email.label'),
-            icon: 'mail',
+            icon: icons.correu,
             action: 'ENVIAR_EMAIL',
             showInMenu: true,
             onClick: (ids:any) => handleEnviarEmail(ids, true),
         },
         {
             label: t('page.registre.accio.reenviar.label'),
-            icon: 'send',
+            icon: icons.envia,
             action: 'REENVIAR',
             showInMenu: true,
             onClick: (ids:any) => handleReenviar(ids, true),
         },
         {
             label: t('page.registre.accio.marcarProcessada.label'),
-            icon: 'check_circle',
+            icon: icons.correcte,
             action: 'MARCAR_PROCESSADA',
             showInMenu: true,
             onClick: (ids:any) => handleProcessada(ids, true),
         },
         {
             label: t('page.registre.accio.marcarPendent.label'),
-            icon: 'undo',
+            icon: icons.desfes,
             action: 'MARCAR_PENDENT',
             showInMenu: true,
             onClick: (ids:any) => handlePendent(ids, true),
         },
         {
             label: t('page.registre.accio.enviaMarca.label'),
-            icon: 'mail',
+            icon: icons.correu,
             action: 'ENVIAR_MARCAR',
             showInMenu: true,
             onClick: (ids:any) => handleEnviaMarca(ids, true),
         },
         {
             label: t('page.registre.accio.export.ODS'),
-            icon: 'download',
+            icon: icons.descarrega,
             report: 'EXPORT',
             showInMenu: true,
             onClick: (ids:any) => exportRegistre(ids, 'ODS'),
         },
         {
             label: t('page.registre.accio.export.CSV'),
-            icon: 'download',
+            icon: icons.descarrega,
             report: 'EXPORT',
             showInMenu: true,
             onClick: (ids:any) => exportRegistre(ids, 'CSV'),
         },
         {
             label: t('page.registre.accio.descargaMassiva.label'),
-            icon: 'download',
+            icon: icons.descarrega,
             action: 'DESCARREGAR_MASSIU',
             showInMenu: true,
             onClick: (ids:any) => handleDescargaMassiva(ids, true),

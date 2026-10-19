@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import Icon from '@mui/material/Icon';
 import { useLocation } from 'react-router-dom';
 import { useResourceApiContext } from 'reactlib';
+import { icons } from '../util/icons';
 
 
 // L'arrel del back antic decideix la interfície (perfil de l'usuari o la propietat
@@ -59,7 +60,7 @@ export const InterficieClassicaButton: React.FC = () => {
     return (
         <Button
             color="inherit"
-            startIcon={<Icon fontSize="small">fast_rewind</Icon>}
+            startIcon={<Icon fontSize="small">{icons.interficieClassica}</Icon>}
             onClick={anarAInterficieClassica}>
             {t('app.interficie.classica')}
         </Button>

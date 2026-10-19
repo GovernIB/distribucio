@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { GridPage, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
-import { CardPage } from '../../components/CardData';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
 import LimitCanviEstatFormContent from './LimitCanviEstatFormContent';
 import useLimitCanviEstatAccions from './LimitCanviEstatAccions';
@@ -22,7 +23,7 @@ export const LimitCanviEstatGrid: React.FC = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.limitCanviEstat.grid.title')}>
+            <ScreenFrame icon={icons.limitCanviEstat} title={t('page.limitCanviEstat.grid.title')}>
                 <StyledMuiGrid
                     toolbarCreateTitle={t('page.limitCanviEstat.accio.new')}
                     resourceName="limitCanviEstatResource"
@@ -42,7 +43,7 @@ export const LimitCanviEstatGrid: React.FC = () => {
                     rowHideDeleteButton
                     rowAdditionalActions={accions}
                 />
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

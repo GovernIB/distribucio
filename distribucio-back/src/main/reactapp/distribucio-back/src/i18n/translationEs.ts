@@ -19,12 +19,13 @@ const translationEs = {
         filterCount_one: '{{num}} filtro aplicado',
         filterCount_other: '{{num}} filtros aplicados',
         advancedSearch: 'Búsqueda avanzada',
-        advancedSearchOpen: 'Abrir la búsqueda avanzada',
-        advancedSearchClose: 'Cerrar la búsqueda avanzada',
+        advancedSearchOpen: 'Abre la búsqueda avanzada',
+        advancedSearchClose: 'Cierra la búsqueda avanzada',
         copiat: 'Copiado correctamente',
         refresh: 'Refresca',
         create: 'Crea',
         processing: 'Procesando...',
+        optionNotFound: '{{value}} - (No encontrado)',
         boolean: {
             true: "Si",
             false: "No",
@@ -173,7 +174,7 @@ const translationEs = {
                 title: "Servicios",
             },
             accio: {
-                actualitzarTotsButton: 'Actualizar todos los servicios',
+                actualitzarTotsButton: 'Actualiza todos los servicios',
                 actualitzar: 'Actualiza el servicio',
                 esborrar: 'Borra',
                 actualitzarOk: "El servicio se ha actualizado correctamente",
@@ -205,7 +206,7 @@ const translationEs = {
                 title: "Procedimientos",
             },
             accio: {
-                actualitzarTotsButton: "Actualizar todos los procedimientos",
+                actualitzarTotsButton: "Actualiza todos los procedimientos",
                 actualitzar: "Actualiza el procedimiento",
                 actualitzarOk: "El procedimiento se ha actualizado correctamente",
                 actualitzarTotsOk: "Todos los procedimientos se han actualizado correctamente",
@@ -351,7 +352,7 @@ const translationEs = {
                     firmes: 'Firmas',
                 },
                 firmes: {
-                    mostrar: 'Mostrar firmas',
+                    mostrar: 'Muestra firmas',
                     column: {
                         nom: 'Nombre',
                         nif: 'NIF',
@@ -491,9 +492,9 @@ const translationEs = {
                     ERROR_VALIDANT: 'Error en la validación',
                 },
                 action: {
-                    validarFirmes: 'Validar firmas',
-                    validarICustodiar: 'Validar y custodiar',
-                    descarregarFirma: 'Descargar firma',
+                    validarFirmes: 'Valida firmas',
+                    validarICustodiar: 'Valida y custodia',
+                    descarregarFirma: 'Descarga firma',
                 },
             },
         },
@@ -501,8 +502,8 @@ const translationEs = {
             title: 'Métricas',
             timers: 'Timers',
             accio: {
-                importar: 'Importar',
-                exportar: 'Exportar',
+                importar: 'Importa',
+                exportar: 'Exporta',
                 error: 'Error',
                 errorCarrega: 'No se han podido obtener las métricas',
                 errorImportar: 'El fichero seleccionado no contiene métricas válidas',
@@ -537,7 +538,7 @@ const translationEs = {
             pendents: 'Número de anotaciones pendientes',
             cronInactivitat: "Expresión 'cron' inactividad",
             histograma: 'Histograma',
-            refrescar: 'Refrescar',
+            refrescar: 'Refresca',
             errorCarrega: 'No se ha podido obtener el histórico de anotaciones pendientes',
             senseDades: 'Todavía no hay datos de la tarea',
             serie: {
@@ -581,14 +582,14 @@ const translationEs = {
                 discos: 'Disco y CPU',
             },
             accio: {
-                refrescar: 'Refrescar',
+                refrescar: 'Refresca',
                 error: 'Error',
                 reiniciar: {
-                    label: 'Reiniciar tarea',
+                    label: 'Reinicia tarea',
                     ok: 'La tarea se ha reiniciado correctamente',
                 },
                 reiniciarTotes: {
-                    label: 'Reiniciar seleccionadas',
+                    label: 'Reinicia seleccionadas',
                     ok: 'Las tareas se han reiniciado correctamente',
                 },
             },
@@ -668,7 +669,7 @@ const translationEs = {
                     label: "Descarga PDF",
                 },
                 sincronitzar: {
-                    label: "Sincronizar",
+                    label: "Sincroniza",
                     title: "Predicción de sincronización",
                     sincronitzar: "Sincroniza",
                     forzar: "Fuerza sincronización",
@@ -765,7 +766,7 @@ const translationEs = {
                 unitatObsoleta: 'La unidad organizativa de filtro ha quedado obsoleta',
                 columna: {
                     destinacio: 'Destino',
-                    aturar: 'Parar',
+                    aturar: 'Para',
                     icona: {
                         bustia: 'Buzón',
                         backoffice: 'BackOffice',
@@ -850,7 +851,7 @@ const translationEs = {
         },
         bustia: {
             title: "Buzón",
-            vista: "Cambiar vista",
+            vista: "Cambia de vista",
             grid: {
                 title: "Gestión de buzones",
                 writeAllowed: "Acceso",
@@ -866,7 +867,7 @@ const translationEs = {
                     label: "Nuevo buzón",
                 },
                 update: {
-                    title: "Modificar buzón",
+                    title: "Modifica buzón",
                 },
                 moureAnotacions: {
                     title: "Mover las anotaciones de registro del buzón '{{nom}}'",
@@ -931,19 +932,19 @@ const translationEs = {
                     title: "Contenido",
                 },
                 play: {
-                    label: "Reanudar",
+                    label: "Reanuda",
                     ok: "La acción se ha reanudado correctamente",
                 },
                 pause: {
-                    label: "Pausar",
+                    label: "Pausa",
                     ok: "La acción se ha pausado correctamente",
                 },
                 cancel: {
-                    label: "Cancelar",
+                    label: "Cancela",
                     ok: "La acción se ha cancelado correctamente",
                 },
                 download: {
-                    label: "Descargar",
+                    label: "Descarga",
                     notFound: "Documento no disponible",
                     ok: "Documento descargado correctamente",
                 }
@@ -1024,9 +1025,9 @@ const translationEs = {
                     },
                 },
                 email: {
-                    label: "Envía per correu electrònic...",
-                    title: "Enviar per correu electrònic",
-                    titleMassive: "Enviar per correu electrònic {{num}} anotacions",
+                    label: "Envía por correo electrónico...",
+                    title: "Envía por correo electrónico",
+                    titleMassive: "Enviar por correo electrónico {{num}} anotaciones",
                     ok: "L'anotació \"{{numero}}\" s'ha enviat correctament",
                     form: {
                         destinatari: "Introduïu els destinataris separats per coma o espai",
@@ -1034,19 +1035,19 @@ const translationEs = {
                 },
                 reenviar: {
                     label: "Reenvía...",
-                    title: "Reenviar",
+                    title: "Reenvía",
                     titleMassive: "Reenviar {{num}} anotaciones",
                     ok: "La anotación \"{{numero}}\" se ha reenviado correctamente",
                 },
                 marcarProcessada: {
                     label: "Marca como procesada...",
-                    title: "Marcar como procesada",
+                    title: "Marca como procesada",
                     titleMassive: "Marcar como procesadas {{num}} anotaciones",
                     ok: "La anotación \"{{numero}}\" se ha marcado como procesada",
                 },
                 marcarPendent: {
                     label: "Marca como pendiente...",
-                    title: "Marcar como pendiente",
+                    title: "Marca como pendiente",
                     titleMassive: "Marcar como pendientes {{num}} anotaciones",
                     ok: "La anotación \"{{numero}}\" se ha marcado como pendiente",
                 },
@@ -1061,7 +1062,7 @@ const translationEs = {
                 },
                 sobreescriure: {
                     label: "Marca para sobrescribir...",
-                    title: "Marcar para sobrescribir",
+                    title: "Marca para sobrescribir",
                     titleMassive: "Marcar para sobrescribir {{num}} anotaciones",
                     ok: "La anotación con número \"{{numero}}\" se ha marcado para sobrescribir correctamente",
                 },
@@ -1225,7 +1226,7 @@ const translationEs = {
         },
         ProcesEstatLegend: {
             title: "Leyenda de los estados del proceso de las anotaciones de registro",
-            tanca: "Cerrar",
+            tanca: "Cierra",
             estat: {
                 ARXIU_PENDENT: {
                     label: "Pendiente de guardar anexos",
@@ -1272,7 +1273,7 @@ const translationEs = {
         CommentDialog: {
             title: "Comentarios del contenido: {{name}}",
             label: "Comentarios",
-            envia: "Enviar",
+            envia: "Envía",
         },
         RecordNavigation: {
             prev: "Anterior",
@@ -1293,12 +1294,12 @@ const translationEs = {
                 empty: "Sin permisos",
             },
             coneixement: {
-                marcar: "Añadir a conocimiento",
-                desmarcar: "Quitar de conocimiento",
+                marcar: "Añade a conocimiento",
+                desmarcar: "Quita de conocimiento",
             },
             favorit: {
-                marcar: "Añadir a favoritos",
-                desmarcar: "Quitar de favoritos",
+                marcar: "Añade a favoritos",
+                desmarcar: "Quita de favoritos",
             },
         },
         RegistreDetail: {

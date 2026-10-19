@@ -6,6 +6,7 @@ import * as builder from '../../../util/springFilterUtils';
 import ContingutLogDetallContent from './ContingutLogDetallDialog';
 import {useActions} from "../../registre/detail/RegistreActions.tsx";
 import {useTranslation} from "react-i18next";
+import { icons } from '../../../util/icons';
 
 type ContingutLogGridProps = {
     contingutRow: any;
@@ -63,7 +64,7 @@ export const ContingutLogGrid: React.FC<ContingutLogGridProps> = ({ contingutRow
                 {
                     position: 0,
                     element: <ToolbarButton
-                        icon={'description'}
+                        icon={icons.informe}
                         variant={'contained'}
                         // title={t('page.contingut.historial.informe.label')}
                         onClick={() => informeLogs(contingut.id)}

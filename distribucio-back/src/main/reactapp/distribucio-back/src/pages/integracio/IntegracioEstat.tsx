@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Icon from '@mui/material/Icon';
+import { icons } from '../../util/icons';
 
 type IntegracioEstatProps = {
     value?: string;
@@ -21,9 +22,7 @@ export const IntegracioEstat: React.FC<IntegracioEstatProps> = ({ value, excepci
                     borderRadius: '4px',
                 }}
             >
-                <Icon fontSize="small" sx={{ fontSize: '18px' }}>
-                    check_circle
-                </Icon>
+                <Icon fontSize="small" sx={{ fontSize: '18px' }}>{icons.correcte}</Icon>
                 {value}
             </Box>
         );
@@ -43,9 +42,7 @@ export const IntegracioEstat: React.FC<IntegracioEstatProps> = ({ value, excepci
                     borderRadius: '4px',
                 }}
             >
-                <Icon fontSize="small" sx={{ fontSize: '18px' }}>
-                    warning
-                </Icon>
+                <Icon fontSize="small" sx={{ fontSize: '18px' }}>{icons.advertencia}</Icon>
                 {value}
             </Box>
         );

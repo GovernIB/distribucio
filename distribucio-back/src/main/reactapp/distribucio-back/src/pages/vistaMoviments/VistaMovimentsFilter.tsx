@@ -3,6 +3,7 @@ import StyledMuiFilter from '../../components/StyledMuiFilter';
 import GridFormField, { GridButtonField } from '../../components/GridFormField';
 import * as builder from '../../util/springFilterUtils';
 import { useFormContext } from 'reactlib';
+import { icons } from '../../util/icons';
 
 const VistaMovimentsFilterForm: React.FC = () => {
     const { data } = useFormContext();
@@ -15,19 +16,19 @@ const VistaMovimentsFilterForm: React.FC = () => {
         <>
             {!data?.advanced && (
                 <>
-                    <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="numero" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="titol" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 1.1 }} name="estat" />
-                    <GridFormField size={{ xs: 10, sm: 5, md: 2 }} name="bustiaOrigen" filter={filtreBustiaOrigen} />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 1.6 }} name="numero" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.3 }} name="titol" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 1.2 }} name="estat" />
+                    <GridFormField size={{ xs: 10, sm: 5, md: 2.2 }} name="bustiaOrigen" filter={filtreBustiaOrigen} />
                     <GridButtonField
-                        icon={'inbox'}
+                        icon={icons.bustia}
                         size={{ xs: 2, sm: 1, md: 0.5 }}
                         sx={{ minWidth: 0 }}
                         name="mostrarInactivesOrigen"
                     />
-                    <GridFormField size={{ xs: 10, sm: 5, md: 2 }} name="bustiaDesti" filter={filtreBustiaDesti} />
+                    <GridFormField size={{ xs: 10, sm: 5, md: 2.2 }} name="bustiaDesti" filter={filtreBustiaDesti} />
                     <GridButtonField
-                        icon={'inbox'}
+                        icon={icons.bustia}
                         size={{ xs: 2, sm: 1, md: 0.5 }}
                         sx={{ minWidth: 0 }}
                         name="mostrarInactives"
@@ -46,14 +47,14 @@ const VistaMovimentsFilterForm: React.FC = () => {
                     <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="dataRecepcioFi" />
                     <GridFormField size={{ xs: 10, sm: 5, md: 3 }} name="bustiaOrigen" filter={filtreBustiaOrigen} />
                     <GridButtonField
-                        icon={'inbox'}
+                        icon={icons.bustia}
                         size={{ xs: 2, sm: 1, md: 0.5 }}
                         sx={{ minWidth: 0 }}
                         name="mostrarInactivesOrigen"
                     />
                     <GridFormField size={{ xs: 10, sm: 5, md: 3 }} name="bustiaDesti" filter={filtreBustiaDesti} />
                     <GridButtonField
-                        icon={'inbox'}
+                        icon={icons.bustia}
                         size={{ xs: 2, sm: 1, md: 0.5 }}
                         sx={{ minWidth: 0 }}
                         name="mostrarInactives"

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useBaseAppContext, useConfirmDialogButtons, useResourceApiService } from 'reactlib';
 import type { MassiveActionProps } from '../../components/MassiveActionSelector';
 import useAplicarManualment from "./ReglaAplicarManualment.tsx";
+import { icons } from '../../util/icons';
 
 const ACCIO_ACTIVAR = 'ACTIVAR';
 const ACCIO_DESACTIVAR = 'DESACTIVAR';
@@ -35,14 +36,14 @@ export const useReglaAccions = (refresh: () => void) => {
     const actions = [
         {
             label: t('page.regla.accio.modificar'),
-            icon: 'edit',
+            icon: icons.modifica,
             showInMenu: true,
             rowLink: 'update',
             clickShowUpdateDialog: true,
         },
         {
             label: t('page.regla.accio.aplicarManualment'),
-            icon: 'settings',
+            icon: icons.configuracio,
             showInMenu: true,
             action: ACCIO_APLICAR_MANUALMENT,
             disabled: (row: any) => !row?.activa,
@@ -50,7 +51,7 @@ export const useReglaAccions = (refresh: () => void) => {
         },
         {
             label: t('page.regla.accio.amunt'),
-            icon: 'arrow_upward',
+            icon: icons.amunt,
             showInMenu: true,
             action: ACCIO_AMUNT,
             hidden: (row: any) => row?.ordre === 0,
@@ -58,7 +59,7 @@ export const useReglaAccions = (refresh: () => void) => {
         },
         {
             label: t('page.regla.accio.avall'),
-            icon: 'arrow_downward',
+            icon: icons.avall,
             showInMenu: true,
             action: ACCIO_AVALL,
             hidden: (row: any) => row?.ordre === (row?.totalRegles ?? 1) - 1,
@@ -66,7 +67,7 @@ export const useReglaAccions = (refresh: () => void) => {
         },
         {
             label: t('page.regla.accio.activar'),
-            icon: 'check',
+            icon: icons.accepta,
             showInMenu: true,
             action: ACCIO_ACTIVAR,
             hidden: (row: any) => row?.activa,
@@ -74,7 +75,7 @@ export const useReglaAccions = (refresh: () => void) => {
         },
         {
             label: t('page.regla.accio.desactivar'),
-            icon: 'close',
+            icon: icons.cancela,
             showInMenu: true,
             action: ACCIO_DESACTIVAR,
             hidden: (row: any) => !row?.activa,
@@ -82,7 +83,7 @@ export const useReglaAccions = (refresh: () => void) => {
         },
         {
             label: t('page.regla.accio.esborrar'),
-            icon: 'delete',
+            icon: icons.esborra,
             showInMenu: true,
             rowLink: 'delete',
             clickTriggerDelete: true,
@@ -138,21 +139,21 @@ export const useReglaMassiveAccions = (
     const actions: MassiveActionProps[] = [
         {
             label: t('page.regla.accio.activar'),
-            icon: 'check',
+            icon: icons.accepta,
             showInMenu: true,
             action: ACCIO_MASSIVA,
             onClick: (ids: any[]) => executarAccioMassiva(ids, 'activar', 'page.regla.accio.activarMassiuOk'),
         },
         {
             label: t('page.regla.accio.desactivar'),
-            icon: 'close',
+            icon: icons.cancela,
             showInMenu: true,
             action: ACCIO_MASSIVA,
             onClick: (ids: any[]) => executarAccioMassiva(ids, 'desactivar', 'page.regla.accio.desactivarMassiuOk'),
         },
         {
             label: t('page.regla.accio.esborrarMassiu'),
-            icon: 'delete',
+            icon: icons.esborra,
             showInMenu: true,
             action: ACCIO_MASSIVA,
             onClick: esborrarMassiu,

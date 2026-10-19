@@ -1,11 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { GridPage, useBaseAppContext, useResourceApiService } from 'reactlib';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import type { Theme } from '@mui/material/styles';
-import { CardPage, ContenidoData, DetailCard } from '../../components/CardData';
+import { ContenidoData, DetailCard } from '../../components/CardData';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import { ToolbarButton } from '../../components/StyledMuiGrid';
 import PendentsArxiuGrafic from './PendentsArxiuGrafic';
 import { formatDataHora, Histograma } from './pendentsArxiuUtils';
@@ -71,19 +72,14 @@ export const PendentsArxiuPage: React.FC = () => {
 
     return (
         <GridPage>
-            <CardPage title={text('title')}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                    <Typography variant="h6" component="h2">
-                        {text('tasca')}
-                    </Typography>
-                    <ToolbarButton
-                        title={text('refrescar')}
-                        icon="refresh"
-                        color="primary"
-                        disabled={loading}
-                        onClick={refresh}
-                    />
-                </Box>
+            <ScreenFrame
+                icon={icons.pendentsArxiu}
+                title={text('title')}
+                actions={<ToolbarButton title={text('refrescar')} icon={icons.refresca} color="primary" disabled={loading} onClick={refresh} />}
+            >
+                <Typography variant="h6" component="h2">
+                    {text('tasca')}
+                </Typography>
                 <Grid container spacing={1}>
                     <DetailCard>
                         <Grid size={4} container alignContent="flex-start" p={1}>
@@ -102,7 +98,7 @@ export const PendentsArxiuPage: React.FC = () => {
                     {text('histograma')}
                 </Typography>
                 <PendentsArxiuGrafic entrades={entrades} />
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

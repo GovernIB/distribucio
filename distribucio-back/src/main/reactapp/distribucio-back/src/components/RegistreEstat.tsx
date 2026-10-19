@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Icon, Typography } from '@mui/material';
 import { formatDate } from '../util/dateUtils.ts';
+import { icons } from '../util/icons';
 
 type RegistreEstatProps = {
     /** Fila amb les dades de l'anotació (RegistreResource o VistaMovimentResource). */
@@ -30,9 +31,7 @@ export const RegistreEstat: React.FC<RegistreEstatProps> = ({ entity, children, 
             <span>{children}</span>
 
             {estat == 'BACK_REBUTJADA' && !!entity.backObservacions && (
-                <Icon title={entity.backObservacions} color={'warning'} fontSize={'small'}>
-                    error
-                </Icon>
+                <Icon title={entity.backObservacions} color={'warning'} fontSize={'small'}>{icons.error}</Icon>
             )}
 
             {showReintents && ambReintents && (
@@ -53,9 +52,7 @@ export const RegistreEstat: React.FC<RegistreEstatProps> = ({ entity, children, 
                     {reglaNom != null ? (
                         reglaNom
                     ) : (
-                        <Icon title={t('page.registre.estat.regla')} color={'error'} fontSize={'small'}>
-                            warning
-                        </Icon>
+                        <Icon title={t('page.registre.estat.regla')} color={'error'} fontSize={'small'}>{icons.advertencia}</Icon>
                     )}
                 </Box>
             )}

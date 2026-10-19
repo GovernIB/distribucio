@@ -9,7 +9,9 @@ import {
     useCloseDialogButtons,
     useDetailContext,
 } from 'reactlib';
-import { CardPage, DetailCard, DetailField } from '../../components/CardData';
+import { DetailCard, DetailField } from '../../components/CardData';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
 import { formatDate } from '../../util/dateUtils';
 import IntegracioStacktrace from '../integracio/detail/IntegracioStacktrace.tsx';
@@ -108,7 +110,7 @@ export const ExcepcioGrid: React.FC = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.excepcio.grid.title')}>
+            <ScreenFrame icon={icons.excepcio} title={t('page.excepcio.grid.title')}>
                 <StyledMuiGrid
                     readOnly
                     toolbarHideCreate
@@ -123,14 +125,14 @@ export const ExcepcioGrid: React.FC = () => {
                     rowAdditionalActions={[
                         {
                             label: t('page.excepcio.detail.boto'),
-                            icon: 'info',
+                            icon: icons.detall,
                             showInMenu: false,
                             onClick: (id: any) => mostrarDetall(id),
                         },
                     ]}
                 />
                 {detailDialog}
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

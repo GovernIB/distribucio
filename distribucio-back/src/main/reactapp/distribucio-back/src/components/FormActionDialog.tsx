@@ -1,5 +1,6 @@
 import React, {useMemo} from 'react';
 import {useBaseAppContext, useMuiActionReportLogic, type DialogButton} from 'reactlib';
+import { icons } from '../util/icons';
 
 export type FormActionDialogApi = {
     /**
@@ -53,7 +54,7 @@ export const FormActionDialog: React.FC<FormActionDialogProps> = (props) => {
         {
             value: true,
             text: t('buttons.action.exec'),
-            icon: 'bolt',
+            icon: icons.executa,
             componentProps: { variant: 'contained' },
         },
         {

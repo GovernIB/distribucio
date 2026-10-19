@@ -3,6 +3,7 @@ import {useTranslation} from "react-i18next";
 import {useMoureAnotacions} from "../actions/MoureAnotacions.tsx";
 import {iniciaDescargaBlob} from "../../../util/downloadUtils.ts";
 import {useDesactivar} from "../actions/Desactivar.tsx";
+import { icons } from '../../../util/icons';
 
 export const useActions = (refresh?: () => void) => {
     const { t } = useTranslation();
@@ -82,7 +83,7 @@ export const useBustiaActions = (refresh?: () => void) => {
     const actions:any[] = [
         {
             label: t('page.bustia.accio.perDefecte.label'),
-            icon: 'check_box',
+            icon: icons.seleccionaTot,
             action: 'PRINCIPAL',
             showInMenu: true,
             onClick: perDefecte,
@@ -90,7 +91,7 @@ export const useBustiaActions = (refresh?: () => void) => {
         },
         {
             label: t('page.bustia.accio.activar.label'),
-            icon: 'check',
+            icon: icons.accepta,
             action: 'ACTIVAR',
             showInMenu: true,
             onClick: activar,
@@ -98,7 +99,7 @@ export const useBustiaActions = (refresh?: () => void) => {
         },
         {
             label: t('page.bustia.accio.desactivar.label'),
-            icon: 'close',
+            icon: icons.cancela,
             action: 'DESACTIVAR',
             showInMenu: true,
             onClick: (id:any, row:any) => row.perDefecte
@@ -108,7 +109,7 @@ export const useBustiaActions = (refresh?: () => void) => {
         },
         {
             label: t('page.bustia.accio.moureAnotacions.label'),
-            icon: 'turn_right',
+            icon: icons.mou,
             action: 'MOURE_ANOTACIO',
             showInMenu: true,
             onClick: handleShow,

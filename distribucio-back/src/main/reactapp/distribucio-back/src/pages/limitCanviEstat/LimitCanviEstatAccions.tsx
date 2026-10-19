@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { icons } from '../../util/icons';
 
 export const useLimitCanviEstatAccions = () => {
     const { t } = useTranslation();
@@ -6,14 +7,14 @@ export const useLimitCanviEstatAccions = () => {
     return [
         {
             label: t('page.entitats.accio.modificar'),
-            icon: 'edit',
+            icon: icons.modifica,
             showInMenu: true,
             rowLink: 'update',
             clickShowUpdateDialog: true,
         },
         {
             label: t('page.entitats.accio.esborrar'),
-            icon: 'delete',
+            icon: icons.esborra,
             showInMenu: true,
             rowLink: 'delete',
             clickTriggerDelete: true,

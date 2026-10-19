@@ -83,14 +83,14 @@ const isEmpty = (value:any) => {
 }
 
 export const DetailCard = (props: DetailCardProps) => {
-    const { icon, title, header, actionHeader, children, size = 12, hidden, cardProps = {}, headerProps = {}, variant = 'overline', ...other } = props;
+    const { icon, title, header, actionHeader, children, size = 12, hidden, cardProps = {}, headerProps = {}, gridProps = {}, contentProps = {}, variant = 'overline', ...other } = props;
 
     if (hidden) {
         return <></>;
     }
 
     return (
-        <Grid size={size}>
+        <Grid size={size} {...gridProps}>
             <Card sx={cardProps}>
                 {(title || header) && (
                     <CardHead icon={icon} action={actionHeader} className={'detail'} sx={{ py: 0, px: 2, ...headerProps }}>
@@ -103,7 +103,7 @@ export const DetailCard = (props: DetailCardProps) => {
                     </CardHead>
                 )}
 
-                <CardContent sx={{ p: '0 !important' }}>
+                <CardContent sx={{ p: '0 !important', ...contentProps }}>
                     <Grid container {...other} sx={{ ...(other?.sx ?? {}), ...(!(title || header) && { paddingTop: '0 !important' }) }}>
                         {children}
                     </Grid>

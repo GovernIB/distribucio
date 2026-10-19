@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {GridPage, MuiDataGridColDef, useMuiDataGridApiRef} from 'reactlib';
-import { CardPage } from '../../components/CardData';
+import {GridPage, MuiDataGridColDef, useFilterApiRef, useMuiDataGridApiRef} from 'reactlib';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid, { ToolbarButton } from '../../components/StyledMuiGrid';
 import { formatDate } from '../../util/dateUtils';
 import * as builder from '../../util/springFilterUtils';
@@ -46,8 +47,18 @@ const sortModel: GridSortModel = [{ field: 'data', sort: 'desc' }];
 export const IntegracioGrid: React.FC = () => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
+    const filterApiRef = useFilterApiRef();
     const [formFilter, setFormFilter] = React.useState<string>();
     const [filterData, setFilterData] = React.useState<any>();
+    // El recompte d'errors de les pestanyes es demana amb les dades del filtre APLICAT, no amb les del
+    // formulari: el filtre s'aplica sol i les dades canvien a cada tecla.
+    const alAplicarFiltre = React.useCallback(
+        (springFilter?: string) => {
+            setFormFilter(springFilter);
+            setFilterData(filterApiRef.current?.getData?.());
+        },
+        [filterApiRef]
+    );
     const { value: tab, tabElement, refreshCounts } = useIntegracioTabs(filterData);
     const { show: mostrarDetall, component: detailDialog } = useIntegracioDetail();
     const {
@@ -67,11 +78,9 @@ export const IntegracioGrid: React.FC = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.integracio.grid.title')}>
-                <IntegracioFilter
-                    onSpringFilterChange={setFormFilter}
-                    onDataChange={setFilterData}
-                />
+            <ScreenFrame icon={icons.integracio} title={t('page.integracio.grid.title')}>
+                <IntegracioFilter apiRef={filterApiRef} onSpringFilterChange={alAplicarFiltre} />
+                {tabElement}
                 <StyledMuiGrid
                     readOnly
                     toolbarHideCreate
@@ -88,7 +97,6 @@ export const IntegracioGrid: React.FC = () => {
                     onRowClick={(params: any) => mostrarDetall(params?.row?.id, params?.row)}
                     rowAdditionalActions={actions}
                     toolbarElementsWithPositions={[
-                        { position: 0, element: tabElement },
                         {
                             position: 2,
                             element: (
@@ -106,7 +114,7 @@ export const IntegracioGrid: React.FC = () => {
                             position: 2,
                             element: (
                                 <ToolbarButton
-                                    icon="monitor_heart"
+                                    icon={icons.diagnostic}
                                     onClick={mostrarDiagnostic}
                                     disabled={!diagnosticIsReady}
                                 >
@@ -119,7 +127,7 @@ export const IntegracioGrid: React.FC = () => {
                 {detailDialog}
                 {diagnosticDialog}
                 {components}
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

@@ -9,7 +9,8 @@ import {
     useFormApiRef,
     useResourceApiService,
 } from 'reactlib';
-import { CardPage } from '../../components/CardData';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import GridFormField from '../../components/GridFormField';
 import UsuariCanviCodisResultat, {
     type CanviCodisLinia,
@@ -191,18 +192,7 @@ export const UsuariCanviCodis: React.FC = () => {
 
     return (
         <GridPage>
-            <CardPage
-                title={t('page.usuariCanviCodis.title')}
-                cardProps={{ minHeight: 0 }}
-                sx={{
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 2,
-                    minHeight: 0,
-                    overflow: 'auto',
-                }}
-            >
+            <ScreenFrame icon={icons.usuariCanviCodis} title={t('page.usuariCanviCodis.title')}>
                 <Box sx={{ flexShrink: 0 }}>
                     <MuiForm
                         resourceName="usuariResource"
@@ -252,7 +242,7 @@ export const UsuariCanviCodis: React.FC = () => {
                                 >
                                     <Button
                                         variant="contained"
-                                        startIcon={<Icon sx={{ mr: 0.5 }}>save</Icon>}
+                                        startIcon={<Icon sx={{ mr: 0.5 }}>{icons.desa}</Icon>}
                                         onClick={handleModifica}
                                         disabled={loading || !apiIsReady}
                                     >
@@ -294,7 +284,7 @@ export const UsuariCanviCodis: React.FC = () => {
                     finalitzat={!loading && duradaTotal != null}
                     duradaTotal={duradaTotal}
                 />
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

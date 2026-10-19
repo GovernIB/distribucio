@@ -2,12 +2,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { GridPage, useBaseAppContext, useResourceApiService } from 'reactlib';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { CardPage } from '../../components/CardData';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
+import { SCREEN_GRID_MIN_HEIGHT } from '../../util/layout';
+import { ToolbarButton } from '../../components/StyledMuiGrid';
 import MetriquesTimers from './MetriquesTimers';
 import { esMetriquesValides, MetriquesData } from './metriquesUtils';
-import { Divider, Icon } from '@mui/material';
+import { Divider } from '@mui/material';
 
 const ACCIO_OBTENIR_METRIQUES = 'OBTENIR_METRIQUES';
 const FITXER_METRIQUES = 'metrics.json';
@@ -72,36 +74,40 @@ export const MetriquesPage: React.FC = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.metriques.title')}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" gap={1} mb={1}>
-                    <Typography variant="h6" component="h2">
-                        {t('page.metriques.timers')}
-                    </Typography>
-                    <Box display="flex" gap={1}>
+            <ScreenFrame
+                icon={icons.metriques}
+                title={t('page.metriques.title')}
+                actions={
+                    <>
                         <input ref={fitxerRef} type="file" accept=".json,application/json" hidden onChange={importar} />
-                        <Button
-                            variant="outlined"
+                        <ToolbarButton
+                            title={t('page.metriques.accio.importar')}
+                            icon={icons.carrega}
+                            color="primary"
                             onClick={() => fitxerRef.current?.click()}
-                            startIcon={<Icon sx={{ mr: 1 }}>file_upload</Icon>}
                         >
                             {t('page.metriques.accio.importar')}
-                        </Button>
-                        <Button
-                            variant="outlined"
+                        </ToolbarButton>
+                        <ToolbarButton
+                            title={t('page.metriques.accio.exportar')}
+                            icon={icons.descarrega}
+                            color="primary"
                             disabled={!dades}
                             onClick={exportar}
-                            startIcon={<Icon sx={{ mr: 1 }}>file_download</Icon>}
                         >
                             {t('page.metriques.accio.exportar')}
-                        </Button>
-                    </Box>
-                </Box>
-                <Divider />
-                {/* Alçada fixa: la llista de timers fa scroll dins el contenidor. */}
-                <Box sx={{ height: 'calc(100vh - 270px)', minHeight: '420px', overflow: 'auto' }}>
+                        </ToolbarButton>
+                    </>
+                }
+            >
+                <Typography variant="h6" component="h2" sx={{ flexShrink: 0 }}>
+                    {t('page.metriques.timers')}
+                </Typography>
+                <Divider sx={{ flexShrink: 0 }} />
+                <Box sx={{ flex: '1 1 0', minHeight: SCREEN_GRID_MIN_HEIGHT + 'px', overflow: 'auto' }}>
                     <MetriquesTimers dades={dades} />
                 </Box>
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

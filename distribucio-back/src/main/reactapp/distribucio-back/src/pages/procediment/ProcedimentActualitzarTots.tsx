@@ -6,6 +6,7 @@ import BackdropLoading from '../../components/BackdropLoading';
 import { usePollingArtifactAction } from '../../components/ActionPollingOptions';
 import { useBaseAppContext } from 'reactlib';
 import { buildEstatProcedimentsMessage, UpdateProgressDto } from './ProcedimentEstat';
+import { icons } from '../../util/icons';
 
 const TEMPS_REFRES_PROGRES = 1000;
 /**
@@ -111,7 +112,7 @@ const useProcedimentActualitzarTots = (refresh?: () => void) => {
                 title={t('page.procediments.accio.actualitzarTots.title')}
                 buttons={[
                     {
-                        icon: 'sync',
+                        icon: icons.sincronitza,
                         text: t('common.actualitza'),
                         componentProps: { variant: 'contained', disabled },
                         value: true,

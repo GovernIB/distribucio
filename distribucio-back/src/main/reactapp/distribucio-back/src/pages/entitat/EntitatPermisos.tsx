@@ -1,7 +1,8 @@
 import {AclPermissionGrid, useAclCustomPermissionManager} from "../../components/AclPermissionManager.tsx";
 import React from "react";
 import {useDistribucioContext} from "../../components/DistribucioContext.ts";
-import {CardPage} from "../../components/CardData.tsx";
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import {GridPage, useFormContext} from "reactlib";
 import {useTranslation} from "react-i18next";
 import {Grid} from "@mui/material";
@@ -62,14 +63,14 @@ export const EntitatPermisos = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.entitats.permis.title')}>
+            <ScreenFrame icon={icons.permis} title={t('page.entitats.permis.title')}>
                 <AclPermissionGrid
                     resourceId={currentEntitatId}
                     resourceType={'ENTITAT'}
                     columns={useEntitatPermisosColumns()}
                     formContent={<EntitatPermisForm/>}
                 />
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 }

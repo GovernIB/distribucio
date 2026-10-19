@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Box, Icon, Tooltip } from '@mui/material';
 import { useGridApiRef } from '@mui/x-data-grid-pro';
 import { GridPage, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
-import { CardPage } from '../../components/CardData';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
 import { formatDate } from '../../util/dateUtils';
 import AnnexFilter from './AnnexFilter';
@@ -34,9 +35,7 @@ export const AnnexArxiuEstatCell: React.FC<{ params: any }> = ({ params }) => {
                             },
                         }}
                     >
-                        <Icon fontSize="small" color="error" sx={{ fontSize: '18px' }}>
-                            error
-                        </Icon>
+                        <Icon fontSize="small" color="error" sx={{ fontSize: '18px' }}>{icons.error}</Icon>
                     </Tooltip>
                 )}
             </Box>
@@ -49,9 +48,7 @@ export const AnnexArxiuEstatCell: React.FC<{ params: any }> = ({ params }) => {
 
     return (
         <Tooltip title={t('page.annex.grid.arxiuEstat.buitAvis')}>
-            <Icon fontSize="small" color="warning">
-                warning
-            </Icon>
+            <Icon fontSize="small" color="warning">{icons.advertencia}</Icon>
         </Tooltip>
     );
 };
@@ -110,7 +107,7 @@ const AnnexGrid: React.FC = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.annex.grid.title')}>
+            <ScreenFrame icon={icons.annex} title={t('page.annex.grid.title')}>
                 <AnnexFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid
                     toolbarHideCreate
@@ -131,7 +128,7 @@ const AnnexGrid: React.FC = () => {
                 {detailDialog}
                 {accionsComponents}
                 {massiveComponents}
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

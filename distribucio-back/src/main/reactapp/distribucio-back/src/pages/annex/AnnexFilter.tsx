@@ -38,10 +38,10 @@ const AnnexFilterForm: React.FC = () => {
             <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="arxiuEstat" />
             <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="tipusFirma" />
             <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="fitxerTipusMime" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="titol" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="dataAnotacioInici" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="dataAnotacioFi" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="fitxerNom" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="titol" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 2.4 }} name="dataAnotacioInici" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 2.4 }} name="dataAnotacioFi" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 2.95 }} name="fitxerNom" />
         </>
     );
 };

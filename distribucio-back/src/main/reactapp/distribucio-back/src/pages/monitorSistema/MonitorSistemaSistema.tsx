@@ -7,6 +7,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 import { ContenidoData, DetailCard, DetailCardContent } from '../../components/CardData';
 import { ToolbarButton } from '../../components/StyledMuiGrid';
+import { icons } from '../../util/icons';
 
 const ACCIO_INFORMACIO_SISTEMA = 'INFORMACIO_SISTEMA';
 
@@ -146,7 +147,7 @@ export const MonitorSistemaSistema: React.FC = () => {
             <Box display="flex" justifyContent="end" mb={1}>
                 <ToolbarButton
                     title={t('page.monitorSistema.accio.refrescar')}
-                    icon="refresh"
+                    icon={icons.refresca}
                     color="primary"
                     disabled={loading}
                     onClick={refresh}

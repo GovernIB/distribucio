@@ -1,7 +1,8 @@
 import StyledMuiGrid, {ToolbarButton} from "../../components/StyledMuiGrid.tsx";
 import {GridPage, MuiDataGridColDef} from "reactlib";
 import React from "react";
-import {CardPage} from "../../components/CardData.tsx";
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import {useTranslation} from "react-i18next";
 import UnitatOrganitzativaFilter from "./UnitatOrganitzativaFilter.tsx";
 import {useUnitatOrganitzativaOrganigrama} from "./UnitatOrganitzativaOrganigrama.tsx";
@@ -30,7 +31,7 @@ export const UnitatOrganitzativaGrid = () => {
     const {handleOpen: handleSinc, dialog: dialogSinc} = useSincronitzar()
     return (
         <GridPage>
-            <CardPage title={t('page.unitatOrganitzativa.grid.title')}>
+            <ScreenFrame icon={icons.unitatOrganitzativa} title={t('page.unitatOrganitzativa.grid.title')}>
                 <UnitatOrganitzativaFilter onSpringFilterChange={setSpringFilter} onNamedQueriesChange={setNamedQueries} />
 
                 <StyledMuiGrid
@@ -45,13 +46,13 @@ export const UnitatOrganitzativaGrid = () => {
                                 <strong>{t('page.unitatOrganitzativa.grid.dataSinc')}:</strong> {formatDate(currentEntitat?.fechaSincronizacion) || " - "}<br/>
                                 <strong>{t('page.unitatOrganitzativa.grid.dataDarrerSinc')}:</strong> {formatDate(currentEntitat?.fechaActualizacion) || " - "}
                             </>}>
-                                <Icon color={'primary'}>info</Icon>
+                                <Icon color={'primary'}>{icons.detall}</Icon>
                             </Tooltip>
                         },
                         {
                             position: 2,
                             element: <ToolbarButton
-                                icon={'account_tree'}
+                                icon={icons.unitatOrganitzativa}
                                 onClick={handleOrgOpen}
                             >
                                 {t('page.unitatOrganitzativa.accio.organigrama.label')}
@@ -60,7 +61,7 @@ export const UnitatOrganitzativaGrid = () => {
                         {
                             position: 2,
                             element: <ToolbarButton
-                                icon={'cached'}
+                                icon={icons.sincronitza}
                                 onClick={handleSinc}
                                 hidden={currentRole != ROLE_ADMIN}
                             >
@@ -75,7 +76,7 @@ export const UnitatOrganitzativaGrid = () => {
                 />
                 {organigrama}
                 {dialogSinc}
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     )
 }

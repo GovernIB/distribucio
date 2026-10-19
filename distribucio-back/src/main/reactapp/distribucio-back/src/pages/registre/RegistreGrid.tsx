@@ -1,10 +1,12 @@
 import {useTranslation} from "react-i18next";
 import {GridPage, useMuiDataGridApiRef} from "reactlib";
-import {CardPage} from "../../components/CardData.tsx";
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid from "../../components/StyledMuiGrid.tsx";
 import RegistreFilter from "./RegistreFilter.tsx";
+import BustiaPathCell from "../../components/BustiaPathCell.tsx";
 import React, {useMemo} from "react";
-import {Icon, Tooltip} from "@mui/material";
+import {Box, Icon, Tooltip} from "@mui/material";
 import {useCommentsColumn} from "../../components/CommentsColumn.tsx";
 import {RegistreEstat} from "../../components/RegistreEstat.tsx";
 import {useRegistreActions, useRegistreMassiveActions} from "./detail/RegistreActions.tsx";
@@ -15,48 +17,105 @@ import IconButton from "@mui/material/IconButton";
 import {useConfig} from "../../components/ConfigProvider.tsx";
 import useProcesEstatLegend from "../../components/ProcesEstatLegend.tsx";
 
-const RegistreAvisos = ({entity}:any) => {
+const RegistreAvisos = ({ entity }: any) => {
     const { t } = useTranslation();
-    return <>
-        {entity.sobreescriure && <Icon title={t('page.registre.avisos.sobreescriure')}>history</Icon>}
-        {entity.enviatPerEmail &&
-            <Tooltip title={<>
-                {t('page.registre.avisos.enviatPerEmail')}
-                {entity.enviamentsPerEmail.map?.((e:string) => <><br/> {">"} {e}</>)}
-            </>}>
-            <Icon title={t('page.registre.avisos.enviatPerEmail')}>mail</Icon>
-            </Tooltip>
-        }
-        {entity.documentacioFisicaCodi == '1' && <Icon title={t('page.registre.avisos.documentacio._1')} sx={{color: '#D9534F'}}>inventory_2</Icon>}
-        {entity.documentacioFisicaCodi == '2' && <>
-            <Icon title={t('page.registre.avisos.documentacio._2')} sx={{color: '#F0AD4E'}}>code_xml</Icon>
-            <Icon title={t('page.registre.avisos.documentacio._2')} sx={{color: '#F0AD4E'}}>inventory_2</Icon>
-        </>}
-        {entity.documentacioFisicaCodi == '3' && <Icon title={t('page.registre.avisos.documentacio._3')} sx={{color: '#5CB85C'}}>code_xml</Icon>}
-        {entity.annexosEstatEsborrany > 0 && <Icon title={t('page.registre.avisos.estatEsborrany')} color={'warning'}>error</Icon>}
-        {entity.alerta && <Icon title={t('page.registre.avisos.alerta')} color={'warning'}>note_stack</Icon>}
-        {entity.procesError != null && (
-            entity.procesError == 'ARXIU_PENDENT' ? <Icon title={t('page.registre.avisos.procesError.ARXIU_PENDENT')} color={'error'}>warning</Icon>
-            :entity.procesError == 'REGLA_PENDENT' ? <Icon title={t('page.registre.avisos.procesError.REGLA_PENDENT')} color={'error'}>warning</Icon>
-            :entity.procesError == 'BACK_PENDENT' ? <Icon title={t('page.registre.avisos.procesError.BACK_PENDENT')} color={'error'}>warning</Icon>
-            :entity.procesError == 'BACK_ERROR' ? <Icon title={t('page.registre.avisos.procesError.BACK_ERROR')} color={'error'}>warning</Icon>
-            : <Icon title={t('page.registre.avisos.procesError.default')} color={'error'}>warning</Icon>
-        )}
-        {entity.pendentExecucioMassiva && <Icon title={t('page.registre.avisos.pendentExecucioMassiva')} color={'warning'}>schedule</Icon>}
-    </>
-}
+    return (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 0.25, lineHeight: 1.4 }}>
+            {entity.sobreescriure && (
+                <Icon fontSize="small" title={t('page.registre.avisos.sobreescriure')}>
+                    {icons.historial}
+                </Icon>
+            )}
+            {entity.enviatPerEmail && (
+                <Tooltip
+                    title={
+                        <>
+                            {t('page.registre.avisos.enviatPerEmail')}
+                            {entity.enviamentsPerEmail.map?.((e: string) => (
+                                <>
+                                    <br /> {'>'} {e}
+                                </>
+                            ))}
+                        </>
+                    }
+                >
+                    <Icon fontSize="small" title={t('page.registre.avisos.enviatPerEmail')}>
+                        {icons.correu}
+                    </Icon>
+                </Tooltip>
+            )}
+            {entity.documentacioFisicaCodi == '1' && (
+                <Icon fontSize="small" title={t('page.registre.avisos.documentacio._1')} color="error">
+                    {icons.documentacioFisica}
+                </Icon>
+            )}
+            {entity.documentacioFisicaCodi == '2' && (
+                <>
+                    <Icon fontSize="small" title={t('page.registre.avisos.documentacio._2')} color="warning">
+                        {icons.documentacioElectronica}
+                    </Icon>
+                    <Icon fontSize="small" title={t('page.registre.avisos.documentacio._2')} color="warning">
+                        {icons.documentacioFisica}
+                    </Icon>
+                </>
+            )}
+            {entity.documentacioFisicaCodi == '3' && (
+                <Icon fontSize="small" title={t('page.registre.avisos.documentacio._3')} color="success">
+                    {icons.documentacioElectronica}
+                </Icon>
+            )}
+            {entity.annexosEstatEsborrany > 0 && (
+                <Icon fontSize="small" title={t('page.registre.avisos.estatEsborrany')} color={'warning'}>
+                    {icons.error}
+                </Icon>
+            )}
+            {entity.alerta && (
+                <Icon fontSize="small" title={t('page.registre.avisos.alerta')} color={'warning'}>
+                    {icons.alertes}
+                </Icon>
+            )}
+            {entity.procesError != null &&
+                (entity.procesError == 'ARXIU_PENDENT' ? (
+                    <Icon fontSize="small" title={t('page.registre.avisos.procesError.ARXIU_PENDENT')} color={'error'}>
+                        {icons.advertencia}
+                    </Icon>
+                ) : entity.procesError == 'REGLA_PENDENT' ? (
+                    <Icon fontSize="small" title={t('page.registre.avisos.procesError.REGLA_PENDENT')} color={'error'}>
+                        {icons.advertencia}
+                    </Icon>
+                ) : entity.procesError == 'BACK_PENDENT' ? (
+                    <Icon fontSize="small" title={t('page.registre.avisos.procesError.BACK_PENDENT')} color={'error'}>
+                        {icons.advertencia}
+                    </Icon>
+                ) : entity.procesError == 'BACK_ERROR' ? (
+                    <Icon fontSize="small" title={t('page.registre.avisos.procesError.BACK_ERROR')} color={'error'}>
+                        {icons.advertencia}
+                    </Icon>
+                ) : (
+                    <Icon fontSize="small" title={t('page.registre.avisos.procesError.default')} color={'error'}>
+                        {icons.advertencia}
+                    </Icon>
+                ))}
+            {entity.pendentExecucioMassiva && (
+                <Icon fontSize="small" title={t('page.registre.avisos.pendentExecucioMassiva')} color={'warning'}>
+                    {icons.programat}
+                </Icon>
+            )}
+        </Box>
+    );
+};
 
 const RegistreRemitent = ({entity}:any) => {
     const { t } = useTranslation();
     return entity.darrerMoviment != null
         ?((entity.darrerMovimentResource.bustiaOrigen != null
             && entity.darrerMovimentResource.unitatOrganitzativaOrigen != null)
-                ?<>/<Icon title={entity.darrerMovimentResource.unitatOrganitzativaOrigen.description} >account_tree</Icon>
-                    /<Icon title={entity.darrerMovimentResource.bustiaOrigen.description} >inbox</Icon>
+                ?<>/<Icon title={entity.darrerMovimentResource.unitatOrganitzativaOrigen.description} >{icons.unitatOrganitzativa}</Icon>
+                    /<Icon title={entity.darrerMovimentResource.bustiaOrigen.description} >{icons.bustia}</Icon>
                     {entity.darrerMovimentResource.remitent.description}</>
-                :<><Icon>home</Icon>{entity.oficinaDescripcio} ({entity.darrerMovimentResource.remitent.description})</>
+                :<><Icon>{icons.inici}</Icon>{entity.oficinaDescripcio} ({entity.darrerMovimentResource.remitent.description})</>
         )
-        :<Icon title={t('page.registre.remitentEmpty')}>block</Icon>
+        :<Icon title={t('page.registre.remitentEmpty')}>{icons.senseDades}</Icon>
 }
 
 const columns = (t:any, handleEstat: () => void) => [
@@ -77,21 +136,18 @@ const columns = (t:any, handleEstat: () => void) => [
                 onClick={(e) => {
                 e.stopPropagation();
                 handleEstat();
-            }}><Icon fontSize="small">list</Icon></IconButton></>,
+            }}><Icon fontSize="small">{icons.llista}</Icon></IconButton></>,
         renderCell: (params:any) => <RegistreEstat entity={params.row}>{params.formattedValue}</RegistreEstat>
     },
     { field: 'avisos', headerName: t('page.registre.grid.avisos'), flex: 1, sortable: false,
         renderCell: (params:any) => <RegistreAvisos entity={params.row}/>
     },
     { field: 'pare', flex: 3, sortable: false,
-        renderCell: (params:any) => <>
-            {params.row.pare?.id && <>
-                / <Icon>account_tree</Icon> {params.row.unitatAdministrativaDescripcio} / <Icon>inbox</Icon> {params.formattedValue}
-            </>}
-
-
-            {(!params.row.pare?.id || !params.row.bustiaActiva) && <Icon title={t('page.registre.grid.bustiaActiva')} color={'warning'}>warning</Icon>}
-        </>
+        renderCell: (params:any) => <BustiaPathCell
+            path={params.row.pare?.id ?[params.row.unitatAdministrativaDescripcio, params.formattedValue] :[]}>
+            {(!params.row.pare?.id || !params.row.bustiaActiva) &&
+                <Icon title={t('page.registre.grid.bustiaActiva')} color={'warning'} sx={{ fontSize: '18px', verticalAlign: 'text-bottom', ml: 0.5 }}>{icons.advertencia}</Icon>}
+        </BustiaPathCell>
     },
     { field: 'interessatsString', flex: 4, sortable: false },
 ]
@@ -138,7 +194,7 @@ export const RegistreGrid = () => {
     const additionalActions = useMemo(() => [
         {
             label: t('page.contingut.accio.detalls.label'),
-            icon: 'info',
+            icon: icons.detall,
             showInMenu: true,
             onClick: handleDetail,
         },
@@ -147,7 +203,7 @@ export const RegistreGrid = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.registre.title')}>
+            <ScreenFrame icon={icons.anotacio} title={t('page.registre.title')}>
                 <RegistreFilter
                     onSpringFilterChange={setSpringFilter}
                     onNamedQueriesChange={setNamedQueries}
@@ -188,7 +244,7 @@ export const RegistreGrid = () => {
                 {massiveComponents}
                 {dialogDetail}
                 {component}
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     )
 }

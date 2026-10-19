@@ -6,6 +6,7 @@ import Load from '../../../components/Load.tsx';
 import { useTranslation } from 'react-i18next';
 import { DetailExpandCard } from '../../../components/CardData.tsx';
 import { Chip, Typography, Box, Icon } from '@mui/material';
+import { icons } from '../../../util/icons';
 
 export const RegistreSelector = ({ expanded = false, disabled = false }: any) => {
     const { t } = useTranslation();
@@ -16,7 +17,7 @@ export const RegistreSelector = ({ expanded = false, disabled = false }: any) =>
         { field: 'extracte', flex: 2,
             renderCell: (params:any) => <Box display={'flex'} alignItems={'center'}>
                 {params.formattedValue}
-                {data.warning?.[params.id] && <Icon title={data.warning?.[params.id]} color={'warning'}>warning</Icon>}
+                {data.warning?.[params.id] && <Icon title={data.warning?.[params.id]} color={'warning'}>{icons.advertencia}</Icon>}
             </Box>
         },
     ]
@@ -36,7 +37,7 @@ export const RegistreSelector = ({ expanded = false, disabled = false }: any) =>
                         <Typography mt={0.5} variant={'body2'}>
                             {t('component.RegistreSelector.title')}
                         </Typography>
-                        {data.warning && <Icon title={data.warning?.[0]} color={'warning'}>warning</Icon>}
+                        {data.warning && <Icon title={data.warning?.[0]} color={'warning'}>{icons.advertencia}</Icon>}
                     </Box>
                 }
                 cardProps={{ backgroundColor: 'greyBackground' }}

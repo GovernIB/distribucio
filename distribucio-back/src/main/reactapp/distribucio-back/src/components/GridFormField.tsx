@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { FormField, FormFieldProps, useFormContext, useResourceApiContext } from 'reactlib';
 import Load from './Load';
+import { isTypingFieldType, useFilterAutoApply } from './FilterAutoApplyContext';
 import { FormFieldRefOptionsResponse } from '../../lib/components/mui/form/FormFieldReference.tsx';
 import { GridSortModel } from '@mui/x-data-grid-pro';
 
@@ -60,7 +61,7 @@ export const GridButton = (props: any) => {
         <Grid title={title} size={size} hidden={hidden}>
             <Button
                 variant="outlined"
-                sx={{ borderRadius: '4px', width: '100%', height: '100%', minWidth: 0, ...sx }}
+                sx={[{ borderRadius: '4px', width: '100%', height: '100%', minWidth: 0 }, ...(Array.isArray(sx) ? sx : [sx])]}
                 style={{ margin: 0 }}
                 aria-label={title && (iconOnly || !children) ? title : undefined}
                 {...other}
@@ -168,6 +169,7 @@ const GridFormField: React.FC<GridFormFieldProps> = (props) => {
     const { optionDataFields, ...fieldProps } = props;
     const { size, valueField: vField, additionalOpctions, hidden } = props;
     const { fields } = useFormContext();
+    const autoApply = useFilterAutoApply();
 
     const field = fields?.find?.((item: any) => item?.name === props.name);
 
@@ -215,7 +217,14 @@ const GridFormField: React.FC<GridFormFieldProps> = (props) => {
 
     return (
         <Grid size={size}>
-            <FormField optionsRequest={optionsRequest} {...fieldProps} />
+            {/* Dins un filtre que s'aplica sol, els camps de text no retarden el canvi pel seu compte
+                (el seu debounce de 300 ms): el retard i el Tab els gestiona FilterAutoApply. Es posa
+                abans de `fieldProps` perquè una pantalla ho pugui sobreescriure. */}
+            <FormField
+                optionsRequest={optionsRequest}
+                {...(autoApply && isTypingFieldType(field?.type) ? { debounceDisabled: true } : null)}
+                {...fieldProps}
+            />
         </Grid>
     );
 };

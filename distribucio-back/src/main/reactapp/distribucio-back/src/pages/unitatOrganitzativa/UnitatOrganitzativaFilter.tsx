@@ -6,10 +6,10 @@ import * as builder from '../../util/springFilterUtils';
 const UnitatOrganitzativaFilterForm: React.FC = () => {
     return (
         <>
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.4 }} name="codi" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.4 }} name="denominacio" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.4 }} name="unitatSuperior" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.4 }} name="estat" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 2.8 }} name="codi" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 2.8 }} name="denominacio" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 2.8 }} name="unitatSuperior" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 2.85 }} name="estat" />
         </>
     );
 };

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useBaseAppContext, useResourceApiService, type MuiDataGridProps } from 'reactlib';
+import { icons } from '../../util/icons';
 
 /** Codis de les accions declarades a EntitatResource (@ResourceArtifact de tipus ACTION). */
 const ACTUALITZAR_SERVEI = 'ACTUALITZAR_SERVEI';
@@ -31,7 +32,7 @@ export const useServeiAccions = (refresh: () => void): AccionsFila => {
     return [
         {
             label: t('page.serveis.accio.actualitzar'),
-            icon: 'sync',
+            icon: icons.sincronitza,
             showInMenu: true,
             action: ACTUALITZAR_SERVEI,
             onClick: (id: any) => executarAccio(id, ACTUALITZAR_SERVEI, 'page.serveis.accio.actualitzarOk'),

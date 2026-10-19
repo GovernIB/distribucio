@@ -1,12 +1,17 @@
-import { Box, Button, Icon, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Icon, IconButton, Theme, Tooltip, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { FilterCountChip } from './FilterCountChip'; // TODO: corregir ruta d'import segons projecte
+import { FilterCountChip } from './FilterCountChip';
 import {MuiDataGrid, MuiDataGridProps, useMuiDataGridApiRef, useResourceApiService} from 'reactlib';
 import {useGridApiRef as useMuiDatagridApiRef} from "@mui/x-data-grid-pro";
 import { useUserPreferences } from './UserProfile';
 import MassiveActionSelector, {MassiveActionProps} from "./MassiveActionSelector.tsx";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from 'react-dom';
+import { useScreenFrame } from './ScreenFrameContext';
+import { titleBarControlsSx } from './titleBarControlsSx';
 import {fromSelectionModel, toSelectionModel} from "../util/selectionModelUtils.ts";
+import { SCREEN_GRID_MIN_HEIGHT, SCREEN_TITLE_MIN_HEIGHT, SCREEN_TITLE_PADDING_X } from '../util/layout';
+import { icons } from '../util/icons';
 
 /**
  * Wrapper propi sobre MuiDataGrid (base-react).
@@ -15,8 +20,10 @@ import {fromSelectionModel, toSelectionModel} from "../util/selectionModelUtils.
  * pantalles del projecte, per no haver de repetir-los a cada graella.
  *
  * Funcionalitats afegides (port parcial de StyledMuiGrid de RIPEA):
- *  - Xip amb el nombre de filtres aplicats a la barra d'eines (FilterCountChip existent).
- *  - Botó estàndard de barra d'eines (ToolbarButton) reutilitzat per "Refrescar".
+ *  - Recompte de filtres aplicats (FilterCountChip): a la barra de títol de la pantalla (ScreenFrame),
+ *    al costat del títol, o a la barra d'eines si la graella no és dins un marc.
+ *  - Dins un ScreenFrame, la barra d'eines de la llibreria es superposa a la barra de títol (veure l'sx).
+ *  - Botó estàndard de barra d'eines (ToolbarButton) reutilitzat per "Refresca".
  *  - Defaults pel formulari popup: botons Guardar/Cancel·lar, mida del diàleg,
  *    no tancar en fer clic fora, i no permetre guardar si hi ha errors de validació.
  *  - Mida de pàgina per defecte treta del perfil de l'usuari (numElementsPagina).
@@ -51,7 +58,7 @@ export const ToolbarButton = (props: any) => {
                     {children && (
                         <Typography
                             variant="body2"
-                            sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}
+                            sx={{ display: { xs: 'none', sm: 'none', md: 'block' }, whiteSpace: 'nowrap' }}
                             ml={1}
                         >
                             {children}
@@ -62,6 +69,9 @@ export const ToolbarButton = (props: any) => {
         </Tooltip>
     );
 };
+
+/** Posició que col·loca un element al final de la barra d'eines de la llibreria (veure reactNodePosition). */
+const TOOLBAR_END = 100;
 
 /**
  * Mides de pàgina que es poden triar al peu de les graelles: les mateixes que ofereix el perfil de
@@ -77,10 +87,14 @@ const OPCIONS_PAGINACIO = [10, 20, 50, 100, 250];
 const NUM_ELEMENTS_PAGINA_DEFECTE = 10;
 
 /**
- * Alçada mínima de la graella (barra d'eines inclosa) quan fa scroll ella mateixa. Si la finestra és
- * tan baixa que no hi cap, deixa de reduir-se i torna a fer scroll la pàgina.
+ * Selector del contenidor de la barra d'eines que la llibreria pinta sobre la graella (DataToolbar),
+ * fill de l'embolcall de la llibreria. Es descriu pel que conté (el `.MuiToolbar-root` de MUI) i no
+ * per la posició, perquè no depengui de l'ordre dels germans. Únic punt a revisar si la llibreria
+ * canvia aquesta estructura: l'usen l'sx i l'efecte de mesura d'aquest component.
+ *
+ * Només s'aplica a les graelles que no són `autoHeight` (el DOM de la llibreria no hi té l'embolcall).
  */
-const ALCADA_MINIMA_GRAELLA = '200px';
+const LIB_TOOLBAR = 'div:has(> .MuiToolbar-root):not(.MuiDataGrid-root)';
 
 type FilterCount = number | ((num: number) => number);
 
@@ -123,7 +137,7 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
         filter,
         filterCount,
         namedQueries,
-        toolbarShowFilterCount = false,
+        toolbarShowFilterCount: toolbarShowFilterCountProp,
         toolbarCreateTitle,
         toolbarElementsWithPositions,
         toolbarHideRefresh,
@@ -152,6 +166,57 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
 
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
 
+    // Dins un ScreenFrame, la barra d'eines de la llibreria es superposa a la barra de títol (CSS de
+    // més avall) i el recompte de filtres es pinta al costat del títol. Fora d'un marc tot es manté
+    // a la barra d'eines de la llibreria. Les graelles `autoHeight` (diàlegs, pestanyes, detalls) no
+    // s'hi enganxen: el context de React travessa els portals dels diàlegs i es mourien les eines de
+    // la graella principal de la pantalla.
+    const frame = useScreenFrame();
+    const infoSlot = !autoHeight ? (frame?.infoSlot ?? null) : null;
+    const setToolbarWidth = !autoHeight ? frame?.setToolbarWidth : undefined;
+    // El recompte és visible per defecte quan la graella és al marc d'una pantalla.
+    const toolbarShowFilterCount = toolbarShowFilterCountProp ?? infoSlot != null;
+    const wrapperRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!setToolbarWidth || infoSlot == null) {
+            return;
+        }
+        const wrapper = wrapperRef.current;
+        if (!wrapper) {
+            return;
+        }
+        // Separació entre el títol (o el recompte) i la primera eina de la barra.
+        const GAP = 12;
+        let toolbar: HTMLElement | null = null;
+        let sizeObserver: ResizeObserver | undefined;
+        // La barra de la llibreria (LIB_TOOLBAR, veure l'sx) no es pinta fins que la graella és a
+        // punt: se la cerca a cada canvi del DOM de dins.
+        const attach = () => {
+            const found = wrapper.querySelector<HTMLElement>(`:scope > div > ${LIB_TOOLBAR}`);
+            if (found === toolbar) {
+                return;
+            }
+            sizeObserver?.disconnect();
+            toolbar = found;
+            if (toolbar) {
+                const observed = toolbar;
+                sizeObserver = new ResizeObserver(() => setToolbarWidth(Math.ceil(observed.offsetWidth) + GAP));
+                sizeObserver.observe(observed);
+            } else {
+                setToolbarWidth(0);
+            }
+        };
+        const domObserver = new MutationObserver(attach);
+        domObserver.observe(wrapper, { childList: true, subtree: true });
+        attach();
+        return () => {
+            domObserver.disconnect();
+            sizeObserver?.disconnect();
+            setToolbarWidth(0);
+        };
+    }, [setToolbarWidth, infoSlot]);
+
     const refresh = () => {
         onRefresh?.();
         apiRef?.current?.refresh?.();
@@ -169,16 +234,19 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
     const getRowClassName = (params: any): string =>
         `row-with-color-${params.row.id} ${params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'}`;
 
-    // Posició 0: xip de filtres. Posició 3: botó de refresc.
-    // Si la pantalla passa els seus propis toolbarElementsWithPositions, es combinen (no se sobreescriuen).
+    // Ordre de la barra d'eines (d'esquerra a dreta): xip de filtres, filtre ràpid (el posa la llibreria),
+    // accions massives, accions pròpies de la pantalla (toolbarElementsWithPositions), «Nou/Nova X» i,
+    // sempre al final de tot, refresca. Tot va a «TOOLBAR_END» (el final de la barra) en aquest ordre: la
+    // llibreria insereix per posició relativa i les pantalles en passaven de diferents: aquestes posicions
+    // s'ignoren i es manté l'ordre de l'array de cada pantalla.
     const toolbarElements = [
         {
             position: 0,
             element: <FilterCountChip filter={filter} filterCount={filterCount} sx={{ ml: 1.5 }} />,
-            hidden: !toolbarShowFilterCount,
+            hidden: !toolbarShowFilterCount || infoSlot != null,
         },
         {
-            position: 3,
+            position: TOOLBAR_END,
             element: <MassiveActionSelector
                 resourceName={others?.resourceName}
                 selectedRows={selectedRows}
@@ -192,24 +260,13 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
             />,
             hidden: !toolbarMassiveActions || others?.readOnly,
         },
+        ...(toolbarElementsWithPositions ?? []).map((e) => ({ ...e, position: TOOLBAR_END })),
         {
-            position: 3,
-            element: (
-                <ToolbarButton
-                    title={t('common.refresh')}
-                    icon="refresh"
-                    onClick={refresh}
-                    color="primary"
-                />
-            ),
-            hidden: toolbarHideRefresh,
-        },
-        {
-            position: 3,
+            position: TOOLBAR_END,
             element: (
                 <ToolbarButton
                     title={t('common.create')}
-                    icon={'add'}
+                    icon={icons.crea}
                     onClick={create}
                     color={'primary'}
                 >
@@ -218,28 +275,66 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
             ),
             hidden: !isCreateLinkPresent || toolbarHideCreate || others?.readOnly,
         },
-        ...(toolbarElementsWithPositions ?? []),
+        {
+            position: TOOLBAR_END,
+            element: (
+                <IconButton
+                    title={t('common.refresh')}
+                    onClick={refresh}
+                    sx={{ color: (theme: Theme) => theme.palette.primary.contrastText }}
+                >
+                    <Icon>{icons.refresca}</Icon>
+                </IconButton>
+            ),
+            hidden: toolbarHideRefresh,
+        },
     ].filter((e: any) => !e?.hidden);
 
     return (
         <Box
+            ref={wrapperRef}
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
-                // Sense autoHeight la graella ocupa l'alçada que deixen lliure els elements germans
-                // (filtre, capçalera de la targeta) i fa scroll ella mateixa. Cal que la pàgina
-                // usi <GridPage> sense autoHeight, que és qui fixa l'alçada disponible (100vh).
+                // Sense autoHeight, dins ScreenFrame (columna flex amb alçada acotada) la graella ocupa
+                // l'alçada que sobra, amb un mínim: si no hi cap, és el contingut de la pantalla qui fa
+                // scroll i el títol i el peu es mantenen visibles. Cal que la pàgina usi <GridPage> sense
+                // autoHeight, que és qui fixa l'alçada disponible (100vh).
                 ...(autoHeight
                     ? { height: '100%' }
-                    : { flex: '1 1 0', minHeight: ALCADA_MINIMA_GRAELLA }),
+                    : { flex: '1 1 0', minHeight: SCREEN_GRID_MIN_HEIGHT + 'px' }),
                 // El filtre ràpid de la barra d'eines és un TextField "small" de 37px i quedava
                 // més alt que la resta de controls de la barra (32px). S'iguala des d'aquí perquè
                 // el crea reactlib i no admet ni props ni estils des de fora.
                 '& .MuiToolbar-root .MuiOutlinedInput-root': { height: '32px' },
                 '& .MuiToolbar-root .MuiOutlinedInput-input': { pt: 0, pb: 0 },
+                // Barra d'eines de la llibreria sobre la barra de títol del ScreenFrame, a la dreta
+                // i centrada verticalment (DataToolbar, que no es pot moure per props): amb
+                // `position: absolute` s'ancora al `.screen-frame` i conserva l'ordre dels seus
+                // elements, el filtre ràpid i l'indicador d'error. Es localitza amb LIB_TOOLBAR,
+                // el mateix selector que fa servir l'efecte de més amunt.
+                ...(infoSlot != null && {
+                    [`& > div > ${LIB_TOOLBAR}`]: {
+                        position: 'absolute',
+                        // `--screen-toolbar-top` el posa el ScreenFrame: 0 si la barra hi cap
+                        // al costat del títol, o l'alçada d'una fila si ha de passar a sota.
+                        top: 'var(--screen-toolbar-top, 0px)',
+                        right: SCREEN_TITLE_PADDING_X + 'px',
+                        height: SCREEN_TITLE_MIN_HEIGHT + 'px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        zIndex: 1,
+                        '& .MuiToolbar-root': { width: 'auto', minHeight: 0, mt: 0 },
+                        // Botons, xips i filtre ràpid sobre la barra de títol
+                        ...titleBarControlsSx,
+                    },
+                }),
             }}
         >
+            {toolbarShowFilterCount && infoSlot != null
+                ? createPortal(<FilterCountChip filter={filter} filterCount={filterCount} />, infoSlot)
+                : null}
             <MuiDataGrid
                 // Files multilínia (com a RIPEA): amb l'alçada 'auto' MUI marca la fila com a
                 // row--dynamicHeight i el seu CSS deixa passar de línia el text de les cel·les, en
@@ -293,7 +388,7 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
                 popupEditFormDialogButtons={
                     popupEditFormDialogButtons ?? [
                         {
-                            icon: 'save',
+                            icon: icons.desa,
                             text: t('common.save'),
                             componentProps: { variant: 'contained' },
                             value: true,

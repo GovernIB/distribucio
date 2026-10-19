@@ -7,6 +7,7 @@ import Collapse from '@mui/material/Collapse';
 import Icon from '@mui/material/Icon';
 import IconButton from '@mui/material/IconButton';
 import { useAvisosSse, type AvisSse } from './SseClient';
+import { MAIN_GAP } from '../util/layout';
 
 /**
  * Avisos actius de l'aplicació, damunt del contingut de la pàgina.
@@ -61,7 +62,9 @@ export const AvisosBanner: React.FC = () => {
         return null;
     }
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 1 }}>
+        // La separació amb la pantalla de sota la posa el `gap` de <main> (veure frameSx a BaseApp.tsx);
+        // entre els avisos, la mateixa separació.
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: MAIN_GAP + 'px', flex: '0 0 auto' }}>
             {avisos.map((avis) => (
                 <AvisBanner key={avis.id} avis={avis} />
             ))}

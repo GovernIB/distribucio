@@ -2,7 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { GridPage } from 'reactlib';
 import Box from '@mui/material/Box';
-import { CardPage } from '../../components/CardData';
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import TabComponent from '../../components/TabComponent';
 import MonitorSistemaSistema from './MonitorSistemaSistema';
 import MonitorSistemaFils from './MonitorSistemaFils';
@@ -31,12 +32,11 @@ export const MonitorSistemaPage: React.FC = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.monitorSistema.title')}>
-                {/* Alçada fixa per a les pestanyes amb graella: les graelles s'adapten a l'alçada del contenidor. */}
-                <Box sx={{ height: 'calc(100vh - 230px)', minHeight: '420px' }}>
+            <ScreenFrame icon={icons.monitorSistema} title={t('page.monitorSistema.title')}>
+                <Box sx={{ flex: '1 1 0', minHeight: '420px' }}>
                     <TabComponent tabs={tabs} />
                 </Box>
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     );
 };

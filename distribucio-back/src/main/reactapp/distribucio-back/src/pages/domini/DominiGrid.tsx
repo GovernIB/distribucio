@@ -1,6 +1,7 @@
 import {useTranslation} from "react-i18next";
 import {GridPage, useBaseAppContext, useFormContext, useMuiDataGridApiRef, useResourceApiService} from "reactlib";
-import { CardPage } from "../../components/CardData";
+import ScreenFrame from '../../components/ScreenFrame';
+import { icons } from '../../util/icons';
 import StyledMuiGrid, {ToolbarButton} from "../../components/StyledMuiGrid.tsx";
 import {Grid} from "@mui/material";
 import GridFormField from "../../components/GridFormField.tsx";
@@ -76,7 +77,7 @@ export const DominiGrid = () => {
 
     return (
         <GridPage>
-            <CardPage title={t('page.domini.title')}>
+            <ScreenFrame icon={icons.domini} title={t('page.domini.title')}>
                 <StyledMuiGrid
                     apiRef={apiRef}
                     resourceName="dominiResource"
@@ -95,7 +96,7 @@ export const DominiGrid = () => {
                             element: <ToolbarButton
                                 title={t('page.domini.accio.cache.title')}
                                 onClick={() => cleanCache()}
-                                icon={'cached'}
+                                icon={icons.sincronitza}
                                 color={'warning'}
                                 variant={'contained'}
                             >
@@ -111,7 +112,7 @@ export const DominiGrid = () => {
                         deleteSuccess: 'page.domini.accio.delete.ok',
                     }}
                 />
-            </CardPage>
+            </ScreenFrame>
         </GridPage>
     )
 }
