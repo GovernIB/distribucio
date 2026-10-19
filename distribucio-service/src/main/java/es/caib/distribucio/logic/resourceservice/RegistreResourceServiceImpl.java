@@ -1014,7 +1014,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 map.put("isVistaMoviments", params.isVistaMoviments());
                 map.put("destins", params.getBusties());
                 map.put("destinsUsuari", destinsUsuari);
-                map.put("deixarCopia", params.isAmbCopia());
+                map.put("deixarCopia", params.isAmbCopia() || params.isVistaMoviments());
                 map.put("comentari", params.getComentari());
                 if ( this.isConeixementActiva() )
                     map.put("perConeixement", params.getConeixement());
@@ -1038,7 +1038,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                         entitatActualId,
                         params.getBusties().toArray(Long[]::new),
                         registre.getId(),
-                        params.isAmbCopia(),
+                        params.isAmbCopia() || params.getDestiLogic() != null,
                         params.getComentari(),
                         params.getConeixement().toArray(Long[]::new),
                         destinsUsuari,

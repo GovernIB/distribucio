@@ -12,7 +12,7 @@ import {
 import { CardPage, DetailCard, DetailField } from '../../components/CardData';
 import StyledMuiGrid from '../../components/StyledMuiGrid';
 import { formatDate } from '../../util/dateUtils';
-import IntegracioStacktrace from '../integracio/IntegracioStacktrace';
+import IntegracioStacktrace from '../integracio/detail/IntegracioStacktrace.tsx';
 
 const RESOURCE_NAME = 'excepcioLogResource';
 

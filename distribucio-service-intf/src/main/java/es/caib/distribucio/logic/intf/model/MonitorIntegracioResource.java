@@ -88,6 +88,17 @@ import java.util.Map;
 										roles = {BaseConfig.ROLE_SUPER},
 										grantedPermissions = {PermissionEnum.READ}
 								)
+						}),
+				@ResourceArtifact(
+						type = ResourceArtifactType.ACTION,
+						code = MonitorIntegracioResource.ACTION_ESBORRAR_CODE,
+						formClass = MonitorIntegracioResource.EsborrarForm.class,
+						accessConstraints = {
+								@ResourceAccessConstraint(
+										type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+										roles = {BaseConfig.ROLE_SUPER},
+										grantedPermissions = {PermissionEnum.READ}
+								)
 						})
 		}
 )
@@ -97,6 +108,7 @@ public class MonitorIntegracioResource implements Resource<Long> {
 	public static final String ACTION_COUNT_ERRORS_CODE = "COUNT_ERRORS";
 	public static final String ACTION_INTEGRACIONS_DIAGNOSTIC_CODE = "INTEGRACIONS_DIAGNOSTIC";
 	public static final String ACTION_DIAGNOSTIC_CODE = "DIAGNOSTIC";
+	public static final String ACTION_ESBORRAR_CODE = "ESBORRAR";
 
 	private Long id;
 	private String codi;
@@ -211,5 +223,11 @@ public class MonitorIntegracioResource implements Resource<Long> {
 		private String excepcioStacktrace;
 
 	}
+
+    @Getter
+    @Setter
+    public static class EsborrarForm implements Serializable {
+        private String codi;
+    }
 
 }

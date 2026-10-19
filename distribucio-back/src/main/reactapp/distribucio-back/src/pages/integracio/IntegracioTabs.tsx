@@ -2,12 +2,10 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import { useResourceApiService } from 'reactlib';
 import { StyledBadge } from '../../components/StyledBadge';
+import {useActions} from "./detail/IntegracioActions.tsx";
 
 export type IntegracioCodi = string;
-
-const ACTION_COUNT_ERRORS = 'COUNT_ERRORS';
 
 interface CountErrorsResult {
     codis: string[];
@@ -18,9 +16,7 @@ interface CountErrorsResult {
  * Codis d'integració a mostrar com a pestanyes i el nombre d'errors de cadascun.
  */
 const useIntegracioTabsData = (filterData: any) => {
-    const { isReady: apiIsReady, artifactAction } = useResourceApiService(
-        'monitorIntegracioResource'
-    );
+    const {apiIsReady, countErrors} = useActions();
     const [codis, setCodis] = useState<string[]>([]);
     const [counts, setCounts] = useState<Record<string, number>>({});
 
@@ -28,7 +24,7 @@ const useIntegracioTabsData = (filterData: any) => {
         if (!apiIsReady) {
             return;
         }
-        artifactAction(undefined, { code: ACTION_COUNT_ERRORS, data: filterData })
+        countErrors(filterData)
             .then((result: CountErrorsResult) => {
                 setCodis(result?.codis ?? []);
                 setCounts(result?.errors ?? {});

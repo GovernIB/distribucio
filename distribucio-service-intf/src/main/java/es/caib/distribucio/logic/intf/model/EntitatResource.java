@@ -56,8 +56,7 @@ import java.util.List;
 				// la gestió (creació/modificació) de l'entitat continua restringida a DIS_SUPER, igual
 				// que a la interfície JSP (veure WebMvcConfig.SUPER_PATHS).
 				@ResourceAccessConstraint(
-						type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-						roles = { BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_USER },
+						type = ResourceAccessConstraint.ResourceAccessConstraintType.AUTHENTICATED,
 						grantedPermissions = { PermissionEnum.READ }
 				)
 		},

@@ -68,7 +68,6 @@ export const useVistaMovimentsAccions = (options: {
             icon: 'send',
             showInMenu: true,
             onClick: (_id: any, row: any) => handleReenviar([row.idRegistre], false, { destiLogic: row.destiLogic }),
-            hidden: (row:any) => !row.potModificar,
         },
         {
             label: <Divider sx={{width: '100%'}} color={"none"}/>,

@@ -61,9 +61,7 @@ export const getFieldFromItem = (item:any, t: TranslateFn) => {
                 .map((v: string) => [v, configTypeValueLabel(t, item.type.id, v)])
         )
         : undefined;
-    const value = (item.type.id == 'BOOL' && typeof item.value == 'string')
-        ? item.value === "true"
-        : item.value
+    const value = item.value != null ?item.value :item.alternativeValue
 
     return {
         label: item.description,
@@ -97,9 +95,7 @@ const PropsListItem: React.FC<any> = ({ highlight }:any) => {
                 <FormField
                     field={field}
                     name={'value'}
-                    value={(item.type.id == 'BOOL' || password)
-                        ?(item.value != null ?field.value :item.alternativeValue)
-                        :field.value}
+                    value={(item.type.id == 'BOOL') ?field.value == "true" :field.value}
                     inline
                     decimalScale={decimalScale}
                     disabled={disabled}

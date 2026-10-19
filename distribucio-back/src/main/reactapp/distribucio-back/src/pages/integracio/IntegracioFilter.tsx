@@ -31,12 +31,16 @@ const springFilterBuilder = (data: any) => {
 };
 
 export const IntegracioFilter: React.FC<any> = (props) => {
+    const { onDataChange, ...other } = props
     return (
         <StyledMuiFilter
             resourceName="monitorIntegracioResource"
             code="FILTER"
-            springFilterBuilder={springFilterBuilder}
-            {...props}
+            springFilterBuilder={(data:any) => {
+                onDataChange(data)
+                springFilterBuilder(data)
+            }}
+            {...other}
         >
             <IntegracioFilterForm />
         </StyledMuiFilter>

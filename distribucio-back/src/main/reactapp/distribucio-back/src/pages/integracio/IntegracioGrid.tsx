@@ -1,16 +1,17 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { GridPage, MuiDataGridColDef, useMuiDataGridApiRef } from 'reactlib';
+import {GridPage, MuiDataGridColDef, useMuiDataGridApiRef} from 'reactlib';
 import { CardPage } from '../../components/CardData';
 import StyledMuiGrid, { ToolbarButton } from '../../components/StyledMuiGrid';
 import { formatDate } from '../../util/dateUtils';
 import * as builder from '../../util/springFilterUtils';
 import IntegracioFilter from './IntegracioFilter';
 import { useIntegracioTabs } from './IntegracioTabs';
-import useIntegracioDetail from './IntegracioDetail';
-import useIntegracioDiagnostic from './IntegracioDiagnostic';
+import useIntegracioDetail from './detail/IntegracioDetail.tsx';
+import useIntegracioDiagnostic from './detail/IntegracioDiagnostic.tsx';
 import { IntegracioEstat } from './IntegracioEstat';
 import { GridSortModel } from '@mui/x-data-grid-pro';
+import {useActions, useIntegracioActions} from "./detail/IntegracioActions.tsx";
 
 const columns: MuiDataGridColDef[] = [
     {
@@ -55,6 +56,9 @@ export const IntegracioGrid: React.FC = () => {
         component: diagnosticDialog,
     } = useIntegracioDiagnostic();
 
+    const {remove} = useActions();
+    const {actions, components} = useIntegracioActions()
+
     // El codi de la pestanya seleccionada s'afegeix com un filtre més (codi és un camp normal del recurs)
     const filter = React.useMemo(
         () => builder.and(builder.eq('codi', tab ? `'${tab}'` : undefined), formFilter),
@@ -82,16 +86,22 @@ export const IntegracioGrid: React.FC = () => {
                     sortModel={sortModel}
                     onRefresh={refreshCounts}
                     onRowClick={(params: any) => mostrarDetall(params?.row?.id, params?.row)}
-                    rowAdditionalActions={[
-                        {
-                            label: t('page.integracio.detail.title'),
-                            icon: 'info',
-                            showInMenu: false,
-                            onClick: (id: any, row: any) => mostrarDetall(id, row),
-                        },
-                    ]}
+                    rowAdditionalActions={actions}
                     toolbarElementsWithPositions={[
                         { position: 0, element: tabElement },
+                        {
+                            position: 2,
+                            element: (
+                                <ToolbarButton
+                                    icon="delete"
+                                    onClick={() => tab && remove(tab)}
+                                    disabled={!diagnosticIsReady}
+                                    color={"error"}
+                                >
+                                    {t('common.delete')}
+                                </ToolbarButton>
+                            ),
+                        },
                         {
                             position: 2,
                             element: (
@@ -108,6 +118,7 @@ export const IntegracioGrid: React.FC = () => {
                 />
                 {detailDialog}
                 {diagnosticDialog}
+                {components}
             </CardPage>
         </GridPage>
     );

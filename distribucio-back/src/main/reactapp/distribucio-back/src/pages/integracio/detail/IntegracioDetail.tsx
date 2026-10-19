@@ -5,9 +5,9 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import { MuiDialog, useCloseDialogButtons } from 'reactlib';
-import { formatDate } from '../../util/dateUtils';
-import { IntegracioEstat } from './IntegracioEstat';
-import { IntegracioStacktrace } from './IntegracioStacktrace';
+import { formatDate } from '../../../util/dateUtils.ts';
+import { IntegracioEstat } from '../IntegracioEstat.tsx';
+import { IntegracioStacktrace } from './IntegracioStacktrace.tsx';
 
 type DetailFieldSpec = {
     label: string;

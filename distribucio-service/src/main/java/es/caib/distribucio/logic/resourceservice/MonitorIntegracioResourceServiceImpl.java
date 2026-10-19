@@ -7,6 +7,7 @@ import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
+import es.caib.distribucio.logic.intf.base.util.I18nUtil;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioDiagnosticDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioDto;
@@ -60,6 +61,7 @@ public class MonitorIntegracioResourceServiceImpl
 		register(MonitorIntegracioResource.ACTION_COUNT_ERRORS_CODE, new CountErrorsActionExecutor());
 		register(MonitorIntegracioResource.ACTION_INTEGRACIONS_DIAGNOSTIC_CODE, new IntegracionsDiagnosticActionExecutor());
 		register(MonitorIntegracioResource.ACTION_DIAGNOSTIC_CODE, new DiagnosticActionExecutor());
+		register(MonitorIntegracioResource.ACTION_ESBORRAR_CODE, new EsborrarActionExecutor());
 	}
 
 	@Override
@@ -253,5 +255,29 @@ public class MonitorIntegracioResourceServiceImpl
 		}
 
 	}
+
+	private class EsborrarActionExecutor implements ActionExecutor<MonitorIntegracioResourceEntity, MonitorIntegracioResource.EsborrarForm, Serializable> {
+
+        @Override
+        public Serializable exec(String code, MonitorIntegracioResourceEntity entity, MonitorIntegracioResource.EsborrarForm params) throws ActionExecutionException {
+            try {
+//                int n = monitorIntegracioService.delete(params.getCodi());
+                return "{\"num\": " + 0 + "}";
+            } catch (Exception e) {
+                throw new ActionExecutionException(
+                        MonitorIntegracioResource.class,
+                        null,
+                        code,
+                        I18nUtil.getInstance().getI18nMessage(
+                                "integracio.esborrar.error",
+                                params.getCodi(), e.getMessage())
+                );
+            }
+        }
+
+        @Override
+        public void onChange(Serializable id, MonitorIntegracioResource.EsborrarForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, MonitorIntegracioResource.EsborrarForm target) {
+        }
+    }
 
 }

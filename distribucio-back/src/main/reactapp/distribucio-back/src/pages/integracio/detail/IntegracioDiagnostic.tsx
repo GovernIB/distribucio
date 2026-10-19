@@ -13,12 +13,9 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { MuiDialog, useResourceApiService } from 'reactlib';
+import { MuiDialog } from 'reactlib';
 import { IntegracioStacktrace } from './IntegracioStacktrace';
-
-const INTEGRACIO_RESOURCE = 'monitorIntegracioResource';
-const ACTION_INTEGRACIONS_DIAGNOSTIC = 'INTEGRACIONS_DIAGNOSTIC';
-const ACTION_DIAGNOSTIC = 'DIAGNOSTIC';
+import {useActions} from "./IntegracioActions.tsx";
 
 /** Resposta de l'acció INTEGRACIONS_DIAGNOSTIC (MonitorIntegracioResource.IntegracionsDiagnosticResult). */
 interface IntegracionsDiagnosticResult {
@@ -129,7 +126,7 @@ const DiagnosticFila: React.FC<{
  */
 export const useIntegracioDiagnostic = () => {
     const { t } = useTranslation();
-    const { isReady: apiIsReady, artifactAction } = useResourceApiService(INTEGRACIO_RESOURCE);
+    const {apiIsReady, diagnostic, integracioDiagnostic} = useActions();
     const [open, setOpen] = React.useState(false);
     const [codis, setCodis] = React.useState<string[]>([]);
     const [entitats, setEntitats] = React.useState<IntegracionsDiagnosticResult['entitats']>([]);
@@ -148,10 +145,7 @@ export const useIntegracioDiagnostic = () => {
         execucionsRef.current[codi] = execucio;
         const esVigent = () => execucionsRef.current[codi] === execucio;
         setEstat(codi, { executant: true });
-        artifactAction(undefined, {
-            code: ACTION_DIAGNOSTIC,
-            data: { codiIntegracio: codi, entitatId: entitat },
-        })
+        diagnostic(codi, entitat)
             .then((resultat: DiagnosticResult) => {
                 esVigent() && setEstat(codi, { executant: false, resultat });
             })
@@ -183,7 +177,7 @@ export const useIntegracioDiagnostic = () => {
         setEstats({});
         setErrorCarrega(undefined);
         setOpen(true);
-        artifactAction(undefined, { code: ACTION_INTEGRACIONS_DIAGNOSTIC })
+        integracioDiagnostic()
             .then((result: IntegracionsDiagnosticResult) => {
                 const codisIntegracio = result?.codis ?? [];
                 setCodis(codisIntegracio);

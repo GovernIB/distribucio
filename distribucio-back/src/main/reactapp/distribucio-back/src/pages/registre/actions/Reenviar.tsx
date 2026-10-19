@@ -261,21 +261,21 @@ const Organig = ({quickFilter, favoriteSearch}:any) => {
 }
 
 /**
- * `hideAmbCopia`: la Vista de moviments reenvia sense mostrar el camp "Deixar còpia" (sempre activat, forçat pel backend).
+ * `vistaMoviments`: la Vista de moviments reenvia sense mostrar el camp "Deixar còpia" (sempre activat, forçat pel backend).
  */
-export const ReenviarForm = ({ hideAmbCopia }: { hideAmbCopia?: boolean } = {}) => {
+export const ReenviarForm = () => {
     const { t } = useTranslation();
     const {data, apiRef} = useFormContext()
     const [quickFilter, setQuickFilter] = React.useState<string>();
     const [favoriteSearch, setFavoriteSearch] = React.useState<boolean>(false);
 
     const todosContinguts = useMemo(() => {
-        if (hideAmbCopia || !data.coneixementActiva || data.busties.length <= 0 || data.coneixement.length <= 0)
+        if (!data.coneixementActiva || data.busties.length <= 0 || data.coneixement.length <= 0)
             return false;
 
         return data.busties?.every((b: any) => data.coneixement?.includes(b))
     }, [data.busties, data.coneixement]);
-    if (!hideAmbCopia && data.coneixementActiva && todosContinguts && !data.ambCopia) {
+    if (data.coneixementActiva && todosContinguts && !data.ambCopia) {
         apiRef.current?.setFieldValue("ambCopia", true)
     }
 
@@ -294,9 +294,9 @@ export const ReenviarForm = ({ hideAmbCopia }: { hideAmbCopia?: boolean } = {}) 
 
         <Grid container size={6} direction={"column"} columnSpacing={1} rowSpacing={1}>
             <Grid size={12}><BustiaGrid/></Grid>
-            {!hideAmbCopia && <GridFormField size={12} name="ambCopia" type={'checkbox'}
-                                             componentProps={{ helperText: todosContinguts ?t('component.RegistreReenviar.todosContinguts') :undefined }}
-                                             disabled={todosContinguts} hidden={!!data.destiLogic} />}
+            <GridFormField size={12} name="ambCopia" type={'checkbox'}
+                           componentProps={{ helperText: todosContinguts ?t('component.RegistreReenviar.todosContinguts') :undefined }}
+                           disabled={todosContinguts} hidden={!!data.vistaMoviments || !!data.destiLogic} />
             <GridFormField size={12} name="comentari" type={'textarea'}/>
         </Grid>
     </Grid>
