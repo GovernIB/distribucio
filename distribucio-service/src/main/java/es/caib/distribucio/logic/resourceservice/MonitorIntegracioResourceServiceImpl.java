@@ -261,8 +261,8 @@ public class MonitorIntegracioResourceServiceImpl
         @Override
         public Serializable exec(String code, MonitorIntegracioResourceEntity entity, MonitorIntegracioResource.EsborrarForm params) throws ActionExecutionException {
             try {
-//                int n = monitorIntegracioService.delete(params.getCodi());
-                return "{\"num\": " + 0 + "}";
+                int n = monitorIntegracioService.delete(params.getCodi());
+                return "{\"num\": " + n + "}";
             } catch (Exception e) {
                 throw new ActionExecutionException(
                         MonitorIntegracioResource.class,

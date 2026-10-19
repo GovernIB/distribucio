@@ -56,7 +56,7 @@ export const IntegracioGrid: React.FC = () => {
         component: diagnosticDialog,
     } = useIntegracioDiagnostic();
 
-    const {remove} = useActions();
+    const {remove} = useActions(() => apiRef.current?.refresh());
     const {actions, components} = useIntegracioActions()
 
     // El codi de la pestanya seleccionada s'afegeix com un filtre més (codi és un camp normal del recurs)
