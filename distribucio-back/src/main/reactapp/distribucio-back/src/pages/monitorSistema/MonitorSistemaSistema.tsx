@@ -1,86 +1,15 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useBaseAppContext, useResourceApiService } from 'reactlib';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 import { ContenidoData, DetailCard, DetailCardContent } from '../../components/CardData';
-import { ToolbarButton } from '../../components/StyledMuiGrid';
-import { icons } from '../../util/icons';
-
-const ACCIO_INFORMACIO_SISTEMA = 'INFORMACIO_SISTEMA';
+import type { InformacioSistema, MemoriaUs } from './useInformacioSistema';
 
 /** Percentatge d'ocupació a partir del qual la barra passa a avís i a error. */
 const LLINDAR_AVIS = 80;
 const LLINDAR_ERROR = 90;
-
-type MemoriaUs = { usada?: number; total?: number; usadaFormatada?: string; totalFormatada?: string };
-
-/** Resultat de l'acció (MonitorFilResource.InformacioSistema al backend). */
-type InformacioSistema = {
-    sistemaOperatiu?: string;
-    arquitectura?: string;
-    processadors?: number;
-    versioJboss?: string;
-    servidorAplicacions?: string;
-    jvm?: string;
-    versioJdk?: string;
-    dataArrencada?: string;
-    tempsFuncionant?: string;
-    memoriaJvm?: MemoriaUs;
-    memoriaMaxima?: string;
-    memoriaFisica?: MemoriaUs;
-    filsActius?: number;
-    filsPic?: number;
-    filsDaemon?: number;
-    filsDeadlock?: number;
-    gcExecucions?: number;
-    gcTemps?: number;
-    nuclis?: number;
-    carregaMitjana?: string;
-    carregaCpuSistema?: string;
-    carregaCpuProces?: string;
-    discos?: {
-        nom?: string;
-        usat?: number;
-        total?: number;
-        usatFormatat?: string;
-        totalFormatat?: string;
-    }[];
-};
-
-const useInformacioSistema = () => {
-    const { t } = useTranslation();
-    const { temporalMessageShow } = useBaseAppContext();
-    const { isReady: apiIsReady, artifactAction: apiArtifactAction } = useResourceApiService('monitorFilResource');
-    const [informacio, setInformacio] = React.useState<InformacioSistema>();
-    const [loading, setLoading] = React.useState(false);
-
-    const refresh = () => {
-        if (!apiIsReady) {
-            return;
-        }
-        setLoading(true);
-        apiArtifactAction(undefined, { code: ACCIO_INFORMACIO_SISTEMA })
-            .then((response: InformacioSistema) => setInformacio(response))
-            .catch((error: any) =>
-                temporalMessageShow(
-                    t('page.monitorSistema.accio.error'),
-                    error?.description ?? error?.message ?? '',
-                    'error'
-                )
-            )
-            .finally(() => setLoading(false));
-    };
-
-    React.useEffect(() => {
-        refresh();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [apiIsReady]);
-
-    return { informacio, loading, refresh };
-};
 
 /** Fila d'ocupació (memòria o disc): etiqueta, barra i detall a la mateixa línia. */
 const UsageBar: React.FC<{ label?: string; used?: number; total?: number; detail: string }> = ({
@@ -137,22 +66,12 @@ const Fila: React.FC<{ title: string; children?: React.ReactNode }> = ({ title, 
 );
 
 /** Pestanya "Sistema": informació general, memòria, fils, CPU i discs. */
-export const MonitorSistemaSistema: React.FC = () => {
+export const MonitorSistemaSistema: React.FC<{ informacio?: InformacioSistema }> = ({ informacio }) => {
     const { t } = useTranslation();
-    const { informacio, loading, refresh } = useInformacioSistema();
     const detall = (clau: string) => t(`page.monitorSistema.detail.${clau}`);
 
     return (
         <Box>
-            <Box display="flex" justifyContent="end" mb={1}>
-                <ToolbarButton
-                    title={t('page.monitorSistema.accio.refrescar')}
-                    icon={icons.refresca}
-                    color="primary"
-                    disabled={loading}
-                    onClick={refresh}
-                />
-            </Box>
             <Grid container spacing={1}>
                 <DetailCard>
                     <Camp size={4} sx={{ mt: 0 }} title={detall('sistemaOperatiu')}>

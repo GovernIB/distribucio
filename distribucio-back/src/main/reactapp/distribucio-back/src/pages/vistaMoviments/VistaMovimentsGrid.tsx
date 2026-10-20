@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { GridPage, useMuiDataGridApiRef } from 'reactlib';
 import ScreenFrame from '../../components/ScreenFrame';
+import BustiaPathCell from '../../components/BustiaPathCell';
 import { icons } from '../../util/icons';
 import StyledMuiGrid from '../../components/StyledMuiGrid.tsx';
 import { VistaMovimentsFilter } from './VistaMovimentsFilter.tsx';
@@ -44,28 +45,13 @@ const VistaMovimentsBustiaCell = ({ path, activa }: any) => {
     const { t } = useTranslation();
     if (!path?.length) return null;
     return (
-        <Box sx={{ whiteSpace: 'normal', lineHeight: 1.4 }}>
-            {path.map((nom: string, index: number) => (
-                <React.Fragment key={index}>
-                    {index > 0 && ' / '}
-                    <Tooltip
-                        title={
-                            index === 0 ? t('page.contingut.grid.icona.unitat') : t('page.contingut.grid.icona.bustia')
-                        }
-                    >
-                        <Icon fontSize="small" sx={{ fontSize: '18px', verticalAlign: 'text-bottom', mr: 0.5 }}>
-                            {index === 0 ? 'account_tree' : 'inbox'}
-                        </Icon>
-                    </Tooltip>
-                    {nom}
-                </React.Fragment>
-            ))}
+        <BustiaPathCell path={path}>
             {!activa && (
                 <Tooltip title={t('page.vistaMoviments.grid.bustiaInactiva')}>
                     <Icon fontSize="small" color="warning" sx={{ verticalAlign: 'text-bottom', ml: 0.5 }}>{icons.advertencia}</Icon>
                 </Tooltip>
             )}
-        </Box>
+        </BustiaPathCell>
     );
 };
 

@@ -64,8 +64,8 @@ const useToogleInterval = (time:number, fn: () => void) => {
 }
 
 const columns = [
-    { field: 'tipus', flex: 1 },
-    { field: 'exec', flex: 1,
+    { field: 'tipus', flex: 2 },
+    { field: 'exec', flex: 1.5,
         renderCell: (params:any) => (
             <>
                 <Chip label={params.formattedValue} color={params.row.estat == "CANCELADA" ?"warning" :"default"} />

@@ -265,11 +265,13 @@ const baseComponentStyles = {
             }),
         },
     },
-    // Pestanya seleccionada: als temes foscos el color base no té prou contrast amb el text sobre el
-    // fons fosc; es fa servir el to clar (accentColor). Al clar es manté el del tema.
+    // Text de les pestanyes tal com s'escriu (MUI el posa tot en majúscules). Pestanya seleccionada: als
+    // temes foscos el color base no té prou contrast amb el text sobre el fons fosc; es fa servir el to
+    // clar (accentColor). Al clar es manté el del tema.
     MuiTab: {
         styleOverrides: {
             root: ({ theme }: { theme: Theme }) => ({
+                textTransform: 'none',
                 ...(theme.palette.mode === 'dark' && { '&.Mui-selected': { color: accentColor(theme) } }),
             }),
         },

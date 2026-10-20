@@ -5,8 +5,8 @@ import {useBaseAppContext, useMuiContentDialog, useMuiDataGridApiRef} from "reac
 import {Chip, Tooltip} from "@mui/material";
 
 const columns = [
-    { field: 'elementNom', flex: 1 },
-    { field: 'estat', flex: 1,
+    { field: 'elementNom', flex: 3 },
+    { field: 'estat', flex: 0.5,
         renderCell: (params:any) => <>
             <Tooltip title={params.row.error || params.row.missatge}>
                 <Chip label={params.formattedValue} color={params.row.estat == "ERROR" ?'error' :"default"}/>
@@ -48,7 +48,7 @@ export const useEMContent = () => {
             t('page.massiva.accio.detail.title'),
             <ExecucioMassivaContingutGrid apiRef={apiRef} id={id}/>,
             [],
-            { maxWidth: 'md', fullWidth: true }
+            { maxWidth: 'xl', fullWidth: true }
         );
     };
 

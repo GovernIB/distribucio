@@ -615,58 +615,79 @@ const RegistreDetail = (props:any) => {
         },
     ], [data, metadadesActives])
 
-    return (<>
-        <Box display={'flex'} alignItems={'center'} flexWrap={'wrap'} bgcolor={'greyBackground'} p={1}>
-            &nbsp;/&nbsp; <Icon fontSize={'small'} >{icons.unitatOrganitzativa}</Icon> {data.unitatAdministrativaDescripcio}
-            &nbsp;/&nbsp; <Icon fontSize={'small'} >{icons.bustia}</Icon> {data.pare?.description}
-            &nbsp;/&nbsp; {data.nom}
-        </Box>
+    return (
+        <>
+            <Box display={'flex'} alignItems={'center'} flexWrap={'wrap'} bgcolor={'greyBackground'} sx={{ p: 1 }}>
+                &nbsp;/&nbsp; <Icon fontSize={'small'}>{icons.unitatOrganitzativa}</Icon>{' '}
+                {data.unitatAdministrativaDescripcio}
+                &nbsp;/&nbsp; <Icon fontSize={'small'}>{icons.bustia}</Icon> {data.pare?.description}
+                &nbsp;/&nbsp; {data.nom}
+            </Box>
 
-        <TabComponent
-            variant="scrollable"
-            headerAdditionalData={<Box display={'flex'} justifyContent={'end'} gap={1}>
-                {isUser && isConeixementActiu && <Button
-                    variant={'contained'}
-                    color={data.darrerMovimentResource?.perConeixement ? 'info' : 'warning'}
-                >
-                    <Typography variant={'caption'}>
-                        {data.darrerMovimentResource?.perConeixement
-                            ?t('page.registre.detail.coneixement')
-                            :t('page.registre.detail.tramit')}
-                    </Typography>
-                </Button>}
-                {data.pendentExecucioMassiva && <Icon title={t('page.registre.avisos.pendentExecucioMassiva')} color={'warning'}>{icons.programat}</Icon>}
-                <Button
-                    title={t('component.RegistreDetail.avancar')}
-                    variant={avanzarPagina ?'contained' :'outlined'}
-                    onClick={() => setAvanzarPagina(prev => !prev)}
-                >
-                    <Icon>{icons.avanca}</Icon>
-                </Button>
-                <IconButton
-                    title={t('component.CommentDialog.label')}
-                    onClick={() => handleOpen(data.id, data.nom) }
-                >
-                    <Badge badgeContent={data.numComentaris} color="primary" showZero>
-                        <Icon>{icons.comentaris}</Icon>
-                    </Badge>
-                </IconButton>
+            <TabComponent
+                variant="scrollable"
+                headerAdditionalData={
+                    <Box display={'flex'} justifyContent={'end'} gap={1}>
+                        {isUser && isConeixementActiu && (
+                            <Button
+                                variant={'contained'}
+                                color={data.darrerMovimentResource?.perConeixement ? 'info' : 'warning'}
+                                sx={headerButtonSx}
+                            >
+                                <Typography variant={'caption'}>
+                                    {data.darrerMovimentResource?.perConeixement
+                                        ? t('page.registre.detail.coneixement')
+                                        : t('page.registre.detail.tramit')}
+                                </Typography>
+                            </Button>
+                        )}
+                        {data.pendentExecucioMassiva && (
+                            <Icon title={t('page.registre.avisos.pendentExecucioMassiva')} color={'warning'}>
+                                {icons.programat}
+                            </Icon>
+                        )}
+                        <Button
+                            title={t('component.RegistreDetail.avancar')}
+                            variant={avanzarPagina ? 'contained' : 'outlined'}
+                            onClick={() => setAvanzarPagina((prev) => !prev)}
+                            sx={headerButtonSx}
+                        >
+                            <Icon>{icons.avanca}</Icon>
+                        </Button>
+                        <IconButton
+                            title={t('component.CommentDialog.label')}
+                            onClick={() => handleOpen(data.id, data.nom)}
+                            sx={{ ...headerButtonSx, width: 32, px: 0, borderRadius: 1 }}
+                        >
+                            <Badge badgeContent={data.numComentaris} color="primary" showZero>
+                                <Icon>{icons.comentaris}</Icon>
+                            </Badge>
+                        </IconButton>
 
-                <MenuActionButton
-                    resourceName={'registreResource'}
-                    id={data.id}
-                    entity={data}
-                    buttonLabel={<><Icon sx={{ mr: 1 }}>{icons.configuracio}</Icon>{t('common.actions')}</>}
-                    actions={actions}
-                    buttonProps={{ variant: 'contained' }}
-                />
-            </Box>}
-            tabs={tabs}
-        />
-        {component}
-        {actionComponents}
-    </>);
+                        <MenuActionButton
+                            resourceName={'registreResource'}
+                            id={data.id}
+                            entity={data}
+                            buttonLabel={
+                                <>
+                                    <Icon sx={{ mr: 1 }}>{icons.configuracio}</Icon>
+                                    {t('common.actions')}
+                                </>
+                            }
+                            actions={actions}
+                            buttonProps={{ variant: 'contained', sx: headerButtonSx }}
+                        />
+                    </Box>
+                }
+                tabs={tabs}
+            />
+            {component}
+            {actionComponents}
+        </>
+    );
 }
+
+const headerButtonSx = { height: 32, minHeight: 32, px: 1.25, fontSize: '0.8125rem', '& .MuiIcon-root': { fontSize: 18 } }
 
 const perspectives = ['ARXIU_DETALL', 'DARRER_MOVIMENT', 'COMMENT_NUM', 'DETAIL_INFO']
 export const useBasicDetail = (props:any = {}) => {
