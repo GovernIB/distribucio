@@ -462,7 +462,7 @@ public abstract class BaseReadonlyResourceService<R extends Resource<ID>, ID ext
 			}
 			try {
 				return generator.generateData(code, entity, params);
-			} catch (ActionExecutionException ex) {
+			} catch (ReportGenerationException ex) {
 				throw ex;
 			} catch (Exception ex) {
 				ReportGenerationException rgex = new ReportGenerationException(
@@ -513,7 +513,7 @@ public abstract class BaseReadonlyResourceService<R extends Resource<ID>, ID ext
 								"Couldn't generate report file: both generateFile and getJasperReportUrl methods returned null (fileType=" + fileType + ")");
 					}
 				}
-			} catch (ActionExecutionException ex) {
+			} catch (ReportGenerationException ex) {
 				throw ex;
 			} catch (Exception ex) {
 				ReportGenerationException rgex = new ReportGenerationException(

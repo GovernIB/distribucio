@@ -182,6 +182,15 @@ export const ReglaGrid: React.FC = () => {
                     rowAdditionalActions={actions}
                     toolbarMassiveActions={massiveActions}
                     selectionActive={isAdmin || undefined}
+
+                    // ocultar acciones para admin lectura
+                    initialState={{
+                        columns: {
+                            columnVisibilityModel: {
+                                [' ']: isAdmin,
+                            }
+                        }
+                    }}
                 />
                 {massiveComponents}
                 {components}

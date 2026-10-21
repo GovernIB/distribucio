@@ -6,6 +6,7 @@ import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.AclResourceHelper;
 import es.caib.distribucio.logic.helper.PermisosHelper;
+import es.caib.distribucio.logic.helper.PluginHelper;
 import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
@@ -31,6 +32,7 @@ import es.caib.distribucio.persist.resourceentity.*;
 import es.caib.distribucio.persist.resourcerepository.BustiaResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.UnitatOrganitzativaResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.UsuariResourceRepository;
+import es.caib.distribucio.plugin.usuari.DadesUsuari;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -62,6 +64,7 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
     private final UsuariResourceRepository usuariResourceRepository;
     private final UnitatOrganitzativaHelper unitatOrganitzativaHelper;
     private final AclResourceHelper aclResourceHelper;
+    private final PluginHelper pluginHelper;
 
     @PostConstruct
     public void init() {
@@ -382,9 +385,10 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
                     .collect(Collectors.toList());
             try {
 
-                Map<Long, List<PermisDto>> permisosPerEntitat = permisosHelper.findPermisos(
-                        bustiaResources.stream().map(BaseAuditableResource::getId).collect(Collectors.toList()),
-                        BustiaEntity.class);
+                Map<Long, List<UsuariPermisDto>> permisosPerEntitat = new HashMap<>();
+                for (BustiaResource bustia : bustiaResources) {
+                    permisosPerEntitat.put(bustia.getId(), bustiaService.getUsuarisPerBustia(bustia.getId()));
+                }
 
                 Workbook workbook = new XSSFWorkbook();
                 Sheet sheet = workbook.createSheet("Hoja 1");
@@ -417,14 +421,12 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
                 int rowNum = 1;
                 for (BustiaResource bustia : bustiaResources) {
                     if (permisosPerEntitat.containsKey(bustia.getId())) {
-                        for (PermisDto permis : permisosPerEntitat.get(bustia.getId())) {
-                            if (PrincipalTipusEnumDto.USUARI.equals(permis.getPrincipalTipus())) {
-                                Row row1 = sheet.createRow(rowNum++);
-                                row1.createCell(0).setCellValue(bustia.getUnitatOrganitzativa().getDescription());
-                                row1.createCell(1).setCellValue(bustia.getNom());
-                                row1.createCell(2).setCellValue(permis.getPrincipalNom());
-                                row1.createCell(3).setCellValue(permis.getPrincipalDescripcio());
-                            }
+                        for (UsuariPermisDto permis : permisosPerEntitat.get(bustia.getId())) {
+                            Row row1 = sheet.createRow(rowNum++);
+                            row1.createCell(0).setCellValue(bustia.getUnitatOrganitzativa().getDescription());
+                            row1.createCell(1).setCellValue(bustia.getNom());
+                            row1.createCell(2).setCellValue(permis.getCodi());
+                            row1.createCell(3).setCellValue(permis.getNom());
                         }
                     }
                 }

@@ -43,7 +43,7 @@ const columns: MuiDataGridColDef[] = [
 ];
 
 const sortModel: GridSortModel = [{ field: 'data', sort: 'desc' }];
-
+const perspectives = ['PARAMS'];
 export const IntegracioGrid: React.FC = () => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
@@ -90,6 +90,7 @@ export const IntegracioGrid: React.FC = () => {
                     apiRef={apiRef}
                     columns={columns}
                     filter={filter}
+                    perspectives={perspectives}
                     // toolbarShowFilterCount
                     paginationActive
                     sortModel={sortModel}

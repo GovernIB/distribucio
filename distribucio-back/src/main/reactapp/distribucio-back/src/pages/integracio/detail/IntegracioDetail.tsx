@@ -111,29 +111,38 @@ export const useIntegracioDetail = () => {
                         },
                     ]}
                 />
-                {row?.estat === 'ERROR' && (
-                    <>
-                        <DetailRow
-                            fields={[
-                                {
-                                    label: t('page.integracio.detail.errorDescripcio'),
-                                    value: row?.errorDescripcio,
-                                },
-                            ]}
-                        />
-                        <DetailRow
-                            fields={[
-                                {
-                                    label: t('page.integracio.detail.excepcioMessage'),
-                                    value: row?.excepcioMessage,
-                                },
-                            ]}
-                        />
-                        {row?.excepcioStacktrace && (
-                            <IntegracioStacktrace stacktrace={row.excepcioStacktrace} />
-                        )}
-                    </>
-                )}
+                {row?.estat === 'ERROR' && ([
+                    <DetailRow
+                        fields={[
+                            {
+                                label: t('page.integracio.detail.params'),
+                                value: <ul>
+                                    {row?.params.map((param: any) =>
+                                        <li><strong>{param.key}:</strong> {param.value}</li>)}
+                                </ul>,
+                            },
+                        ]}
+                    />,
+                    <DetailRow
+                        fields={[
+                            {
+                                label: t('page.integracio.detail.errorDescripcio'),
+                                value: row?.errorDescripcio,
+                            },
+                        ]}
+                    />,
+                    <DetailRow
+                        fields={[
+                            {
+                                label: t('page.integracio.detail.excepcioMessage'),
+                                value: row?.excepcioMessage,
+                            },
+                        ]}
+                    />,
+                    <>{row?.excepcioStacktrace && (
+                        <IntegracioStacktrace stacktrace={row.excepcioStacktrace} />
+                    )}</>
+                ])}
             </Stack>
         </MuiDialog>
     );

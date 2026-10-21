@@ -35,8 +35,28 @@ export const IntegracioStacktrace: React.FC<IntegracioStacktraceProps> = ({
     const { temporalMessageShow } = useBaseAppContext();
 
     const copyStacktrace = () => {
-        navigator.clipboard?.writeText(stacktrace);
-        temporalMessageShow(null, t('common.copiat'), 'success');
+        navigator.clipboard?.writeText(stacktrace)
+            .then(() => {
+                temporalMessageShow(null, t('common.copiat'), 'success');
+            })
+            .catch((error) => {
+                const temp = Object.assign(document.createElement('textarea'), {
+                    value: stacktrace,
+                    style: 'position:fixed;opacity:0'
+                });
+
+                document.body.appendChild(temp);
+                temp.select();
+
+                try {
+                    document.execCommand('copy');
+                    temporalMessageShow(null, t('common.copiat'), 'success');
+                } catch (err) {
+                    temporalMessageShow(null, error?.message, 'error');
+                }
+
+                temp.remove();
+            });
     };
 
     return (

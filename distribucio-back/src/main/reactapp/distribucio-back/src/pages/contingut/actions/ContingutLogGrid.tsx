@@ -55,6 +55,7 @@ export const ContingutLogGrid: React.FC<ContingutLogGridProps> = ({ contingutRow
             perspectives={perspectives}
             popupEditActive
             popupEditFormContent={<ContingutLogDetallContent row />}
+            toolbarHideRefresh
             toolbarHideCreate
             rowHideDeleteButton
             paginationActive

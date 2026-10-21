@@ -640,20 +640,29 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
         @Override
         public List<ContingutLogResource> generateData(String code, RegistreResourceEntity entity, Serializable params) throws ReportGenerationException {
-            List<ContingutLogResourceEntity> logEntityList = entity.getLogs();
-            List<ContingutLogResource> logResourceList = logEntityList.stream()
-                    .map(log -> objectMappingHelper.newInstanceMap(log, ContingutLogResource.class))
-                    .collect(Collectors.toList());
+            try {
+                List<ContingutLogResourceEntity> logEntityList = entity.getLogs();
+                List<ContingutLogResource> logResourceList = logEntityList.stream()
+                        .map(log -> objectMappingHelper.newInstanceMap(log, ContingutLogResource.class))
+                        .collect(Collectors.toList());
 
-            for (int i = 0; i<logEntityList.size(); i++){
-                ContingutLogResourceEntity e = logEntityList.get(i);
-                ContingutLogResource r = logResourceList.get(i);
+                for (int i = 0; i<logEntityList.size(); i++){
+                    ContingutLogResourceEntity e = logEntityList.get(i);
+                    ContingutLogResource r = logResourceList.get(i);
 
-                contingutLogResourceHelper.setLogText(e, r);
+                    contingutLogResourceHelper.setLogText(e, r);
+                }
+
+                logResourceList.sort(Comparator.comparing(BaseAuditableResource::getCreatedDate));
+                return logResourceList;
+            } catch (Exception e) {
+                throw new ReportGenerationException(
+                        RegistreResource.class,
+                        entity.getId(),
+                        code,
+                        e.getMessage()
+                );
             }
-
-            logResourceList.sort(Comparator.comparing(BaseAuditableResource::getCreatedDate));
-            return logResourceList;
         }
 
         @Override

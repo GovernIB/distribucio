@@ -37,7 +37,7 @@ public class EntitatResourceEntity extends BaseAuditableEntity<EntitatResource, 
 	@SequenceGenerator(name = "default_seq", sequenceName = "dis_hibernate_seq", allocationSize = 1)
 	private Long id;
 
-	@Column(name = "codi", length = 64, nullable = false, unique = true)
+	@Column(name = "codi", length = 64, nullable = false, updatable = false, unique = true)
 	private String codi;
 
 	@Column(name = "nom", length = 256, nullable = false)

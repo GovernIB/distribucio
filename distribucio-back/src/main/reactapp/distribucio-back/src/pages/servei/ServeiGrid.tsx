@@ -38,7 +38,6 @@ export const ServeiGrid: React.FC = () => {
             <ScreenFrame icon={icons.servei} title={t('page.serveis.grid.title')}>
                 <ServeiFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid
-                    toolbarHideCreate
                     resourceName="serveiResource"
                     apiRef={apiRef}
                     columns={columns}
@@ -61,12 +60,17 @@ export const ServeiGrid: React.FC = () => {
                         },
                     ]}
                     paginationActive
-                    popupEditActive
-                    popupEditFormDialogResourceTitle={t('page.serveis.accio.actualitzarTots.title')}
-                    rowHideUpdateButton
-                    rowHideDeleteButton
                     rowAdditionalActions={accions}
                     defaultSortModel={sortModel}
+                    readOnly
+                    // ocultar acciones para admin lectura
+                    initialState={{
+                        columns: {
+                            columnVisibilityModel: {
+                                [' ']: isAdmin,
+                            }
+                        }
+                    }}
                 />
                 {contentActualitzarTots}
             </ScreenFrame>

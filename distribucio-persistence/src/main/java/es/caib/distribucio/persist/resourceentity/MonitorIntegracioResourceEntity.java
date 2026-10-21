@@ -9,21 +9,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Entitat de base de dades del recurs {@link MonitorIntegracioResource}.
@@ -89,5 +78,11 @@ public class MonitorIntegracioResourceEntity extends BaseResourceEntity<MonitorI
 
 	@Column(name = "numero_registre")
 	private String numeroRegistre;
+
+    @OneToMany(
+            mappedBy = "monitorIntegracio",
+            orphanRemoval = true,
+            cascade={CascadeType.ALL})
+    private List<MonitorIntegracioParamResourceEntity> parametres = new ArrayList<>();
 
 }

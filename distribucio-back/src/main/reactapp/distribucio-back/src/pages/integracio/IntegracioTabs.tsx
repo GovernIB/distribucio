@@ -67,7 +67,7 @@ export const useIntegracioTabs = (filterData?: any) => {
                     key={codi}
                     value={codi}
                     label={
-                        <StyledBadge badgeContent={counts[codi] ?? 0} badgecolor="error">
+                        <StyledBadge badgeContent={counts[codi] ?? 0} badgecolor="error" max={999}>
                             {t(`page.integracio.pipella.${codi}`)}
                         </StyledBadge>
                     }

@@ -640,6 +640,7 @@ const translationEs = {
                     ENVIAMENT: 'Enviado',
                     RECEPCIO: 'Recepción',
                 },
+                params: 'Parámetros',
                 errorDescripcio: 'Descripción del error',
                 excepcioMessage: 'Mensaje',
                 excepcioStacktrace: 'Traza',
@@ -655,6 +656,11 @@ const translationEs = {
                 executaTotes: 'Vuelve a ejecutarlas todas',
                 mostraTraca: 'Muestra la traza',
                 amagaTraca: 'Oculta la traza',
+            },
+            accio: {
+                delete: {
+                    ok: "Se han borrado correctamente {{num}} entradas para la integración con código {{codi}}",
+                }
             },
         },
         unitatOrganitzativa: {
@@ -1334,6 +1340,10 @@ const translationEs = {
             alert: "La unidad: {{unitat}} del buzón: {{bustia}}",
             newUnitats: "Nuevas unidades",
             afectedBusties: "Otros buzones afectados",
+        },
+        TreeView: {
+            expandAll: "Expandir todo",
+            collapseAll: "Contraer todo",
         },
     },
 };

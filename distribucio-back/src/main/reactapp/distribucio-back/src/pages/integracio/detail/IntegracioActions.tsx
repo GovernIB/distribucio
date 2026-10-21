@@ -15,7 +15,7 @@ export const useActions = (refresh?: () => void) => {
         apiAction(undefined, {code: 'ESBORRAR', data: { codi }})
             .then((response) => {
                 refresh?.()
-                temporalMessageShow(null, t('Se han borrado correctamente {{num}} entradas para la integración con código {{codi}}', {num: response.num, codi}), 'success');
+                temporalMessageShow(null, t('page.integracio.accio.delete.ok', {num: response.num, codi}), 'success');
             })
             .catch((error) => {
                 temporalMessageShow(null, error?.message, 'error');

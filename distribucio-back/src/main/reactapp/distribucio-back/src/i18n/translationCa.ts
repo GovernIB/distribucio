@@ -640,6 +640,7 @@ const translationCa = {
                     ENVIAMENT: 'Enviament',
                     RECEPCIO: 'Recepció',
                 },
+                params: 'Paràmetres',
                 errorDescripcio: 'Descripció de l\'error',
                 excepcioMessage: 'Missatge',
                 excepcioStacktrace: 'Traça',
@@ -655,6 +656,11 @@ const translationCa = {
                 executaTotes: 'Torna a executar-les totes',
                 mostraTraca: 'Mostra la traça',
                 amagaTraca: 'Amaga la traça',
+            },
+            accio: {
+                delete: {
+                    ok: "S'han esborrat correctament {{num}} entrades per a la integració amb codi {{codi}}",
+                }
             },
         },
         unitatOrganitzativa: {
@@ -1334,6 +1340,10 @@ const translationCa = {
             alert: "La unitat: {{unitat}} de la bústia: {{bustia}}",
             newUnitats: "Noves unitats",
             afectedBusties: "Altres bústies afectades",
+        },
+        TreeView: {
+            expandAll: "Expandeix tots",
+            collapseAll: "Contreu tots",
         },
     },
 };

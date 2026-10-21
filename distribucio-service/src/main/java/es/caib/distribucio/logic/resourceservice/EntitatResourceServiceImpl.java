@@ -1,10 +1,7 @@
 package es.caib.distribucio.logic.resourceservice;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -342,4 +339,16 @@ public class EntitatResourceServiceImpl extends BaseMutableResourceService<Entit
 			}
 		}
 	}
+
+    @Override
+    public Optional<EntitatResource> findByCodi(String codi) {
+        return entitatResourceRepository.findByCodi(codi)
+                .map(entity -> objectMappingHelper.newInstanceMap(entity, EntitatResource.class));
+    }
+
+    @Override
+    public Optional<EntitatResource> findByCodiDir3(String codiDir3) {
+        return entitatResourceRepository.findByCodiDir3(codiDir3)
+                .map(entity -> objectMappingHelper.newInstanceMap(entity, EntitatResource.class));
+    }
 }

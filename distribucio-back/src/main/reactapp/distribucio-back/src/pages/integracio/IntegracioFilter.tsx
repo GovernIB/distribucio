@@ -36,10 +36,7 @@ export const IntegracioFilter: React.FC<any> = (props) => {
         <StyledMuiFilter
             resourceName="monitorIntegracioResource"
             code="FILTER"
-            springFilterBuilder={(data:any) => {
-                onDataChange(data)
-                springFilterBuilder(data)
-            }}
+            springFilterBuilder={springFilterBuilder}
             {...other}
         >
             <IntegracioFilterForm />

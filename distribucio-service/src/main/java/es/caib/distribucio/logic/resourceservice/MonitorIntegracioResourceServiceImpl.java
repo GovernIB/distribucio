@@ -6,11 +6,13 @@ import es.caib.distribucio.logic.helper.EntitatHelper;
 import es.caib.distribucio.logic.helper.IntegracioHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
+import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.util.I18nUtil;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioDiagnosticDto;
 import es.caib.distribucio.logic.intf.dto.IntegracioDto;
+import es.caib.distribucio.logic.intf.model.MonitorIntegracioParamResource;
 import es.caib.distribucio.logic.intf.model.MonitorIntegracioResource;
 import es.caib.distribucio.logic.intf.resourceservice.MonitorIntegracioResourceService;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
@@ -58,6 +60,7 @@ public class MonitorIntegracioResourceServiceImpl
 
 	@PostConstruct
 	public void init() {
+		register(MonitorIntegracioResource.PERSPECTIVE_PARAMS_CODE, new ParamsPerspectiveApplicator());
 		register(MonitorIntegracioResource.ACTION_COUNT_ERRORS_CODE, new CountErrorsActionExecutor());
 		register(MonitorIntegracioResource.ACTION_INTEGRACIONS_DIAGNOSTIC_CODE, new IntegracionsDiagnosticActionExecutor());
 		register(MonitorIntegracioResource.ACTION_DIAGNOSTIC_CODE, new DiagnosticActionExecutor());
@@ -72,6 +75,20 @@ public class MonitorIntegracioResourceServiceImpl
 					entity.getEntitat().getCodi() + " - " + entity.getEntitat().getNom()));
 		}
 	}
+
+    private class ParamsPerspectiveApplicator implements PerspectiveApplicator<MonitorIntegracioResourceEntity, MonitorIntegracioResource> {
+
+        @Override
+        public void applySingle(String code, MonitorIntegracioResourceEntity entity, MonitorIntegracioResource resource) throws PerspectiveApplicationException {
+            if (!entity.getParametres().isEmpty()) {
+                resource.setParams(
+                        entity.getParametres().stream().map(param ->
+                                objectMappingHelper.newInstanceMap(param, MonitorIntegracioParamResource.class))
+                                .collect(Collectors.toList())
+                );
+            }
+        }
+    }
 
 	/**
 	 * Retorna els codis d'integració a mostrar com a pestanyes ({@link IntegracioHelper#findAll()},

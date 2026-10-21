@@ -10,6 +10,7 @@ import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.PrincipalTipusEnumDto;
+import es.caib.distribucio.logic.intf.resourcevalidation.EntitatValid;
 import es.caib.distribucio.logic.intf.resourcevalidation.ValidImageFile;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -102,6 +103,7 @@ import java.util.List;
 						formClass = EntitatResource.FormPermisEsborrar.class)
 		}
 )
+@EntitatValid
 public class EntitatResource extends BaseResource<Long> {
 
 	public static final String FILTER_CODE = "FILTER";

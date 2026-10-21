@@ -41,7 +41,7 @@ public class EntitatEntity extends DistribucioAuditable<Long> {
 	private String descripcio;
 	@Column(name = "cif", length = 9, nullable = false)
 	private String cif;
-	@Column(name = "codi_dir3", length = 9, nullable = false)
+	@Column(name = "codi_dir3", length = 9, nullable = false, unique = true)
 	private String codiDir3;
 	@Column(name = "fecha_actualizacion")
 	Timestamp fechaActualizacion;

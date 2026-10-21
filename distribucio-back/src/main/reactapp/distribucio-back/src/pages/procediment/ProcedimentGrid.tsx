@@ -37,7 +37,6 @@ export const ProcedimentGrid: React.FC = () => {
             <ScreenFrame icon={icons.procediment} title={t('page.procediments.grid.title')}>
                 <ProcedimentFilter onSpringFilterChange={setSpringFilter} />
                 <StyledMuiGrid
-                    toolbarHideCreate
                     resourceName="procedimentResource"
                     apiRef={apiRef}
                     columns={columns}
@@ -60,12 +59,17 @@ export const ProcedimentGrid: React.FC = () => {
                         },
                     ]}
                     paginationActive
-                    popupEditActive
-                    popupEditFormDialogResourceTitle={t('page.procediments.accio.actualitzarTots.title')}
-                    rowHideUpdateButton
-                    rowHideDeleteButton
                     rowAdditionalActions={accions}
                     defaultSortModel={sortModel}
+                    readOnly
+                    // ocultar acciones para admin lectura
+                    initialState={{
+                        columns: {
+                            columnVisibilityModel: {
+                                [' ']: isAdmin,
+                            }
+                        }
+                    }}
                 />
                 {contentActualitzarTots}
             </ScreenFrame>

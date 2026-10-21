@@ -42,6 +42,8 @@ public class ConfigResourceServiceImpl extends BaseMutableResourceService<Config
 
     @Override
     protected void afterConversion(ConfigResourceEntity entity, ConfigResource resource) {
+        if (Objects.equals(resource.getValue(), "null"))
+            resource.setValue(null);
         if ("CREDENTIALS".equals(resource.getType().getId()) && resource.getValue() != null) {
             resource.setValue( "********" );
         }

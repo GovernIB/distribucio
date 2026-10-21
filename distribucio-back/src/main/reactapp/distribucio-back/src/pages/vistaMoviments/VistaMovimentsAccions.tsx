@@ -126,7 +126,6 @@ export const useVistaMovimentsMassiveAccions = (refresh?: () => void) => {
         apiFindAll({ filter: builder.inside("id", ids.map(id => `'${id}'`)), unpaged: true })
             .then((response) => {
                 const idsUnicos = [...new Set(response.rows.map(mov => mov.idRegistre))];
-                console.log("idsUnicos", idsUnicos)
                 resolve(idsUnicos)
             })
             .catch(reject)

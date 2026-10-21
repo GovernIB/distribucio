@@ -3,7 +3,7 @@ package es.caib.distribucio.logic.intf.model;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceAccessConstraint;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceArtifact;
 import es.caib.distribucio.logic.intf.base.annotation.ResourceConfig;
-import es.caib.distribucio.logic.intf.base.model.Resource;
+import es.caib.distribucio.logic.intf.base.model.BaseResource;
 import es.caib.distribucio.logic.intf.base.model.ResourceArtifactType;
 import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Sort;
 
 import java.io.Serializable;
@@ -54,6 +55,9 @@ import java.util.Map;
 						type = ResourceArtifactType.FILTER,
 						code = MonitorIntegracioResource.FILTER_CODE,
 						formClass = MonitorIntegracioResource.FormFilter.class),
+				@ResourceArtifact(
+						type = ResourceArtifactType.PERSPECTIVE,
+						code = MonitorIntegracioResource.PERSPECTIVE_PARAMS_CODE),
 				@ResourceArtifact(
 						type = ResourceArtifactType.ACTION,
 						code = MonitorIntegracioResource.ACTION_COUNT_ERRORS_CODE,
@@ -102,15 +106,15 @@ import java.util.Map;
 						})
 		}
 )
-public class MonitorIntegracioResource implements Resource<Long> {
+public class MonitorIntegracioResource extends BaseResource<Long> {
 
 	public static final String FILTER_CODE = "FILTER";
+	public static final String PERSPECTIVE_PARAMS_CODE = "PARAMS";
 	public static final String ACTION_COUNT_ERRORS_CODE = "COUNT_ERRORS";
 	public static final String ACTION_INTEGRACIONS_DIAGNOSTIC_CODE = "INTEGRACIONS_DIAGNOSTIC";
 	public static final String ACTION_DIAGNOSTIC_CODE = "DIAGNOSTIC";
 	public static final String ACTION_ESBORRAR_CODE = "ESBORRAR";
 
-	private Long id;
 	private String codi;
 	private Date data;
 	private String descripcio;
@@ -124,10 +128,7 @@ public class MonitorIntegracioResource implements Resource<Long> {
 	private String excepcioStacktrace;
 	private String numeroRegistre;
 
-	@Override
-	public Long getId() {
-		return id;
-	}
+    @Transient private List<MonitorIntegracioParamResource> params;
 
 	/**
 	 * Camps del filtre del llistat, reutilitzats també com a paràmetres de l'acció

@@ -354,16 +354,12 @@ public class MonitorIntegracioServiceImpl implements MonitorIntegracioService {
 	}
 
 	private void crearEsborrarArxiu() {
-		byte[] array = new byte[7]; 
-		byte[] array2 = new byte[5]; 
-	    new Random().nextBytes(array);
-	    new Random().nextBytes(array2);
-	    String aleatori_1 = new String(array, Charset.forName("UTF-8"));	
-	    String aleatori_2 = new String(array2, Charset.forName("UTF-8"));	
+	    String registreNumero = "DIS_diagnostic_registreNumero_" + new Date().getTime();
+        String expedientNumero = "DIS_diagnostic_expedientNumero_" + new Date().getTime();
 	    
-	    String codContingu = pluginHelper.saveRegistreAsExpedientInArxiu(aleatori_1, aleatori_2, "LIM");
+	    String codContingu = pluginHelper.saveRegistreAsExpedientInArxiu(registreNumero, expedientNumero, "LIM");
 	 // PENDENT DE REVISAR COM OBTENIR EL NUMERO DE REGISTRE
-		pluginHelper.arxiuExpedientEliminar(codContingu,"");
+		pluginHelper.arxiuExpedientEliminar(codContingu,registreNumero);
 	}
 
 	private void provaGestioDocumental() {

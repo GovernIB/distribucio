@@ -5,10 +5,12 @@ import es.caib.distribucio.logic.intf.base.annotation.ResourceConfig;
 import es.caib.distribucio.logic.intf.base.model.BaseResource;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.resourcevalidation.AclValid;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldNameConstants;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -19,6 +21,7 @@ import java.util.Base64;
 @Getter
 @Setter
 @NoArgsConstructor
+@FieldNameConstants
 @ResourceConfig(
 		accessConstraints = {
                 @ResourceAccessConstraint(
@@ -32,6 +35,7 @@ import java.util.Base64;
 				),
 		}
 )
+@AclValid
 public class AclEntryResource extends BaseResource<String> {
 
 	@NotNull
