@@ -34,29 +34,36 @@ export const IntegracioStacktrace: React.FC<IntegracioStacktraceProps> = ({
     const { t } = useTranslation();
     const { temporalMessageShow } = useBaseAppContext();
 
+    const fallbackCopy = () => {
+        const temp = Object.assign(document.createElement('textarea'), {
+            value: stacktrace,
+            style: 'position:fixed;opacity:0'
+        });
+
+        document.body.appendChild(temp);
+        temp.select();
+
+        try {
+            document.execCommand('copy');
+            temporalMessageShow(null, t('common.copiat'), 'success');
+        } catch (error:any) {
+            temporalMessageShow(null, error?.message, 'error');
+        }
+
+        temp.remove();
+    }
     const copyStacktrace = () => {
-        navigator.clipboard?.writeText(stacktrace)
-            .then(() => {
-                temporalMessageShow(null, t('common.copiat'), 'success');
-            })
-            .catch((error) => {
-                const temp = Object.assign(document.createElement('textarea'), {
-                    value: stacktrace,
-                    style: 'position:fixed;opacity:0'
-                });
-
-                document.body.appendChild(temp);
-                temp.select();
-
-                try {
-                    document.execCommand('copy');
+        if (navigator.clipboard?.writeText) {
+            navigator.clipboard?.writeText(stacktrace)
+                .then(() => {
                     temporalMessageShow(null, t('common.copiat'), 'success');
-                } catch (err) {
-                    temporalMessageShow(null, error?.message, 'error');
-                }
-
-                temp.remove();
-            });
+                })
+                .catch(() => {
+                    fallbackCopy()
+                });
+        } else {
+            fallbackCopy()
+        }
     };
 
     return (
