@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { MuiDialog, useCloseDialogButtons, useResourceApiService } from 'reactlib';
 import Load from '../../../components/Load';
 import BustiaContingutDetailContent from './BustiaContingutDetailContent';
-import {useBasicDetail} from '../../registre/detail/RegistreDetail';
+import {useBasicDetail} from '../../registre/detail/useRegistreDetail';
 
 /** "Detalls" del llistat de continguts: (Bústia -> bustiaAdminDetall.jsp, Registre -> registreDetall.jsp). */
 export const useContingutDetailDialog = () => {

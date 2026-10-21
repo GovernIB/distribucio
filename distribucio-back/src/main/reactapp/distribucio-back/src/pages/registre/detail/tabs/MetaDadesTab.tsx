@@ -1,13 +1,13 @@
-import StyledMuiGrid from "../../../components/StyledMuiGrid.tsx";
+import StyledMuiGrid from "../../../../components/StyledMuiGrid.tsx";
 import {FormField, MuiForm, useBaseAppContext, useFormApiRef, useFormContext, useResourceApiService} from "reactlib";
 import {useMemo} from "react";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import Icon from "@mui/material/Icon";
-import Load from "../../../components/Load.tsx";
-import * as builder from '../../../util/springFilterUtils';
-import {fieldType} from "../../metadada/MetaDadaGrid.tsx";
-import { icons } from '../../../util/icons';
+import Load from "../../../../components/Load.tsx";
+import * as builder from '../../../../util/springFilterUtils';
+import {fieldType} from "../../../metadada/MetaDadaGrid.tsx";
+import { icons } from '../../../../util/icons';
 import Box from "@mui/material/Box";
 
 const DadaField = ({ index, metaDada, value, onChange, required, ...other }: any) => {
@@ -141,7 +141,7 @@ const columns = [
     { field: 'nom', flex: 1 },
 ]
 const sortModel:any = [{ field: 'ordre', sort: 'asc' }]
-export const MetaDadesForm = ({entity}:any) => {
+export const MetaDadesTab = ({entity}:any) => {
     const { t } = useBaseAppContext();
     const apiRef = useFormApiRef();
 

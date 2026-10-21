@@ -5,7 +5,7 @@ import { iniciaDescargaBlob } from '../../util/downloadUtils';
 import { ROLE_ADMIN, useDistribucioContext } from '../../components/DistribucioContext';
 import type { MassiveActionProps } from '../../components/MassiveActionSelector';
 import { useExecucioMassivaGrid } from '../execucioMassiva/ExecucioMassivaGrid';
-import {useRegistreDetail} from '../registre/detail/RegistreDetail';
+import {useRegistreDetail} from '../registre/detail/useRegistreDetail';
 import { icons } from '../../util/icons';
 
 const ACTION_GUARDAR_DEFINITIU = 'GUARDAR_DEFINITIU';

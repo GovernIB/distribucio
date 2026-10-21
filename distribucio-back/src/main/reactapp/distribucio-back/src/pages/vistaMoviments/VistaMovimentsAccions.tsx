@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import {useBaseAppContext, useResourceApiService} from 'reactlib';
 import useContingutHistorialDialog from '../contingut/actions/ContingutHistorialDialog.tsx';
 import { useAlertes } from '../registre/detail/Alertes.tsx';
-import {useRegistreDetail} from '../registre/detail/RegistreDetail.tsx';
+import {useRegistreDetail} from '../registre/detail/useRegistreDetail.tsx';
 import useEnviarViaEmail from "../registre/actions/EnviarViaEmail.tsx";
 import {useActions} from "../registre/detail/RegistreActions.tsx";
 import {Divider} from "@mui/material";

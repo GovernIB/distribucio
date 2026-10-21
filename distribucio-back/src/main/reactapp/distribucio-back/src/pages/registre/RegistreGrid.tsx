@@ -5,13 +5,14 @@ import { icons } from '../../util/icons';
 import StyledMuiGrid from '../../components/StyledMuiGrid.tsx';
 import RegistreFilter from './RegistreFilter.tsx';
 import BustiaPathCell from '../../components/BustiaPathCell.tsx';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Box, Icon, Tooltip } from '@mui/material';
 import { useCommentsColumn } from '../../components/CommentsColumn.tsx';
 import { RegistreEstat } from '../../components/RegistreEstat.tsx';
 import { useRegistreActions, useRegistreMassiveActions } from './detail/RegistreActions.tsx';
 import { useGridApiRef } from '@mui/x-data-grid-pro';
-import { useRegistreDetail } from './detail/RegistreDetail.tsx';
+import { useRegistreDetail, useBasicDetail } from './detail/useRegistreDetail.tsx';
+import { useSearchParams } from 'react-router-dom';
 import Load from '../../components/Load.tsx';
 import IconButton from '@mui/material/IconButton';
 import { useConfig } from '../../components/ConfigProvider.tsx';
@@ -238,6 +239,26 @@ export const RegistreGrid = () => {
         namedQueries,
     });
 
+    // Enllaç directe a una anotació: /registre?registreID=XXX
+    const { handleOpen: handleOpenBasic, dialog: dialogBasic } = useBasicDetail();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const registreIdParam = searchParams.get('registreID');
+    const registreIdObert = useRef<string | null>(null);
+    useEffect(() => {
+        if (filtreLlest && registreIdParam && registreIdParam !== registreIdObert.current) {
+            registreIdObert.current = registreIdParam;
+            handleOpenBasic(registreIdParam, undefined);
+            // es neteja el paràmetre perquè un refresc de la pàgina no torni a obrir el detall
+            setSearchParams(
+                (prev) => {
+                    prev.delete('registreID');
+                    return prev;
+                },
+                { replace: true }
+            );
+        }
+    }, [registreIdParam, filtreLlest]);
+
     const { actions, components } = useRegistreActions(refresh);
     const { actions: massiveActions, components: massiveComponents } = useRegistreMassiveActions();
 
@@ -278,6 +299,11 @@ export const RegistreGrid = () => {
                         // filterCount={(num) => num + (namedQueries.length || 0)}
                         // toolbarShowFilterCount
 
+                        onRowClick={(params: any, event: any) => {
+                            // el checkbox de selecció i el menú d'accions no han d'obrir el detall
+                            if (event?.target?.closest?.('.MuiCheckbox-root, [data-field="actions"], [data-field="__check__"]')) return;
+                            handleDetail(params?.row?.id, params?.row);
+                        }}
                         rowAdditionalActions={additionalActions}
                         // reactlib crea la columna del menú d'accions amb 100px fixos i només hi va el
                         // botó "⋮": s'estreny com a RIPEA (ExpedientGrid) per deixar més espai al text.
@@ -295,6 +321,7 @@ export const RegistreGrid = () => {
                 {components}
                 {massiveComponents}
                 {dialogDetail}
+                {dialogBasic}
                 {component}
             </ScreenFrame>
         </GridPage>

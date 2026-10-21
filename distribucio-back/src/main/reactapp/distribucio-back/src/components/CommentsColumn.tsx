@@ -37,9 +37,11 @@ export const useCommentsColumn = (options: CommentsColumnOptions = {}) => {
         renderCell: (params: any) => (
             <IconButton
                 title={t('component.CommentDialog.label')}
-                onClick={() =>
-                    handleOpen(getId ? getId(params.row) : params.id, getName ? getName(params.row) : params.row.nom)
-                }
+                onClick={(e) => {
+                    // evita que el clic arribi a la fila (onRowClick)
+                    e.stopPropagation();
+                    handleOpen(getId ? getId(params.row) : params.id, getName ? getName(params.row) : params.row.nom);
+                }}
             >
                 <Badge badgeContent={params.formattedValue} color="primary" showZero>
                     <Icon>{icons.comentaris}</Icon>
