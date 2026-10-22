@@ -12,7 +12,7 @@ const ReglaFilterForm: React.FC = () => {
         <>
             {!data?.advanced && (
                 <>
-                    <GridFormField size={{ xs: 12, sm: 6, md: 3.3 }} name="nom" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3.8 }} name="nom" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 1.7 }} name="codiAssumpte" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2.2 }} name="codiSIA" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 1.7 }} name="codiServei" />

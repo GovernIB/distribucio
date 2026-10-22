@@ -2,6 +2,7 @@ import React from 'react';
 import StyledMuiFilter from '../../components/StyledMuiFilter';
 import GridFormField from '../../components/GridFormField';
 import * as builder from '../../util/springFilterUtils';
+import { useFormContext } from 'reactlib';
 
 /**
  * Codis curts (TFxx) que fa servir la BBDD per a cada tipus de firma -- veure ArxiuConversions al
@@ -31,17 +32,32 @@ const TIPUS_FIRMA_CODIS: Record<string, string> = {
 const numeroCopiaValor = (value: string): number => Number(value.split('_')[1]);
 
 const AnnexFilterForm: React.FC = () => {
+    const { data } = useFormContext();
+
     return (
         <>
-            <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="numero" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="numeroCopia" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="arxiuEstat" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="tipusFirma" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="fitxerTipusMime" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="titol" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.4 }} name="dataAnotacioInici" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.4 }} name="dataAnotacioFi" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.95 }} name="fitxerNom" />
+            {!data?.advanced && (
+                <>
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.75 }} name="numero" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.75 }} name="titol" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="arxiuEstat" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 1.75 }} name="dataAnotacioInici" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 1.75 }} name="dataAnotacioFi" />
+                </>
+            )}
+            {data?.advanced && (
+                <>
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="numero" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="numeroCopia" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="arxiuEstat" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="tipusFirma" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="fitxerTipusMime" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="titol" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="dataAnotacioInici" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="dataAnotacioFi" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="fitxerNom" />
+                </>
+            )}
         </>
     );
 };
@@ -65,6 +81,7 @@ export const AnnexFilter: React.FC<any> = (props) => {
             resourceName="registreAnnexResource"
             code="FILTER"
             springFilterBuilder={springFilterBuilder}
+            advancedSearch
             {...props}
         >
             <AnnexFilterForm />

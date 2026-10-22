@@ -7,7 +7,7 @@ import { icons } from '../../util/icons';
 const BustiaFilterForm: React.FC = () => {
     return (
         <>
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.25 }} name="nom" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="nom" />
             <GridFormField size={{ xs: 12, sm: 6, md: 2.75 }} name="unitatSuperior" />
             <GridFormField size={{ xs: 12, sm: 6, md: 2.75 }} name="unitatOrganitzativa" />
             <GridFormField size={{ xs: 12, sm: 6, md: 1 }} type={'checkbox'} name="pendent" />

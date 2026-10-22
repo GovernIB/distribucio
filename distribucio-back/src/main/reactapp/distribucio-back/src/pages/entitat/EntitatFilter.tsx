@@ -8,14 +8,14 @@ import * as builder from '../../util/springFilterUtils';
  * (artefacte FILTER d'EntitatResource, formClass EntitatResource.FormFilter), per això
  * només cal indicar-hi el `name`.
  *
- * Les mides `md` sumen 9.6 perquè el bloc de botons de StyledMuiFilter (md 2.4) càpiga
+ * Les mides `md` sumen 11.5 perquè el bloc de botons de StyledMuiFilter (md 0.5) càpiga
  * a la mateixa fila; si se'n canvia alguna cal mantenir la suma.
  */
 const EntitatFilterForm: React.FC = () => {
     return (
         <>
             <GridFormField size={{ xs: 12, sm: 6, md: 2.1 }} name="codi" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 3.4 }} name="nom" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 3.65 }} name="nom" />
             <GridFormField size={{ xs: 12, sm: 6, md: 2.1 }} name="cif" />
             <GridFormField size={{ xs: 12, sm: 6, md: 2.1 }} name="codiDir3" />
             <GridFormField size={{ xs: 12, sm: 6, md: 1.55 }} name="activa" />

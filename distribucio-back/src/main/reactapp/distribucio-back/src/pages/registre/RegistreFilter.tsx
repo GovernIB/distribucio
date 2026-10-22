@@ -18,12 +18,12 @@ const RegistreFilterForm: React.FC<any> = ({ isAdmin }: any) => {
         <>
             {!data?.advanced && (
                 <>
-                    <GridFormField size={{ xs: 12, sm: 6, md: 4 }} name="numero" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 4 }} name="titol" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 4 }} name="interessat" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.25 }} name="numero" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="titol" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.25 }} name="interessat" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="dataRecepcioInici" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="dataRecepcioFi" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="estat" />
+                    {/* <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="dataRecepcioFi" /> */}
+                    <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="estat" />
                 </>
             )}
             {data?.advanced && (
@@ -59,7 +59,7 @@ const RegistreFilterForm: React.FC<any> = ({ isAdmin }: any) => {
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="sobreescriure" hidden={!isAdmin} />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="nombreAnnexes" />
                     <GridFormField
-                        size={{ xs: 12, sm: 6, md: 3 }}
+                        size={{ xs: 12, sm: 6, md: 3.5 }}
                         name="procediment"
                         valueField={'codiSia'}
                         additionalOpctions={(q) =>

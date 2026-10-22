@@ -36,16 +36,16 @@ const filterStyle = { className: 'styledFilter' };
  * Columnes (de 12) que ocupa el bloc de botons del filtre, per punt de ruptura. És l'única font de
  * les mides del bloc: es pot ajustar tot des d'aquí.
  *
- * El bloc simple només duu el botó "Neteja" (amb icona): amb `md: 0.75` a ~900px d'amplada són uns
- * 25px i la icona (24px) hi queda justa, 0.75 és el mínim còmode. Amb la cerca avançada (`advancedSearch`)
+ * El bloc simple només duu el botó "Neteja" (amb icona): amb `md: 0.5` a ~900px d'amplada són uns
+ * 17px i la icona hi queda justa (cal que el botó no tingui padding). Amb la cerca avançada (`advancedSearch`)
  * n'hi ha dos (commutador + "Neteja"), tots dos només amb icona.
  *
  * Els camps de cada filtre han de sumar `12 - FILTER_BUTTONS_COLUMNS.md` a `md` (o
  * `12 - FILTER_BUTTONS_COLUMNS_ADVANCED.md` amb cerca avançada) a l'última fila perquè el bloc càpiga
  * a la mateixa fila.
  */
-export const FILTER_BUTTONS_COLUMNS = { xs: 12, sm: 6, md: 0.75 } as const;
-export const FILTER_BUTTONS_COLUMNS_ADVANCED = { xs: 12, sm: 6, md: 1.5 } as const;
+export const FILTER_BUTTONS_COLUMNS = { xs: 12, sm: 6, md: 0.5 } as const;
+export const FILTER_BUTTONS_COLUMNS_ADVANCED = { xs: 12, sm: 6, md: 1 } as const;
 
 // Amplada (px) per sota de la qual els botons d'acció del filtre avançat es redueixen a
 // només icona, perquè el text no quedi retallat dins del seu contenidor.

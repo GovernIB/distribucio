@@ -6,10 +6,10 @@ import * as builder from '../../util/springFilterUtils';
 const BackofficeFilterForm: React.FC = () => {
     return (
         <>
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.8 }} name="codi" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.8 }} name="nom" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.8 }} name="url" />
-            <GridFormField size={{ xs: 12, sm: 6, md: 2.85 }} name="tipus" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="codi" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="nom" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="url" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="tipus" />
         </>
     );
 };

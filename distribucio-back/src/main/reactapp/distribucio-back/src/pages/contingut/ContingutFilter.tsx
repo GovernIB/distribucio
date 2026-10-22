@@ -6,7 +6,7 @@ import * as builder from '../../util/springFilterUtils';
 const ContingutFilterForm: React.FC = () => {
     return (
         <>
-            <GridFormField size={{ xs: 12, sm: 6, md: 3.25 }} name="nom" />
+            <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="nom" />
             <GridFormField size={{ xs: 12, sm: 6, md: 1.9 }} name="tipus" />
             <GridFormField size={{ xs: 12, sm: 6, md: 1.9 }} name="dataCreacioInici" />
             <GridFormField size={{ xs: 12, sm: 6, md: 1.9 }} name="dataCreacioFi" />

@@ -9,7 +9,7 @@ const ExecucioMassivaFilterForm: React.FC = () => {
     const {data} = useFormContext()
     return (
         <>
-            <GridFormField size={{ xs: 12, sm: 6, md: 5.6 }} name="usuari" disabled={data.isUser} />
+            <GridFormField size={{ xs: 12, sm: 6, md: 5.85 }} name="usuari" disabled={data.isUser} />
             <GridFormField size={{ xs: 12, sm: 6, md: 5.65 }} name="tipus" />
         </>
     );
