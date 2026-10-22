@@ -44,11 +44,6 @@ const UsageBar: React.FC<{ label?: string; used?: number; total?: number; detail
 
 const detallMemoria = (memoria?: MemoriaUs) => `${memoria?.usadaFormatada ?? '-'} / ${memoria?.totalFormatada ?? '-'}`;
 
-/** Camp de la fitxa: mateixa presentació (títol en negreta) per a tots. */
-const Camp: React.FC<React.ComponentProps<typeof DetailCardContent>> = (props) => (
-    <DetailCardContent componentTitleProps={{ fontWeight: 'bold' }} {...props} />
-);
-
 /** Fila etiqueta + valor a la mateixa línia */
 const Fila: React.FC<{ title: string; children?: React.ReactNode }> = ({ title, children }) => (
     <ContenidoData
@@ -74,35 +69,35 @@ export const MonitorSistemaSistema: React.FC<{ informacio?: InformacioSistema }>
         <Box>
             <Grid container spacing={1}>
                 <DetailCard>
-                    <Camp size={4} sx={{ mt: 0 }} title={detall('sistemaOperatiu')}>
+                    <DetailCardContent size={4} sx={{ mt: 0 }} title={detall('sistemaOperatiu')}>
                         {informacio?.sistemaOperatiu}
-                    </Camp>
-                    <Camp size={4} sx={{ mt: 0 }} title={detall('arquitectura')}>
+                    </DetailCardContent>
+                    <DetailCardContent size={4} sx={{ mt: 0 }} title={detall('arquitectura')}>
                         {informacio?.arquitectura}
-                    </Camp>
-                    <Camp size={4} sx={{ mt: 0 }} title={detall('processadors')}>
+                    </DetailCardContent>
+                    <DetailCardContent size={4} sx={{ mt: 0 }} title={detall('processadors')}>
                         {informacio?.processadors}
-                    </Camp>
-                    <Camp size={4} title={detall('versioJboss')}>
+                    </DetailCardContent>
+                    <DetailCardContent size={4} title={detall('versioJboss')}>
                         {informacio?.versioJboss}
-                    </Camp>
-                    <Camp size={4} title={detall('servidorAplicacions')}>
+                    </DetailCardContent>
+                    <DetailCardContent size={4} title={detall('servidorAplicacions')}>
                         {informacio?.servidorAplicacions}
-                    </Camp>
-                    <Camp size={4} title={detall('tempsFuncionant')}>
+                    </DetailCardContent>
+                    <DetailCardContent size={4} title={detall('tempsFuncionant')}>
                         {informacio?.tempsFuncionant}
-                    </Camp>
-                    <Camp size={4} title={detall('jvm')}>
+                    </DetailCardContent>
+                    <DetailCardContent size={4} title={detall('jvm')}>
                         {informacio?.jvm}
-                    </Camp>
-                    <Camp size={4} title={detall('versioJdk')}>
+                    </DetailCardContent>
+                    <DetailCardContent size={4} title={detall('versioJdk')}>
                         {informacio?.versioJdk}
-                    </Camp>
-                    <Camp size={4} title={detall('dataArrencada')}>
+                    </DetailCardContent>
+                    <DetailCardContent size={4} title={detall('dataArrencada')}>
                         {informacio?.dataArrencada}
-                    </Camp>
+                    </DetailCardContent>
 
-                    <Camp title={detall('memoriaJvm')} isObject>
+                    <DetailCardContent title={detall('memoriaJvm')} isObject>
                         <Grid container alignItems="center">
                             <Fila title={detall('filsActius')}>{informacio?.filsActius}</Fila>
                             <Fila title={detall('gcExecucions')}>{informacio?.gcExecucions}</Fila>
@@ -122,9 +117,9 @@ export const MonitorSistemaSistema: React.FC<{ informacio?: InformacioSistema }>
                                 detail={detallMemoria(informacio?.memoriaJvm)}
                             />
                         </Grid>
-                    </Camp>
+                    </DetailCardContent>
 
-                    <Camp title={detall('discos')} isObject>
+                    <DetailCardContent title={detall('discos')} isObject>
                         <Grid container alignItems="center">
                             <Fila title={detall('nuclis')}>{informacio?.nuclis}</Fila>
                             <Fila title={detall('carregaMitjana')}>{informacio?.carregaMitjana}</Fila>
@@ -140,7 +135,7 @@ export const MonitorSistemaSistema: React.FC<{ informacio?: InformacioSistema }>
                                 />
                             ))}
                         </Grid>
-                    </Camp>
+                    </DetailCardContent>
                 </DetailCard>
             </Grid>
         </Box>

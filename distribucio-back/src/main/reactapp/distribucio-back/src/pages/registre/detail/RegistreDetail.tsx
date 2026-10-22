@@ -2,7 +2,7 @@ import {
     useBaseAppContext,
     useDetailContext,
 } from "reactlib";
-import {Badge, Box, Icon, IconButton, Typography} from "@mui/material";
+import {Badge, Box, Breadcrumbs, Icon, IconButton, Typography} from "@mui/material";
 import TabComponent from "../../../components/TabComponent.tsx";
 import {useEffect, useMemo, useState} from "react";
 import {useCommentDialog} from "../../CommentDialog.tsx";
@@ -25,6 +25,32 @@ import {ProcessAuto} from "./tabs/ProcesAutoTab.tsx";
 import {ProcessBack} from "./tabs/ProcesBackTab.tsx";
 import {MetaDadesTab} from "./tabs/MetaDadesTab.tsx";
 import {Copies} from "./tabs/CopiesTab.tsx";
+
+const RegistreDetailHeader = ({data}:any) => (
+    <Breadcrumbs
+        separator={'/'}
+        sx={{
+            px: 1, py: 0.75, mb: 1,
+            borderBottom: 1, borderColor: 'divider',
+            color: 'text.secondary',
+            fontSize: '0.875rem',
+        }}
+    >
+        <Box display={'flex'} alignItems={'center'} gap={0.5}>
+            <Icon fontSize={'small'}>{icons.unitatOrganitzativa}</Icon>
+            {data.unitatAdministrativaDescripcio}
+        </Box>
+        <Box display={'flex'} alignItems={'center'} gap={0.5}>
+            <Icon fontSize={'small'}>{icons.bustia}</Icon>
+            {data.pare?.description}
+        </Box>
+        <Typography variant={'inherit'} fontWeight={500} color={'text.primary'}>
+            {data.nom}
+        </Typography>
+    </Breadcrumbs>
+);
+
+const headerButtonSx = { height: 32, minHeight: 32, px: 1.25, fontSize: '0.8125rem', '& .MuiIcon-root': { fontSize: 18 } }
 
 const RegistreDetail = (props:any) => {
     const { t } = useBaseAppContext();
@@ -114,14 +140,9 @@ const RegistreDetail = (props:any) => {
 
     return (
         <>
-            <Box display={'flex'} alignItems={'center'} flexWrap={'wrap'} bgcolor={'greyBackground'} sx={{ p: 1 }}>
-                &nbsp;/&nbsp; <Icon fontSize={'small'}>{icons.unitatOrganitzativa}</Icon>{' '}
-                {data.unitatAdministrativaDescripcio}
-                &nbsp;/&nbsp; <Icon fontSize={'small'}>{icons.bustia}</Icon> {data.pare?.description}
-                &nbsp;/&nbsp; {data.nom}
-            </Box>
-
+            <RegistreDetailHeader data={data}/>
             <TabComponent
+                tabs={tabs}
                 variant="scrollable"
                 headerAdditionalData={
                     <Box display={'flex'} justifyContent={'end'} gap={1}>
@@ -139,7 +160,7 @@ const RegistreDetail = (props:any) => {
                             </Button>
                         )}
                         {data.pendentExecucioMassiva && (
-                            <Icon title={t('page.registre.avisos.pendentExecucioMassiva')} color={'warning'}>
+                            <Icon title={t('page.registre.avisos.pendentExecucioMassiva')} color={'warning'} sx={{ alignSelf: 'center'}}>
                                 {icons.programat}
                             </Icon>
                         )}
@@ -176,14 +197,11 @@ const RegistreDetail = (props:any) => {
                         />
                     </Box>
                 }
-                tabs={tabs}
             />
             {component}
             {actionComponents}
         </>
     );
 }
-
-const headerButtonSx = { height: 32, minHeight: 32, px: 1.25, fontSize: '0.8125rem', '& .MuiIcon-root': { fontSize: 18 } }
 
 export default RegistreDetail;

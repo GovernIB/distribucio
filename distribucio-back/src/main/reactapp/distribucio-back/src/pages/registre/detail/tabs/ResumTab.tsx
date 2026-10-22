@@ -20,7 +20,7 @@ export const Resum = ({entity}:any) => {
             <DetailField size={6} name={isAdmin ?"identificador" :"numero"}
                          formatterValue={(v:any) =>
                              <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'}>
-                                 <Typography variant="inherit" color="textSecondary">
+                                 <Typography variant="inherit" color="text.primary">
                                      {v}
                                  </Typography>
                                  <IconButton
@@ -37,7 +37,7 @@ export const Resum = ({entity}:any) => {
             <DetailField size={12} name={"extracte"} inline/>
             <DetailField size={6} name={"procediment"} isObject inline hidden={entity.serveiCodi}>
                 <Box display={'flex'}>
-                    <Typography variant="inherit" color="textSecondary">
+                    <Typography variant="inherit" color="text.primary">
                         {entity.procediment?.description}
                     </Typography>
                     {entity.siaExtingit && <Icon title={t('page.procediments.extingit')} fontSize={'small'} color={'warning'}>{icons.advertencia}</Icon>}
@@ -45,7 +45,7 @@ export const Resum = ({entity}:any) => {
             </DetailField>
             <DetailField size={6} name={"servei"} isObject inline hidden={!entity.serveiCodi}>
                 <Box display={'flex'} >
-                    <Typography variant="inherit" color="textSecondary">
+                    <Typography variant="inherit" color="text.primary">
                         {entity.servei?.description}
                     </Typography>
                     {entity.siaExtingit && <Icon title={t('page.serveis.extingit')} fontSize={'small'} color={'warning'}>{icons.advertencia}</Icon>}

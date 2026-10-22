@@ -188,7 +188,7 @@ export const useRegistreDetail = (options:RegistreDetailOptions) => {
             }}
         >
             <Load value={detailId}>
-                <Box sx={{ position: 'relative' }}>
+                <Box sx={{ position: 'relative', height: 600 }}>
                     <MuiDetail
                         apiRef={apiDetialRef}
                         id={detailId}

@@ -78,7 +78,7 @@ const useExcepcioDetail = () => {
                     hiddenToolbar
                     componentProps={{ sx: { mt: 0 } }}
                 >
-                    <DetailCard sx={{ mb: 2 }}>
+                    <DetailCard cardProps={{ mb: 2 }}>
                         <DetailField
                             name="data"
                             size={6}

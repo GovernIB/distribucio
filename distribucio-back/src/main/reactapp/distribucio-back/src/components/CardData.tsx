@@ -35,6 +35,8 @@ type ContenidoDataProps = {
     hiddenIfEmpty?: boolean;
 }
 type DetailCardContentProps = ContenidoDataProps & {
+    /** Amplada fixa (px) de l'etiqueta, per alinear els valors (amb titleSize 'auto'); com a màxim el 45% del camp. */
+    labelWidth?: number;
     sx?: any;
     isObject?:boolean;
 }
@@ -160,11 +162,13 @@ export const DetailExpandCard = (props: DetailCardProps) => {
 };
 
 export const DetailCardContent = (props:DetailCardContentProps) => {
-    const {title, children, isObject, size = 12, titleSize = 12, textSize = 12, componentTitleProps, componentTextProps, hidden, hiddenIfEmpty, ...other} = props;
+    const {title, children, isObject, size = 12, titleSize = 12, textSize = 12, labelWidth, componentTitleProps, componentTextProps, hidden, hiddenIfEmpty, ...other} = props;
 
     if (hidden || (hiddenIfEmpty && isEmpty(children))) {
         return <></>;
     }
+
+    const compartitFila = size !== 12;
 
     return (
         <Grid
@@ -173,28 +177,30 @@ export const DetailCardContent = (props:DetailCardContentProps) => {
             direction={'row'}
             {...other}
             sx={{
-                p: 1,
-                border: '1px solid',
-                mt: '-1px',
+                py: 0.75,
+                px: 2,
+                borderBottom: '1px solid',
                 borderColor: other?.sx?.borderColor || 'divider',
+                // flexGrow: un camp que queda sol a la fila (p. ex. perquè el seu company està ocult) l'omple tota
+                ...(compartitFila && { borderLeft: '1px solid', borderLeftColor: 'divider', ml: '-1px', flexGrow: 1 }),
                 ...(other?.sx ?? {}),
             }}
         >
-            <Grid size={titleSize}>
+            <Grid size={titleSize} sx={labelWidth ? { width: labelWidth, maxWidth: '45%', flexShrink: 0, pr: 1 } : undefined}>
                 <Typography
                     variant={'body1'}
-                    sx={{ color: (theme) => (theme.palette.mode === 'dark' ? 'primary.light' : 'primary.main'), ...componentTitleProps }}
+                    sx={{ fontWeight: 'bold', color: 'text.primary', ...componentTitleProps }}
                 >
                     {title}
                 </Typography>
             </Grid>
-            <Grid size={textSize}>
+            <Grid size={textSize} sx={{ minWidth: 0 }}>
                 {isEmpty(children) ? (
                     ' - '
                 ) : isObject ? (
                     children
                 ) : (
-                    <Typography variant="inherit" color="textSecondary" sx={componentTextProps}>
+                    <Typography variant="inherit" color="text.primary" sx={{ overflowWrap: 'anywhere', ...componentTextProps }}>
                         {children}
                     </Typography>
                 )}
@@ -290,20 +296,27 @@ export const ContenidoData = (props:ContenidoDataProps) => {
 }
 
 // Only with MuiDetail
-export const DetailField = (props:any) => {
-    const {name, size, inline = false, children, formatterValue, ...other} = props;
-    const {data, fields} = useDetailContext()
+export const DetailField = (props: any) => {
+    const { name, size, inline = false, children, formatterValue, ...other } = props;
+    const { data, fields } = useDetailContext();
     const field = fields?.find?.((item: any) => item?.name === name);
     const value = field?.options?.[data[name]] ?? data[name];
 
-    const v = value?.description || formatDate(value) || value
+    const v = value?.description || formatDate(value) || value;
+    // inline, l'etiqueta té una amplada fixa (no una proporció de la graella) perquè els valors quedin
+    // alineats entre camps de fila sencera, de mitja fila i de targetes estretes; en tres columnes és més curta.
+    const labelWidth = (size ?? 12) <= 4 ? 100 : 140;
+
     return (
         <DetailCardContent
-            title={props.label ?? (field?.label ?? name)}
+            title={props.label ?? field?.label ?? name}
             size={size}
-            titleSize={inline ?4 :12}
-            textSize={inline ?8 :12}
+            titleSize={inline ? 'auto' : 12}
+            textSize={inline ? 'grow' : 12}
+            labelWidth={inline ? labelWidth : undefined}
             {...other}
-        >{children || formatterValue?.(v, data) || v}</DetailCardContent>
-    )
-}
+        >
+            {children || formatterValue?.(v, data) || v}
+        </DetailCardContent>
+    );
+};
