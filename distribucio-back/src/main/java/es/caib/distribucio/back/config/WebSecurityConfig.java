@@ -3,14 +3,13 @@
  */
 package es.caib.distribucio.back.config;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
+import es.caib.distribucio.back.base.config.BaseWebSecurityConfig;
+import es.caib.distribucio.back.base.config.MethodSecurityConfig;
+import es.caib.distribucio.logic.intf.base.util.HttpRequestUtil;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.model.auth.AuthenticationDetails;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.IDToken;
@@ -22,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.SimpleAttributes2GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleMappableAttributesRetriever;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
@@ -33,12 +33,13 @@ import org.springframework.security.web.authentication.preauth.j2ee.J2eeBasedPre
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import es.caib.distribucio.back.base.config.BaseWebSecurityConfig;
-import es.caib.distribucio.back.base.config.MethodSecurityConfig;
-import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.model.auth.AuthenticationDetails;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Configuració de Spring Security. Suporta dos modes d'autenticació segons el tipus de
@@ -184,6 +185,43 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 		return !isJboss();
 	}
 
+	@Override
+	protected Set<String> getAllowedRoles() {
+
+		Optional<HttpServletRequest> optionalRequest = HttpRequestUtil.getCurrentHttpRequest();
+		Set<String> allowedRoles = Set.of(mappableRoles.split(","));
+		if (optionalRequest.isPresent()) {
+			// Si la petició HTTP conté la capçalera amb el rol seleccionat retorna únicament aquest rol en la llista de rols permesos.
+			HttpServletRequest request = optionalRequest.get();
+			String selectedRole = request.getHeader(selectedRoleHttpHeader);
+			if (selectedRole != null) {
+				HashSet<String> editableAllowedRoles = new HashSet<>(allowedRoles);
+				editableAllowedRoles.removeIf(s -> !s.equals(selectedRole));
+				return editableAllowedRoles;
+			}
+		}
+		return allowedRoles;
+	}
+
+	/**
+	 * Concedeix el rol "tothom" ({@link BaseConfig#ROLE_USER}) a qualsevol usuari autenticat, abans
+	 * que s'apliqui el filtre de rols permesos. No és un rol de Keycloak ni està declarat al
+	 * web.xml: és el rol base amb què opera qualsevol usuari de l'aplicació, i la interfície JSP
+	 * ja l'ofereix al selector sempre que l'usuari tengui permís de lectura sobre l'entitat actual
+	 * (veure {@code RolHelper.getRolsUsuariActual}). Sense això el selector de rols de la interfície
+	 * REACT no el pot oferir mai, i seleccionar-lo deixava l'usuari sense cap authority perquè
+	 * {@link #getAllowedRoles()} no el considerava mapejable.
+	 * <p/>
+	 * RIPEA fa el mateix a {@code SpringBootWebSecurityConfig.java:104} (camí Spring Boot) i a
+	 * {@code JBossWebSecurityConfig.java:141} (camí JBoss, que aquí es cobreix a
+	 * {@link #getPreauthFilterAuthenticationDetailsSource()}).
+	 */
+	@Override
+	protected void filterAllowedGrantedAuthorities(Set<GrantedAuthority> grantedAuthorities) {
+		grantedAuthorities.add(new SimpleGrantedAuthority(BaseConfig.ROLE_USER));
+		super.filterAllowedGrantedAuthorities(grantedAuthorities);
+	}
+
 	private boolean isJboss() {
 		return jbossHomeDir != null;
 	}
@@ -241,6 +279,7 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 			}
 		};
 		SimpleMappableAttributesRetriever mappableAttributesRetriever = new SimpleMappableAttributesRetriever();
+		mappableAttributesRetriever.setMappableAttributes(getAllowedRoles());
 		authenticationDetailsSource.setMappableRolesRetriever(mappableAttributesRetriever);
 		SimpleAttributes2GrantedAuthoritiesMapper attributes2GrantedAuthoritiesMapper = new SimpleAttributes2GrantedAuthoritiesMapper();
 		attributes2GrantedAuthoritiesMapper.setAttributePrefix(MethodSecurityConfig.DEFAULT_ROLE_PREFIX);
