@@ -1,6 +1,3 @@
-/**
- * 
- */
 package es.caib.distribucio.ws.client;
 
 import java.io.IOException;
@@ -68,7 +65,7 @@ public class BustiaV1Test2 {
 	private static final String EXPEDIENT_NUM =  System.currentTimeMillis() + "/2025";
 	
 
-	private static final int N_ANOTACIONS = 10;
+	private static final int N_ANOTACIONS = 3;
 	private static final int N_ANNEXOS = 2;
 	private static final boolean TEST_ANNEX_FIRMAT = true;
 	private static final boolean TEST_ANNEX_FIRMAT_XADES_INTERNALLY_DETACHED = false; //TF02 - XAdES internally detached signature
@@ -76,6 +73,8 @@ public class BustiaV1Test2 {
 	private static final boolean TEST_ANNEX_FIRMA_CADES_DETACHED = false; //TF04 - CAdES detached/explicit signature
 	private static final boolean TEST_ANNEX_FIRMA_CADES_ATTACHED = false; //TF05 - CAdES attached
 	private static final boolean TEST_ANNEX_PDF = true;
+	private static final boolean TEST_ANNEX_PDF_FIRMA_INVALIDA = false;
+	private static final boolean TEST_ANNEX_PDF_CORRUPTE = false;
 	private static final boolean TEST_ANNEX_DOC_TECNIC = true; // Indica si adjuntar els documents tècnics de sistra2 com annexos
 	
 	
@@ -171,7 +170,13 @@ public class BustiaV1Test2 {
 	        //calendar.setTime(new SimpleDateFormat("dd-MM-yyyy").parse("29-11-2021"));
 	        calendar.setTime(new Date());
 	        anotacio.setData(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
-	        anotacio.setExtracte(EXTRACTE + " " + i + " de " + N_ANOTACIONS);
+	        String extracte = EXTRACTE + " " + i + " de " + N_ANOTACIONS;
+	        extracte+=" ["+N_ANNEXOS+" annexos]";
+	        if (TEST_ANNEX_DOC_TECNIC) { extracte+=" [Annex doc tècnic]"; }
+	        if (TEST_ANNEX_PDF_FIRMA_INVALIDA) { extracte+=" [Firma_ko]"; }
+	        if (TEST_ANNEX_PDF_CORRUPTE) { extracte+=" [PDF corrupte]"; }
+	        
+	        anotacio.setExtracte(extracte);
 	        anotacio.setEntitatCodi(ENTITAT_CODI);
 	        anotacio.setEntitatDescripcio(ENTITAT_DESC);
 	        anotacio.setOficinaCodi(OFICINA_CODI);
@@ -299,17 +304,16 @@ public class BustiaV1Test2 {
 						
 			        	firmes = new ArrayList<Firma>();
 			            Firma firma = new Firma();
-			            firma.setFitxerNom("annex_firmat.pdf");
+			            firma.setFitxerNom("document_signed.pdf");
 			            firma.setTipusMime("application/pdf");
-			            firma.setContingut(
-			            		IOUtils.toByteArray(getContingutAnnexFirmat()));
+			            firma.setContingut(getContingutAltre("document_signed.pdf").readAllBytes());
 //			            firma.setContingut(null);
 			            firma.setTipus("TF06");
 			            firma.setPerfil("EPES");
 			            firmes.add(firma);
 			            annex = crearAnnex(
 				        		"Annex signat PAdES " + j,
-				        		"annex_firmat.pdf",
+				        		"document_signed.pdf",
 				        		"application/pdf",
 				        		null,
 				        		null,
@@ -346,17 +350,6 @@ public class BustiaV1Test2 {
 				        		"TD01",
 				        		"01",
 				        		firmes);
-//			        	annex = crearAnnex(
-//				        		"Annex XML " + j,
-//				        		"annex.xml",
-//				        		"application/xml",
-//				        		null,
-//				        		getContingutAltre("formulario.xml"),
-//				        		"0",
-//				        		"EE01",
-//				        		"TD01",
-//				        		"01",
-//				        		firmes);
 			        }
 		        }
 		        anotacio.getAnnexos().add(annex);
@@ -389,7 +382,37 @@ public class BustiaV1Test2 {
 			        		"03",
 			        		null));
 	        }
-	        	        
+	       
+	        if (TEST_ANNEX_PDF_FIRMA_INVALIDA) {
+		        anotacio.getAnnexos().add(		        
+		        		crearAnnex(
+			        		"Annex PDF Firma no valida",
+			        		"firma_ko.pdf",
+			        		"application/pdf",
+			        		null,
+			        		getContingutAltre("firma_ko.pdf"),
+			        		"0",
+			        		"EE01",
+			        		"TD05",
+			        		"01",
+			        		null));
+	        }
+	        
+	        if (TEST_ANNEX_PDF_CORRUPTE) {
+		        anotacio.getAnnexos().add(		        
+		        		crearAnnex(
+			        		"Annex PDF corrupte",
+			        		"annex_corrupte.pdf",
+			        		"application/pdf",
+			        		null,
+			        		getContingutAltre("annex_firmat.pdf"),
+			        		"0",
+			        		"EE01",
+			        		"TD01",
+			        		"01",
+			        		null));
+	        }
+	        
 	        RegistreAnnex justificant = crearAnnex(
 	        		"justificant",
 	        		"justificant.pdf",
@@ -579,7 +602,7 @@ public class BustiaV1Test2 {
 		return is;
 	}
 	private InputStream getContingutAnnexFirmat() {
-		InputStream is = getClass().getResourceAsStream("/annex_firmat.pdf");
+		InputStream is = getClass().getResourceAsStream("document_signed.pdf");
 		return is;
 	}
 	private InputStream getContingutAltre(String arxiuNom) {
