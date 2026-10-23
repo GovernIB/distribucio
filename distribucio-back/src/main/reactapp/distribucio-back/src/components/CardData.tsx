@@ -95,9 +95,9 @@ export const DetailCard = (props: DetailCardProps) => {
         <Grid size={size} {...gridProps}>
             <Card sx={cardProps}>
                 {(title || header) && (
-                    <CardHead icon={icon} action={actionHeader} className={'detail'} sx={{ py: 0, px: 2, ...headerProps }}>
+                    <CardHead icon={icon} action={actionHeader} className={'detail'} sx={{ py: 0, px: 2, backgroundColor: 'primarySoft', ...headerProps }}>
                         {title && (
-                            <Typography mt={0.5} variant={variant}>
+                            <Typography mt={0.5} variant={variant} sx={{ fontWeight: 600, color: 'primary.dark' }}>
                                 {title}
                             </Typography>
                         )}
@@ -132,10 +132,10 @@ export const DetailExpandCard = (props: DetailCardProps) => {
         <Grid size={size}>
             <Card sx={cardProps}>
                 {(title || header) && (
-                    <CardHead icon={icon} className={'detail'} sx={{ py: 0, px: 2, ...headerProps }}
+                    <CardHead icon={icon} className={'detail'} sx={{ py: 0, px: 2, backgroundColor: 'primarySoft', ...headerProps }}
                               componentProps={{width: '100%', display: 'flex', justifyContent: 'space-between'}} onClick={handleExpandClick}>
                         {title && (<>
-                            <Typography mt={0.5} variant={variant}>
+                            <Typography mt={0.5} variant={variant} sx={{ fontWeight: 600, color: 'primary.dark' }}>
                                 {title}
                             </Typography>
 

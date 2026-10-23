@@ -1,25 +1,26 @@
-import StyledMuiGrid from "../../../../components/StyledMuiGrid.tsx";
-import {FormField, MuiForm, useBaseAppContext, useFormApiRef, useFormContext, useResourceApiService} from "reactlib";
-import {useMemo} from "react";
-import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
-import Icon from "@mui/material/Icon";
-import Load from "../../../../components/Load.tsx";
+import StyledMuiGrid, { ToolbarButton } from '../../../../components/StyledMuiGrid.tsx';
+import { FormField, MuiForm, useBaseAppContext, useFormApiRef, useFormContext, useResourceApiService } from 'reactlib';
+import { useMemo } from 'react';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Icon from '@mui/material/Icon';
+import Load from '../../../../components/Load.tsx';
 import * as builder from '../../../../util/springFilterUtils';
-import {fieldType} from "../../../metadada/MetaDadaGrid.tsx";
+import { fieldType } from '../../../metadada/MetaDadaGrid.tsx';
 import { icons } from '../../../../util/icons';
-import Box from "@mui/material/Box";
+import Box from '@mui/material/Box';
 
 const DadaField = ({ index, metaDada, value, onChange, required, ...other }: any) => {
-    const { fields } = useFormContext()
+    const { fields } = useFormContext();
 
-    const fieldDomini = fields?.filter(i=>i.name=='domini')[0];
-    const isDomini = metaDada.tipus == "DOMINI"
+    const fieldDomini = fields?.filter((i) => i.name == 'domini')[0];
+    const isDomini = metaDada.tipus == 'DOMINI';
 
     const additionalProps = isDomini
-        ?{ field: fieldDomini, autocomplete: true, requestParams: { domini: metaDada.domini?.id } } :{}
+        ? { field: fieldDomini, autocomplete: true, requestParams: { domini: metaDada.domini?.id } }
+        : {};
 
-    const type = isDomini ?'enum' :fieldType(metaDada.tipus)
+    const type = isDomini ? 'enum' : fieldType(metaDada.tipus);
 
     const decimalScale = metaDada.tipus === 'SENCER' ? 0 : undefined;
 
@@ -33,8 +34,8 @@ const DadaField = ({ index, metaDada, value, onChange, required, ...other }: any
                 const newValue = e?.target ? e.target.value : e;
                 onChange?.(newValue);
             }}
-            componentProps={{ size: "small" }}
-            required={false}
+            componentProps={{ size: 'small' }}
+            required={required}
             decimalScale={decimalScale}
             disabled={metaDada.readOnly}
             {...additionalProps}
@@ -50,19 +51,19 @@ const MetaDadaColumn = ({ metaDada }: any) => {
         const dadesActual = data.dades;
         const arrayActual = dadesActual[metaDada.id] || [];
 
-        const nouArray = arrayActual.filter((_:any, i:any) => i !== index);
+        const nouArray = arrayActual.filter((_: any, i: any) => i !== index);
 
-        apiRef.current?.setFieldValue("dades", {
+        apiRef.current?.setFieldValue('dades', {
             ...dadesActual,
             [metaDada.id]: nouArray,
         });
     };
 
-    const handleAdd = (newValue: string = "") => {
+    const handleAdd = (newValue: string = '') => {
         const dadesActual = data.dades;
         const arrayActual = dadesActual[metaDada.id] || [];
 
-        apiRef.current?.setFieldValue("dades", {
+        apiRef.current?.setFieldValue('dades', {
             ...dadesActual,
             [metaDada.id]: [...arrayActual, newValue],
         });
@@ -74,7 +75,7 @@ const MetaDadaColumn = ({ metaDada }: any) => {
         const nouArray = [...arrayActual];
         nouArray[index] = newValue;
 
-        apiRef.current?.setFieldValue("dades", {
+        apiRef.current?.setFieldValue('dades', {
             ...dadesActual,
             [metaDada.id]: nouArray,
         });
@@ -96,27 +97,31 @@ const MetaDadaColumn = ({ metaDada }: any) => {
                             onChange={(newValue: string) => handleUpdateValue(index, newValue)}
                         />
                     </Grid>
-                    {isMultiple && <Grid size={1} sx={{display: 'flex', alignItems: 'center'}}>
-                        <IconButton onClick={() => handleRemove(index)} size="small">
-                            <Icon>{icons.esborra}</Icon>
-                        </IconButton>
-                    </Grid>}
+                    {isMultiple && (
+                        <Grid size={1} sx={{ display: 'flex', alignItems: 'center' }}>
+                            <IconButton onClick={() => handleRemove(index)} size="small">
+                                <Icon>{icons.esborra}</Icon>
+                            </IconButton>
+                        </Grid>
+                    )}
                 </Grid>
             ))}
 
             {isMultiple && (
-                <Grid container direction={"row"} size={12} columnSpacing={1} rowSpacing={1}>
+                <Grid container direction={'row'} size={12} columnSpacing={1} rowSpacing={1}>
                     <Grid size={11}>
-                        <DadaField index={'new'} value={data[`${metaDada.id}-new`]} metaDada={metaDada}/>
+                        <DadaField index={'new'} value={data[`${metaDada.id}-new`]} metaDada={metaDada} />
                     </Grid>
                     <Grid size={1}>
                         <IconButton
                             onClick={() => {
-                                handleAdd(data[`${metaDada.id}-new`])
-                                apiRef.current?.setFieldValue(`${metaDada.id}-new`, null)
+                                handleAdd(data[`${metaDada.id}-new`]);
+                                apiRef.current?.setFieldValue(`${metaDada.id}-new`, null);
                             }}
                             disabled={data[`${metaDada.id}-new`] == null}
-                        ><Icon>{icons.crea}</Icon></IconButton>
+                        >
+                            <Icon>{icons.crea}</Icon>
+                        </IconButton>
                     </Grid>
                 </Grid>
             )}
@@ -137,84 +142,80 @@ const MetaDadaColumn = ({ metaDada }: any) => {
     );
 };
 
-const columns = [
-    { field: 'nom', flex: 1 },
-]
-const sortModel:any = [{ field: 'ordre', sort: 'asc' }]
-export const MetaDadesTab = ({entity}:any) => {
+const columns = [{ field: 'nom', flex: 1 }];
+const sortModel: any = [{ field: 'ordre', sort: 'asc' }];
+
+export const MetaDadesTab = ({ entity, refresh }: any) => {
     const { t } = useBaseAppContext();
     const apiRef = useFormApiRef();
 
-    const {
-        isReady: apiIsReady,
-        artifactAction: apiAction,
-    } = useResourceApiService('registreResource');
-    const {temporalMessageShow} = useBaseAppContext();
+    const { isReady: apiIsReady, artifactAction: apiAction } = useResourceApiService('registreResource');
+    const { temporalMessageShow } = useBaseAppContext();
 
     const save = () => {
         if (apiIsReady) {
-            apiAction(entity.id, { code: "UPDATE_DADES", data: apiRef.current?.getData() })
+            apiAction(entity.id, { code: 'UPDATE_DADES', data: apiRef.current?.getData() })
                 .then(() => {
                     temporalMessageShow(null, t('page.registre.dades.success'), 'success');
+                    refresh?.();
                 })
                 .catch((error) => {
                     temporalMessageShow(null, error?.message, 'error');
                 });
         }
-    }
+    };
 
-    const additionalColumns = useMemo(() => [
-        ...columns,
-        { field: 'id', flex: 1, headerName: '',
-            renderCell: (params:any) => <MetaDadaColumn metaDada={params.row} />
-        },
-    ], [])
+    const additionalColumns = useMemo(
+        () => [
+            ...columns,
+            {
+                field: 'id',
+                flex: 1,
+                headerName: '',
+                renderCell: (params: any) => <MetaDadaColumn metaDada={params.row} />,
+            },
+        ],
+        []
+    );
 
-    return (<>
-        <Box
-            sx={{
-                '.MuiToolbar-root.MuiToolbar-regular': {
-                    top: 0
-                }
-            }}
-        >
-        <Load value={entity} noEffect>
-        <MuiForm
-            apiRef={apiRef}
-            key={entity.id}
-            id={entity.id}
-            title={t('page.registre.dades.title')}
-            resourceName={'registreResource'}
-            resourceType={"ACTION"}
-            resourceTypeCode={"UPDATE_DADES"}
-
-            toolbarElementsWithPositions={[
-                {
-                    position: 2,
-                    element: <IconButton onClick={save}><Icon>{icons.desa}</Icon></IconButton>
-                }
-            ]}
-
-            hiddenSaveButton
-            hiddenBackButton
-            hiddenRevertButton
-            hiddenDeleteButton
-            initOnChangeRequest
-        >
-            <StyledMuiGrid
-                resourceName={'metaDadaResource'}
-                columns={additionalColumns}
-                filter={builder.eq('activa', true)}
-                fixedSortModel={sortModel}
-                disableColumnSorting
-
-                toolbarHide
-                autoHeight
-                readOnly
-            />
-        </MuiForm>
-        </Load>
-
+    const desaButton = (
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+            <ToolbarButton icon={icons.desa} onClick={save}>
+                {t('common.save')}
+            </ToolbarButton>
         </Box>
-    </>)
-}
+    );
+
+    return (
+        <Load value={entity} noEffect>
+            <MuiForm
+                apiRef={apiRef}
+                key={entity.id}
+                id={entity.id}
+                title={t('page.registre.dades.title')}
+                resourceName={'registreResource'}
+                resourceType={'ACTION'}
+                resourceTypeCode={'UPDATE_DADES'}
+                hiddenToolbar
+                componentProps={{ sx: { mt: 0 } }}
+                hiddenSaveButton
+                hiddenBackButton
+                hiddenRevertButton
+                hiddenDeleteButton
+                initOnChangeRequest
+            >
+                {desaButton}
+                <StyledMuiGrid
+                    resourceName={'metaDadaResource'}
+                    columns={additionalColumns}
+                    filter={builder.eq('activa', true)}
+                    fixedSortModel={sortModel}
+                    disableColumnSorting
+                    toolbarHide
+                    autoHeight
+                    readOnly
+                />
+            </MuiForm>
+        </Load>
+    );
+};

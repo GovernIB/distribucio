@@ -19,14 +19,24 @@ export const TYPING_FIELD_TYPES = ['text', 'string', 'textarea', 'url', 'number'
 /** Un camp sense tipus conegut es tracta com a text. */
 export const isTypingFieldType = (type?: string) => TYPING_FIELD_TYPES.includes(type ?? 'text');
 
+/** Camp del formulari que només commuta la cerca avançada (no filtra res: no compta com a canvi del filtre). */
+const ADVANCED_SEARCH_FIELD = 'advanced';
+
 /**
  * Forma canònica de les dades d'un filtre per comparar-les: sense camps buits (`undefined`, `null`,
- * text buit o llista buida) i amb els camps ordenats per nom. Un camp esborrat i un camp que no s'ha
- * tocat són el mateix filtre.
+ * text buit o llista buida), sense el commutador de cerca avançada i amb els camps ordenats per nom.
+ * Un camp esborrat i un camp que no s'ha tocat són el mateix filtre, i commutar entre cerca bàsica i
+ * avançada no en canvia el resultat.
  */
 export const normalizeFilterData = (data?: Record<string, unknown>): string =>
     JSON.stringify(
         Object.entries(data ?? {})
-            .filter(([, value]) => value != null && value !== '' && !(Array.isArray(value) && value.length === 0))
+            .filter(
+                ([name, value]) =>
+                    name !== ADVANCED_SEARCH_FIELD &&
+                    value != null &&
+                    value !== '' &&
+                    !(Array.isArray(value) && value.length === 0)
+            )
             .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
     );

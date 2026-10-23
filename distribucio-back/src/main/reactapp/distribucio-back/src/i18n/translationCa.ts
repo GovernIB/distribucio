@@ -972,6 +972,11 @@ const translationCa = {
                 eniDataObertura: "Data obertura",
                 eniClassificacio: "Classificació",
                 eniEstat: "Estat",
+                estat: {
+                    OBERT: "Obert",
+                    TANCAT: "Tancat",
+                    INDEX_REMISSIO: "Índex per remissió tancat",
+                },
             },
             detail: {
                 coneixement: 'Per coneixement',

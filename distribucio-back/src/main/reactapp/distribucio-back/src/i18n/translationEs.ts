@@ -972,6 +972,11 @@ const translationEs = {
                 eniDataObertura: "Fecha de apertura",
                 eniClassificacio: "Clasificación",
                 eniEstat: "Estado",
+                estat: {
+                    OBERT: "Abierto",
+                    TANCAT: "Cerrado",
+                    INDEX_REMISSIO: "Índice por remisión cerrado",
+                },
             },
             detail: {
                 coneixement: 'Para conocimiento',

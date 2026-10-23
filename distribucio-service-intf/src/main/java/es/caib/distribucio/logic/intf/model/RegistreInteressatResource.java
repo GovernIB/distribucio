@@ -30,7 +30,7 @@ import org.springframework.data.annotation.Transient;
 		accessConstraints = {
                 @ResourceAccessConstraint(
                         type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-                        roles = { BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_USER },
+                        roles = { BaseConfig.ROLE_ADMIN, BaseConfig.ROLE_ADMIN_LECTURA, BaseConfig.ROLE_USER },
                         grantedPermissions = { PermissionEnum.READ }
                 )
         },
