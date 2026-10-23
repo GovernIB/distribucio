@@ -1345,6 +1345,10 @@ const translationCa = {
             expandAll: "Expandeix tots",
             collapseAll: "Contreu tots",
         },
+        UserLastConection: {
+            lastConnection: "Data i hora de la darrera connexió de l'usuari",
+            darreraConnexio: "Darrera connexió:",
+        },
     },
 };
 

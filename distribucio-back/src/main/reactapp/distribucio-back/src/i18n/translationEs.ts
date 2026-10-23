@@ -1345,6 +1345,10 @@ const translationEs = {
             expandAll: "Expandir todo",
             collapseAll: "Contraer todo",
         },
+        UserLastConection: {
+            lastConnection: "Fecha y hora de la última conexión del usuario",
+            darreraConnexio: "Última conexión:",
+        },
     },
 };
 

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -81,6 +82,11 @@ public class UsuariResourceEntity extends BaseResourceEntity<UsuariResource, Str
 	@Enumerated(EnumType.STRING)
 	@Column(name = "interficie_usuari", length = 5)
 	private InterficieUsuariEnumDto interficieUsuari;
+
+    @Column(name = "darrer_periode")
+    private LocalDateTime darrerPeriode;
+    @Column(name = "darrera_activitat")
+    private LocalDateTime darreraActivitat;
 
 	@Version
 	private long version = 0;
