@@ -22,7 +22,7 @@ export const QuickFilter: React.FC<{
     onChange: (quickFilter: string | undefined) => void;
 }> = (props) => {
     const { label, compact, onChange } = props;
-    // const { t } = useTranslation();
+    const { t } = useTranslation();
     const [quickFilter, setQuickFilter] = React.useState<string>('');
     const quickFilterDebounced = useDebounce(quickFilter);
     React.useEffect(() => {
@@ -44,6 +44,8 @@ export const QuickFilter: React.FC<{
                     : undefined
             }
             slotProps={{
+                // Sense `label` visible (barra de títol), el camp necessita igualment una etiqueta (OAW 1.9)
+                htmlInput: label ? undefined : { 'aria-label': t('common.cerca') },
                 input: {
                     startAdornment: (
                         <InputAdornment position="start">

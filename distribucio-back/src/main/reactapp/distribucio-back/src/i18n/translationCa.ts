@@ -18,6 +18,7 @@ const translationCa = {
         filter: 'Filtra',
         filterCount_one: '{{num}} filtre aplicat',
         filterCount_other: '{{num}} filtres aplicats',
+        cerca: 'Cerca',
         advancedSearch: 'Cerca avançada',
         advancedSearchOpen: 'Avançat',
         advancedSearchClose: 'Bàsic',

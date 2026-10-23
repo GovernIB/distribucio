@@ -58,7 +58,9 @@ const VistaMovimentsBustiaCell = ({ path, activa }: any) => {
 /** Interessats */
 const VistaMovimentsInteressatsCell = ({ value }: any) => {
     if (!value) return null;
-    return <Box sx={{ whiteSpace: 'pre-line', lineHeight: 1.4 }}>{value}</Box>;
+    // <p> i no <div>: amb molts interessats el text passa de 150 caràcters i l'OAW (1.5) el compta
+    // com a paràgraf sense marcar
+    return <Box component="p" sx={{ m: 0, whiteSpace: 'pre-line', lineHeight: 1.4 }}>{value}</Box>;
 };
 
 /** Avís "Error": una icona d'avís amb el missatge corresponent a l'estat en què s'ha produït l'error. */

@@ -56,7 +56,8 @@ export const MetriquesTimers: React.FC<{ dades?: MetriquesData }> = ({ dades }) 
             <Llegenda />
             {timers.length > 0 && (
                 <Box sx={{ px: 2, pb: 2 }}>
-                    <Typography variant="h6" component="h4" sx={{ mb: 1 }}>
+                    {/* h3: penja del títol "Timers" (h2) de MetriquesPage, sense saltar nivells */}
+                    <Typography variant="h6" component="h3" sx={{ mb: 1 }}>
                         {t('page.metriques.generics')}
                     </Typography>
                     {timers.map((timer) => (

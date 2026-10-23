@@ -18,6 +18,7 @@ const translationEs = {
         filter: 'Filtra',
         filterCount_one: '{{num}} filtro aplicado',
         filterCount_other: '{{num}} filtros aplicados',
+        cerca: 'Buscar',
         advancedSearch: 'Búsqueda avanzada',
         advancedSearchOpen: 'Avanzado',
         advancedSearchClose: 'Básico',

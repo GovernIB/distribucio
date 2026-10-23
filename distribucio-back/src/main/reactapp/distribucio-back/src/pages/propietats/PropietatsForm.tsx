@@ -29,19 +29,20 @@ const fieldPropType = (typeCode: string, typeValue?: string) => {
     }
 };
 
-const TextHighlight: React.FC<{ text: string; variant?:any, match?: string; ignoreCase?: boolean }> = (
+const TextHighlight: React.FC<{ text: string; variant?:any, component?: React.ElementType, match?: string; ignoreCase?: boolean }> = (
     props
 ) => {
-    const { text, match, ignoreCase, variant = 'inherit' } = props;
+    const { text, match, ignoreCase, variant = 'inherit', component } = props;
+    const componentProps = component ? { component } : {};
     if (!match) {
-        return <Typography variant={variant}>{text}</Typography>;
+        return <Typography variant={variant} {...componentProps}>{text}</Typography>;
     }
     const escapedMatch = match.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const flags = ignoreCase ? 'gi' : 'g';
     const pattern = new RegExp(`(${escapedMatch})`, flags);
     const parts = text.split(pattern);
     return (
-        <Typography variant={variant}>
+        <Typography variant={variant} {...componentProps}>
             {parts.map((part, index) =>
                 pattern.test(part) ? (
                     <mark key={index}>{part}</mark>
@@ -82,6 +83,12 @@ const PropsListItem: React.FC<any> = ({ highlight }:any) => {
     const decimalScale = item.type.id === 'INT' ? 0 : undefined;
 
     const field = getFieldFromItem(item, t)
+    // La descripció de la propietat és l'etiqueta (<label for>) del camp, que es pinta `inline` (sense
+    // etiqueta pròpia); sense, l'OAW (1.9) el dona per camp sense etiqueta. Les propietats amb valors
+    // possibles es pinten amb un Select de MUI, que posa l'id a un <div>: un <label for> que hi apuntés
+    // seria una associació incorrecta, i per això en aquest cas la descripció queda com a text.
+    const inputId = React.useId();
+    const ambEtiqueta = field.type !== 'search';
 
     const save = () => {
         apiRef.current?.save()
@@ -90,7 +97,13 @@ const PropsListItem: React.FC<any> = ({ highlight }:any) => {
     return (
         <Grid container spacing={2} sx={{ width: '100%' }}>
             <Grid size={4.5}>
-                <TextHighlight text={item.description} match={highlight} ignoreCase />
+                {ambEtiqueta ? (
+                    <label htmlFor={inputId}>
+                        <TextHighlight text={item.description} component="span" match={highlight} ignoreCase />
+                    </label>
+                ) : (
+                    <TextHighlight text={item.description} match={highlight} ignoreCase />
+                )}
             </Grid>
             <Grid size={6}>
                 <FormField
@@ -101,6 +114,7 @@ const PropsListItem: React.FC<any> = ({ highlight }:any) => {
                     decimalScale={decimalScale}
                     disabled={disabled}
                     componentProps={{
+                        ...(ambEtiqueta && { id: inputId }),
                         type: password ?'password' :field.type,
                         placeholder: item.alternativeValue || item.key,
                         helperText: <TextHighlight text={item.key} match={highlight} ignoreCase />
@@ -148,7 +162,9 @@ export const PropietatsForm = ({id, highlight}:any) => {
             perspectives={perspectives}
             // componentProps={{ sx: {m: 0} }}
             commonFieldComponentProps={{ size: 'small' }}>
-            <ListItem disablePadding>
+            {/* <div> i no <li>: el MuiForm s'interposa entre la llista i l'element, i un <li> fora
+                d'un <ul> és una llista mal construïda per a l'OAW (1.3) */}
+            <ListItem component="div" disablePadding>
                 <ListItemButton disableRipple>
                     <PropsListItem highlight={highlight}/>
                 </ListItemButton>

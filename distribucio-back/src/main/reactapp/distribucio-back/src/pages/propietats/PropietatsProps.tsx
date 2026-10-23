@@ -23,7 +23,9 @@ export const PropietatsProps: React.FC<{ groupId?: any, grups: any[], configs: a
 
     return (
         <Load value={group} noEffect>
-            <DetailCard title={group?.description} variant={'h6'} headerProps={{ color: 'white', backgroundColor: 'primary.main' }}
+            {/* Encapçalaments: el grup arrel penja del títol de la pantalla (h1) i els subgrups, d'ell */}
+            <DetailCard title={group?.description} variant={'h6'} titleComponent={root ? 'h2' : 'h3'}
+                headerProps={{ color: 'white', backgroundColor: 'primary.main' }}
                 {...(root && {
                     gridProps: { sx: { height: '100%' } },
                     cardProps: { height: '100%', display: 'flex', flexDirection: 'column' },

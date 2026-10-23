@@ -17,6 +17,8 @@ type DetailCardProps = CardPageProps & {
     size?: any;
     cardProps?: any;
     variant?: any;
+    /** Element HTML del títol quan ha de ser un encapçalament d'un nivell diferent del de `variant` (p. ex. 'h2'). */
+    titleComponent?: React.ElementType;
     buttons?: any[];
     hidden?: boolean;
 }
@@ -85,7 +87,7 @@ const isEmpty = (value:any) => {
 }
 
 export const DetailCard = (props: DetailCardProps) => {
-    const { icon, title, header, actionHeader, children, size = 12, hidden, cardProps = {}, headerProps = {}, gridProps = {}, contentProps = {}, variant = 'overline', ...other } = props;
+    const { icon, title, header, actionHeader, children, size = 12, hidden, cardProps = {}, headerProps = {}, gridProps = {}, contentProps = {}, variant = 'overline', titleComponent, ...other } = props;
 
     if (hidden) {
         return <></>;
@@ -97,7 +99,7 @@ export const DetailCard = (props: DetailCardProps) => {
                 {(title || header) && (
                     <CardHead icon={icon} action={actionHeader} className={'detail'} sx={{ py: 0, px: 2, ...headerProps }}>
                         {title && (
-                            <Typography mt={0.5} variant={variant}>
+                            <Typography mt={0.5} variant={variant} {...(titleComponent && { component: titleComponent })}>
                                 {title}
                             </Typography>
                         )}

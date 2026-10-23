@@ -79,7 +79,15 @@ export const MetriquesPage: React.FC = () => {
                 title={t('page.metriques.title')}
                 actions={
                     <>
-                        <input ref={fitxerRef} type="file" accept=".json,application/json" hidden onChange={importar} />
+                        {/* Ocult, però l'OAW (1.9) també hi exigeix una etiqueta */}
+                        <input
+                            ref={fitxerRef}
+                            type="file"
+                            accept=".json,application/json"
+                            hidden
+                            aria-label={t('page.metriques.accio.importar')}
+                            onChange={importar}
+                        />
                         <ToolbarButton
                             title={t('page.metriques.accio.importar')}
                             icon={icons.carrega}

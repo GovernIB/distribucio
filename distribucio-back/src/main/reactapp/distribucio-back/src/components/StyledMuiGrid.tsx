@@ -1,11 +1,11 @@
 import { Box, Button, Icon, IconButton, Theme, Tooltip, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { FilterCountChip } from './FilterCountChip';
-import {MuiDataGrid, MuiDataGridProps, useMuiDataGridApiRef, useResourceApiService} from 'reactlib';
+import {MuiDataGrid, MuiDataGridColDef, MuiDataGridProps, useMuiDataGridApiRef, useResourceApiService} from 'reactlib';
 import {useGridApiRef as useMuiDatagridApiRef} from "@mui/x-data-grid-pro";
 import { useUserPreferences } from './UserProfile';
 import MassiveActionSelector, {MassiveActionProps} from "./MassiveActionSelector.tsx";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from 'react-dom';
 import { useScreenFrame } from './ScreenFrameContext';
 import { titleBarControlsSx } from './titleBarControlsSx';
@@ -96,6 +96,35 @@ const NUM_ELEMENTS_PAGINA_DEFECTE = 10;
  */
 const LIB_TOOLBAR = 'div:has(> .MuiToolbar-root):not(.MuiDataGrid-root)';
 
+/**
+ * Llargada a partir de la qual l'OAW (verificació 1.5, "Agrupació estructural") considera que un
+ * <div> amb text és un paràgraf simulat. Compta també el text de les etiquetes en línia (<span>...),
+ * de manera que només un element de bloc com <p> l'exclou.
+ */
+const LLARGADA_PARAGRAF = 150;
+
+/**
+ * Les cel·les de la graella són <div>: un text llarg (interessats, extractes...) hi quedaria com a
+ * paràgraf sense marcar. A les columnes que pinta MUI per defecte (sense `renderCell` ni tipus propi),
+ * els textos llargs es pinten dins un <p>; la resta es pinta igual que abans.
+ */
+const ambParagrafsLlargs = (columns: MuiDataGridColDef[]): MuiDataGridColDef[] =>
+    columns.map((c) =>
+        c.renderCell != null || (c.type != null && c.type !== 'string')
+            ? c
+            : {
+                  ...c,
+                  renderCell: (params) => {
+                      const text = params.formattedValue ?? params.value;
+                      return typeof text === 'string' && text.length > LLARGADA_PARAGRAF ? (
+                          <Box component="p" sx={{ m: 0 }}>{text}</Box>
+                      ) : (
+                          text?.toString()
+                      );
+                  },
+              }
+    );
+
 type FilterCount = number | ((num: number) => number);
 
 export type StyledMuiGridProps = Omit<MuiDataGridProps, 'toolbarElementsWithPositions' | 'onRowSelectionModelChange'> & {
@@ -155,8 +184,11 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
         onRowSelectionModelChange,
         autoHeight = false,
         sx,
+        columns,
         ...others
     } = { ...defaultProps, ...props };
+    // Memoritzat: la llibreria torna a processar les columnes cada vegada que canvia l'array.
+    const columnsAmbParagrafs = useMemo(() => ambParagrafsLlargs(columns), [columns]);
 
     const {
         currentActions: apiCurrentActions,
@@ -341,6 +373,7 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
                 // el pugui sobreescriure.
                 getRowHeight={() => 'auto'}
                 {...others}
+                columns={columnsAmbParagrafs}
                 // El títol de la pantalla ja el posa ScreenFrame (<h1>). Sense títol, la barra d'eines
                 // de la llibreria pintava igualment un <h6> buit, que l'OAW compta com a encapçalament
                 // buit i com a salt de nivell (h1 -> h6). Només es mostra si la graella en du un de
