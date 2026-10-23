@@ -905,10 +905,6 @@ const translationEs = {
         config: {
             title: "Propiedades de configuración",
             accio: {
-                restart: {
-                    label: "Reinicia tareas en segundo plano",
-                    ok: "Se han reiniciado las tareas en segundo plano. Puede comprobar el estado de ejecución de cada tarea en el monitor del sistema.",
-                },
                 sync: {
                     label: "Sincroniza",
                     ok: "Sincronización realizada correctamente",

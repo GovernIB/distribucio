@@ -155,14 +155,6 @@ export const Propietats = () => {
         return configGroups.filter((g) => temp.some((g2) => g2.id == g.id || g2.parent?.id == g.id));
     }, [filteredProps, configGroups]);
 
-    const restart = () => {
-        apiConfigAction(undefined, { code: 'RESTART_TASKS' })
-            .then(() => {
-                temporalMessageShow(null, t('page.config.accio.restart.ok'), 'success');
-            })
-            .catch((error) => temporalMessageShow(null, error.message, 'error'));
-    };
-
     const sync = () => {
         apiConfigAction(undefined, { code: 'SYNC_JBOSS' })
             .then(() => {
@@ -179,14 +171,6 @@ export const Propietats = () => {
                 actions={
                     <>
                         <QuickFilter compact onChange={setQuickFilter} />
-                        <ToolbarButton
-                            title={t('page.config.accio.restart.label')}
-                            icon={icons.sincronitza}
-                            color="primary"
-                            onClick={restart}
-                        >
-                            {t('page.config.accio.restart.label')}
-                        </ToolbarButton>
                         <ToolbarButton
                             title={t('page.config.accio.sync.label')}
                             icon={icons.sincronitza}
