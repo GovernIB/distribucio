@@ -14,11 +14,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
+import org.springframework.data.annotation.Transient;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -108,6 +110,8 @@ public class UsuariResource extends BaseResource<String> {
 	private InterficieUsuariEnumDto interficieUsuari;
 	/** Nomes es fixa en llegir el recurs (veure completeResource); no es persisteix. */
 	private String[] rols;
+
+    @Transient private LocalDateTime darreraConnexio;
 
 	/** Paràmetres de l'acció {@link #ACTION_CANVI_CODIS_CODE}. */
 	@Getter

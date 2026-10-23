@@ -222,6 +222,7 @@ public class UsuariResourceServiceImpl extends BaseMutableResourceService<Usuari
 
 	@Override
 	protected void afterConversion(UsuariResourceEntity entity, UsuariResource resource) {
+        resource.setDarreraConnexio(entity.getDarrerPeriode());
 		// completeResource() només es crida des de create()/update() (sobre el resource
 		// d'entrada, abans de desar) -- getOne() no el crida mai, per tant sense això els camps
 		// derivats (rols, bustiaPerDefecte) no es mostraven en obrir el diàleg de perfil, només

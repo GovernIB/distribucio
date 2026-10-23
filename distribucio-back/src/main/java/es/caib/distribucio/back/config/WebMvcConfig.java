@@ -100,6 +100,8 @@ public class WebMvcConfig extends BaseWebMvcConfig {
 	private AccesMetadadaInterceptor accesMetadadaInterceptor;
 	@Autowired
 	private AccesSuperInterceptor accesSuperInterceptor;
+	@Autowired
+	private CurrentUserHandlerInterceptor currentUserHandlerInterceptor;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -367,6 +369,7 @@ public class WebMvcConfig extends BaseWebMvcConfig {
 		registry.addInterceptor(accesAdminInterceptor).addPathPatterns(ADMIN_PATHS);
 		registry.addInterceptor(accesMetadadaInterceptor).addPathPatterns(META_PATHS);
 		registry.addInterceptor(accesSuperInterceptor).addPathPatterns(SUPER_PATHS).excludePathPatterns(SUPER_EXCLUSIONS);
+		registry.addInterceptor(currentUserHandlerInterceptor).excludePathPatterns(SUPER_EXCLUSIONS).addPathPatterns("/api/**");
 	}
 
 	/**
