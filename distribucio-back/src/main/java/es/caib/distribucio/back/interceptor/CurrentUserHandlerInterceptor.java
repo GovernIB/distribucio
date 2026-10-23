@@ -1,6 +1,6 @@
 package es.caib.distribucio.back.interceptor;
 
-import es.caib.distribucio.back.helper.UsuarisRefreshHelper;
+import es.caib.distribucio.logic.intf.resourceservice.UsuariResourceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class CurrentUserHandlerInterceptor implements AsyncHandlerInterceptor {
 
-    private final UsuarisRefreshHelper usuarisRefreshHelper;
+    private final UsuariResourceService usuariResourceService;
 
     @Override
     public boolean preHandle(
@@ -27,7 +27,7 @@ public class CurrentUserHandlerInterceptor implements AsyncHandlerInterceptor {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             try {
-                usuarisRefreshHelper.refreshCurrentUser();
+                usuariResourceService.refresh();
             } catch (Exception e) {
                 log.error("Error refreshing current user", e);
             }

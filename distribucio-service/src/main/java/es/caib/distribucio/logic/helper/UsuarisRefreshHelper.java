@@ -1,4 +1,4 @@
-package es.caib.distribucio.back.helper;
+package es.caib.distribucio.logic.helper;
 
 import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.persist.resourceentity.UsuariResourceEntity;

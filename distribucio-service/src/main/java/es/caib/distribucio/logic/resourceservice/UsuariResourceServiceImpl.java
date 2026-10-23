@@ -4,6 +4,7 @@ import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.helper.CacheHelper;
 import es.caib.distribucio.logic.helper.UsuariCodiHelper;
+import es.caib.distribucio.logic.helper.UsuarisRefreshHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.base.exception.ArtifactNotFoundException;
@@ -68,8 +69,9 @@ public class UsuariResourceServiceImpl extends BaseMutableResourceService<Usuari
 	private final BustiaResourceRepository bustiaResourceRepository;
 	private final BustiaDefaultResourceRepository bustiaDefaultResourceRepository;
 	private final UsuariCodiHelper usuariCodiHelper;
+    private final UsuarisRefreshHelper usuarisRefreshHelper;
 
-	@PostConstruct
+    @PostConstruct
 	public void init() {
 		register(UsuariResource.Fields.idioma, new IdiomaFieldOptionsProvider());
 		register(UsuariResource.ACTION_CANVI_CODIS_CODE, new CanviCodisActionExecutor());
@@ -276,6 +278,7 @@ public class UsuariResourceServiceImpl extends BaseMutableResourceService<Usuari
 				usuari.setEstilMenu(usuariFromAuth.getEstilMenu());
 				usuariResourceRepository.save(usuari);
 			}
+            usuarisRefreshHelper.refreshCurrentUser();
 		}
     }
 
