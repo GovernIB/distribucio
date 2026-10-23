@@ -210,7 +210,8 @@ const baseComponentStyles = {
                 // un píxel perquè el centre caigui just a MENU_ICON_COLUMN.
                 [`@container (max-width: ${MENU_COLLAPSED_BELOW}px)`]: {
                     '& .MuiListItemText-root': { display: 'none' },
-                    '& > div > .MuiList-root > .MuiListItemButton-root > .menu-item-icon': {
+                    // Les entrades amb enllaç van dins un <li> (Link de BaseApp.tsx); els grups, no
+                    '& > div > .MuiList-root > .MuiListItemButton-root > .menu-item-icon, & > div > .MuiList-root > li > .MuiListItemButton-root > .menu-item-icon': {
                         marginLeft: `${-8 + MENU_BORDER_WIDTH}px`,
                     },
                 },
@@ -218,7 +219,7 @@ const baseComponentStyles = {
                 // esquerra), i amb la mida nova el centre cauria a 44px. Es retoca el marge de les
                 // entrades de nivell 0 perquè el centre sigui a MENU_ICON_COLUMN, com en plegat.
                 [`@container (min-width: ${MENU_COLLAPSED_BELOW + 1}px)`]: {
-                    '& > .MuiList-root > .MuiListItemButton-root > .menu-item-icon': {
+                    '& > .MuiList-root > .MuiListItemButton-root > .menu-item-icon, & > .MuiList-root > li > .MuiListItemButton-root > .menu-item-icon': {
                         marginLeft: `${MENU_ICON_COLUMN - ICON_SIZE / 2 - MENU_ITEM_PADDING_LEFT}px`,
                     },
                 },

@@ -122,7 +122,6 @@ const defaultProps: Partial<StyledMuiGridProps> = {
     // Exemple (comentat, no actiu):
     // paginationActive: true,
     // striped: true,
-    title: '',
 };
 
 const StyledMuiGrid = (props: StyledMuiGridProps) => {
@@ -342,6 +341,12 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
                 // el pugui sobreescriure.
                 getRowHeight={() => 'auto'}
                 {...others}
+                // El títol de la pantalla ja el posa ScreenFrame (<h1>). Sense títol, la barra d'eines
+                // de la llibreria pintava igualment un <h6> buit, que l'OAW compta com a encapçalament
+                // buit i com a salt de nivell (h1 -> h6). Només es mostra si la graella en du un de
+                // propi (p. ex. la de bústies de Reenviar); `titleDisabled` de la llibreria només
+                // admet `true`, per això es decideix aquí i no a defaultProps.
+                titleDisabled={others.titleDisabled ?? (others.title ? undefined : true)}
                 // Per defecte la graella fa scroll ella mateixa (capçalera, filtre i paginació
                 // queden fixos). Les graelles que no són el contingut principal de la pàgina
                 // (diàlegs, pestanyes, detalls) passen autoHeight i creixen amb el contingut.
