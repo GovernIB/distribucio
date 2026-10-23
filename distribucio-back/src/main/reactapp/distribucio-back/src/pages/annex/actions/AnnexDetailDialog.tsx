@@ -1,8 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MuiDialog, useCloseDialogButtons, useResourceApiService } from 'reactlib';
-import Load from '../../../components/Load';
-import AnnexDetailContent from './AnnexDetailContent';
+import Grid from '@mui/material/Grid';
+import Load from '../../../components/Load';import AnnexDetailContent from './AnnexDetailContent';
 
 export const useAnnexDetailDialog = () => {
     const { t } = useTranslation();
@@ -48,7 +48,9 @@ export const useAnnexDetailDialog = () => {
             buttonCallback={() => handleClose()}
         >
             <Load value={annex}>
-                <AnnexDetailContent annex={annex} onRefresh={refreshAnnex} />
+                <Grid container>
+                    <AnnexDetailContent annex={annex} onRefresh={refreshAnnex} />
+                </Grid>
             </Load>
         </MuiDialog>
     );

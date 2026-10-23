@@ -332,9 +332,10 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
                 // l'alçada que sobra, amb un mínim: si no hi cap, és el contingut de la pantalla qui fa
                 // scroll i el títol i el peu es mantenen visibles. Cal que la pàgina usi <GridPage> sense
                 // autoHeight, que és qui fixa l'alçada disponible (100vh).
-                ...(autoHeight
-                    ? { height: '100%' }
-                    : { flex: '1 1 0', minHeight: SCREEN_GRID_MIN_HEIGHT + 'px' }),
+                // Amb autoHeight l'embolcall no té alçada pròpia: la graella és un element flex i, amb
+                // `height: 100%`, es comprimia fins a l'alçada del pare (p. ex. el panell d'una pestanya)
+                // i retallava les files i els panells de detall expandits, sense deixar fer scroll.
+                ...(!autoHeight && { flex: '1 1 0', minHeight: SCREEN_GRID_MIN_HEIGHT + 'px' }),
                 // El filtre ràpid de la barra d'eines és un TextField "small" de 37px i quedava
                 // més alt que la resta de controls de la barra (32px). S'iguala des d'aquí perquè
                 // el crea reactlib i no admet ni props ni estils des de fora.

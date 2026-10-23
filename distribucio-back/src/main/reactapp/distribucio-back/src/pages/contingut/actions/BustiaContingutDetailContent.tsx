@@ -1,18 +1,31 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
 import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import Icon from '@mui/material/Icon';
-import CampDetall from '../../../components/CampDetall';
+import { DetailCardContent } from '../../../components/CardData';
 import { AclPermissionGrid } from '../../../components/AclPermissionManager';
 import { useBustiaPermisosColumns } from '../../bustia/BustiaPermisosForm';
 
 type BustiaContingutDetailContentProps = {
     bustia: any;
 };
+
+/** Amplada (px) de l'etiqueta dels camps del detall, perquè els valors quedin alineats. */
+const BUSTIA_LABEL_WIDTH = 220;
+
+type BustiaCampProps = {
+    label: string;
+    children?: React.ReactNode;
+    /** El valor és un element React (no text): no s'embolica en un Typography. */
+    isObject?: boolean;
+};
+
+const BustiaCamp: React.FC<BustiaCampProps> = ({ label, children, ...other }) => (
+    <DetailCardContent title={label} titleSize="auto" textSize="grow" labelWidth={BUSTIA_LABEL_WIDTH} {...other}>
+        {children}
+    </DetailCardContent>
+);
 
 const BooleaValue: React.FC<{ value?: boolean }> = ({ value }) => (
     <Icon fontSize="small">
@@ -25,50 +38,43 @@ export const BustiaContingutDetailContent: React.FC<BustiaContingutDetailContent
     const permisosColumns = useBustiaPermisosColumns();
 
     return (
-        <Table size="small">
-            <TableBody>
-                <CampDetall label={t('page.contingut.detall.camp.nom')} value={bustia?.nom} />
-                <CampDetall label={t('page.contingut.detall.camp.entitat')} value={bustia?.entitat?.description} />
-                <CampDetall
-                    label={t('page.contingut.detall.camp.unitatOrganitzativa')}
-                    value={bustia?.unitatOrganitzativa?.description}
-                />
-                <CampDetall
-                    label={t('page.contingut.detall.camp.perDefecte')}
-                    value={<BooleaValue value={bustia?.perDefecte} />}
-                />
-                <CampDetall
-                    label={t('page.contingut.detall.camp.activa')}
-                    value={<BooleaValue value={bustia?.activa} />}
-                />
-                {!!bustia?.permisosCount && (
-                    <TableRow>
-                        <TableCell colSpan={2} sx={{ p: 0, borderBottom: 'none' }}>
-                            <Box sx={{ mt: 2 }}>
-                                <AclPermissionGrid
-                                    title={t('page.contingut.detall.camp.permisos')}
-                                    resourceId={bustia.id}
-                                    resourceType="BUSTIA"
-                                    columns={permisosColumns}
-                                    readOnly
-                                    toolbarHideCreate
-                                    rowHideUpdateButton
-                                    rowHideDeleteButton
-                                    autoHeight
-                                    toolbarHideQuickFilter
-                                    height="300px"
-                                    density="compact"
-                                    sx={{
-                                        '& .MuiDataGrid-row': { minHeight: '36px !important', maxHeight: '36px !important' },
-                                        '& .MuiDataGrid-cell': { minHeight: '36px !important', maxHeight: '36px !important' },
-                                    }}
-                                />
-                            </Box>
-                        </TableCell>
-                    </TableRow>
-                )}
-            </TableBody>
-        </Table>
+        <>
+            <BustiaCamp label={t('page.contingut.detall.camp.nom')}>{bustia?.nom}</BustiaCamp>
+            <BustiaCamp label={t('page.contingut.detall.camp.entitat')}>{bustia?.entitat?.description}</BustiaCamp>
+            <BustiaCamp label={t('page.contingut.detall.camp.unitatOrganitzativa')}>
+                {bustia?.unitatOrganitzativa?.description}
+            </BustiaCamp>
+            <BustiaCamp label={t('page.contingut.detall.camp.perDefecte')} isObject>
+                <BooleaValue value={bustia?.perDefecte} />
+            </BustiaCamp>
+            <BustiaCamp label={t('page.contingut.detall.camp.activa')} isObject>
+                <BooleaValue value={bustia?.activa} />
+            </BustiaCamp>
+            {!!bustia?.permisosCount && (
+                <Grid size={12}>
+                    <Box sx={{ mt: 2 }}>
+                        <AclPermissionGrid
+                            title={t('page.contingut.detall.camp.permisos')}
+                            resourceId={bustia.id}
+                            resourceType="BUSTIA"
+                            columns={permisosColumns}
+                            readOnly
+                            toolbarHideCreate
+                            rowHideUpdateButton
+                            rowHideDeleteButton
+                            autoHeight
+                            toolbarHideQuickFilter
+                            height="300px"
+                            density="compact"
+                            sx={{
+                                '& .MuiDataGrid-row': { minHeight: '36px !important', maxHeight: '36px !important' },
+                                '& .MuiDataGrid-cell': { minHeight: '36px !important', maxHeight: '36px !important' },
+                            }}
+                        />
+                    </Box>
+                </Grid>
+            )}
+        </>
     );
 };
 

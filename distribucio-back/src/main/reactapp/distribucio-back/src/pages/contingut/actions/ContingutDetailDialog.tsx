@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MuiDialog, useCloseDialogButtons, useResourceApiService } from 'reactlib';
+import Grid from '@mui/material/Grid';
 import Load from '../../../components/Load';
 import BustiaContingutDetailContent from './BustiaContingutDetailContent';
 import {useBasicDetail} from '../../registre/detail/useRegistreDetail';
@@ -57,7 +58,9 @@ export const useContingutDetailDialog = () => {
             buttonCallback={() => handleClose()}
         >
             <Load value={bustia}>
-                <BustiaContingutDetailContent bustia={bustia} />
+                <Grid container>
+                    <BustiaContingutDetailContent bustia={bustia} />
+                </Grid>
             </Load>
         </MuiDialog>
     );
