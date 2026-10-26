@@ -36,6 +36,8 @@ type SessioUsuari = {
     email?: string;
     /** Rols de l'usuari que la interfície pot oferir (inclòs el rol base "tothom"). */
     rols: string[];
+    /** Tots els rols de l'aplicació (DIS_*) que l'usuari té a l'IdP, per mostrar-los al perfil. */
+    rolsPerfil: string[];
 };
 
 type EstatSessio = 'carregant' | 'autenticat' | 'caducada' | 'error';

@@ -32,11 +32,11 @@ import java.util.stream.Collectors;
  * rol" en lloc de "l'usuari està operant amb aquest rol": qui té {@code DIS_ADMIN} i
  * {@code DIS_ADMIN_LECTURA} continuaria podent escriure encara que hagués triat el rol de lectura.
  * <p/>
- * {@link WebSecurityConfig#getAllowedRoles()} ja fa aquesta restricció, però només arriba a
- * aplicar-se al camí de token bearer ({@code BaseWebSecurityConfig.jwtAuthConverter}, que es
- * resol a cada petició). Als camins de sessió OIDC i de preautenticació les autoritats es
- * calculen una sola vegada -- en iniciar sessió-- quan encara no hi ha cap capçalera, de manera
- * que la restricció no s'hi aplicava mai. Aquest filtre la garanteix als tres camins.
+ * És l'únic punt on es fa aquesta restricció: les autoritats de l'autenticació són tots els rols
+ * de l'usuari a l'IdP (veure {@link WebSecurityConfig#filterAllowedGrantedAuthorities}). Als
+ * camins de sessió OIDC i de preautenticació es calculen una sola vegada -- en iniciar sessió --,
+ * quan encara no hi ha cap capçalera, així que la restricció per rol no pot anar allà. Aquest
+ * filtre l'aplica igual als tres camins (bearer, OIDC i preautenticació).
  * <p/>
  * Només pot restringir: la llista resultant és la intersecció amb les autoritats que l'usuari ja
  * tenia, així que una capçalera manipulada no pot concedir cap rol (com a molt deixa la petició

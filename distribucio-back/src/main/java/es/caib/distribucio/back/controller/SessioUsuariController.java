@@ -1,11 +1,13 @@
 package es.caib.distribucio.back.controller;
 
-import es.caib.distribucio.back.config.WebMvcConfig;
-import es.caib.distribucio.logic.intf.config.BaseConfig;
-import es.caib.distribucio.logic.intf.dto.UsuariDto;
-import es.caib.distribucio.logic.intf.service.AplicacioService;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -16,13 +18,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import es.caib.distribucio.back.config.WebMvcConfig;
+import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.dto.UsuariDto;
+import es.caib.distribucio.logic.intf.service.AplicacioService;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
 /**
  * Usuari de la sessió de servidor amb què opera la interfície REACT.
@@ -59,6 +60,8 @@ public class SessioUsuariController {
 			BaseConfig.ROLE_USER
 	};
 
+	private static final String PREFIX_ROLS_PERFIL = "DIS_";
+
 	private final AplicacioService aplicacioService;
 
 	@GetMapping(BaseConfig.API_PATH + "/sessioUsuari")
@@ -67,11 +70,14 @@ public class SessioUsuariController {
 		if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
-		Set<String> autoritats = auth.getAuthorities().stream().
+		List<String> rols = auth.getAuthorities().stream().
 				map(GrantedAuthority::getAuthority).
-				collect(Collectors.toSet());
-		List<String> rols = Arrays.stream(ROLS_INTERFICIE).
-				filter(autoritats::contains).
+				collect(Collectors.toList());
+		// Els rols que es mostren al perfil: tots els que l'usuari té a l'Idp però només es mostren els rols de la interfície com
+		// la interfície JSP (veure UsuariController.getFiltraRolsPerMostrar).
+		List<String> rolsPerfil = rols.stream().
+				filter(a -> a.startsWith(PREFIX_ROLS_PERFIL)).
+				sorted().
 				collect(Collectors.toList());
 		// L'usuari pot no existir encara a dis_usuari (primer accés): el nom i el correu són
 		// només per a mostrar-los, i sense ells la interfície mostra el codi.
@@ -80,7 +86,8 @@ public class SessioUsuariController {
 				auth.getName(),
 				usuari != null ? usuari.getNom() : null,
 				usuari != null ? usuari.getEmail() : null,
-				rols));
+				rols,
+				rolsPerfil));
 	}
 
 	/**
@@ -131,6 +138,7 @@ public class SessioUsuariController {
 		String nom;
 		String email;
 		List<String> rols;
+		List<String> rolsPerfil;
 	}
 
 }
