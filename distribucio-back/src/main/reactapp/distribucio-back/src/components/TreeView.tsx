@@ -45,23 +45,21 @@ export const TreeView = ({list, renderCell, defaultExpandedItems, ...other} :any
         setExpanded([])
     }
 
-    return <SimpleTreeView
-        expandedItems={expanded}
-        onExpandedItemsChange={(_e, ids) => setExpanded(ids)}
-        {...other}
-    >
-        <ButtonGroup>
-            <Tooltip title={t('component.TreeView.expandAll')}>
-                <Button onClick={expandAll} startIcon={<Icon>arrow_drop_down</Icon>}>
-                    {t('component.TreeView.expandAll')}
-                </Button>
-            </Tooltip>
-            <Tooltip title={t('component.TreeView.collapseAll')}>
-                <Button onClick={collapseAll} startIcon={<Icon>arrow_drop_up</Icon>}>
-                    {t('component.TreeView.collapseAll')}
-                </Button>
-            </Tooltip>
-        </ButtonGroup>
-        <TreeList list={list} renderCell={renderCell} />
-    </SimpleTreeView>
+    return (
+        <SimpleTreeView expandedItems={expanded} onExpandedItemsChange={(_e, ids) => setExpanded(ids)} {...other}>
+            <ButtonGroup sx={{ mb: 1 }}>
+                <Tooltip title={t('component.TreeView.expandAll')}>
+                    <Button onClick={expandAll} startIcon={<Icon>arrow_drop_down</Icon>}>
+                        {t('component.TreeView.expandAll')}
+                    </Button>
+                </Tooltip>
+                <Tooltip title={t('component.TreeView.collapseAll')}>
+                    <Button onClick={collapseAll} startIcon={<Icon>arrow_drop_up</Icon>}>
+                        {t('component.TreeView.collapseAll')}
+                    </Button>
+                </Tooltip>
+            </ButtonGroup>
+            <TreeList list={list} renderCell={renderCell} />
+        </SimpleTreeView>
+    );
 }

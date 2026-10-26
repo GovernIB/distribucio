@@ -200,7 +200,7 @@ const translationEs = {
                 },
                 accio: {
                     gestionar: 'Gestiona los permisos',
-                    nou: 'Nuevo permiso',
+                    nou: 'Nuevo permiso de entidad',
                     modificar: 'Modifica',
                     esborrar: 'Elimina',
                     guardarOk: 'El permiso se ha guardado correctamente',
@@ -693,16 +693,6 @@ const translationEs = {
         integracio: {
             grid: {
                 title: 'Monitor de integraciones',
-                column: {
-                    data: 'Fecha',
-                    descripcio: 'Descripción',
-                    tipus: 'Tipo',
-                    codiUsuari: 'Usuario',
-                    entitat: 'Entidad',
-                    numeroRegistre: 'Número de registro',
-                    tempsResposta: 'Tiempo respuesta',
-                    estat: 'Estado',
-                },
             },
             pipella: {
                 USUARIS: 'Usuarios',
@@ -720,14 +710,6 @@ const translationEs = {
             },
             detail: {
                 title: 'Detalle',
-                tipus: {
-                    ENVIAMENT: 'Enviado',
-                    RECEPCIO: 'Recepción',
-                },
-                params: 'Parámetros',
-                errorDescripcio: 'Descripción del error',
-                excepcioMessage: 'Mensaje',
-                excepcioStacktrace: 'Traza',
                 copyTooltip: 'Copia la traza al portapapeles',
             },
             diagnostic: {

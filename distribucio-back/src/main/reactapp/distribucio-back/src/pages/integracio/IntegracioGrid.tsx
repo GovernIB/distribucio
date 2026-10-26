@@ -95,7 +95,7 @@ export const IntegracioGrid: React.FC = () => {
                     paginationActive
                     sortModel={sortModel}
                     onRefresh={refreshCounts}
-                    onRowClick={(params: any) => mostrarDetall(params?.row?.id, params?.row)}
+                    onRowClick={(params: any) => mostrarDetall(params?.row?.id)}
                     rowAdditionalActions={actions}
                     toolbarElementsWithPositions={[
                         {

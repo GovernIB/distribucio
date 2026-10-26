@@ -200,7 +200,7 @@ const translationCa = {
                 },
                 accio: {
                     gestionar: 'Gestiona els permisos',
-                    nou: 'Nou permís',
+                    nou: "Nou permís d'entitat",
                     modificar: 'Modifica',
                     esborrar: 'Esborra',
                     guardarOk: "El permís s'ha desat correctament",
@@ -693,16 +693,6 @@ const translationCa = {
         integracio: {
             grid: {
                 title: "Monitor d'integracions",
-                column: {
-                    data: 'Data',
-                    descripcio: 'Descripció',
-                    tipus: 'Tipus',
-                    codiUsuari: 'Usuari',
-                    entitat: 'Entitat',
-                    numeroRegistre: 'Número de registre',
-                    tempsResposta: 'Temps resposta',
-                    estat: 'Estat',
-                },
             },
             pipella: {
                 USUARIS: 'Usuaris',
@@ -720,14 +710,6 @@ const translationCa = {
             },
             detail: {
                 title: 'Detall',
-                tipus: {
-                    ENVIAMENT: 'Enviament',
-                    RECEPCIO: 'Recepció',
-                },
-                params: 'Paràmetres',
-                errorDescripcio: 'Descripció de l\'error',
-                excepcioMessage: 'Missatge',
-                excepcioStacktrace: 'Traça',
                 copyTooltip: 'Còpia la traça al portapapers',
             },
             diagnostic: {

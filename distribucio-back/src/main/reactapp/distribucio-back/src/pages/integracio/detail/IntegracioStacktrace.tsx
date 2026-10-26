@@ -9,6 +9,8 @@ import Box from '@mui/material/Box';
 import { useBaseAppContext } from 'reactlib';
 
 type IntegracioStacktraceProps = {
+    /** Etiqueta del camp de la traça (la proporciona el backend). */
+    label?: string;
     stacktrace: string;
     height?: number;
 };
@@ -28,6 +30,7 @@ const esLiniaExcepcio = (linia: string, index: number) =>
  * les línies d'excepció, i els frames van amb el color de text secundari.
  */
 export const IntegracioStacktrace: React.FC<IntegracioStacktraceProps> = ({
+    label,
     stacktrace,
     height = 300,
 }) => {
@@ -69,9 +72,7 @@ export const IntegracioStacktrace: React.FC<IntegracioStacktraceProps> = ({
     return (
         <Stack>
             <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between">
-                <Typography variant="subtitle2">
-                    {t('page.integracio.detail.excepcioStacktrace')}
-                </Typography>
+                <Typography variant="subtitle2">{label}</Typography>
                 <IconButton
                     size="small"
                     onClick={copyStacktrace}
