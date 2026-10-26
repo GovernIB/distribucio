@@ -124,10 +124,10 @@ const translationCa = {
             preparacio: {
                 title: "Preparació de la present declaració",
                 elaborat: "Aquesta declaració s'ha elaborat mitjançant autoavaluació realitzada per l'equip de desenvolupament utilitzant l'eina automatitzada: Rastrejador Web de l'Observatori d'Accessibilitat Web.",
-                dataPrep: "Data de preparació: 23/10/2026",
                 darreraRevisio: "Darrera revisió: 23/10/2026",
                 properaRevisio: "Propera revisió programada: 23/10/2027",
                 norma: "Norma de referència: UNE-EN 301549:2022, nivells A i AA",
+                mostra: "Mostra avaluada: 10 pàgines de l'aplicació, amb els rols de superadministrador i administrador d'entitat",
                 resultatTitle: "Resultat",
                 puntuacioLabel: "Puntuació mitjana del lloc web",
                 puntuacioVal: "8,47",

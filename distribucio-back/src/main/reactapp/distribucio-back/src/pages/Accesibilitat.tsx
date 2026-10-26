@@ -89,10 +89,10 @@ const Accesibilitat: React.FC = () => {
                         </SectionTitle>
                         <Typography component="p">{t(`${p}.preparacio.elaborat`)}</Typography>
                         <Box component="ul">
-                            <Box component="li">{t(`${p}.preparacio.dataPrep`)}</Box>
                             <Box component="li">{t(`${p}.preparacio.darreraRevisio`)}</Box>
                             <Box component="li">{t(`${p}.preparacio.properaRevisio`)}</Box>
                             <Box component="li">{t(`${p}.preparacio.norma`)}</Box>
+                            <Box component="li">{t(`${p}.preparacio.mostra`)}</Box>
                         </Box>
                         <Typography component="p" sx={{ fontWeight: 600, mt: 1 }}>
                             {t(`${p}.preparacio.resultatTitle`)}
