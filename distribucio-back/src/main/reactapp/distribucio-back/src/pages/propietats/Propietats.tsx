@@ -65,6 +65,20 @@ export const QuickFilter: React.FC<{
     );
 };
 
+// Grups del menú, niuats: cada grup penja del seu pare (la clau `undefined` són els de nivell superior)
+const GroupTreeItems: React.FC<{ parentId?: string; childrenByParent: Map<string | undefined, any[]> }> = (props) => {
+    const { parentId, childrenByParent } = props;
+    return (
+        <>
+            {childrenByParent.get(parentId)?.map((g) => (
+                <TreeItem key={g.key} itemId={g.id} label={g.description}>
+                    {childrenByParent.has(g.id) && <GroupTreeItems parentId={g.id} childrenByParent={childrenByParent} />}
+                </TreeItem>
+            ))}
+        </>
+    );
+};
+
 export const Propietats = () => {
     const { t } = useTranslation();
     const { id: entitatId } = useParams();
@@ -125,35 +139,109 @@ export const Propietats = () => {
     const { isReady: isGroupReady, find: apiGroupFind } = useResourceApiService('configGroupResource');
     const [configGroups, setConfigGroups] = React.useState<any[]>();
     const [selectedGroupId, setSelectedGroupId] = React.useState<string>();
+    const [expandedGroupIds, setExpandedGroupIds] = React.useState<string[]>([]);
     React.useEffect(() => {
         if (isGroupReady) {
             const args = {
-                sorts: ['position,asc'],
+                // Hi ha grups germans amb la mateixa posició: la descripció desempata l'ordre
+                sorts: ['position,asc', 'description,asc'],
                 unpaged: true,
             };
             apiGroupFind(args).then((response) => {
-                const configGroups = response.rows;
-                setSelectedGroupId(undefined);
-                setConfigGroups(configGroups);
-                if (configGroups.length) {
-                    const isSelectedGroupIdInConfigGroups = configGroups.find((g) => g.id === selectedGroupId);
-                    if (!isSelectedGroupIdInConfigGroups) {
-                        setSelectedGroupId(configGroups[0].id);
-                    }
-                }
+                setConfigGroups(response.rows);
             });
         }
     }, [isGroupReady]);
 
+    const groupsById = useMemo(() => new Map<string, any>((configGroups ?? []).map((g) => [g.id, g])), [configGroups]);
+
+    // Grups visibles: els que tenen propietats i tots els seus ancestres, a qualsevol nivell
     const filteredGroups = useMemo(() => {
-        if (!configGroups || !filteredProps || filteredProps.length === 0) {
+        if (!configGroups || filteredProps.length === 0) {
             return [];
         }
+        const visibleIds = new Set<string>();
+        filteredProps.forEach((p) => {
+            let id: string | undefined = p.group?.id;
+            while (id != null && !visibleIds.has(id)) {
+                visibleIds.add(id);
+                id = groupsById.get(id)?.parent?.id;
+            }
+        });
+        return configGroups.filter((g) => visibleIds.has(g.id));
+    }, [filteredProps, configGroups, groupsById]);
 
-        const temp = configGroups.filter((g) => filteredProps.some((p) => g.id === p.group.id));
+    // Grups visibles agrupats pel pare; els grups de nivell superior pengen de la clau `undefined`
+    const childrenByParent = useMemo(() => {
+        const map = new Map<string | undefined, any[]>();
+        filteredGroups.forEach((g) => {
+            const parentId = g.parent?.id;
+            map.set(parentId, [...(map.get(parentId) ?? []), g]);
+        });
+        return map;
+    }, [filteredGroups]);
 
-        return configGroups.filter((g) => temp.some((g2) => g2.id == g.id || g2.parent?.id == g.id));
-    }, [filteredProps, configGroups]);
+    const groupIdsWithProps = useMemo(() => new Set<string>(filteredProps.map((p) => p.group?.id)), [filteredProps]);
+
+    // Grup mateix o, si no té propietats, el primer descendent que en tingui (perquè el panell no quedi buit)
+    const resolveGroupWithProps = (groupId: string): string | undefined => {
+        if (groupIdsWithProps.has(groupId)) {
+            return groupId;
+        }
+        for (const child of childrenByParent.get(groupId) ?? []) {
+            const resolved = resolveGroupWithProps(child.id);
+            if (resolved != null) {
+                return resolved;
+            }
+        }
+        return undefined;
+    };
+
+    // Els pares sense propietats pròpies són només contenidors: en fer-hi clic s'expandeixen o es pleguen, però no es seleccionen
+    const isContainer = (groupId: string) => childrenByParent.has(groupId) && !groupIdsWithProps.has(groupId);
+
+    // Manté sempre seleccionat un grup visible i amb propietats (càrrega inicial, cercador, vista per entitat)
+    React.useEffect(() => {
+        if (filteredGroups.length === 0) {
+            return;
+        }
+        const isSelectedVisible = filteredGroups.some((g) => g.id === selectedGroupId);
+        const candidates = isSelectedVisible ? [selectedGroupId!] : (childrenByParent.get(undefined) ?? []).map((g) => g.id);
+        for (const candidate of candidates) {
+            const resolved = resolveGroupWithProps(candidate);
+            if (resolved != null) {
+                if (resolved !== selectedGroupId) {
+                    setSelectedGroupId(resolved);
+                }
+                return;
+            }
+        }
+    }, [filteredGroups, selectedGroupId]);
+
+    // En seleccionar un grup només queda oberta la seva branca; si no en té, es plega tot el menú.
+    React.useEffect(() => {
+        const ancestorIds: string[] = [];
+        let parentId = selectedGroupId != null ? groupsById.get(selectedGroupId)?.parent?.id : undefined;
+        while (parentId != null && !ancestorIds.includes(parentId)) {
+            ancestorIds.push(parentId);
+            parentId = groupsById.get(parentId)?.parent?.id;
+        }
+        setExpandedGroupIds((prev) => {
+            const next = quickFilter ? [...prev, ...ancestorIds.filter((id) => !prev.includes(id))] : ancestorIds;
+            return next.length === prev.length && next.every((id) => prev.includes(id)) ? prev : next;
+        });
+    }, [selectedGroupId, groupsById, quickFilter]);
+
+    // Amb el cercador actiu es desplega tot el que coincideix
+    React.useEffect(() => {
+        if (!quickFilter) {
+            return;
+        }
+        const parentIds = Array.from(childrenByParent.keys()).filter((id): id is string => id != null);
+        setExpandedGroupIds((prev) =>
+            parentIds.every((id) => prev.includes(id)) ? prev : [...prev, ...parentIds.filter((id) => !prev.includes(id))]
+        );
+    }, [quickFilter, childrenByParent]);
 
     const sync = () => {
         apiConfigAction(undefined, { code: 'SYNC_JBOSS' })
@@ -200,10 +288,14 @@ export const Propietats = () => {
                         })}
                     >
                         <SimpleTreeView
-                            selectedItems={selectedGroupId}
+                            selectedItems={selectedGroupId ?? null}
                             onSelectedItemsChange={(_event, id) => {
-                                setSelectedGroupId(id || undefined);
+                                if (id && !isContainer(id)) {
+                                    setSelectedGroupId(id);
+                                }
                             }}
+                            expandedItems={expandedGroupIds}
+                            onExpandedItemsChange={(_event, ids) => setExpandedGroupIds(ids)}
                             sx={(theme) => ({
                                 '& .MuiTreeItem-content': {
                                     paddingY: 1,
@@ -218,16 +310,11 @@ export const Propietats = () => {
                                 }),
                             })}
                         >
-                            {filteredGroups
-                                ?.filter((g) => g.parent == null)
-                                ?.map((g) => (
-                                    <TreeItem key={g.key} itemId={g.id} label={g.description} />
-                                ))}
+                            <GroupTreeItems childrenByParent={childrenByParent} />
                         </SimpleTreeView>
                     </Box>
                     <Box sx={{ flex: '1 1 0', minWidth: 0 }}>
                         <PropietatsProps
-                            root
                             groupId={selectedGroupId}
                             grups={filteredGroups}
                             configs={filteredProps}

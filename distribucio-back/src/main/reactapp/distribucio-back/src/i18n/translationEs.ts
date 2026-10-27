@@ -971,7 +971,7 @@ const translationEs = {
             title: "Propiedades de configuración",
             accio: {
                 sync: {
-                    label: "Sincroniza",
+                    label: "Sincroniza con JBoss",
                     ok: "Sincronización realizada correctamente",
                 },
             }

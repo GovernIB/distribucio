@@ -49,10 +49,14 @@ export const CombinedIcon = (props: any) => {
 
 /** Botó que ocupa una cel·la del Grid; per sota de `iconOnlyBreakpoint` amaga el text. */
 export const GridButton = (props: any) => {
-    const { title, icon, size, children, hidden, sx, iconOnlyBreakpoint = 'md', iconSx, ...other } = props;
+    const { title, icon, size, children, hidden, sx, iconOnlyBreakpoint = 'md', iconOnlyFrom, iconSx, ...other } = props;
 
     const theme = useTheme();
-    const iconOnly = useMediaQuery(theme.breakpoints.down(iconOnlyBreakpoint));
+    // `iconOnlyFrom`: només icona entre aquest breakpoint i `iconOnlyBreakpoint` (p. ex. a xs el bloc ocupa
+    // tota l'amplada i el text hi cap); sense ell, només icona per sota de `iconOnlyBreakpoint`.
+    const iconOnly = useMediaQuery(
+        iconOnlyFrom ? theme.breakpoints.between(iconOnlyFrom, iconOnlyBreakpoint) : theme.breakpoints.down(iconOnlyBreakpoint)
+    );
 
     const iconNode =
         typeof icon === 'string' ? <Icon sx={{ mr: !iconOnly && children ? 0.5 : 0, ...iconSx }}>{icon}</Icon> : icon;
@@ -78,7 +82,7 @@ export const GridButton = (props: any) => {
  * el botó queda "contained" mentre està actiu.
  */
 export const GridButtonField = (props: any) => {
-    const { name, whitLabel, icon, title, ...other } = props;
+    const { name, whitLabel, icon, title, text, ...other } = props;
     const { data, apiRef, fields } = useFormContext();
 
     const active = !!data?.[name];
@@ -94,7 +98,7 @@ export const GridButtonField = (props: any) => {
                 icon={typeof icon === 'function' ? icon?.(active) : icon}
                 {...other}
             >
-                {whitLabel && label}
+                {text != null ? (typeof text === 'function' ? text(active) : text) : whitLabel && label}
             </GridButton>
         </Load>
     );

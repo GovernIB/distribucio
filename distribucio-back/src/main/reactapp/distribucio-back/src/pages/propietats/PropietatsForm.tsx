@@ -117,7 +117,7 @@ const PropsListItem: React.FC<any> = ({ highlight }:any) => {
                         ...(ambEtiqueta && { id: inputId }),
                         type: password ?'password' :field.type,
                         placeholder: item.alternativeValue || item.key,
-                        helperText: <TextHighlight text={item.key} match={highlight} ignoreCase />
+                        helperText: <TextHighlight text={item.key} component="span" match={highlight} ignoreCase />
                     }}
                 />
             </Grid>

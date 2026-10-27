@@ -3,7 +3,7 @@ import { Grid, Typography } from '@mui/material';
 import { MuiFilter, useFilterApiRef } from 'reactlib';
 import { useTranslation } from 'react-i18next';
 import { useSession } from './SessionStorageContext';
-import { CombinedIcon, GridButton, GridButtonField } from './GridFormField';
+import { GridButton, GridButtonField } from './GridFormField';
 import FilterAutoApply from './FilterAutoApply';
 import { FilterAutoApplyContext, normalizeFilterData } from './FilterAutoApplyContext';
 import { icons } from '../util/icons';
@@ -38,14 +38,14 @@ const filterStyle = { className: 'styledFilter' };
  *
  * El bloc simple només duu el botó "Neteja" (amb icona): amb `md: 0.5` a ~900px d'amplada són uns
  * 17px i la icona hi queda justa (cal que el botó no tingui padding). Amb la cerca avançada (`advancedSearch`)
- * n'hi ha dos (commutador + "Neteja"), tots dos només amb icona.
+ * n'hi ha dos: el commutador (fletxa de desplegar/contreure + text "Avançat"/"Bàsic") i "Neteja" (només icona).
  *
  * Els camps de cada filtre han de sumar `12 - FILTER_BUTTONS_COLUMNS.md` a `md` (o
  * `12 - FILTER_BUTTONS_COLUMNS_ADVANCED.md` amb cerca avançada) a l'última fila perquè el bloc càpiga
  * a la mateixa fila.
  */
-export const FILTER_BUTTONS_COLUMNS = { xs: 12, sm: 6, md: 0.5 } as const;
-export const FILTER_BUTTONS_COLUMNS_ADVANCED = { xs: 12, sm: 6, md: 1 } as const;
+export const FILTER_BUTTONS_COLUMNS = { xs: 12, sm: 2, md: 0.5 } as const;
+export const FILTER_BUTTONS_COLUMNS_ADVANCED = { xs: 12, sm: 3, md: 1.5 } as const;
 
 // Amplada (px) per sota de la qual els botons d'acció del filtre avançat es redueixen a
 // només icona, perquè el text no quedi retallat dins del seu contenidor.
@@ -169,7 +169,10 @@ const StyledMuiFilter = (props: any) => {
         }
     }, []);
 
-    const buttonSize = 12 / (buttons.length + (advancedSearch ? 1 : 0));
+    // Amb cerca avançada el commutador duu icona (fletxa) + text i ocupa la major part del bloc;
+    // la resta de botons (només icona) es reparteixen el que queda.
+    const advancedButtonSize = buttons.length > 0 ? 8 : 12;
+    const otherButtonSize = advancedSearch ? 4 / Math.max(buttons.length, 1) : 12 / buttons.length;
 
     return (
         <MuiFilter
@@ -220,23 +223,23 @@ const StyledMuiFilter = (props: any) => {
                     >
                         {advancedSearch && (
                             <GridButtonField
-                                size={buttonSize}
+                                size={advancedButtonSize}
                                 name="advanced"
                                 title={(active: boolean) =>
                                     active ? t('common.advancedSearchClose') : t('common.advancedSearchOpen')
                                 }
-                                icon={(active: boolean) =>
-                                    active ? (
-                                        <CombinedIcon base={icons.cercaAvancadaTanca} badge={icons.plega} />
-                                    ) : (
-                                        <CombinedIcon base={icons.cercaAvancadaObre} badge={icons.desplega} />
-                                    )
+                                text={(active: boolean) =>
+                                    active ? t('common.advancedSearchClose') : t('common.advancedSearchOpen')
                                 }
+                                icon={(active: boolean) => (active ? icons.plega : icons.desplega)}
+                                iconOnlyFrom="sm"
+                                iconOnlyBreakpoint={buttonIconOnlyBreakpoint}
+                                sx={{ whiteSpace: 'nowrap', overflow: 'hidden' }}
                             />
                         )}
                         {buttons?.map((button: FilterButtonProps) => (
                             <GridButton
-                                size={buttonSize}
+                                size={otherButtonSize}
                                 key={button.value}
                                 title={button.text}
                                 icon={button.icon}

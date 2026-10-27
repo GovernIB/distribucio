@@ -71,7 +71,7 @@ export const useIntegracioTabs = (filterData?: any) => {
                             {t(`page.integracio.pipella.${codi}`)}
                         </StyledBadge>
                     }
-                    sx={{ textTransform: 'none' }}
+                    sx={{ textTransform: 'none', pl: 1.5, pr: 3 }}
                 />
             ))}
         </Tabs>

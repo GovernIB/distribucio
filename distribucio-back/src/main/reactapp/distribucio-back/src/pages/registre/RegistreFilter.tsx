@@ -18,8 +18,8 @@ const RegistreFilterForm: React.FC<any> = ({ isAdmin }: any) => {
         <>
             {!data?.advanced && (
                 <>
-                    <GridFormField size={{ xs: 12, sm: 6, md: 2.25 }} name="numero" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="titol" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="numero" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.75 }} name="titol" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2.25 }} name="interessat" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="dataRecepcioInici" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="estat" />
@@ -36,12 +36,12 @@ const RegistreFilterForm: React.FC<any> = ({ isAdmin }: any) => {
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="dataRecepcioFi" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="unitatOrganitzativa" />
                     <GridFormField
-                        size={{ xs: 12, sm: 6, md: 3 }}
+                        size={{ xs: 12, sm: 6, md: 3.25 }}
                         name="bustia"
                         filter={bustiaFilter}
                         namedQueries={bustiaQueries}
                     />
-                    <GridButtonField icon={icons.bustia} size={{ xs: 12, sm: 1, md: 0.75 }} name="inactives" />
+                    <GridButtonField icon={icons.bustia} size={{ xs: 12, sm: 1, md: 0.5 }} name="inactives" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="enviatPerEmail" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 3.75 }} name="documentacio" />
                     <GridButtonField icon={icons.advertencia} size={{ xs: 12, sm: 1, md: 0.75 }} name="ambEsborranys" />
@@ -52,13 +52,13 @@ const RegistreFilterForm: React.FC<any> = ({ isAdmin }: any) => {
                         hidden={!isAdmin}
                     />
                     <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="backoffice" valueField={'codi'} />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="estat" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="procesEstat" />
-                    <GridButtonField icon={icons.error} size={{ xs: 12, sm: 1, md: 0.75 }} name="ambErrors" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 1.25 }} name="estat" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="procesEstat" />
+                    <GridButtonField icon={icons.error} size={{ xs: 12, sm: 1, md: 0.5 }} name="ambErrors" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="sobreescriure" hidden={!isAdmin} />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 2.75 }} name="nombreAnnexes" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.25 }} name="nombreAnnexes" />
                     <GridFormField
-                        size={{ xs: 12, sm: 6, md: 3.5 }}
+                        size={{ xs: 12, sm: 6, md: 4 }}
                         name="procediment"
                         valueField={'codiSia'}
                         additionalOpctions={(q) =>
@@ -66,7 +66,7 @@ const RegistreFilterForm: React.FC<any> = ({ isAdmin }: any) => {
                         }
                     />
                     <GridFormField
-                        size={{ xs: 12, sm: 6, md: 3 }}
+                        size={{ xs: 12, sm: 6, md: 4 }}
                         name="servei"
                         valueField={'codiSia'}
                         additionalOpctions={(q) =>

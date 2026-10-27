@@ -971,7 +971,7 @@ const translationCa = {
             title: "Propietats de configuració",
             accio: {
                 sync: {
-                    label: "Sincronitza",
+                    label: "Sincronitza amb JBoss",
                     ok: "Sincronització realitzada amb èxit",
                 },
             }

@@ -1,0 +1,68 @@
+databaseChangeLog:
+- changeSet:
+    id: 1.1.1_004
+    author: limit
+    comment: Subgrups per a les propietats que penjaven directament dels grups GENERAL i SCHEDULLED (així el menú de propietats només té fills a seleccionar)
+    changes:
+    - insert:
+        tableName: ${app_prefix}config_group
+        columns:
+        - column:
+            name: code
+            value: GENERAL_COMUNES
+        - column:
+            name: parent_code
+            value: GENERAL
+        - column:
+            name: position
+            valueNumeric: 0
+        - column:
+            name: description
+            value: Configuracions comunes
+    - insert:
+        tableName: ${app_prefix}config_group
+        columns:
+        - column:
+            name: code
+            value: SCHEDULLED_COMUNES
+        - column:
+            name: parent_code
+            value: SCHEDULLED
+        - column:
+            name: position
+            valueNumeric: 0
+        - column:
+            name: description
+            value: Configuració comuna de les tasques periòdiques
+    - update:
+        tableName: ${app_prefix}config
+        columns:
+        - column:
+            name: group_code
+            value: GENERAL_COMUNES
+        where: group_code = 'GENERAL'
+    - update:
+        tableName: ${app_prefix}config
+        columns:
+        - column:
+            name: group_code
+            value: SCHEDULLED_COMUNES
+        where: group_code = 'SCHEDULLED'
+    rollback:
+    - update:
+        tableName: ${app_prefix}config
+        columns:
+        - column:
+            name: group_code
+            value: SCHEDULLED
+        where: group_code = 'SCHEDULLED_COMUNES'
+    - update:
+        tableName: ${app_prefix}config
+        columns:
+        - column:
+            name: group_code
+            value: GENERAL
+        where: group_code = 'GENERAL_COMUNES'
+    - delete:
+        tableName: ${app_prefix}config_group
+        where: code IN ('GENERAL_COMUNES', 'SCHEDULLED_COMUNES')
