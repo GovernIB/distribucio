@@ -8,9 +8,9 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.persistence.criteria.Predicate;
 
+import es.caib.distribucio.logic.helper.SiaResourceHelper;
 import es.caib.distribucio.logic.intf.util.Utils;
-import es.caib.distribucio.persist.resourceentity.BustiaResourceEntity;
-import es.caib.distribucio.persist.resourceentity.ProcedimentResourceEntity;
+import es.caib.distribucio.persist.resourceentity.*;
 import es.caib.distribucio.persist.resourcerepository.BustiaResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.UnitatOrganitzativaResourceRepository;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,8 +26,6 @@ import es.caib.distribucio.logic.intf.model.ServeiResource;
 import es.caib.distribucio.logic.intf.resourceservice.ServeiResourceService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.persist.entity.ServeiEntity;
-import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
-import es.caib.distribucio.persist.resourceentity.ServeiResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +39,7 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 	private final EntitatResourceRepository entitatResourceRepository;
     private final BustiaResourceRepository bustiaResourceRepository;
     private final UnitatOrganitzativaResourceRepository unitatOrganitzativaResourceRepository;
+    private final SiaResourceHelper siaResourceHelper;
 
     @PostConstruct
 	public void init() {
@@ -159,7 +158,8 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 						"No s'ha pogut determinar l'entitat de context.");
 			}
 			try {
-				serveiHelper.findAndUpdateServeis(entitatId);
+//				serveiHelper.findAndUpdateServeis(entitatId);
+                siaResourceHelper.findAndUpdateServeis(entitatId);
 				return null;
 			} catch (Exception e) {
 				log.error("Error actualitzant serveis per a l'entitat " + entitatId, e);
@@ -206,7 +206,8 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 						"No s'ha pogut determinar l'entitat de context.");
 			}
 			try {
-				ServeiEntity serveiEntity = serveiHelper.findAndUpdateServei(entitatId, entity.getCodi());
+//				ServeiEntity serveiEntity = serveiHelper.findAndUpdateServei(entitatId, entity.getCodi());
+                SiaResourceEntity serveiEntity = siaResourceHelper.findAndUpdateServei(entitatId, entity.getCodi());
 				return serveiEntity != null ? serveiEntity.getId() : null;
 			} catch (Exception e) {
 				log.warn("No s'ha pogut actualitzar el servei {}: {}", entity.getCodi(), e.getMessage());
@@ -248,7 +249,7 @@ public class ServeiResourceServiceImpl extends BaseMutableResourceService<Servei
 			if (entitatId == null) {
 				return null;
 			}
-			UpdateProgressDto progres = serveiHelper.serveisActualitzacio.get(entitatId);
+			UpdateProgressDto progres = siaResourceHelper.serveisActualitzacio.get(entitatId);
 
 			return progres;
 		}

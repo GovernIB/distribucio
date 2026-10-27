@@ -12,6 +12,8 @@ import javax.persistence.PersistenceContext;
 
 import es.caib.distribucio.logic.helper.*;
 import es.caib.distribucio.logic.intf.dto.*;
+import es.caib.distribucio.persist.resourceentity.SiaResourceEntity;
+import es.caib.distribucio.persist.resourcerepository.SiaResourceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +89,8 @@ public class ReglaServiceImpl implements ReglaService {
     private EntityManager entityManager;
     @Autowired
     private ProcedimentHelper procedimentHelper;
+    @Autowired
+    private SiaResourceRepository siaResourceRepository;
 
     @Override
 	@Transactional
@@ -109,8 +113,7 @@ public class ReglaServiceImpl implements ReglaService {
 				reglaDto.getTipus(),
 				reglaDto.getPresencial(),
 				reglaDto.getAssumpteCodiFiltre(),
-				reglaDto.getProcedimentCodiFiltre(),
-				reglaDto.getServeiCodiFiltre(),
+				reglaDto.getSiaCodiFiltre(),
 				reglaDto.getTramitCodiFiltre(),
 				reglaDto.getUnitatOrganitzativaFiltre() != null ? unitatOrganitzativaRepository.findById(reglaDto.getUnitatOrganitzativaFiltre().getId()).orElse(null) : null,
 				reglaDto.getBustiaFiltreId() != null ? bustiaRepository.findById(reglaDto.getBustiaFiltreId()).orElse(null) : null,
@@ -140,7 +143,7 @@ public class ReglaServiceImpl implements ReglaService {
 		this.monitoritzarRegla(
 				ReglaGestioTipusEnumDto.Alta,
 				entitat.getNom(),
-				reglaDto.getProcedimentCodiFiltre(),
+				reglaDto.getSiaCodiFiltre(),
 				reglaDto.getBackofficeDestiNom());				
 		return novaReglaDto;
 	}
@@ -175,8 +178,7 @@ public class ReglaServiceImpl implements ReglaService {
 				reglaDto.getTipus(),
 				reglaDto.getPresencial(),
 				reglaDto.getAssumpteCodiFiltre(),
-				reglaDto.getProcedimentCodiFiltre(),
-				reglaDto.getServeiCodiFiltre(),
+				reglaDto.getSiaCodiFiltre(),
 				reglaDto.getTramitCodiFiltre(),
 				reglaDto.getUnitatOrganitzativaFiltre() != null ? unitatOrganitzativaRepository.findById(reglaDto.getUnitatOrganitzativaFiltre().getId()).orElse(null) : null,
 				reglaDto.getBustiaFiltreId() != null ? bustiaRepository.findById(reglaDto.getBustiaFiltreId()).orElse(null) : null,
@@ -202,7 +204,7 @@ public class ReglaServiceImpl implements ReglaService {
 		this.monitoritzarRegla(
 				ReglaGestioTipusEnumDto.Modificacio,
 				entitat.getNom(),
-				reglaDto.getProcedimentCodiFiltre(),
+				reglaDto.getSiaCodiFiltre(),
 				reglaDto.getBackofficeDestiNom());				
 		return novaReglaDto;
 	}
@@ -503,8 +505,8 @@ public class ReglaServiceImpl implements ReglaService {
 						filtre.getCodiAssumpte() != null ? filtre.getCodiAssumpte() : "", 
 						filtre.getCodiSIA() == null || filtre.getCodiSIA().isEmpty(), 
 						filtre.getCodiSIA() != null ? filtre.getCodiSIA() : "",
-						filtre.getCodiServei() == null || filtre.getCodiServei().isEmpty(), 
-						filtre.getCodiServei() != null ? filtre.getCodiServei() : "",
+//						filtre.getCodiServei() == null || filtre.getCodiServei().isEmpty(),
+//						filtre.getCodiServei() != null ? filtre.getCodiServei() : "",
 						filtre.getCodiTramit() == null || filtre.getCodiTramit().isEmpty(),
 						filtre.getCodiTramit() != null ? filtre.getCodiTramit() : "",
 						filtre.getTipus() == null , 
@@ -567,8 +569,8 @@ public class ReglaServiceImpl implements ReglaService {
 						filtre.getCodiAssumpte() != null ? filtre.getCodiAssumpte() : "", 
 						filtre.getCodiSIA() == null || filtre.getCodiSIA().isEmpty(), 
 						filtre.getCodiSIA() != null ? filtre.getCodiSIA() : "",
-						filtre.getCodiServei() == null || filtre.getCodiServei().isEmpty(), 
-						filtre.getCodiServei() != null ? filtre.getCodiServei() : "",
+//						filtre.getCodiServei() == null || filtre.getCodiServei().isEmpty(),
+//						filtre.getCodiServei() != null ? filtre.getCodiServei() : "",
 						filtre.getCodiTramit() == null || filtre.getCodiTramit().isEmpty(),
 						filtre.getCodiTramit() != null ? filtre.getCodiTramit() : "",
 						filtre.getTipus() == null , 
@@ -615,7 +617,8 @@ public class ReglaServiceImpl implements ReglaService {
 
     @Override
     public RegistreClassificarTipusEnum getTipusSiaByCodi(Long entitatId, String codiSia) {
-        return procedimentHelper.getTipusSiaByCodi(entitatId, codiSia);
+        Optional<SiaResourceEntity> op = siaResourceRepository.findByEntitatIdAndCodiSia(entitatId, codiSia);
+        return op.map(SiaResourceEntity::getTipus).orElse(null);
     }
 
     @Transactional(readOnly = true)
@@ -693,8 +696,9 @@ public class ReglaServiceImpl implements ReglaService {
 		logger.debug("Simulant regla aplicacio ("
 				+ "unitatId=" + registreSimulatDto.getUnitatId() + ", "
 				+ "bustiaId=" + registreSimulatDto.getBustiaId() + ", "
-				+ "codiProcedmient=" + registreSimulatDto.getProcedimentCodi() + ", "
-				+ "codiServei=" + registreSimulatDto.getServeiCodi() + ", "
+//				+ "codiProcedmient=" + registreSimulatDto.getProcedimentCodi() + ", "
+//				+ "codiServei=" + registreSimulatDto.getServeiCodi() + ", "
+				+ "codiSia=" + registreSimulatDto.getSiaCodi() + ", "
 				+ "codiTramit=" + registreSimulatDto.getTramitCodi() + ", "
 				+ "presencial=" + registreSimulatDto.getPresencial() + ", "
 				+ "codiAssumpte=" + registreSimulatDto.getAssumpteCodi() + ")");

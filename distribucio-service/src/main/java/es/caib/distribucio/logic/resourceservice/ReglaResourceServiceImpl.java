@@ -76,7 +76,7 @@ public class ReglaResourceServiceImpl
     @PostConstruct
     public void init() {
         register(ReglaResource.Fields.tipus, new TipusOnChangeLogicProcessor());
-        register(ReglaResource.Fields.tipusSia, new TipusSiaOnChangeLogicProcessor());
+//        register(ReglaResource.Fields.tipusSia, new TipusSiaOnChangeLogicProcessor());
         ActivaActionExecutor activaActionExecutor = new ActivaActionExecutor();
         register(ReglaResource.ACTION_ACTIVAR_CODE, activaActionExecutor);
         register(ReglaResource.ACTION_DESACTIVAR_CODE, activaActionExecutor);
@@ -115,12 +115,12 @@ public class ReglaResourceServiceImpl
         if (entity.getUnitatDesti() != null) {
             resource.setUnitatDestiEstat(entity.getUnitatDesti().getEstat());
         }
-        // "tipusSia" no es desa: es dedueix de quin dels dos codis té la regla, perquè el formulari mostri el camp que toca.
-        boolean serveiInformat = entity.getServeiCodiFiltre() != null && !entity.getServeiCodiFiltre().trim().isEmpty();
-        boolean procedimentInformat = entity.getProcedimentCodiFiltre() != null && !entity.getProcedimentCodiFiltre().trim().isEmpty();
-        resource.setTipusSia(serveiInformat && !procedimentInformat
-                ? RegistreClassificarTipusEnum.SERVEI
-                : RegistreClassificarTipusEnum.PROCEDIMENT);
+//        // "tipusSia" no es desa: es dedueix de quin dels dos codis té la regla, perquè el formulari mostri el camp que toca.
+//        boolean serveiInformat = entity.getServeiCodiFiltre() != null && !entity.getServeiCodiFiltre().trim().isEmpty();
+//        boolean procedimentInformat = entity.getProcedimentCodiFiltre() != null && !entity.getProcedimentCodiFiltre().trim().isEmpty();
+//        resource.setTipusSia(serveiInformat && !procedimentInformat
+//                ? RegistreClassificarTipusEnum.SERVEI
+//                : RegistreClassificarTipusEnum.PROCEDIMENT);
         resource.setCreatedByFullName(codiAndNom(entity.getCreatedBy()));
         resource.setLastModifiedByFullName(codiAndNom(entity.getLastModifiedBy()));
         if (entity.getEntitat() != null) {
@@ -422,8 +422,9 @@ public class ReglaResourceServiceImpl
                 RegistreSimulatDto dto = new RegistreSimulatDto();
                 dto.setUnitatId(params.getUnitat().getId());
                 dto.setBustiaId(params.getBustia() != null ? params.getBustia().getId() : null);
-                dto.setProcedimentCodi(params.getProcedimentCodi());
-                dto.setServeiCodi(params.getServeiCodi());
+//                dto.setProcedimentCodi(params.getProcedimentCodi());
+//                dto.setServeiCodi(params.getServeiCodi());
+                dto.setSiaCodi(params.getSiaCodi());
                 dto.setTramitCodi(params.getTramitCodi());
                 dto.setAssumpteCodi(params.getAssumpteCodi());
                 dto.setPresencial(params.getPresencial());
@@ -513,8 +514,9 @@ public class ReglaResourceServiceImpl
                     reglaId,
                     entitatId,
                     resource.getUnitatOrganitzativaFiltre() != null ? resource.getUnitatOrganitzativaFiltre().getId() : null,
-                    resource.getProcedimentCodiFiltre(),
-                    resource.getServeiCodiFiltre(),
+//                    resource.getProcedimentCodiFiltre(),
+//                    resource.getServeiCodiFiltre(),
+                    resource.getSiaCodiFiltre(),
                     resource.getTramitCodiFiltre()));
         }
         // Cada missatge és una frase: es garanteix el punt final perquè, un cop units, no quedin enganxades.
@@ -540,26 +542,26 @@ public class ReglaResourceServiceImpl
         }
     }
 
-    /**
-     * "tipusSia" és un camp només de formulari (no es desa) que decideix si el filtre per codi SIA
-     * es fa per procediment o per servei: en canviar-lo es buida el camp que ha deixat d'aplicar.
-     */
-    private class TipusSiaOnChangeLogicProcessor implements OnChangeLogicProcessor<ReglaResource> {
-        @Override
-        public void onChange(
-                Serializable id,
-                ReglaResource previous,
-                String fieldName,
-                Object fieldValue,
-                Map<String, AnswerRequiredException.AnswerValue> answers,
-                String[] previousFieldNames,
-                ReglaResource target) {
-            if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(fieldValue)) {
-                target.setServeiCodiFiltre(null);
-            } else if (RegistreClassificarTipusEnum.SERVEI.equals(fieldValue)) {
-                target.setProcedimentCodiFiltre(null);
-            }
-        }
-    }
+//    /**
+//     * "tipusSia" és un camp només de formulari (no es desa) que decideix si el filtre per codi SIA
+//     * es fa per procediment o per servei: en canviar-lo es buida el camp que ha deixat d'aplicar.
+//     */
+//    private class TipusSiaOnChangeLogicProcessor implements OnChangeLogicProcessor<ReglaResource> {
+//        @Override
+//        public void onChange(
+//                Serializable id,
+//                ReglaResource previous,
+//                String fieldName,
+//                Object fieldValue,
+//                Map<String, AnswerRequiredException.AnswerValue> answers,
+//                String[] previousFieldNames,
+//                ReglaResource target) {
+//            if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(fieldValue)) {
+//                target.setServeiCodiFiltre(null);
+//            } else if (RegistreClassificarTipusEnum.SERVEI.equals(fieldValue)) {
+//                target.setProcedimentCodiFiltre(null);
+//            }
+//        }
+//    }
 
 }

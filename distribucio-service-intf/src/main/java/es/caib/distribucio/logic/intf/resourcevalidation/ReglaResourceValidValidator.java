@@ -45,14 +45,16 @@ public class ReglaResourceValidValidator implements ConstraintValidator<ReglaRes
         // Com a mínim un filtre informat, llevat de les regles de tipus BACKOFFICE.
         if (resource.getTipus() != ReglaTipusEnumDto.BACKOFFICE
                 && isBlank(resource.getAssumpteCodiFiltre())
-                && isBlank(resource.getProcedimentCodiFiltre())
-                && isBlank(resource.getServeiCodiFiltre())
+//                && isBlank(resource.getProcedimentCodiFiltre())
+//                && isBlank(resource.getServeiCodiFiltre())
+                && isBlank(resource.getSiaCodiFiltre())
                 && resource.getUnitatOrganitzativaFiltre() == null
                 && resource.getBustiaFiltre() == null) {
             String message = i18n("regla.validacio.codi.buit");
             addViolation(context, ReglaResource.Fields.assumpteCodiFiltre, message);
-            addViolation(context, ReglaResource.Fields.procedimentCodiFiltre, message);
-            addViolation(context, ReglaResource.Fields.serveiCodiFiltre, message);
+//            addViolation(context, ReglaResource.Fields.procedimentCodiFiltre, message);
+//            addViolation(context, ReglaResource.Fields.serveiCodiFiltre, message);
+            addViolation(context, ReglaResource.Fields.siaCodiFiltre, message);
             addViolation(context, ReglaResource.Fields.unitatOrganitzativaFiltre, message);
             addViolation(context, ReglaResource.Fields.bustiaFiltre, message);
             valid = false;
@@ -70,20 +72,19 @@ public class ReglaResourceValidValidator implements ConstraintValidator<ReglaRes
                 notNullViolation(context, ReglaResource.Fields.backofficeDesti);
                 valid = false;
             }
-            if (isBlank(resource.getProcedimentCodiFiltre()) && isBlank(resource.getServeiCodiFiltre())) {
-                notNullViolation(context, ReglaResource.Fields.procedimentCodiFiltre);
-                notNullViolation(context, ReglaResource.Fields.serveiCodiFiltre);
+            if (isBlank(resource.getSiaCodiFiltre())) {
+                notNullViolation(context, ReglaResource.Fields.siaCodiFiltre);
                 valid = false;
             }
         }
 
-        // Només un dels dos codis (procediment o servei), mai els dos alhora.
-        if (!isBlank(resource.getProcedimentCodiFiltre()) && !isBlank(resource.getServeiCodiFiltre())) {
-            String message = i18n("regla.validacio.codis.procediment.servei");
-            addViolation(context, ReglaResource.Fields.procedimentCodiFiltre, message);
-            addViolation(context, ReglaResource.Fields.serveiCodiFiltre, message);
-            valid = false;
-        }
+//        // Només un dels dos codis (procediment o servei), mai els dos alhora.
+//        if (!isBlank(resource.getProcedimentCodiFiltre()) && !isBlank(resource.getServeiCodiFiltre())) {
+//            String message = i18n("regla.validacio.codis.procediment.servei");
+//            addViolation(context, ReglaResource.Fields.procedimentCodiFiltre, message);
+//            addViolation(context, ReglaResource.Fields.serveiCodiFiltre, message);
+//            valid = false;
+//        }
 
         if (!valid) {
             context.disableDefaultConstraintViolation();

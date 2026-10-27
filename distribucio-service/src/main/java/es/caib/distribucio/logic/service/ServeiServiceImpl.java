@@ -5,16 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import es.caib.distribucio.logic.helper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.logic.helper.ConversioTipusHelper;
-import es.caib.distribucio.logic.helper.PaginacioHelper;
-import es.caib.distribucio.logic.helper.PluginHelper;
-import es.caib.distribucio.logic.helper.ServeiHelper;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.ServeiDto;
@@ -53,8 +50,10 @@ public class ServeiServiceImpl implements ServeiService{
 	private ConversioTipusHelper conversioTipusHelper;
 	@Autowired
 	private ServeiHelper serveiHelper;
+    @Autowired
+    private SiaResourceHelper siaResourceHelper;
 
-	@Override
+    @Override
 	@Transactional(readOnly = true) 
 	public PaginaDto<ServeiDto> findAmbFiltre(
 			Long entitatId, 
@@ -104,7 +103,8 @@ public class ServeiServiceImpl implements ServeiService{
 	 * programada.
 	 */
 	public void findAndUpdateServeis(Long entitatId) throws Exception {
-		serveiHelper.findAndUpdateServeis(entitatId);
+//		serveiHelper.findAndUpdateServeis(entitatId);
+		siaResourceHelper.findAndUpdateServeis(entitatId);
 	}
 
 	@Transactional
@@ -169,7 +169,7 @@ public class ServeiServiceImpl implements ServeiService{
 
 	@Override
 	public boolean isUpdatingServeis(Long entitatId) {
-		UpdateProgressDto progres = serveiHelper.serveisActualitzacio.get(entitatId);
+		UpdateProgressDto progres = siaResourceHelper.serveisActualitzacio.get(entitatId);
 		return progres != null 
 				&& progres.getEstat() != UpdateProgressDto.Estat.FINALITZAT
 				&& progres.getEstat() != UpdateProgressDto.Estat.ERROR;
@@ -177,7 +177,7 @@ public class ServeiServiceImpl implements ServeiService{
 	
 	@Override
 	public UpdateProgressDto getProgresActualitzacio(Long entitatId) {
-		return serveiHelper.serveisActualitzacio.get(entitatId);
+		return siaResourceHelper.serveisActualitzacio.get(entitatId);
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ServeiServiceImpl.class);

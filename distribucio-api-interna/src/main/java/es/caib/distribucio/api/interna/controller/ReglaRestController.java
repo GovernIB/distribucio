@@ -135,11 +135,12 @@ public class ReglaRestController {
 		novaReglaDto.setBackofficeDestiId(backofficeDto.getId());
 		novaReglaDto.setBackofficeDestiNom(backoffice);
 
-        if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(tipSiaFinal)) {
-            novaReglaDto.setProcedimentCodiFiltre(sia);
-        } else if (RegistreClassificarTipusEnum.SERVEI.equals(tipSiaFinal)) {
-            novaReglaDto.setServeiCodiFiltre(sia);
-        }
+//        if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(tipSiaFinal)) {
+//            novaReglaDto.setProcedimentCodiFiltre(sia);
+//        } else if (RegistreClassificarTipusEnum.SERVEI.equals(tipSiaFinal)) {
+//            novaReglaDto.setServeiCodiFiltre(sia);
+//        }
+        novaReglaDto.setSiaCodiFiltre(sia);
         novaReglaDto.setTramitCodiFiltre(tramit);
 		if (presencial != null) {
 			novaReglaDto.setPresencial(presencial.booleanValue() ? ReglaPresencialEnumDto.SI : ReglaPresencialEnumDto.NO );
@@ -336,9 +337,9 @@ public class ReglaRestController {
 			r.put("data", dateFormat.format(data));
 			r.put("entitat", regla.getEntitatNom());
 			r.put("activa", regla.isActiva());
-			r.put("tipusSia", regla.getProcedimentCodiFiltre() != null
-                    ? RegistreClassificarTipusEnum.PROCEDIMENT.name()
-                    : RegistreClassificarTipusEnum.SERVEI.name());
+//			r.put("tipusSia", regla.getProcedimentCodiFiltre() != null
+//                    ? RegistreClassificarTipusEnum.PROCEDIMENT.name()
+//                    : RegistreClassificarTipusEnum.SERVEI.name());
 			if (regla.getPresencial() != null) {
 				switch(regla.getPresencial()) {
 				case NO:
@@ -353,9 +354,10 @@ public class ReglaRestController {
 			if (backofficeDto != null) {
 				r.put("backofficeDesti", backofficeDto.getNom());
 			}
-			r.put("sia", regla.getProcedimentCodiFiltre() != null
-                    ? regla.getProcedimentCodiFiltre()
-                    : regla.getServeiCodiFiltre());
+//			r.put("sia", regla.getProcedimentCodiFiltre() != null
+//                    ? regla.getProcedimentCodiFiltre()
+//                    : regla.getServeiCodiFiltre());
+			r.put("sia", regla.getSiaCodiFiltre());
 			r.put("tramit", regla.getTramitCodiFiltre());
 		}
 		return r;

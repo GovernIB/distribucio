@@ -7,35 +7,44 @@ const ACTUALITZAR_SERVEI = 'ACTUALITZAR_SERVEI';
 
 type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
 
-export const useServeiAccions = (refresh: () => void): AccionsFila => {
+export const useActions = (refresh: () => void) => {
     const { t } = useTranslation();
+    const { isReady: apiIsReady, artifactAction: apiArtifactAction } = useResourceApiService('serveiResource');
     const { temporalMessageShow } = useBaseAppContext();
-    const { isReady: apiIsReady, artifactAction: apiArtifactAction } =
-        useResourceApiService('serveiResource');
-    const executarAccio = (id: any, code: string, clauMissatgeOk: string) => {
+
+    const executarAccio = (id: any, code: string, missatge: string) => {
         if (!apiIsReady) {
             return;
         }
         apiArtifactAction(id, { code })
             .then(() => {
                 refresh();
-                temporalMessageShow(null, t(clauMissatgeOk), 'success');
+                temporalMessageShow(null, missatge, 'success');
             })
             .catch((error: any) =>
-                temporalMessageShow(
-                    t('page.serveis.accio.error'),
-                    error?.description ?? error?.message,
-                    'error'
-                )
+                temporalMessageShow(t('page.serveis.accio.error'), error?.description ?? error?.message, 'error')
             );
     };
+
+    const actualitzar = (id: any) => executarAccio(id, ACTUALITZAR_SERVEI, t('page.serveis.accio.actualitzarOk'))
+
+    return {
+        actualitzar
+    }
+}
+
+export const useServeiAccions = (refresh: () => void): AccionsFila => {
+    const { t } = useTranslation();
+
+    const { actualitzar } = useActions(refresh)
+
     return [
         {
             label: t('page.serveis.accio.actualitzar'),
             icon: icons.sincronitza,
             showInMenu: true,
             action: ACTUALITZAR_SERVEI,
-            onClick: (id: any) => executarAccio(id, ACTUALITZAR_SERVEI, 'page.serveis.accio.actualitzarOk'),
+            onClick: actualitzar,
         },
     ];
 };

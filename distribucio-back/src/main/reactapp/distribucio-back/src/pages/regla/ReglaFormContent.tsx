@@ -4,7 +4,7 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import { useTranslation } from 'react-i18next';
-import GridFormField, { GridRadioButtonField } from '../../components/GridFormField';
+import GridFormField from '../../components/GridFormField';
 import GridUnitatField from '../../components/GridUnitatField';
 import { useFormContext } from 'reactlib';
 import { formatDate } from '../../util/dateUtils';
@@ -37,25 +37,31 @@ export const ReglaFormContent: React.FC = () => {
             />
             {data?.tipus !== 'BACKOFFICE' && <GridFormField size={6} name="bustiaFiltre" />}
 
-            <Grid container spacing={2} size={12}>
-                <GridRadioButtonField size={2.5} name="tipusSia" />
-                {data?.tipusSia === 'PROCEDIMENT' && (
-                    <GridFormField
-                        size={9.5}
-                        name="procedimentCodiFiltre"
-                        type="textarea"
-                        componentProps={{ helperText: t('page.regla.form.camp.procedimentCodiFiltre.info') }}
-                    />
-                )}
-                {data?.tipusSia === 'SERVEI' && (
-                    <GridFormField
-                        size={8}
-                        name="serveiCodiFiltre"
-                        type="textarea"
-                        componentProps={{ helperText: t('page.regla.form.camp.serveiCodiFiltre.info') }}
-                    />
-                )}
-            </Grid>
+            {/*<Grid container spacing={2} size={12}>*/}
+            {/*    <GridRadioButtonField size={2.5} name="tipusSia" />*/}
+            {/*    {data?.tipusSia === 'PROCEDIMENT' && (*/}
+            {/*        <GridFormField*/}
+            {/*            size={9.5}*/}
+            {/*            name="procedimentCodiFiltre"*/}
+            {/*            type="textarea"*/}
+            {/*            componentProps={{ helperText: t('page.regla.form.camp.procedimentCodiFiltre.info') }}*/}
+            {/*        />*/}
+            {/*    )}*/}
+            {/*    {data?.tipusSia === 'SERVEI' && (*/}
+            {/*        <GridFormField*/}
+            {/*            size={8}*/}
+            {/*            name="serveiCodiFiltre"*/}
+            {/*            type="textarea"*/}
+            {/*            componentProps={{ helperText: t('page.regla.form.camp.serveiCodiFiltre.info') }}*/}
+            {/*        />*/}
+            {/*    )}*/}
+            {/*</Grid>*/}
+            <GridFormField
+                size={12}
+                name="siaCodiFiltre"
+                type="textarea"
+                componentProps={{ helperText: t('page.regla.form.camp.serveiCodiFiltre.info') }}
+            />
             <GridFormField size={6} name="tramitCodiFiltre" type="textarea" />
             <Grid container spacing={2} size={6}>
                 {data?.tipus !== 'BACKOFFICE' && <GridFormField size={12} name="assumpteCodiFiltre" />}

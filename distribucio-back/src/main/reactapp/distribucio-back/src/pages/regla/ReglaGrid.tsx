@@ -86,8 +86,9 @@ const ReglaDestinacioCell = ({ row }: any) => {
 const getColumns = (t: (key: string) => string): MuiDataGridColDef[] => [
     { field: 'nom', flex: 1.5, sortable: false, renderCell: (params: any) => <ReglaNomCell row={params.row} /> },
     { field: 'assumpteCodiFiltre', flex: 1, sortable: false },
-    { field: 'procedimentCodiFiltre', flex: 1, sortable: false },
-    { field: 'serveiCodiFiltre', flex: 1, sortable: false },
+    // { field: 'procedimentCodiFiltre', flex: 1, sortable: false },
+    // { field: 'serveiCodiFiltre', flex: 1, sortable: false },
+    { field: 'siaCodiFiltre', flex: 1, sortable: false },
     { field: 'tramitCodiFiltre', flex: 1, sortable: false },
     {
         field: 'unitatOrganitzativaFiltre',

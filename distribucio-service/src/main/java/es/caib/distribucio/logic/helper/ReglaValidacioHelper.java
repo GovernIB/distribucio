@@ -63,8 +63,7 @@ public class ReglaValidacioHelper {
 		Set<String> alreadyAdded = new HashSet<>();
 		for (ReglaEntity regla : resultats) {
 			List<String> siasRegla = new ArrayList<>();
-			siasRegla.addAll(split(regla.getProcedimentCodiFiltre()));
-			siasRegla.addAll(split(regla.getServeiCodiFiltre()));
+			siasRegla.addAll(split(regla.getSiaCodiFiltre()));
 			List<String> tramitsRegla = split(regla.getTramitCodiFiltre());
 			for (String sia : sias) {
 				if (!siasRegla.contains(sia)) {
@@ -96,12 +95,13 @@ public class ReglaValidacioHelper {
 			Long reglaId,
 			Long entitatId,
 			Long unitatFiltreId,
-			String procedimentCodiFiltre,
-			String serveiCodiFiltre,
+//			String procedimentCodiFiltre,
+//			String serveiCodiFiltre,
+			String siaCodiFiltre,
 			String tramitCodiFiltre) {
 		List<String> errors = new ArrayList<>();
 		List<String> tramits = split(tramitCodiFiltre);
-		for (String codis : Arrays.asList(procedimentCodiFiltre, serveiCodiFiltre)) {
+		for (String codis : siaCodiFiltre.split(" ")) {
 			List<String> sias = split(codis);
 			if (sias.isEmpty()) {
 				continue;

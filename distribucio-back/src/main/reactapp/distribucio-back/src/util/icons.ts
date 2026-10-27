@@ -24,6 +24,7 @@ export const icons = {
     // Mateixa icona que les opcions principals de RIPEA "Procediments i serveis" i "Acció massiva".
     procediment: 'integration_instructions',
     servei: 'integration_instructions',
+    sia: 'integration_instructions',
     massiva: 'list_alt',
     // La mateixa que fa servir RIPEA als botons de permisos (p. ex. pages/entitat/EntitatGrid.tsx).
     permis: 'key',

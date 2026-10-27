@@ -129,8 +129,9 @@ const ReglaSimuladorContingut: React.FC = () => {
                     <GridUnitatField size={5} name="unitat" required />
                     <GridFormField size={5} name="bustia" filter={filtreBustiesActives} />
                     <GridFormField size={2} name="presencial" />
-                    <GridFormField size={3} name="procedimentCodi" />
-                    <GridFormField size={3} name="serveiCodi" />
+                    {/*<GridFormField size={3} name="procedimentCodi" />*/}
+                    {/*<GridFormField size={3} name="serveiCodi" />*/}
+                    <GridFormField size={3} name="siaCodi" />
                     <GridFormField size={3} name="tramitCodi" />
                     <GridFormField size={3} name="assumpteCodi" />
                     <SimulaFila onSimula={simula} loading={loading} />

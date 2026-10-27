@@ -27,8 +27,9 @@ public class ReglaDto extends AuditoriaDto {
 
 	// ------------- FILRE ----------------------
 	private String assumpteCodiFiltre;
-	private String procedimentCodiFiltre;
-	private String serveiCodiFiltre;
+//	private String procedimentCodiFiltre;
+//	private String serveiCodiFiltre;
+	private String siaCodiFiltre;
 	private String tramitCodiFiltre;
 	private UnitatOrganitzativaDto unitatOrganitzativaFiltre;
 	private String codiAndNomUnitatOrganitzativa;

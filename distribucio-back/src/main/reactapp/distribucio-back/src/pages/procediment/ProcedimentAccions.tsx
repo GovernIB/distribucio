@@ -7,7 +7,7 @@ const ACTUALITZAR_PROCEDIMENT = 'ACTUALITZAR_PROCEDIMENT';
 
 type AccionsFila = NonNullable<MuiDataGridProps['rowAdditionalActions']>;
 
-export const useProcedimentAccions = (refresh: () => void): AccionsFila => {
+export const useActions = (refresh: () => void) => {
     const { t } = useTranslation();
     const { temporalMessageShow } = useBaseAppContext();
     const { isReady: apiIsReady, artifactAction: apiArtifactAction } =
@@ -29,13 +29,26 @@ export const useProcedimentAccions = (refresh: () => void): AccionsFila => {
                 )
             );
     };
+
+    const actualitzar = (id: any) => executarAccio(id, ACTUALITZAR_PROCEDIMENT, t('page.procediments.accio.actualitzarOk'))
+
+    return {
+        actualitzar
+    }
+}
+
+export const useProcedimentAccions = (refresh: () => void): AccionsFila => {
+    const { t } = useTranslation();
+
+    const { actualitzar } = useActions(refresh)
+
     return [
         {
             label: t('page.procediments.accio.actualitzar'),
             icon: icons.sincronitza,
             showInMenu: true,
             action: ACTUALITZAR_PROCEDIMENT,
-            onClick: (id: any) => executarAccio(id, ACTUALITZAR_PROCEDIMENT, 'page.procediments.accio.actualitzarOk'),
+            onClick: actualitzar,
         },
     ];
 };

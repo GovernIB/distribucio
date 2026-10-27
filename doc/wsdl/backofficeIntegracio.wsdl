@@ -61,6 +61,7 @@
 <xs:element minOccurs="0" name="origenRegistreNumero" type="xs:string" />
 <xs:element minOccurs="0" name="procedimentCodi" type="xs:string" />
 <xs:element minOccurs="0" name="serveiCodi" type="xs:string" />
+<xs:element minOccurs="0" name="siaCodi" type="xs:string" />
 <xs:element minOccurs="0" name="refExterna" type="xs:string" />
 <xs:element minOccurs="0" name="solicita" type="xs:string" />
 <xs:element minOccurs="0" name="transportNumero" type="xs:string" />

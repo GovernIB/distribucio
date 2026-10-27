@@ -39,11 +39,13 @@ public class ReglaCommand {
 	// ------------- FILRE ----------------------
 	@Size(max = 16, groups = {CreateUpdate.class})
 	private String assumpteCodiFiltre;
-	@Size(max = 1024, groups = {CreateUpdate.class})
-	private String procedimentCodiFiltre;
-    @NotNull
-	private RegistreClassificarTipusEnum tipusSia = RegistreClassificarTipusEnum.PROCEDIMENT;
-	private String serveiCodiFiltre;
+//	@Size(max = 1024, groups = {CreateUpdate.class})
+//	private String procedimentCodiFiltre;
+//    @NotNull
+//	private RegistreClassificarTipusEnum tipusSia = RegistreClassificarTipusEnum.PROCEDIMENT;
+//	private String serveiCodiFiltre;
+    @Size(max = 1024, groups = {CreateUpdate.class})
+	private String siaCodiFiltre;
 	private String tramitCodiFiltre;
 	private Long unitatFiltreId;
 	private Long bustiaFiltreId;
@@ -67,8 +69,8 @@ public class ReglaCommand {
 		if (dto.getUnitatOrganitzativaFiltre() != null)
 			command.setUnitatFiltreId(
 					dto.getUnitatOrganitzativaFiltre().getId());
-        if (dto.getServeiCodiFiltre() != null)
-            command.setTipusSia(RegistreClassificarTipusEnum.SERVEI);
+//        if (dto.getServeiCodiFiltre() != null)
+//            command.setTipusSia(RegistreClassificarTipusEnum.SERVEI);
 		return command;
 	}
 	public static ReglaDto asDto(ReglaCommand command) {

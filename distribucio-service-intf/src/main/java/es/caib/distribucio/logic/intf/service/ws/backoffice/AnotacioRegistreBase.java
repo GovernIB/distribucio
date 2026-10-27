@@ -18,6 +18,7 @@ public class AnotacioRegistreBase {
 	private String identificador;
 	private String procedimentCodi;
 	private String serveiCodi;
+	private String siaCodi;
 	private String extracte;
 	private Date data;
 	private String entitatCodi;
@@ -67,6 +68,12 @@ public class AnotacioRegistreBase {
 	}
 	public void setProcedimentCodi(String procedimentCodi) {
 		this.procedimentCodi = procedimentCodi;
+	}
+	public String getSiaCodi() {
+		return siaCodi;
+	}
+	public void setSiaCodi(String siaCodi) {
+		this.siaCodi = siaCodi;
 	}
 	@XmlTransient
 	public String getServeiCodi() {

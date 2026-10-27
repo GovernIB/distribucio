@@ -76,8 +76,8 @@ $(document).ready(function() {
 // 			$('#bustiaFiltreId').val('');
 			$('#assumpteCodiFiltre').parent().closest('.form-group').css('display', 'none');
 			$('#assumpteCodiFiltre').val('');
-			$('#procedimentCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk1">*</span>');
-			$('#serveiCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk2">*</span>');
+			$('#siaCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk1">*</span>');
+			// $('#serveiCodiFiltre').parent().closest('.form-group').find('label.control-label').append('<span id="asterisk2">*</span>');
 		} else {
 			// $('#bustiaFiltreId').parent().closest('.form-group').css('display', '');
 			$('#assumpteCodiFiltre').parent().closest('.form-group').css('display', '');
@@ -89,10 +89,10 @@ $(document).ready(function() {
 			$('#unitatFiltreId').parent().closest('.form-group').find("p.help-block").remove();
 			$('#bustiaFiltreId').parent().closest('.form-group').removeClass('has-error');
 			$('#bustiaFiltreId').parent().closest('.form-group').find("p.help-block").remove();
-			$('#procedimentCodiFiltre').parent().closest('.form-group').removeClass('has-error');
-			$('#procedimentCodiFiltre').parent().closest('.form-group').find("p.help-block").remove();
-			$('#serveiCodiFiltre').parent().closest('.form-group').removeClass('has-error');
-			$('#serveiCodiFiltre').parent().closest('.form-group').find("p.help-block").remove();
+			$('#siaCodiFiltre').parent().closest('.form-group').removeClass('has-error');
+			$('#siaCodiFiltre').parent().closest('.form-group').find("p.help-block").remove();
+			// $('#serveiCodiFiltre').parent().closest('.form-group').removeClass('has-error');
+			// $('#serveiCodiFiltre').parent().closest('.form-group').find("p.help-block").remove();
 			$('#assumpteCodiFiltre').parent().closest('.form-group').removeClass('has-error');
 			$('#assumpteCodiFiltre').parent().closest('.form-group').find("p.help-block").remove();
 		} else {
@@ -102,26 +102,25 @@ $(document).ready(function() {
 	});
 	$('#tipus').trigger('change');
 
-    $('[name="tipusSia"]').on('change', function() {
-        const val = $(this).val();
-        console.log("AAAAAAAAAAAA", val)
-        if (val == "PROCEDIMENT") {
-            $('#procedimentCodiFiltre').closest('.form-group').show()
-            $('#serveiCodiFiltre').closest('.form-group').hide()
+    // $('[name="tipusSia"]').on('change', function() {
+    //     const val = $(this).val();
+    //     if (val == "PROCEDIMENT") {
+    //         $('#siaCodiFiltre').closest('.form-group').show()
+    //         // $('#serveiCodiFiltre').closest('.form-group').hide()
+    //
+    //         // $('#serveiCodiFiltre').val(null)
+    //     }
+    //     if (val == "SERVEI") {
+    //         $('#siaCodiFiltre').closest('.form-group').hide()
+    //         // $('#serveiCodiFiltre').closest('.form-group').show()
+    //
+    //         $('#siaCodiFiltre').val(null)
+    //     }
+    // });
 
-            $('#serveiCodiFiltre').val(null)
-        }
-        if (val == "SERVEI") {
-            $('#procedimentCodiFiltre').closest('.form-group').hide()
-            $('#serveiCodiFiltre').closest('.form-group').show()
-
-            $('#procedimentCodiFiltre').val(null)
-        }
-    });
-
-    var $radio = $('[name="tipusSia"][value="${reglaCommand.tipusSia}"]');
-    $radio.prop('checked', true);
-    $radio.trigger('change');
+    <%--var $radio = $('[name="tipusSia"][value="${reglaCommand.tipusSia}"]');--%>
+    <%--$radio.prop('checked', true);--%>
+    <%--$radio.trigger('change');--%>
 });
 </script>
 </head>
@@ -216,15 +215,15 @@ $(document).ready(function() {
 				netejar="true"
 				optionMinimumResultsForSearch="0"/>
 
-            <dis:inputRadio
-                    name="tipusSia"
-                    text=" "
-                    optionItems="${tipusSia}"
-                    optionValueAttribute="value"
-                    optionTextKeyAttribute="text"/>
+<%--            <dis:inputRadio--%>
+<%--                    name="tipusSia"--%>
+<%--                    text=" "--%>
+<%--                    optionItems="${tipusSia}"--%>
+<%--                    optionValueAttribute="value"--%>
+<%--                    optionTextKeyAttribute="text"/>--%>
 
-			<dis:inputTextarea name="procedimentCodiFiltre" textKey="regla.form.camp.procediment.codi" comment="regla.form.camp.procediment.codi.info" rows="2"/>
-			<dis:inputTextarea name="serveiCodiFiltre" textKey="regla.form.camp.servei.codi" comment="regla.form.camp.servei.codi.info" rows="2"/>
+			<dis:inputTextarea name="siaCodiFiltre" textKey="regla.form.camp.sia.codi" comment="regla.form.camp.sia.codi.info" rows="2"/>
+<%--			<dis:inputTextarea name="serveiCodiFiltre" textKey="regla.form.camp.servei.codi" comment="regla.form.camp.servei.codi.info" rows="2"/>--%>
 			<dis:inputTextarea name="tramitCodiFiltre" textKey="regla.form.camp.tramit.codi" rows="2" />
 			<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>
 			

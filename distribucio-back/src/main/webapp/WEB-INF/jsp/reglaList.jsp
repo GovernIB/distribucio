@@ -251,11 +251,11 @@
 				<dis:inputText name="codiAssumpte" inline="true" placeholderKey="regla.form.camp.assumpte.codi"/>
 			</div>
             <div class="col-md-3">
-                <dis:inputText name="codiSIA" inline="true" placeholderKey="regla.list.columna.procediment.single.codi"/>
+                <dis:inputText name="codiSIA" inline="true" placeholderKey="regla.list.columna.sia.single.codi"/>
             </div>
-            <div class="col-md-3">
-                <dis:inputText name="codiServei" inline="true" placeholderKey="regla.list.columna.servei.single.codi"/>
-            </div>
+<%--            <div class="col-md-3">--%>
+<%--                <dis:inputText name="codiServei" inline="true" placeholderKey="regla.list.columna.servei.single.codi"/>--%>
+<%--            </div>--%>
 		</div>
 		<div class="row">
             <div class="col-md-3">
@@ -426,8 +426,9 @@
 					</script>
 				</th>
 				<th data-col-name="assumpteCodiFiltre" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>
-				<th data-col-name="procedimentCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.procediment.codi"/></th>
-				<th data-col-name="serveiCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.servei.codi"/></th>
+<%--				<th data-col-name="procedimentCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.procediment.codi"/></th>--%>
+<%--				<th data-col-name="serveiCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.servei.codi"/></th>--%>
+				<th data-col-name="siaCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.sia.codi"/></th>
 				<th data-col-name="tramitCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.tramit.codi"/></th>
 				<!-- <th data-col-name="codiAndNomUnitatOrganitzativa" data-orderable="false"><spring:message code="regla.list.columna.unitat.organitzativa"/></th> -->
 				

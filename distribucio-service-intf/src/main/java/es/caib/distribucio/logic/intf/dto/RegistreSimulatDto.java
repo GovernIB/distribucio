@@ -18,8 +18,9 @@ public class RegistreSimulatDto {
 	private Long unitatId;
 	private Long bustiaId;
 	private String assumpteCodi;
-	private String procedimentCodi;
-	private String serveiCodi;
+//	private String procedimentCodi;
+//	private String serveiCodi;
+	private String siaCodi;
 	private String tramitCodi;
 	private ReglaPresencialEnumDto presencial;
 

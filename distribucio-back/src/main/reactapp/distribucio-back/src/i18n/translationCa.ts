@@ -48,6 +48,7 @@ const translationCa = {
             avisos: 'Avisos',
             consultar: "Consultar",
             serveis: 'Serveis',
+            sia: 'Procediments i serveis',
             configuracio: 'Configuració',
             configurar: 'Configurar',
             limitCanviEstat: "Limits canvis d'estat",
@@ -233,6 +234,9 @@ const translationCa = {
 					},
                 },
             },
+        },
+        sia: {
+            title: 'Procediments i serveis',
         },
         contingut: {
             grid: {

@@ -142,10 +142,12 @@ public class ReglaResource extends BaseAuditableResource<Long> {
     // ------------- FILTRE ----------------------
     @Size(max = 16)
     private String assumpteCodiFiltre;
+//    @Size(max = 1024)
+//    private String procedimentCodiFiltre;
+//    @Size(max = 1024)
+//    private String serveiCodiFiltre;
     @Size(max = 1024)
-    private String procedimentCodiFiltre;
-    @Size(max = 1024)
-    private String serveiCodiFiltre;
+    private String siaCodiFiltre;
     @Size(max = 1024)
     private String tramitCodiFiltre;
     private ResourceReference<UnitatOrganitzativaResource, Long> unitatOrganitzativaFiltre;
@@ -156,9 +158,9 @@ public class ReglaResource extends BaseAuditableResource<Long> {
     private ReglaPresencialEnumDto presencial;
 
     // Decideix si el filtre per codi SIA es fa per procedimentCodiFiltre o serveiCodiFiltre.
-    @Transient
-    @ResourceField(onChangeActive = true)
-    private RegistreClassificarTipusEnum tipusSia = RegistreClassificarTipusEnum.PROCEDIMENT;
+//    @Transient
+//    @ResourceField(onChangeActive = true)
+//    private RegistreClassificarTipusEnum tipusSia = RegistreClassificarTipusEnum.PROCEDIMENT;
 
     // ------------- ACCIO  ----------------------
     @ResourceField(onChangeActive = true)
@@ -226,8 +228,9 @@ public class ReglaResource extends BaseAuditableResource<Long> {
         private ResourceReference<UnitatOrganitzativaResource, Long> unitat;
         private ResourceReference<BustiaResource, Long> bustia;
         @Size(max = 64)
-        private String procedimentCodi;
-        private String serveiCodi;
+//        private String procedimentCodi;
+//        private String serveiCodi;
+        private String siaCodi;
         private String tramitCodi;
         @Size(max = 16)
         private String assumpteCodi;
@@ -261,7 +264,7 @@ public class ReglaResource extends BaseAuditableResource<Long> {
         private String nom;
         private String codiAssumpte;
         private String codiSIA;
-        private String codiServei;
+//        private String codiServei;
         private String codiTramit;
         private ResourceReference<UnitatOrganitzativaResource, Long> unitat;
         private ResourceReference<BustiaResource, Long> bustia;

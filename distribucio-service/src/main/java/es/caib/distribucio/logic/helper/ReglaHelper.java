@@ -188,18 +188,11 @@ public class ReglaHelper {
 	public List<RegistreEntity> findRegistresAplicables(
 			EntitatEntity entitat,
 			ReglaEntity regla) {
-		List<String> codisProcediments;
-		if (regla.getProcedimentCodiFiltre() != null && !regla.getProcedimentCodiFiltre().trim().isEmpty()) {
-			codisProcediments = Arrays.asList(regla.getProcedimentCodiFiltre().split(" "));
+		List<String> codisSia = new ArrayList<>();
+		if (regla.getSiaCodiFiltre() != null && !regla.getSiaCodiFiltre().trim().isEmpty()) {
+			codisSia.addAll(Arrays.asList(regla.getSiaCodiFiltre().split(" ")));
 		} else {
-			codisProcediments = new ArrayList<>();
-			codisProcediments.add("-");
-		}
-		List<String> codisServei = new ArrayList<>();
-		if (regla.getServeiCodiFiltre() != null && !regla.getServeiCodiFiltre().trim().isEmpty()) {
-			codisServei.addAll(Arrays.asList(regla.getServeiCodiFiltre().split(" ")));
-		} else {
-			codisServei.add("-");
+			codisSia.add("-");
 		}
 		List<Long> bustiesUnitatOrganitzativaIds = new ArrayList<>();
 		if (regla.getUnitatOrganitzativaFiltre() != null) {
@@ -224,8 +217,7 @@ public class ReglaHelper {
 				registrePresencial != null ? registrePresencial.booleanValue() : false,
 				regla.getBustiaFiltre() == null,
 				regla.getBustiaFiltre() != null ? regla.getBustiaFiltre().getId() : 0L,
-				codisProcediments,
-				codisServei,
+				codisSia,
 				regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(),
 				regla.getAssumpteCodiFiltre() != null && !regla.getAssumpteCodiFiltre().trim().isEmpty() ?
 						regla.getAssumpteCodiFiltre() : "-");
@@ -378,8 +370,9 @@ public class ReglaHelper {
 		simulat.setUnitatId(dto.getUnitatId());
 		simulat.setBustiaId(dto.getBustiaId());
 		simulat.setAssumpteCodi(dto.getAssumpteCodi());
-		simulat.setProcedimentCodi(dto.getProcedimentCodi());
-		simulat.setServeiCodi(dto.getServeiCodi());
+//		simulat.setProcedimentCodi(dto.getProcedimentCodi());
+//		simulat.setServeiCodi(dto.getServeiCodi());
+		simulat.setSiaCodi(dto.getSiaCodi());
 		simulat.setTramitCodi(dto.getTramitCodi());
 		simulat.setPresencial(dto.getPresencial());
 
@@ -458,9 +451,10 @@ public class ReglaHelper {
 						reglaToApply, 
 						registreSimulatDto.getUnitatId(),
 						registreSimulatDto.getBustiaId(),
-						registreSimulatDto.getProcedimentCodi() != null
-                                ?registreSimulatDto.getProcedimentCodi()
-                                :registreSimulatDto.getServeiCodi(),
+//						registreSimulatDto.getProcedimentCodi() != null
+//                                ?registreSimulatDto.getProcedimentCodi()
+//                                :registreSimulatDto.getServeiCodi(),
+                        registreSimulatDto.getSiaCodi(),
 						registreSimulatDto.getTramitCodi(),
 						registreSimulatDto.getAssumpteCodi(),
 						presencial);
@@ -470,9 +464,10 @@ public class ReglaHelper {
 						entitatEntity,
 						registreSimulatDto.getUnitatId(),
 						registreSimulatDto.getBustiaId(),
-                        registreSimulatDto.getProcedimentCodi() != null
-                                ?registreSimulatDto.getProcedimentCodi()
-                                :registreSimulatDto.getServeiCodi(),
+//                        registreSimulatDto.getProcedimentCodi() != null
+//                                ?registreSimulatDto.getProcedimentCodi()
+//                                :registreSimulatDto.getServeiCodi(),
+                        registreSimulatDto.getSiaCodi(),
                         registreSimulatDto.getTramitCodi(),
 						registreSimulatDto.getAssumpteCodi(), 
 						presencial);

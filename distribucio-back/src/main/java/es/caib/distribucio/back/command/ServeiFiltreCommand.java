@@ -1,5 +1,6 @@
 package es.caib.distribucio.back.command;
 
+import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -20,6 +21,7 @@ public class ServeiFiltreCommand {
 	private Long unitatOrganitzativa;
 	private EntitatDto entitat;
     private boolean nomesComu;
+    private RegistreClassificarTipusEnum tipus;
 	
 	public static ServeiFiltreCommand asCommand(ServeiFiltreDto dto) {
 		ServeiFiltreCommand command = ConversioTipusHelper.convertir(

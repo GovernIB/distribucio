@@ -24,6 +24,7 @@ export type Pantalla = 'home'
     | 'limitCanviEstat'
     | 'usuariCanviCodis'
     | 'procediment'
+    | 'sia'
     | 'permis'
     | 'contingut'
     | 'config'
@@ -61,14 +62,15 @@ export const PANTALLA_ROLS: Record<Pantalla, string[]> = {
     home: ROLS_APLICACIO,
     entitat: [ROLE_SUPER],
     avis: [ROLE_SUPER],
-    servei: [ROLE_ADMIN, ROLE_ADMIN_LECTURA],
+    procediment: [],
+    servei: [],
+    sia: [ROLE_ADMIN, ROLE_ADMIN_LECTURA],
     unitatOrganitzativa: [ROLE_ADMIN, ROLE_ADMIN_LECTURA],
     limitCanviEstat: [ROLE_SUPER],
     usuariCanviCodis: [ROLE_SUPER],
     bustiaAdmin: [ROLE_ADMIN, ROLE_ADMIN_LECTURA],
     bustiaAdminOrganigrama: [ROLE_ADMIN, ROLE_ADMIN_LECTURA],
     permis: [ROLE_ADMIN],
-    procediment: [ROLE_ADMIN, ROLE_ADMIN_LECTURA],
     contingut: [ROLE_ADMIN],
     config: [ROLE_SUPER],
     backoffice: [ROLE_ADMIN, ROLE_ADMIN_LECTURA],

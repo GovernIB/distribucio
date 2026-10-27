@@ -2,6 +2,7 @@ package es.caib.distribucio.persist.resourcerepository;
 
 import es.caib.distribucio.persist.base.repository.BaseRepository;
 import es.caib.distribucio.persist.resourceentity.UnitatOrganitzativaResourceEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -20,4 +21,5 @@ public interface UnitatOrganitzativaResourceRepository extends BaseRepository<Un
             nativeQuery = true)
     List<Long> findUnitatAndAllDescendentsIds(@Param("unitatId") Long unitatId);
 
+    UnitatOrganitzativaResourceEntity findByEntitatCodiDir3AndCodi(String codiDir3, String codi);
 }

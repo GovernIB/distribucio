@@ -31,6 +31,7 @@ import ReglaGrid from './pages/regla/ReglaGrid.tsx';
 import UsuariCanviCodis from './pages/usuari/UsuariCanviCodis.tsx';
 import {MetaDadaGrid} from "./pages/metadada/MetaDadaGrid.tsx";
 import {DominiGrid} from "./pages/domini/DominiGrid.tsx";
+import SiaGrid from "./pages/sia/SiaGrid.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -115,6 +116,16 @@ export const router = createBrowserRouter(
                             path: 'servei',
                             element: <ServeiGrid />,
                             handle: { titol: 'page.serveis.grid.title' },
+                        },
+                    ],
+                },
+                {
+                    element: <ProtectedRoute pantalla="sia" />,
+                    children: [
+                        {
+                            path: 'sia',
+                            element: <SiaGrid />,
+                            handle: { titol: 'page.sia.grid.title' },
                         },
                     ],
                 },

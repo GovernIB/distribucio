@@ -50,8 +50,7 @@ class ReglaHelperTest {
                 eq(entitatActual),
                 eq(dto.getUnitatId()),
                 eq(dto.getBustiaId()),
-                eq(dto.getProcedimentCodi() != null ? dto.getProcedimentCodi()
-                        :eq(dto.getServeiCodi() != null ? dto.getServeiCodi() : "")),
+                eq(dto.getSiaCodi() != null ? dto.getSiaCodi() : ""),
                 eq(dto.getTramitCodi() != null ? dto.getTramitCodi() : ""),
                 eq(dto.getAssumpteCodi() != null ? dto.getAssumpteCodi() : ""),
                 eq(dto.getPresencial() == null),
@@ -189,7 +188,7 @@ class ReglaHelperTest {
         BustiaEntity bustia = bustiaSimulacio(unitat, 20L);
         when(unitatOrganitzativaRepository.findById(10L)).thenReturn(Optional.of(unitat));
         when(bustiaHelper.findBustiaDesti(entitatActual, "U1")).thenReturn(bustia);
-        when(configHelper.getAsBoolean(anyString(), anyBoolean())).thenReturn(true);
+        lenient().when(configHelper.getAsBoolean(anyString(), anyBoolean())).thenReturn(true);
         RegistreSimulatDto entrada = new RegistreSimulatDto();
         entrada.setUnitatId(10L);
 
@@ -232,7 +231,7 @@ class ReglaHelperTest {
         BustiaEntity bustia = bustiaSimulacio(unitat, 20L);
         when(unitatOrganitzativaRepository.findById(10L)).thenReturn(Optional.of(unitat));
         when(bustiaRepository.findById(20L)).thenReturn(Optional.of(bustia));
-        when(configHelper.getAsBoolean(anyString(), anyBoolean())).thenReturn(true);
+        lenient().when(configHelper.getAsBoolean(anyString(), anyBoolean())).thenReturn(true);
         RegistreSimulatDto entrada = new RegistreSimulatDto();
         entrada.setUnitatId(10L);
         entrada.setBustiaId(20L);
@@ -256,7 +255,7 @@ class ReglaHelperTest {
         BustiaEntity bustia = bustiaSimulacio(unitat, 20L);
         when(unitatOrganitzativaRepository.findById(10L)).thenReturn(Optional.of(unitat));
         when(bustiaRepository.findById(20L)).thenReturn(Optional.of(bustia));
-        when(configHelper.getAsBoolean(anyString(), anyBoolean())).thenReturn(true);
+        lenient().when(configHelper.getAsBoolean(anyString(), anyBoolean())).thenReturn(true);
         RegistreSimulatDto entrada = new RegistreSimulatDto();
         entrada.setUnitatId(10L);
         entrada.setBustiaId(20L);
@@ -283,7 +282,6 @@ class ReglaHelperTest {
                 eq(true),
                 eq(0L),
                 eq(List.of("-")),
-                eq(List.of("-")),
                 eq(true),
                 eq("-"))).thenReturn(esperats);
 
@@ -298,8 +296,7 @@ class ReglaHelperTest {
     void testFindRegistresAplicables_codisSeparatsPerEspai() {
         // Given
         ReglaEntity regla = new ReglaEntity();
-        ReflectionTestUtils.setField(regla, "procedimentCodiFiltre", "111 222");
-        ReflectionTestUtils.setField(regla, "serveiCodiFiltre", "333");
+        ReflectionTestUtils.setField(regla, "siaCodiFiltre", "111 222 333");
         ReflectionTestUtils.setField(regla, "assumpteCodiFiltre", "ASS");
         ReflectionTestUtils.setField(regla, "presencial", ReglaPresencialEnumDto.SI);
         List<RegistreEntity> esperats = new ArrayList<>();
@@ -311,8 +308,7 @@ class ReglaHelperTest {
                 eq(true),
                 eq(true),
                 eq(0L),
-                eq(List.of("111", "222")),
-                eq(List.of("333")),
+                eq(List.of("111", "222", "333")),
                 eq(false),
                 eq("ASS"))).thenReturn(esperats);
 
@@ -328,7 +324,7 @@ class ReglaHelperTest {
         RegistreEntity r2 = mock(RegistreEntity.class);
         when(r1.getNumero()).thenReturn("N1");
         when(r2.getNumero()).thenReturn("N2");
-        when(reglaRepository.findRegistres(any(), anyBoolean(), any(), anyBoolean(), anyBoolean(), anyBoolean(), any(), any(), any(), anyBoolean(), any())).
+        when(reglaRepository.findRegistres(any(), anyBoolean(), any(), anyBoolean(), anyBoolean(), anyBoolean(), any(), any(), anyBoolean(), any())).
                 thenReturn(List.of(r1, r2));
 
         // When

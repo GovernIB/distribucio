@@ -49,8 +49,9 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 		// Comprova que almenys un camp del firtre esta informat
 		if (command.getTipus() != ReglaTipusEnumDto.BACKOFFICE && // Si es Tipo UNITAT o BUSTIA
 			(command.getAssumpteCodiFiltre() == null || command.getAssumpteCodiFiltre().trim().isEmpty()) && 
-			(command.getProcedimentCodiFiltre() == null || command.getProcedimentCodiFiltre().trim().isEmpty()) &&
-			(command.getServeiCodiFiltre() == null || command.getServeiCodiFiltre().trim().isEmpty()) &&
+//			(command.getProcedimentCodiFiltre() == null || command.getProcedimentCodiFiltre().trim().isEmpty()) &&
+//			(command.getServeiCodiFiltre() == null || command.getServeiCodiFiltre().trim().isEmpty()) &&
+			(command.getSiaCodiFiltre() == null || command.getSiaCodiFiltre().trim().isEmpty()) &&
 			 command.getUnitatFiltreId() == null &&
 			 command.getBustiaFiltreId() == null) {
 			context.buildConstraintViolationWithTemplate(
@@ -95,16 +96,11 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 						.addConstraintViolation();	
 				valid = false;
 			}
-			if ((command.getProcedimentCodiFiltre() == null || command.getProcedimentCodiFiltre().trim().isEmpty()) &&
-                    (command.getServeiCodiFiltre() == null || command.getServeiCodiFiltre().trim().isEmpty())) {
+			if (command.getSiaCodiFiltre() == null || command.getSiaCodiFiltre().trim().isEmpty()) {
 				context.buildConstraintViolationWithTemplate(
 						MessageHelper.getInstance().getMessage(codiMissatge + ".tipus.desti.buit", null, new RequestContext(request).getLocale()))
-						.addNode("procedimentCodiFiltre")
+						.addNode("siaCodiFiltre")
 						.addConstraintViolation();
-                context.buildConstraintViolationWithTemplate(
-                                MessageHelper.getInstance().getMessage(codiMissatge + ".tipus.desti.buit", null, new RequestContext(request).getLocale()))
-                        .addNode("serveiCodiFiltre")
-                        .addConstraintViolation();
 				valid = false;
 			}
 			
@@ -112,16 +108,16 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 			boolean mateixCodiSiaMateixFiltreUnitat = false;
 			Long unitatOrganitzativaId = command.getUnitatFiltreId();
 			String unitatOrganitzativaComparada;
-			if (command.getProcedimentCodiFiltre() != null) {
+			if (command.getSiaCodiFiltre() != null) {
 				unitatOrganitzativaComparada = MessageHelper.getInstance().getMessage(codiMissatge + ".unitat.buida", null, new RequestContext(request).getLocale());
-				String procedimentCodiFiltre = command.getProcedimentCodiFiltre().trim();
-				List<String> procediments = Arrays.asList(procedimentCodiFiltre.split("\\s+"));
+				String siaCodiFiltre = command.getSiaCodiFiltre().trim();
+				List<String> sias = Arrays.asList(siaCodiFiltre.split("\\s+"));
                 List<String> tramits = Collections.emptyList();
                 if (command.getTramitCodiFiltre()!=null) {
                     String tramitCodiFiltre = command.getTramitCodiFiltre().trim();
                     tramits = Arrays.asList(tramitCodiFiltre.split("\\s+"));
                 }
-                List<ReglaMatchDto> matches = reglaService.findReglesByCodisSiaAndTramits(procediments, tramits);
+                List<ReglaMatchDto> matches = reglaService.findReglesByCodisSiaAndTramits(sias, tramits);
 				for(ReglaMatchDto match : matches) {
                     ReglaDto regla = match.getRegla();
 					StringBuilder reglesNoms = new StringBuilder("");
@@ -147,51 +143,7 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 							String[] args = {reglesNoms.substring(0, reglesNoms.length()-2), match.getSia() + (match.getTramit()!=null ? " - " + match.getTramit() :""), unitatOrganitzativaComparada};
 							context.buildConstraintViolationWithTemplate(
 									MessageHelper.getInstance().getMessage(codiMissatge + ".backoffice.codisia.igualUnitat.existent", args, new RequestContext(request).getLocale()))
-							.addNode("procedimentCodiFiltre")
-							.addConstraintViolation();	
-							valid = false;
-						}
-					}
-				}
-			}
-			// Comprova que els codis SIA de serveis no s'usin en altres regles ja sigui per procediment o servei.
-			if (command.getServeiCodiFiltre() != null) {
-				mateixCodiSiaMateixFiltreUnitat = false;
-				unitatOrganitzativaComparada = MessageHelper.getInstance().getMessage(codiMissatge + ".unitat.buida", null, new RequestContext(request).getLocale());
-				String serveiCodiFiltre = command.getServeiCodiFiltre().trim();
-				List<String> serveis = Arrays.asList(serveiCodiFiltre.split("\\s+"));
-                List<String> tramits = Collections.emptyList();
-                if (command.getTramitCodiFiltre()!=null) {
-                    String tramitCodiFiltre = command.getTramitCodiFiltre().trim();
-                    tramits = Arrays.asList(tramitCodiFiltre.split("\\s+"));
-                }
-                List<ReglaMatchDto> matches = reglaService.findReglesByCodisSiaAndTramits(serveis, tramits);
-				for(ReglaMatchDto match : matches) {
-                    ReglaDto regla = match.getRegla();
-					StringBuilder reglesNoms = new StringBuilder("");
-                    if (!regla.getId().equals(command.getId()) && ReglaTipusEnumDto.BACKOFFICE.equals(regla.getTipus())) {
-                        if (
-                                Objects.equals(unitatOrganitzativaId, (regla.getUnitatOrganitzativaFiltre()!=null
-                                        ?regla.getUnitatOrganitzativaFiltre().getId()
-                                        :null))
-                        ) {
-                            if (regla.getUnitatOrganitzativaFiltre()!=null) {
-                                unitatOrganitzativaComparada = regla.getUnitatOrganitzativaFiltre().getDenominacio();
-                            }
-                            mateixCodiSiaMateixFiltreUnitat = true;
-                            reglesNoms.append(regla.getNom());
-                            if (!entitatActual.getId().equals(regla.getEntitatId())) {
-                                reglesNoms.append(" (").append(regla.getEntitatNom()).append(")");
-                            }
-                            reglesNoms.append(", ");
-                        }
-                    }
-					if (mateixCodiSiaMateixFiltreUnitat) {
-						if (!reglesNoms.toString().isEmpty()) {
-							String[] args = {reglesNoms.substring(0, reglesNoms.length()-2), match.getSia() + (match.getTramit()!=null ? " - " + match.getTramit() :""), unitatOrganitzativaComparada};
-							context.buildConstraintViolationWithTemplate(
-									MessageHelper.getInstance().getMessage(codiMissatge + ".backoffice.codisia.igualUnitat.existent", args, new RequestContext(request).getLocale()))
-							.addNode("serveiCodiFiltre")
+							.addNode("siaCodiFiltre")
 							.addConstraintViolation();	
 							valid = false;
 						}
@@ -201,18 +153,17 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 		}
 		
 		
-		// Comrova que només s'informi el codi de procediment o el codi de servei, però no tots dos a l'hora
-		if (command.getProcedimentCodiFiltre() != null 
-				&& command.getServeiCodiFiltre() != null) {
+		// Comrova que només s'informi el codi de sia o el codi de servei, però no tots dos a l'hora
+		if (command.getSiaCodiFiltre() != null) {
 			String errMsg = MessageHelper.getInstance().getMessage(codiMissatge + ".codis.procediment.servei", null, new RequestContext(request).getLocale());
 			context.buildConstraintViolationWithTemplate(
 					errMsg)
-					.addNode("procedimentCodiFiltre")
+					.addNode("siaCodiFiltre")
 					.addConstraintViolation();	
-			context.buildConstraintViolationWithTemplate(
-					errMsg)
-					.addNode("serveiCodiFiltre")
-					.addConstraintViolation();	
+//			context.buildConstraintViolationWithTemplate(
+//					errMsg)
+//					.addNode("serveiCodiFiltre")
+//					.addConstraintViolation();
 			valid = false;
 		}
 

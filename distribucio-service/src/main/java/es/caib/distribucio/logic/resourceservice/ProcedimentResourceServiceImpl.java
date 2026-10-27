@@ -9,8 +9,10 @@ import javax.annotation.PostConstruct;
 import javax.persistence.criteria.Predicate;
 
 import es.caib.distribucio.logic.helper.ProcedimentHelper;
+import es.caib.distribucio.logic.helper.SiaResourceHelper;
 import es.caib.distribucio.logic.intf.util.Utils;
 import es.caib.distribucio.persist.resourceentity.BustiaResourceEntity;
+import es.caib.distribucio.persist.resourceentity.SiaResourceEntity;
 import es.caib.distribucio.persist.resourcerepository.BustiaResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.UnitatOrganitzativaResourceRepository;
 import org.springframework.data.jpa.domain.Specification;
@@ -40,6 +42,7 @@ public class ProcedimentResourceServiceImpl extends BaseMutableResourceService<P
 	private final ProcedimentHelper procedimentHelper;
     private final BustiaResourceRepository bustiaResourceRepository;
     private final UnitatOrganitzativaResourceRepository unitatOrganitzativaResourceRepository;
+    private final SiaResourceHelper siaResourceHelper;
 
     @PostConstruct
 	public void init() {
@@ -158,7 +161,8 @@ public class ProcedimentResourceServiceImpl extends BaseMutableResourceService<P
 						"No s'ha pogut determinar l'entitat de context.");
 			}
 			try {
-				procedimentHelper.findAndUpdateProcediments(entitatId);
+//				procedimentHelper.findAndUpdateProcediments(entitatId);
+                siaResourceHelper.findAndUpdateProcediments(entitatId);
 				return null;
 			} catch (Exception e) {
 				log.error("Error actualitzant procediments per a l'entitat " + entitatId, e);
@@ -205,7 +209,8 @@ public class ProcedimentResourceServiceImpl extends BaseMutableResourceService<P
 						"No s'ha pogut determinar l'entitat de context.");
 			}
 			try {
-				ProcedimentEntity procedimentEntity = procedimentHelper.findAndUpdateProcediment(entitatId, entity.getCodi());
+//				ProcedimentEntity procedimentEntity = procedimentHelper.findAndUpdateProcediment(entitatId, entity.getCodi());
+                SiaResourceEntity procedimentEntity = siaResourceHelper.findAndUpdateProcediment(entitatId, entity.getCodi());
 				return procedimentEntity != null ? procedimentEntity.getId() : null;
 			} catch (Exception e) {
 				log.warn("No s'ha pogut actualitzar el procediment {}: {}", entity != null ? entity.getCodi() : null, e.getMessage());
@@ -247,7 +252,7 @@ public class ProcedimentResourceServiceImpl extends BaseMutableResourceService<P
 			if (entitatId == null) {
 				return null;
 			}
-			UpdateProgressDto progres = procedimentHelper.progressosActualitzacio.get(entitatId);
+			UpdateProgressDto progres = siaResourceHelper.progressosActualitzacio.get(entitatId);
 
 			return progres;
 		}

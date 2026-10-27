@@ -321,8 +321,9 @@ body {
 												<li><a href="<c:url value="/contingutAdmin"/>"><spring:message code="decorator.menu.continguts"/></a></li>
 												<li><a href="<c:url value="/annexosAdmin"/>"><spring:message code="decorator.menu.annexos"/></a></li>
 											</c:if>
-											<li><a href="<c:url value="/procediment"/>"><spring:message code="decorator.menu.procediments"/></a></li>
-											<li><a href="<c:url value="/servei"/>"><spring:message code="decorator.menu.serveis"/></a></li>
+<%--											<li><a href="<c:url value="/procediment"/>"><spring:message code="decorator.menu.procediments"/></a></li>--%>
+<%--											<li><a href="<c:url value="/servei"/>"><spring:message code="decorator.menu.serveis"/></a></li>--%>
+											<li><a href="<c:url value="/sia"/>"><spring:message code="decorator.menu.sias"/></a></li>
 											<li><a href="<c:url value="/historic"/>"><spring:message code="decorator.menu.estadistiques"/></a></li>
 											<li class="divider"></li>
 											<li>

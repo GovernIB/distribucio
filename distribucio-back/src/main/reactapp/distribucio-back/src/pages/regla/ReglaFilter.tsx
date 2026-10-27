@@ -13,10 +13,10 @@ const ReglaFilterForm: React.FC = () => {
             {!data?.advanced && (
                 <>
                     <GridFormField size={{ xs: 12, sm: 6, md: 3.8 }} name="nom" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 1.7 }} name="codiAssumpte" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 2.2 }} name="codiSIA" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 1.7 }} name="codiServei" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 1.6 }} name="codiTramit" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.4 }} name="codiAssumpte" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="codiSIA" />
+                    {/*<GridFormField size={{ xs: 12, sm: 6, md: 1.7 }} name="codiServei" />*/}
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.3 }} name="codiTramit" />
                 </>
             )}
             {data?.advanced && (
@@ -24,13 +24,13 @@ const ReglaFilterForm: React.FC = () => {
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="nom" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="codiAssumpte" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="codiSIA" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="codiServei" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="codiTramit" />
-                    <GridUnitatField size={{ xs: 12, sm: 6, md: 3.5 }} name="unitat" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="bustia" />
+                    {/*<GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="codiServei" />*/}
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="codiTramit" />
+                    <GridUnitatField size={{ xs: 12, sm: 6, md: 3 }} name="unitat" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="bustia" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="activa" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="presencial" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="tipus" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="tipus" />
 
                     {data?.tipus === 'UNITAT' && (
                         <GridUnitatField size={{ xs: 12, sm: 6, md: 3.5 }} name="unitatDesti" />
@@ -49,8 +49,8 @@ const springFilterBuilder = (data: any) =>
     builder.and(
         builder.like('nom', data?.nom),
         builder.like('assumpteCodiFiltre', data?.codiAssumpte),
-        builder.like('procedimentCodiFiltre', data?.codiSIA),
-        builder.like('serveiCodiFiltre', data?.codiServei),
+        builder.like('siaCodiFiltre', data?.codiSIA),
+        // builder.like('serveiCodiFiltre', data?.codiServei),
         builder.like('tramitCodiFiltre', data?.codiTramit),
         builder.eq('unitatOrganitzativaFiltre.id', data?.unitat?.id),
         builder.eq('bustiaFiltre.id', data?.bustia?.id),

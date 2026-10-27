@@ -18,6 +18,8 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
@@ -31,6 +33,8 @@ import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
  * @author Limit Tecnologies <limit@limit.es>
  */
 @Entity
+@Getter
+@Setter
 @Table(name = BaseConfig.DB_PREFIX + "regla",
 		uniqueConstraints = {
 				@UniqueConstraint(
@@ -54,13 +58,14 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@Column(name = "assumpte_codi", length = 16)
 	protected String assumpteCodiFiltre;
 	
-	@Column(name = "procediment_codi", length = 1024, nullable = false)
-	private String procedimentCodiFiltre;
-	
-	@Column(name = "servei_codi", length = 1024, nullable = false)
-	private String serveiCodiFiltre;
+//	@Column(name = "procediment_codi", length = 1024)
+//	private String procedimentCodiFiltre;
+//	@Column(name = "servei_codi", length = 1024)
+//	private String serveiCodiFiltre;
+	@Column(name = "codis_sia", length = 1024)
+	private String siaCodiFiltre;
 
-	@Column(name = "tramit_codi", length = 1024, nullable = false)
+	@Column(name = "tramit_codi", length = 1024)
 	private String tramitCodiFiltre;
 	
 	@ManyToOne(optional = true, fetch = FetchType.LAZY)
@@ -121,66 +126,6 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	@Version
 	private long version = 0;
 
-	public UnitatOrganitzativaEntity getUnitatOrganitzativaFiltre() {
-		return unitatOrganitzativaFiltre;
-	}
-	public String getNom() {
-		return nom;
-	}
-	public String getDescripcio() {
-		return descripcio;
-	}
-	public ReglaTipusEnumDto getTipus() {
-		return tipus;
-	}
-	public ReglaPresencialEnumDto getPresencial() {
-		return presencial;
-	}
-	public String getAssumpteCodiFiltre() {
-		return assumpteCodiFiltre;
-	}
-	public String getProcedimentCodiFiltre() {
-		return procedimentCodiFiltre;
-	}
-	public String getServeiCodiFiltre() {
-		return serveiCodiFiltre;
-	}
-    public String getTramitCodiFiltre() {
-        return tramitCodiFiltre;
-    }
-    public BustiaEntity getBustiaDesti() {
-		return bustiaDesti;
-	}
-	public int getOrdre() {
-		return ordre;
-	}
-	public boolean isActiva() {
-		return activa;
-	}
-	public EntitatEntity getEntitat() {
-		return entitat;
-	}
-	public BustiaEntity getBustiaFiltre() {
-		return bustiaFiltre;
-	}
-	public BackofficeEntity getBackofficeDesti() {
-		return backofficeDesti;
-	}
-
-	public UnitatOrganitzativaEntity getUnitatDesti() {
-		return unitatDesti;
-	}
-	public void setUnitatDesti(UnitatOrganitzativaEntity  unitatDesti) {
-		this.unitatDesti = unitatDesti;
-	}
-
-	public boolean isAturarAvaluacio() {
-		return aturarAvaluacio;
-	}
-	public void setAturarAvaluacio(boolean aturarAvaluacio) {
-		this.aturarAvaluacio = aturarAvaluacio;
-	}
-
 	public void update(
 			BackofficeEntity backofficeDestiId, 
 			String nom,
@@ -188,8 +133,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			ReglaTipusEnumDto tipus,
 			ReglaPresencialEnumDto presencial,
 			String assumpteCodiFiltre,
-			String procedimentCodiFiltre,
-			String serveiCodiFiltre,
+			String siaCodiFiltre,
 			String tramitCodiFiltre,
 			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
 			BustiaEntity bustiaFiltre, 
@@ -200,8 +144,8 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		this.tipus = tipus;
 		this.presencial = presencial;
 		this.assumpteCodiFiltre = assumpteCodiFiltre;
-		this.procedimentCodiFiltre = procedimentCodiFiltre;
-		this.serveiCodiFiltre = serveiCodiFiltre;
+		this.siaCodiFiltre = siaCodiFiltre;
+//		this.serveiCodiFiltre = serveiCodiFiltre;
 		this.tramitCodiFiltre = tramitCodiFiltre;
 		this.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
 		this.bustiaFiltre = bustiaFiltre;
@@ -239,8 +183,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			ReglaTipusEnumDto tipus,
 			ReglaPresencialEnumDto presencial,
 			String assumpteCodiFiltre,
-			String procedimentCodiFiltre,
-			String serveiCodiFiltre,
+			String siaCodiFiltre,
 			String tramitCodiFiltre,
 			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
 			BustiaEntity bustiaFiltre,
@@ -251,8 +194,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				tipus,
 				presencial, 
 				assumpteCodiFiltre,
-				procedimentCodiFiltre,
-				serveiCodiFiltre,
+                siaCodiFiltre,
                 tramitCodiFiltre,
 				unitatOrganitzativaFiltre,
 				bustiaFiltre,
@@ -266,8 +208,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				ReglaTipusEnumDto tipus,
 				ReglaPresencialEnumDto presencial, 
 				String assumpteCodiFiltre,
-				String procedimentCodiFiltre,
-				String serveiCodiFiltre,
+				String siaCodiFiltre,
 				String tramitCodiFiltre,
 				UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
 				BustiaEntity bustiaFiltre,
@@ -278,8 +219,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			built.tipus = tipus;
 			built.presencial = presencial;
 			built.assumpteCodiFiltre = assumpteCodiFiltre;
-			built.procedimentCodiFiltre = procedimentCodiFiltre;
-			built.serveiCodiFiltre = serveiCodiFiltre;
+			built.siaCodiFiltre = siaCodiFiltre;
 			built.tramitCodiFiltre = tramitCodiFiltre;
 			built.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
 			built.bustiaFiltre = bustiaFiltre;
@@ -293,10 +233,6 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		public ReglaEntity build() {
 			return built;
 		}
-	}
-	
-	public void setUnitatOrganitzativaFiltre(UnitatOrganitzativaEntity unitatOrganitzativaFiltre) {
-		this.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
 	}
 
 	@Override
@@ -323,15 +259,10 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				return false;
 		} else if (!assumpteCodiFiltre.equals(other.assumpteCodiFiltre))
 			return false;
-		if (procedimentCodiFiltre == null) {
-			if (other.procedimentCodiFiltre != null)
+		if (siaCodiFiltre == null) {
+			if (other.siaCodiFiltre != null)
 				return false;
-		} else if (!procedimentCodiFiltre.equals(other.procedimentCodiFiltre))
-			return false;
-		if (serveiCodiFiltre == null) {
-			if (other.serveiCodiFiltre != null)
-				return false;
-		} else if (!serveiCodiFiltre.equals(other.serveiCodiFiltre))
+		} else if (!siaCodiFiltre.equals(other.siaCodiFiltre))
 			return false;
 		if (tramitCodiFiltre == null) {
 			if (other.tramitCodiFiltre != null)

@@ -268,6 +268,13 @@ const InnerApp: React.FC = () => {
                     icon: icons.servei,
                     pantalla: 'servei',
                 },
+                {
+                    id: 'sia',
+                    title: t('app.menu.sia'),
+                    to: 'sia',
+                    icon: icons.sia,
+                    pantalla: 'sia',
+                },
                 // { divider: true },
                 {
                     id: 'massiva',

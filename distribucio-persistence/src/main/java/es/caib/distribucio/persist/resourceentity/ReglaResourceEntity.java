@@ -41,11 +41,14 @@ public class ReglaResourceEntity extends BaseAuditableEntity<ReglaResource, Long
     @Column(name = "assumpte_codi", length = 16)
     private String assumpteCodiFiltre;
 
-    @Column(name = "procediment_codi", length = 1024)
-    private String procedimentCodiFiltre;
+//    @Column(name = "procediment_codi", length = 1024)
+//    private String procedimentCodiFiltre;
+//
+//    @Column(name = "servei_codi", length = 1024)
+//    private String serveiCodiFiltre;
 
-    @Column(name = "servei_codi", length = 1024)
-    private String serveiCodiFiltre;
+    @Column(name = "codis_sia", length = 1024)
+    private String siaCodiFiltre;
 
     @Column(name = "tramit_codi", length = 1024)
     private String tramitCodiFiltre;

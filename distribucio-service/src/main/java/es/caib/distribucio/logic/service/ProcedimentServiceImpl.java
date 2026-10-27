@@ -6,16 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import es.caib.distribucio.logic.helper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.caib.distribucio.logic.helper.ConversioTipusHelper;
-import es.caib.distribucio.logic.helper.PaginacioHelper;
-import es.caib.distribucio.logic.helper.PluginHelper;
-import es.caib.distribucio.logic.helper.ProcedimentHelper;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
@@ -55,9 +52,11 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 	private ConversioTipusHelper conversioTipusHelper;
 	@Autowired
 	private ProcedimentHelper procedimentHelper;
-	
+    @Autowired
+    private SiaResourceHelper siaResourceHelper;
 
-	@Override
+
+    @Override
 	@Transactional(readOnly = true) 
 	public PaginaDto<ProcedimentDto> findAmbFiltre(
 			Long entitatId, 
@@ -109,7 +108,8 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 	@Override
 	@Transactional	
 	public void findAndUpdateProcediments(Long entitatId) throws Exception {
-		procedimentHelper.findAndUpdateProcediments(entitatId);
+//		procedimentHelper.findAndUpdateProcediments(entitatId);
+        siaResourceHelper.findAndUpdateProcediments(entitatId);
 	}
 
 	@Transactional
@@ -178,7 +178,7 @@ public class ProcedimentServiceImpl implements ProcedimentService{
 
 	@Override
 	public UpdateProgressDto getProgresActualitzacio(Long entitatId) {
-		return procedimentHelper.progressosActualitzacio.get(entitatId);
+		return siaResourceHelper.progressosActualitzacio.get(entitatId);
 	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProcedimentServiceImpl.class);

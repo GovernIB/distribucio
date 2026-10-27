@@ -22,6 +22,7 @@ import es.caib.distribucio.logic.helper.*;
 import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.persist.entity.*;
 import es.caib.distribucio.persist.repository.*;
+import es.caib.distribucio.persist.resourcerepository.SiaResourceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,7 +141,7 @@ public class BustiaServiceImpl implements BustiaService {
     @Autowired
     private AlertaHelper alertaHelper;
     @Autowired
-    private ProcedimentHelper procedimentHelper;
+    private SiaResourceHelper siaResourceHelper;
 
     @Override
 	@Transactional
@@ -1099,7 +1100,7 @@ public class BustiaServiceImpl implements BustiaService {
 
         boolean alertaSia = false;
         String codiSia = registreAnotacio.getProcedimentCodi() != null ?registreAnotacio.getProcedimentCodi() :registreAnotacio.getServeiCodi();
-        RegistreClassificarTipusEnum tipusSia = procedimentHelper.getTipusSiaByCodi(entitat.getId(), codiSia);
+        RegistreClassificarTipusEnum tipusSia = siaResourceHelper.getTipusSiaByCodi(entitat.getId(), codiSia);
 
         if (codiSia != null) {
             if (tipusSia != null) {
@@ -1255,7 +1256,7 @@ public class BustiaServiceImpl implements BustiaService {
 
         boolean alertaSia = false;
         String codiSia = registreAnotacio.getProcedimentCodi() != null ?registreAnotacio.getProcedimentCodi() :registreAnotacio.getServeiCodi();
-        RegistreClassificarTipusEnum tipusSia = procedimentHelper.getTipusSiaByCodi(entitat.getId(), codiSia);
+        RegistreClassificarTipusEnum tipusSia = siaResourceHelper.getTipusSiaByCodi(entitat.getId(), codiSia);
 
         if (codiSia != null) {
             if (tipusSia != null) {

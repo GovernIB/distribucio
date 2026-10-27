@@ -13,6 +13,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import es.caib.distribucio.logic.intf.model.SiaResource;
+import es.caib.distribucio.logic.intf.resourceservice.SiaResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +33,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.caib.distribucio.back.controller.BaseUserController;
 import es.caib.distribucio.logic.intf.dto.BackofficeDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.ReglaDto;
 import es.caib.distribucio.logic.intf.dto.ReglaPresencialEnumDto;
 import es.caib.distribucio.logic.intf.dto.ReglaTipusEnumDto;
 import es.caib.distribucio.logic.intf.service.BackofficeService;
 import es.caib.distribucio.logic.intf.service.EntitatService;
-import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.ReglaService;
 
 /**
@@ -61,10 +61,10 @@ public class ReglesController extends BaseUserController {
 	private BackofficeService backofficeService;
 	@Autowired
 	private EntitatService entitatService;
-	@Autowired
-	private ProcedimentService procedimentService;
+    @Autowired
+    private SiaResourceService siaResourceService;
 
-	/** Retorna la documentació de l'API. */
+    /** Retorna la documentació de l'API. */
 	@RequestMapping(value = {"", "/", "/apidoc"}, method = RequestMethod.GET)
 	public String documentacio(HttpServletRequest request) {
 		
@@ -135,7 +135,7 @@ public class ReglesController extends BaseUserController {
 		novaReglaDto.setTipus(tipus);
 		novaReglaDto.setBackofficeDestiId(backofficeDto.getId());
 		novaReglaDto.setBackofficeDestiNom(backoffice);
-		novaReglaDto.setProcedimentCodiFiltre(sia);
+		novaReglaDto.setSiaCodiFiltre(sia);
 		if (presencial != null) {
 			novaReglaDto.setPresencial(presencial.booleanValue() ? ReglaPresencialEnumDto.SI : ReglaPresencialEnumDto.NO );
 		}
@@ -166,18 +166,19 @@ public class ReglesController extends BaseUserController {
 
 		try {
 			novaReglaDto = reglaService.create(entitatDto.getId(), novaReglaDto);
-						
-			ProcedimentDto procediment = procedimentService.findByCodiSia(entitatDto.getId(), sia);
 
-			if (procediment != null) {
+//            ProcedimentDto procediment = procedimentService.findByCodiSia(entitatDto.getId(), sia);
+            SiaResource siaResource = siaResourceService.findByEntitatIdAndCodiSia(entitatDto.getId(), sia);
+
+			if (siaResource != null) {
 				msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
 						+ "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia + " ("
-						+ procediment.getNom() + ")" + " de la unitat " + " \""
-						+ procediment.getUnitatOrganitzativa().getCodiAndNom() + "\"" + " a l'entitat " + entitat;
+						+ siaResource.getNom() + ")" + " de la unitat " + " \""
+						+ siaResource.getUnitatOrganitzativa().getDescription() + "\"" + " a l'entitat " + entitat;
 			} else {
 				msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
 						+ "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia
-						+ "(Procediment no trobat)" + " a l'entitat " + entitat;
+						+ "(SIa no trobat)" + " a l'entitat " + entitat;
 			}
 			logger.debug(msg);
 			return new ResponseEntity<Object>(msg, HttpStatus.OK);
@@ -335,7 +336,7 @@ public class ReglesController extends BaseUserController {
 					sia);
 			response = "Regla amb id " + regla.getId() + " actualitzada correctament.";
 		} catch (Exception e) {
-			String errMsg = "Error actualitzant la regla " + regla.getNom() + " amb id " + regla.getId() + " pel procediment " + regla.getProcedimentCodiFiltre() + ": " + e.getMessage();
+			String errMsg = "Error actualitzant la regla " + regla.getNom() + " amb id " + regla.getId() + " pel procediment " + regla.getSiaCodiFiltre() + ": " + e.getMessage();
 			logger.error(errMsg, e);
 			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 
