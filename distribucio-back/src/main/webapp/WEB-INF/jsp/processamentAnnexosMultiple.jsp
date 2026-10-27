@@ -35,7 +35,7 @@
 	
 	<form:form class="form-horizontal" modelAttribute="processamentAnnexosMultiple">
 		<div id="modal-botons" class="well">
-			<button name="btnProcessamentAnnexosMultipleSubmit" type="submit" class="btn btn-success"><span class="fa fa-cog"></span> <spring:message code="registre.detalls.accio.reintentar"/></button>
+			<button name="btnProcessamentAnnexosMultipleSubmit" type="submit" class="btn btn-success"><span class="fa fa-cog"></span> <spring:message code="comu.boto.executar"/></button>
 			<a href="<c:url value="/registreAdmin"/>" class="btn btn-default" data-modal-cancel="true"><spring:message code="comu.boto.cancelar"/></a>
 		</div>
 	</form:form>
