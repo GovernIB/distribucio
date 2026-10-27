@@ -660,7 +660,8 @@ public class ContingutController extends BaseUserController {
 			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_COMUNICADA"));
 			break;
 		case BACK_REBUDA:
-			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_REBUDA"));
+            String backoffice = log.getParams() != null && !log.getParams().isEmpty() ?log.getParams().get(0) :null;
+			sb.append(this.getMessage(request, "contingut.log.resum.msg.BACK_REBUDA", new Object[] { backoffice }));
 			break;
 		case BACK_PROCESSADA:
 			if ((registre!=null)&&(registre.getBackCodi()!=null)) {

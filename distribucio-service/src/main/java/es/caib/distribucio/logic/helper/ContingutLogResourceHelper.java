@@ -134,7 +134,9 @@ public class ContingutLogResourceHelper {
                 sb.append(i18nUtil.getI18nMessage("contingut.log.resum.msg.BACK_COMUNICADA"));
                 break;
             case BACK_REBUDA:
-                sb.append(i18nUtil.getI18nMessage("contingut.log.resum.msg.BACK_REBUDA"));
+                String backoffice = resource.getParams() != null && !resource.getParams().isEmpty()
+                        ?resource.getParams().get(0) :null;
+                sb.append(i18nUtil.getI18nMessage("contingut.log.resum.msg.BACK_REBUDA", new Object[] { backoffice }));
                 break;
             case BACK_PROCESSADA:
                 if ((registre!=null)&&(registre.getBackCodi()!=null)) {

@@ -1837,7 +1837,7 @@ public class RegistreServiceImpl implements RegistreService {
 				contingutLogHelper.log(
 						registre,
 						LogTipusEnumDto.BACK_REBUDA,
-						null,
+                        List.of(registre.getBackCodi()),
 						false);
 				break;
 			case PROCESSADA:
