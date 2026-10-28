@@ -13,6 +13,7 @@ import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.model.*;
 import es.caib.distribucio.logic.intf.registre.RegistreAnnexSicresTipusDocumentEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
+import es.caib.distribucio.logic.intf.resourceservice.AclEntryResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.ContingutMovimentResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.RegistreResourceService;
 import es.caib.distribucio.logic.intf.service.*;
@@ -77,6 +78,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private final DominiResourceRepository dominiResourceRepository;
     private final DominiService dominiService;
     private final ContingutLogResourceRepository contingutLogResourceRepository;
+    private final AclEntryResourceService aclEntryResourceService;
 
     @PostConstruct
     public void init() {
@@ -952,8 +954,26 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 if (RegistreProcesEstatEnum.ARXIU_PENDENT.equals( registreResource.getProcesEstat() ) && !registreResource.isReintentsEsgotat()) {
                     throw new ActionExecutionException(
                             RegistreResource.class,
-                            null, code,
+                            registre.getId(),
+                            code,
                             I18nUtil.getInstance().getI18nMessage("bustia.controller.pendent.contingut.enviar.email.validacio.estat")
+                    );
+                }
+
+                boolean hasPermission = aclEntryResourceService.anyPermissionGranted(
+                        ResourceType.BUSTIA,
+                        registre.getPare().getId(),
+                        List.of(PermissionEnum.READ),
+                        authenticationHelper.getCurrentUserName(),
+                        List.of(authenticationHelper.getCurrentUserRoles())
+                );
+
+                if (!hasPermission) {
+                    throw new ActionExecutionException(
+                            RegistreResource.class,
+                            registre.getId(),
+                            code,
+                            I18nUtil.getInstance().getI18nMessage("registre.user.controller.error.permis.bustia.descripcio")
                     );
                 }
 
@@ -1043,6 +1063,24 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 }
             } else {
                 RegistreResourceEntity registre = registreResourceRepository.findById(params.getIds().get(0)).get();
+
+                boolean hasPermission = aclEntryResourceService.anyPermissionGranted(
+                        ResourceType.BUSTIA,
+                        registre.getPare().getId(),
+                        List.of(PermissionEnum.READ),
+                        authenticationHelper.getCurrentUserName(),
+                        List.of(authenticationHelper.getCurrentUserRoles())
+                );
+
+                if (!hasPermission) {
+                    throw new ActionExecutionException(
+                            RegistreResource.class,
+                            registre.getId(),
+                            code,
+                            I18nUtil.getInstance().getI18nMessage("registre.user.controller.error.permis.bustia.descripcio")
+                    );
+                }
+
                 bustiaService.registreReenviar(
                         entitatActualId,
                         params.getBusties().toArray(Long[]::new),

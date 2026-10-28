@@ -183,12 +183,17 @@ public class EntityComprovarHelper {
 					new Permission[] {ExtendedPermission.READ},
 					auth);
 			if (!esPermisRead) {
-				throw new PermissionDeniedException(
-						bustiaId,
-						BustiaEntity.class,
-						auth.getName(),
-						"READ",
-						bustia.getNom());
+                throw new ValidationException(
+                        bustiaId,
+                        BustiaEntity.class,
+                        "L'usuari actual no té permisos de lectura sobre la bústia."
+                );
+//				throw new PermissionDeniedException(
+//						bustiaId,
+//						BustiaEntity.class,
+//						auth.getName(),
+//						"READ",
+//						bustia.getNom());
 			}
 		}
 		comprovarBustiaContext.stop();
