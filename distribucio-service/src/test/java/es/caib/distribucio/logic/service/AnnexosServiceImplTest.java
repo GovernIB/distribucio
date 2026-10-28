@@ -100,7 +100,7 @@ class AnnexosServiceImplTest {
             filtre.setDataRecepcioFi(new Date());
             List<Long> idsEsperats = Arrays.asList(1L, 2L);
 
-            when(registreAnnexRepository.findIdsByFiltre(any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any()))
+            when(registreAnnexRepository.findIdsByFiltre(any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any()))
                     .thenReturn(idsEsperats);
 
             // Act
@@ -108,7 +108,7 @@ class AnnexosServiceImplTest {
 
             // Assert
             assertEquals(2, resultat.size());
-            verify(registreAnnexRepository, times(1)).findIdsByFiltre(any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any());
+            verify(registreAnnexRepository, times(1)).findIdsByFiltre(any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any(), anyBoolean(), any());
         }
     }
 

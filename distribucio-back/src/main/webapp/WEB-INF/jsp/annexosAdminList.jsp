@@ -30,6 +30,7 @@ pageContext.setAttribute(
 	<link href="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/css/bootstrap-datepicker.min.css"/>" rel="stylesheet"/>
 	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/js/bootstrap-datepicker.min.js"/>"></script>
 	<script src="<c:url value="/webjars/bootstrap-datepicker/1.6.1/dist/locales/bootstrap-datepicker.${requestLocale}.min.js"/>"></script>
+    <script src="<c:url value="/webjars/autoNumeric/1.9.30/autoNumeric.js"/>"></script>
 	<script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
 	<script src="<c:url value="/js/webutil.common.js"/>"></script>
 	<script src="<c:url value="/js/webutil.datatable.js"/>"></script>
@@ -65,6 +66,15 @@ pageContext.setAttribute(
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
+            $.views.helpers({
+                bytesToMbFloor: function(bytes, decimals) {
+                    if (!bytes || bytes <= 0) return 0;
+                    decimals = decimals || 2;
+                    const mbits = (bytes * 8) / 1_000_000;
+                    const multiplier = Math.pow(10, decimals);
+                    return Math.floor(mbits * multiplier) / multiplier;
+                }
+            });
 		
 		    $('#filtrarBtn').on('click', function(e){
 		        $('#accioHidden').val('filtrar');
@@ -239,19 +249,30 @@ pageContext.setAttribute(
 				<dis:inputText name="fitxerTipusMime" inline="true" placeholderKey="annex.admin.filtre.fitxerTipusMime"/>
 			</div>	
 		</div>
+        <div class="row">
+            <div class="col-md-3">
+                <dis:inputText name="titol" inline="true" placeholderKey="annex.admin.filtre.titol"/>
+            </div>
+            <div class="col-md-3">
+                <dis:inputDate name="dataRecepcioInici" inline="true" placeholderKey="annex.admin.filtre.data.inici"/>
+            </div>
+            <div class="col-md-3">
+                <dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="annex.admin.filtre.data.final"/>
+            </div>
+            <div class="col-md-3">
+                <dis:inputText name="fitxerNom" inline="true" placeholderKey="annex.admin.filtre.fitxerNom"/>
+            </div>
+        </div>
 		<div class="row">
-			<div class="col-md-3">
-				<dis:inputText name="titol" inline="true" placeholderKey="annex.admin.filtre.titol"/>
-			</div>	
-			<div class="col-md-2">
-				<dis:inputDate name="dataRecepcioInici" inline="true" placeholderKey="annex.admin.filtre.data.inici"/>
-			</div>
-			<div class="col-md-2">
-				<dis:inputDate name="dataRecepcioFi" inline="true" placeholderKey="annex.admin.filtre.data.final"/>
-			</div>
-			<div class="col-md-3">
-				<dis:inputText name="fitxerNom" inline="true" placeholderKey="annex.admin.filtre.fitxerNom"/>
-			</div>	
+            <div class="col-md-3">
+                <dis:inputNumber name="midaMinima" separadorDecimal="." nombreDecimals="2" inline="true" placeholderKey="annex.admin.filtre.mida.minima"/>
+            </div>
+            <div class="col-md-3">
+                <dis:inputNumber name="midaMaxima" separadorDecimal="." nombreDecimals="2" inline="true" placeholderKey="annex.admin.filtre.mida.maxima"/>
+            </div>
+
+            <div class="col-md-4"></div>
+
 			<div class="col-md-2 d-flex justify-content-end">
 			    <button id="netejarFiltre" type="button" class="btn btn-default">
 			        <spring:message code="comu.boto.netejar"/>
@@ -330,6 +351,11 @@ pageContext.setAttribute(
            			 </script>
 				</th>
 				<th data-col-name="fitxerTipusMime" width="10%"><spring:message code="annexos.admin.columna.fitxerTipusMime"/></th>
+				<th data-col-name="fitxerTamany" data-template="#cellFitxerTamanyTemplate" width="10%"><spring:message code="annexos.admin.columna.fitxerTamany"/>
+                    <script id="cellFitxerTamanyTemplate" type="text/x-jsrender">
+                        {{:~bytesToMbFloor(fitxerTamany, 2)}} (Mb)
+                    </script>
+                </th>
 				<th data-col-name="signaturaInfo" data-orderable="false" width="10%"><spring:message code="annexos.admin.columna.signaturaInfo"/></th>
 				<th data-col-name="tipusFirma" data-visible="false"></th>
 				<th data-col-name="fitxerExtension" data-visible="false"></th>

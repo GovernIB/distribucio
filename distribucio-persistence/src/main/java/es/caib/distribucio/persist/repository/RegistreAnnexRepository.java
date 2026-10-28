@@ -58,6 +58,8 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 		       " (:esNullArxiuEstat = true or ra.arxiuEstat = :arxiuEstat) and " +
 		       " (:esNullDataRecepcioInici = true or ra.registre.data >= :dataRecepcioInici) and " +
 		       " (:esNullDataRecepcioFi = true or ra.registre.data <= :dataRecepcioFi) and " +
+		       " (:esNullMidaMinima = true or ra.fitxerTamany >= :midaMinima) and " +
+		       " (:esNullMidaMaxima = true or ra.fitxerTamany <= :midaMaxima) and " +
 		       " (:esNullTipusFirma = true or exists ( " +
 		       "     select 1 from ra.firmes f where f.tipus = :tipusFirma" +
 		       " )) and " +
@@ -76,6 +78,10 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 		        @Param("dataRecepcioInici") Date dataRecepcioInici,
 		        @Param("esNullDataRecepcioFi") boolean esNullDataRecepcioFi,
 		        @Param("dataRecepcioFi") Date dataRecepcioFi,
+		        @Param("esNullMidaMinima") boolean esNullMidaMinima,
+		        @Param("midaMinima") Integer midaMinima,
+		        @Param("esNullMidaMaxima") boolean esNullMidaMaxima,
+		        @Param("midaMaxima") Integer midaMaxima,
 		        @Param("esNullTipusFirma") boolean esNullTipusFirma,
 		        @Param("tipusFirma") String tipusFirma,
 		        @Param("esNullTitol") boolean esNullTitol,
@@ -96,6 +102,8 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 			+ " (:esNullArxiuEstat = true or ra.arxiuEstat = :arxiuEstat) and "
 			+ " (:esNullDataRecepcioInici = true or ra.registre.data >= :dataRecepcioInici) and "
 			+ " (:esNullDataRecepcioFi = true or ra.registre.data <= :dataRecepcioFi) and "
+		    + " (:esNullMidaMinima = true or ra.fitxerTamany >= :midaMinima) and "
+            + " (:esNullMidaMaxima = true or ra.fitxerTamany <= :midaMaxima) and "
 			+ " (:esNullTipusFirma = true or (raf is not null and raf.tipus = :tipusFirma)) and "
 			+ " (:esNullTitol = true or lower(ra.titol) like lower('%'||:titol||'%')) and "
 			+ " (:esNullFitxerNom = true or lower(ra.fitxerNom) like lower('%'||:fitxerNom||'%')) and "
@@ -112,7 +120,11 @@ public interface RegistreAnnexRepository extends JpaRepository<RegistreAnnexEnti
 			@Param("esNullDataRecepcioInici") boolean esNullDataRecepcioInici,
 			@Param("dataRecepcioInici") Date dataRecepcioInici,
 			@Param("esNullDataRecepcioFi") boolean esNullDataRecepcioFi, 
-			@Param("dataRecepcioFi") Date dataRecepcioFi, 
+			@Param("dataRecepcioFi") Date dataRecepcioFi,
+            @Param("esNullMidaMinima") boolean esNullMidaMinima,
+            @Param("midaMinima") Integer midaMinima,
+            @Param("esNullMidaMaxima") boolean esNullMidaMaxima,
+            @Param("midaMaxima") Integer midaMaxima,
 			@Param("esNullTipusFirma") boolean esNullTipusFirma,
 			@Param("tipusFirma") String tipusFirma,
 			@Param("esNullTitol") boolean esNullTitol,

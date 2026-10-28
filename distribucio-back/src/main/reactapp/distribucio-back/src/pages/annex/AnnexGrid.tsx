@@ -53,6 +53,13 @@ export const AnnexArxiuEstatCell: React.FC<{ params: any }> = ({ params }) => {
     );
 };
 
+export const bytesToMb = (bytes: number, decimals: number = 2): number => {
+    if (bytes <= 0) return 0;
+    const value = (bytes * 8) / 1_000_000;
+    const multiplier = Math.pow(10, decimals);
+    return Math.floor(value * multiplier) / multiplier;
+};
+
 const AnnexGrid: React.FC = () => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
@@ -100,6 +107,10 @@ const AnnexGrid: React.FC = () => {
                 renderCell: (params: any) => <AnnexArxiuEstatCell params={params} />,
             },
             { field: 'fitxerTipusMime', flex: 0.7 },
+            { field: 'fitxerTamany', flex: 1,
+                valueFormatter: (value:number) => bytesToMb(value),
+                renderCell: (params:any) => <>{params.formattedValue} (Mb)</>,
+            },
             { field: 'signaturaInfo', flex: 0.7, sortable: false },
         ],
         [t]

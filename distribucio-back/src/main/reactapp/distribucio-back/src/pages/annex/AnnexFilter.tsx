@@ -30,7 +30,10 @@ const TIPUS_FIRMA_CODIS: Record<string, string> = {
  * número amb què es filtra registreNumeroCopia surt directament del nom triat.
  */
 const numeroCopiaValor = (value: string): number => Number(value.split('_')[1]);
-
+export const mbToBytes = (mb: number): number | null => {
+    if (mb == null) return null;
+    return Math.round((mb * 1_000_000) / 8);
+};
 const AnnexFilterForm: React.FC = () => {
     const { data } = useFormContext();
 
@@ -52,10 +55,14 @@ const AnnexFilterForm: React.FC = () => {
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="arxiuEstat" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="tipusFirma" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="fitxerTipusMime" />
+
                     <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="titol" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="dataAnotacioInici" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="dataAnotacioFi" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3.0 }} name="dataAnotacioInici" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3.0 }} name="dataAnotacioFi" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="fitxerNom" />
+
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="midaMinima" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="midaMaxima" />
                 </>
             )}
         </>
@@ -71,7 +78,8 @@ const springFilterBuilder = (data: any) => {
         builder.like('fitxerTipusMime', data?.fitxerTipusMime),
         builder.like('titol', data?.titol),
         builder.betweenDates('dataAnotacio', data?.dataAnotacioInici, data?.dataAnotacioFi),
-        builder.like('fitxerNom', data?.fitxerNom)
+        builder.like('fitxerNom', data?.fitxerNom),
+        builder.between('fitxerTamany', mbToBytes(data?.midaMinima), mbToBytes(data?.midaMaxima)),
     );
 };
 

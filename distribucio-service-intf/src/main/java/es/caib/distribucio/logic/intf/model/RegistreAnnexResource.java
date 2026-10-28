@@ -210,6 +210,9 @@ public class RegistreAnnexResource extends BaseResource<Long> {
 		private ArxiuFirmaTipusEnumDto tipusFirma;
 		private LocalDate dataAnotacioInici = LocalDate.from(LocalDate.now().minusMonths(3).atStartOfDay(ZoneId.systemDefault()));
 		private Date dataAnotacioFi;
+
+        private Float midaMinima;
+        private Float midaMaxima;
 	}
 
 	@Getter

@@ -18,6 +18,8 @@
     </c:if>
     <script src="<c:url value="/js/select2-locales/select2_${requestLocale}.min.js"/>"></script>
     <script src="<c:url value="/webjars/select2/4.0.6-rc.1/dist/js/i18n/${requestLocale}.js"/>"></script>
+    <script src="<c:url value="/webjars/autoNumeric/1.9.30/autoNumeric.js"/>"></script>
+    <script src="<c:url value="/webjars/jsrender/1.0.0-rc.70/jsrender.min.js"/>"></script>
     <script src="<c:url value="/js/webutil.common.js"/>"></script>
     <script src="<c:url value="/js/webutil.modal.js"/>"></script>
     <dis:modalHead/>
