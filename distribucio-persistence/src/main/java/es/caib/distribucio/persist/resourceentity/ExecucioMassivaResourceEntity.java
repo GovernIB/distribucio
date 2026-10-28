@@ -75,6 +75,7 @@ public class ExecucioMassivaResourceEntity extends BaseAuditableEntity<ExecucioM
             mappedBy = "execucioMassiva",
             cascade = {CascadeType.ALL},
             fetch = FetchType.EAGER)
+    @OrderBy("ordre ASC")
     private List<ExecucioMassivaContingutResourceEntity> continguts = new ArrayList<>();
 
 }

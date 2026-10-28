@@ -4,19 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
 import lombok.*;
@@ -69,6 +57,7 @@ public class ExecucioMassivaEntity extends DistribucioAuditable<Long> {
 			mappedBy = "execucioMassiva",
 			cascade = {CascadeType.ALL},
 			fetch = FetchType.EAGER)
+    @OrderBy("ordre ASC")
 	private List<ExecucioMassivaContingutEntity> continguts = new ArrayList<ExecucioMassivaContingutEntity>();
 	
 	@Column(name = "parametres")
