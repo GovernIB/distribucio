@@ -5,6 +5,7 @@ import ContingutLogGrid from './ContingutLogGrid';
 import ContingutMovimentGrid from './ContingutMovimentGrid';
 import ContingutAuditoriaTab from './ContingutAuditoriaTab';
 import {useDetailContext} from "reactlib";
+import Load from "../../../components/Load.tsx";
 
 /** Contingut del diàleg "Historial": les 3 pestanyes (Accions/Moviments/Auditoria). */
 export const ContingutHistorialContent: React.FC = () => {
@@ -20,7 +21,7 @@ export const ContingutHistorialContent: React.FC = () => {
         {
             value: 'moviments',
             label: t('page.contingut.historial.tab.moviments'),
-            content: <ContingutMovimentGrid contingutId={contingutRow.id} />,
+            content: <ContingutMovimentGrid contingutId={contingutRow?.id} />,
         },
         {
             value: 'auditoria',
@@ -29,7 +30,7 @@ export const ContingutHistorialContent: React.FC = () => {
         },
     ];
 
-    return (
+    return (<Load value={contingutRow}>
         <TabComponent
             indicatorColor="primary"
             textColor="primary"
@@ -37,7 +38,7 @@ export const ContingutHistorialContent: React.FC = () => {
             tabs={tabs}
             variant="scrollable"
         />
-    );
+    </Load>);
 };
 
 export default ContingutHistorialContent;

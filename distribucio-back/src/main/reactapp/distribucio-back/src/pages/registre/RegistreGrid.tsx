@@ -10,7 +10,7 @@ import { Box, Icon, Tooltip } from '@mui/material';
 import { useCommentsColumn } from '../../components/CommentsColumn.tsx';
 import { RegistreEstat } from '../../components/RegistreEstat.tsx';
 import { useRegistreActions, useRegistreMassiveActions } from './detail/RegistreActions.tsx';
-import { useGridApiRef } from '@mui/x-data-grid-pro';
+import {GridSortDirection, useGridApiRef} from '@mui/x-data-grid-pro';
 import { useRegistreDetail, useBasicDetail } from './detail/useRegistreDetail.tsx';
 import { useSearchParams } from 'react-router-dom';
 import Load from '../../components/Load.tsx';
@@ -108,24 +108,24 @@ const RegistreAvisos = ({ entity }: any) => {
 
 const RegistreRemitent = ({ entity }: any) => {
     const { t } = useTranslation();
-    return entity.darrerMoviment != null ? (
-        entity.darrerMovimentResource.bustiaOrigen != null &&
-        entity.darrerMovimentResource.unitatOrganitzativaOrigen != null ? (
+    return entity.darrerMoviment != null && entity.darrerMovimentResource?.remitent != null ? (
+        entity.darrerMovimentResource?.bustiaOrigen != null &&
+        entity.darrerMovimentResource?.unitatOrganitzativaOrigen != null ? (
             <>
                 /
-                <Icon fontSize="small" title={entity.darrerMovimentResource.unitatOrganitzativaOrigen.description}>
+                <Icon fontSize="small" title={entity.darrerMovimentResource?.unitatOrganitzativaOrigen?.description}>
                     {icons.unitatOrganitzativa}
                 </Icon>
                 /
-                <Icon fontSize="small" title={entity.darrerMovimentResource.bustiaOrigen.description}>
+                <Icon fontSize="small" title={entity.darrerMovimentResource?.bustiaOrigen?.description}>
                     {icons.bustia}
                 </Icon>
-                {entity.darrerMovimentResource.remitent.description}
+                {entity.darrerMovimentResource?.remitent?.description}
             </>
         ) : (
             <>
                 <Icon fontSize="small">{icons.inici}</Icon>
-                {entity.oficinaDescripcio} ({entity.darrerMovimentResource.remitent.description})
+                {entity.oficinaDescripcio} ({entity.darrerMovimentResource?.remitent?.description})
             </>
         )
     ) : (
@@ -142,6 +142,7 @@ const columns = (t: any, handleEstat: () => void) => [
         headerName: t('page.registre.grid.remitent'),
         flex: 1.5,
         renderCell: (params: any) => <RegistreRemitent entity={params.row} />,
+        sortProcessor: (_field: string, sort: GridSortDirection) => [{ field: 'darrerMoviment.remitent.nom', sort }]
     },
     // { field: 'createdDate', flex: 1 },
     // L'amplada mínima és la que necessita la part "dd/mm/aaaa" (76px) més el padding de la cel·la

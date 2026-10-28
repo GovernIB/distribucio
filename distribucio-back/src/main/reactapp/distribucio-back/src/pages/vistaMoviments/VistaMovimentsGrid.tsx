@@ -11,7 +11,7 @@ import { RegistreEstat } from '../../components/RegistreEstat.tsx';
 import { useCommentsColumn } from '../../components/CommentsColumn.tsx';
 import { useProcesEstatLegend } from '../../components/ProcesEstatLegend.tsx';
 import { useVistaMovimentsAccions, useVistaMovimentsMassiveAccions } from './VistaMovimentsAccions.tsx';
-import { useGridApiRef } from '@mui/x-data-grid-pro';
+import {GridSortDirection, useGridApiRef} from '@mui/x-data-grid-pro';
 import { EMPTY_SELECTION_MODEL } from '../../util/selectionModelUtils.ts';
 
 /** Número: icona de llibre (anotació de registre) + número, amb el triangle d'avís si l'anotació té alertes */
@@ -126,7 +126,8 @@ const columns = [
     },
     { field: 'titol', flex: 2 },
     { field: 'numeroOrigen', flex: 1 },
-    { field: 'remitent', flex: 1.5 },
+    { field: 'remitent', flex: 1.5,
+        sortProcessor: (_field: string, sort: GridSortDirection) => [{ field: 'remitent.nom', sort }] },
     { field: 'data', minWidth: 100 },
     {
         field: 'procesError',
