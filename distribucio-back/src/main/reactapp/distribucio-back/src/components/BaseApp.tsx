@@ -22,7 +22,7 @@ import AppFormFieldReference from './AppFormFieldReference';
 import AvisosBanner from './AvisosBanner';
 import Offline from './Offline';
 import { UserProfileMenu, UserProfileFormDialog, useUserPreferences } from './UserProfile';
-import { EntitatSelector, RolSelector, getRolBadgeIcon } from './EntitatRolSelector';
+import { EntitatRolMenu, getRolBadgeIcon } from './EntitatRolSelector';
 import { InterficieClassicaButton } from './InterficieClassica';
 import { useDistribucioContext } from './DistribucioContext';
 import { MenuEstil } from '../theme';
@@ -259,9 +259,6 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
                 <Box key="interficie_classica" sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
                     <InterficieClassicaButton />
                 </Box>,
-                <Box key="entitat_selector" sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-                    <EntitatSelector />
-                </Box>,
             ]}
             headerAuthBadgeIcon={getRolBadgeIcon(rolActual)}
             headerAdditionalAuthComponents={[
@@ -269,7 +266,7 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
                 <Box key="user_profile" sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
                     <UserProfileMenu formDialogApiRef={formDialogApiRef} />
                 </Box>,
-                <RolSelector key="rol_selector" />,
+                <EntitatRolMenu key="entitat_rol" />,
             ]}
             offline={<Offline />}
             footer={footer}
