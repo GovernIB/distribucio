@@ -60,8 +60,9 @@ public class EstadisticaServiceImpl implements EstadisticaService {
 		List<String> entitatCodis = entitatRepository.findDistinctCodiOrderByCodiAsc();
 		List<String> unitatCodis = organitzativaRepository.findDistinctCodiOrderByCodiAsc();
 		List<String> bustiaNoms = bustiaRepository.findDistinctNomOrderByNomAsc();
-		List<String> tipus = Arrays.stream(HistoricTipusEnumDto.values()).map(Enum::name).sorted()
-				.collect(Collectors.toList());
+//		List<String> tipus = Arrays.stream(HistoricTipusEnumDto.values()).map(Enum::name).sorted()
+//				.collect(Collectors.toList());
+		List<String> tipus = List.of(HistoricTipusEnumDto.DIARI.name());
 
 		return List.of(
 				new DimensioDesc().codi(DimEnum.ENT.name()).nom(DimEnum.ENT.getNom()).descripcio(DimEnum.ENT.getDescripcio()).valors(entitatCodis),
@@ -93,13 +94,13 @@ public class EstadisticaServiceImpl implements EstadisticaService {
 		Date data = Date.from(localData.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 		
 		// Històric anotacions
-		List<HistoricAnotacioEntity> historicAnotacions = historicAnotacioRepository.findByDataAndUnitatNotNull(data);
+		List<HistoricAnotacioEntity> historicAnotacions = historicAnotacioRepository.findByDataAndTipusAndUnitatNotNull(data, HistoricTipusEnumDto.DIARI);
 
 		// Històric anotacions per estat
-		List<HistoricEstatEntity> historicPerEstat = historicEstatRepository.findByDataAndUnitatNotNull(data);
+		List<HistoricEstatEntity> historicPerEstat = historicEstatRepository.findByDataAndTipusAndUnitatNotNull(data, HistoricTipusEnumDto.DIARI);
 
 		// Històric permisos per bústia
-		List<HistoricBustiaEntity> historicBusties = historicBustiaRepository.findByData(data);
+		List<HistoricBustiaEntity> historicBusties = historicBustiaRepository.findByDataAndTipus(data, HistoricTipusEnumDto.DIARI);
 
 		return estadisticaMapper.convertirRegistresEstadistics(
 				historicAnotacions, 

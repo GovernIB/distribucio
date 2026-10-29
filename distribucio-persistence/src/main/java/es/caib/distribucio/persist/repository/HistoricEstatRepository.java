@@ -200,6 +200,6 @@ public interface HistoricEstatRepository extends JpaRepository<HistoricEstatEnti
 			@Param("diaSeguent") Date diaSeguent,
 			@Param("mesSeguent") Date mesSeguent);
 
-	public List<HistoricEstatEntity> findByDataAndUnitatNotNull(Date data);
+	public List<HistoricEstatEntity> findByDataAndTipusAndUnitatNotNull(Date data, HistoricTipusEnumDto tipus);
 
 }

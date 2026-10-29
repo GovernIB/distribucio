@@ -95,8 +95,7 @@ class EstadisticaServiceImplTest {
 
             // Verificar Dimensió TIP (Enum ordenat)
             DimensioDesc dimTip = resultat.stream().filter(d -> d.getCodi().equals(DimEnum.TIP.name())).findFirst().orElseThrow();
-            List<String> tipusEsperats = Arrays.stream(HistoricTipusEnumDto.values())
-                    .map(Enum::name).sorted().collect(Collectors.toList());
+            List<String> tipusEsperats = List.of(HistoricTipusEnumDto.DIARI.name());
             assertEquals(tipusEsperats, dimTip.getValors());
 
             verify(entitatRepository, times(1)).findDistinctCodiOrderByCodiAsc();
@@ -167,9 +166,9 @@ class EstadisticaServiceImplTest {
             List<HistoricBustiaEntity> busties = Collections.singletonList(mock(HistoricBustiaEntity.class));
             RegistresEstadistics resultatEsperat = mock(RegistresEstadistics.class);
 
-            when(historicAnotacioRepository.findByDataAndUnitatNotNull(any(Date.class))).thenReturn(anotacions);
-            when(historicEstatRepository.findByDataAndUnitatNotNull(any(Date.class))).thenReturn(estats);
-            when(historicBustiaRepository.findByData(any(Date.class))).thenReturn(busties);
+            when(historicAnotacioRepository.findByDataAndTipusAndUnitatNotNull(any(Date.class), eq(HistoricTipusEnumDto.DIARI))).thenReturn(anotacions);
+            when(historicEstatRepository.findByDataAndTipusAndUnitatNotNull(any(Date.class), eq(HistoricTipusEnumDto.DIARI))).thenReturn(estats);
+            when(historicBustiaRepository.findByDataAndTipus(any(Date.class), eq(HistoricTipusEnumDto.DIARI))).thenReturn(busties);
             when(estadisticaMapper.convertirRegistresEstadistics(eq(anotacions), eq(estats), eq(busties), any(Date.class)))
                     .thenReturn(resultatEsperat);
 
@@ -182,9 +181,9 @@ class EstadisticaServiceImplTest {
             // Capturar les dates passades als repositoris per verificar la conversió correcta
             ArgumentCaptor<Date> dateCaptor = ArgumentCaptor.forClass(Date.class);
 
-            verify(historicAnotacioRepository, times(1)).findByDataAndUnitatNotNull(dateCaptor.capture());
-            verify(historicEstatRepository, times(1)).findByDataAndUnitatNotNull(dateCaptor.capture());
-            verify(historicBustiaRepository, times(1)).findByData(dateCaptor.capture());
+            verify(historicAnotacioRepository, times(1)).findByDataAndTipusAndUnitatNotNull(dateCaptor.capture(), eq(HistoricTipusEnumDto.DIARI));
+            verify(historicEstatRepository, times(1)).findByDataAndTipusAndUnitatNotNull(dateCaptor.capture(), eq(HistoricTipusEnumDto.DIARI));
+            verify(historicBustiaRepository, times(1)).findByDataAndTipus(dateCaptor.capture(), eq(HistoricTipusEnumDto.DIARI));
 
             // Totes les crides han de rebre exactament la mateixa data convertida
             List<Date> datesCapturades = dateCaptor.getAllValues();
@@ -198,9 +197,9 @@ class EstadisticaServiceImplTest {
         @DisplayName("consultaEstadistiques: Quan els repositoris retornen llistes buides, llavors el mapper rep llistes buides")
         void consultaEstadistiques_QuanDadesBuides_LlavorsMapperRepBuit() {
             // Arrange
-            when(historicAnotacioRepository.findByDataAndUnitatNotNull(any())).thenReturn(Collections.emptyList());
-            when(historicEstatRepository.findByDataAndUnitatNotNull(any())).thenReturn(Collections.emptyList());
-            when(historicBustiaRepository.findByData(any())).thenReturn(Collections.emptyList());
+            when(historicAnotacioRepository.findByDataAndTipusAndUnitatNotNull(any(), eq(HistoricTipusEnumDto.DIARI))).thenReturn(Collections.emptyList());
+            when(historicEstatRepository.findByDataAndTipusAndUnitatNotNull(any(), eq(HistoricTipusEnumDto.DIARI))).thenReturn(Collections.emptyList());
+            when(historicBustiaRepository.findByDataAndTipus(any(), eq(HistoricTipusEnumDto.DIARI))).thenReturn(Collections.emptyList());
             RegistresEstadistics resultatEsperat = mock(RegistresEstadistics.class);
             when(estadisticaMapper.convertirRegistresEstadistics(anyList(), anyList(), anyList(), any())).thenReturn(resultatEsperat);
 
@@ -237,9 +236,9 @@ class EstadisticaServiceImplTest {
                 // el millor és verificar que el mètode públic retorna el que toca, o fer un spy.
                 // Aquí, com que consultaEstadistiques és públic, podem verificar el resultat final,
                 // però per ser estrictes amb la cobertura, deixem que executi la lògica real.
-                when(historicAnotacioRepository.findByDataAndUnitatNotNull(any())).thenReturn(Collections.emptyList());
-                when(historicEstatRepository.findByDataAndUnitatNotNull(any())).thenReturn(Collections.emptyList());
-                when(historicBustiaRepository.findByData(any())).thenReturn(Collections.emptyList());
+                when(historicAnotacioRepository.findByDataAndTipusAndUnitatNotNull(any(), eq(HistoricTipusEnumDto.DIARI))).thenReturn(Collections.emptyList());
+                when(historicEstatRepository.findByDataAndTipusAndUnitatNotNull(any(), eq(HistoricTipusEnumDto.DIARI))).thenReturn(Collections.emptyList());
+                when(historicBustiaRepository.findByDataAndTipus(any(), eq(HistoricTipusEnumDto.DIARI))).thenReturn(Collections.emptyList());
                 when(estadisticaMapper.convertirRegistresEstadistics(any(), any(), any(), any())).thenReturn(resultatMock);
 
                 // Act
@@ -250,7 +249,7 @@ class EstadisticaServiceImplTest {
 
                 // Verificar que els repositoris van ser cridats amb la data d'ahir
                 Date dataAhirEsperada = Date.from(ahirEsperat.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-                verify(historicAnotacioRepository, times(1)).findByDataAndUnitatNotNull(eq(dataAhirEsperada));
+                verify(historicAnotacioRepository, times(1)).findByDataAndTipusAndUnitatNotNull(eq(dataAhirEsperada), eq(HistoricTipusEnumDto.DIARI));
             }
         }
     }
