@@ -18,6 +18,7 @@ import { MuiBaseApp, type MenuEntry, useBaseAppContext, useMuiFormDialogApiRef }
 import i18n from '../i18n/i18n';
 import reactlibCa from '../i18n/reactlibCa';
 import reactlibEs from '../i18n/reactlibEs';
+import AppFormFieldReference from './AppFormFieldReference';
 import AvisosBanner from './AvisosBanner';
 import Offline from './Offline';
 import { UserProfileMenu, UserProfileFormDialog, useUserPreferences } from './UserProfile';
@@ -290,6 +291,7 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
             // Els marges d'`<main>` els posa frameSx (la llibreria els deixa a 16px 24px).
             marginsDisabled
             saveAs={saveAs}
+            formFieldComponents={[{ type: 'reference', component: AppFormFieldReference }]}
             menuEntries={menuEntries}
         >
             <CustomLocalizationProvider>

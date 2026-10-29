@@ -19,6 +19,7 @@ import Load from './Load';
 import { isTypingFieldType, useFilterAutoApply } from './FilterAutoApplyContext';
 import { FormFieldRefOptionsResponse } from '../../lib/components/mui/form/FormFieldReference.tsx';
 import { GridSortModel } from '@mui/x-data-grid-pro';
+import { OPTIONS_PAGE_SIZE } from './AppFormFieldReference';
 
 type ResponsiveStyleValue<T> = T | Array<T | null> | { [key in Breakpoint]?: T | null };
 
@@ -178,11 +179,14 @@ const GridFormField: React.FC<GridFormFieldProps> = (props) => {
     const field = fields?.find?.((item: any) => item?.name === props.name);
 
     const { requestHref } = useResourceApiContext();
-    const optionsRequest = (q: any) => {
+    // `pageNumber` el passa FormFieldReference en carregar la pàgina següent (scroll infinit).
+    const optionsRequest = (q: any, pageNumber: number = 0) => {
         const dataSource = field.dataSource;
         const valueField = vField || dataSource.valueField;
         const labelField = dataSource.labelField;
-        const pageArgs = props.optionsUnpaged ? { page: 'UNPAGED' } : { page: 0, size: props.optionsPageSize };
+        const pageArgs = props.optionsUnpaged
+            ? { page: 'UNPAGED' }
+            : { page: pageNumber, size: props.optionsPageSize ?? OPTIONS_PAGE_SIZE };
         const sorts =
             props.sortModel && props.sortModel?.length
                 ? props.sortModel?.map((sm: any) => sm.field + ',' + sm.sort)
@@ -206,10 +210,14 @@ const GridFormField: React.FC<GridFormFieldProps> = (props) => {
                             ? { data: Object.fromEntries(optionDataFields.map((f) => [f, e.data[f]])) }
                             : {}),
                     }));
-                    if (additionalOpctions) options.push(...(additionalOpctions?.(q) || []));
+                    // Les opcions addicionals van al final de la llista, i per això només s'afegeixen
+                    // amb la darrera pàgina: si no, es repetirien a cada pàgina carregada.
+                    const page = state.data.page;
+                    const darreraPagina = page == null || page.number + 1 >= page.totalPages;
+                    if (additionalOpctions && darreraPagina) options.push(...(additionalOpctions?.(q) || []));
                     const response = {
                         options,
-                        page: state.data.page,
+                        page,
                     };
                     resolve(response);
                 })
