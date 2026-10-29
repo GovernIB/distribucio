@@ -17,12 +17,12 @@ export const icons = {
     entitat: 'account_balance',
     configuracio: 'settings',
     // Grup de menú «Configurar» (ajustos de l'aplicació): la mateixa que fa servir ConCSV per a la configuració.
-    ajustos: 'tune',
+    ajustos: 'settings',
     avis: 'campaign',
     monitoritzacio: 'monitor',
     consulta: 'search',
     // Mateixa icona que les opcions principals de RIPEA "Procediments i serveis" i "Acció massiva".
-    procediment: 'integration_instructions',
+    procediment: 'assignment',
     servei: 'integration_instructions',
     massiva: 'list_alt',
     // La mateixa que fa servir RIPEA als botons de permisos (p. ex. pages/entitat/EntitatGrid.tsx).
@@ -31,7 +31,7 @@ export const icons = {
     bustia: 'inbox',
     unitatOrganitzativa: 'account_tree',
     backoffice: 'wifi',
-    config: 'display_settings',
+    config: 'settings',
     limitCanviEstat: 'date_range',
     usuariCanviCodis: 'manage_accounts',
     annex: 'attach_file',
