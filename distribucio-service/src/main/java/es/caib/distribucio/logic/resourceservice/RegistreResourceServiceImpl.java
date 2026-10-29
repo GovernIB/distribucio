@@ -141,9 +141,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         }
         Set<Serializable> ids = aclResourceHelper.findIdsWithAnyPermission(
                 ResourceType.BUSTIA,
-                List.of(PermissionEnum.READ),
-                authenticationHelper.getCurrentUserName(),
-                new ArrayList<>(List.of(BaseConfig.ROLE_USER)));
+                List.of(PermissionEnum.READ));
         List<Long> bustiesIds = ids.stream()
                 .map(i -> i instanceof Number ? ((Number) i).longValue() : Long.valueOf(i.toString()))
                 .collect(Collectors.toList());
@@ -177,14 +175,11 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 predicates.add(cb.equal(root.get("entitat").get("id"), entitatActualId));
             }
 
-            /// Permisos
+            /// Permisos (amb tots els rols de l'usuari, no només el rol amb què opera)
             if ( isUser ) {
                 Set<Serializable> ids = aclResourceHelper.findIdsWithAnyPermission(
                         ResourceType.BUSTIA,
-                        List.of(PermissionEnum.READ),
-                        authenticationHelper.getCurrentUserName(),
-                        new ArrayList<>(List.of(authenticationHelper.getCurrentUserRoles()))
-                );
+                        List.of(PermissionEnum.READ));
 
                 if (ids.isEmpty()) {
                     return cb.disjunction();
@@ -471,10 +466,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         if (isUser) {
             permesesIds = aclResourceHelper.findIdsWithAnyPermission(
                     ResourceType.BUSTIA,
-                    List.of(PermissionEnum.WRITE),
-                    authenticationHelper.getCurrentUserName(),
-                    new ArrayList<>(List.of(authenticationHelper.getCurrentUserRoles()))
-            );
+                    List.of(PermissionEnum.WRITE));
         }
 
         for (RegistreResource resource: resources) {

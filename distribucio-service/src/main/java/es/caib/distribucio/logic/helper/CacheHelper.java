@@ -74,12 +74,13 @@ public class CacheHelper {
 	 * Consulta les entitats accessibles per a un usuari.
 	 *
 	 * @param usuariCodi codi de l'usuari.
-	 * @param rolsUsuari rols amb els quals opera l'usuari. Nomes s'utilitza com a part de la clau
-	 *                   de la cache: els permisos sobre l'entitat es poden haver concedit a un rol
-	 *                   (PrincipalTipusEnumDto.ROL), de manera que el resultat depen dels rols de
-	 *                   l'autenticacio, i la interficie REACT els restringeix al rol amb que
-	 *                   s'esta operant (veure RolSeleccionatFilter). Sense aquest tros de clau,
-	 *                   el llistat calculat amb un rol es reaprofitaria per als altres.
+	 * @param rolsUsuari tots els rols de l'usuari (veure AclHelper.getRolsAcl). Nomes s'utilitza
+	 *                   com a part de la clau de la cache: els permisos sobre l'entitat es poden
+	 *                   haver concedit a un rol (PrincipalTipusEnumDto.ROL), de manera que el
+	 *                   resultat depen dels rols de l'usuari. Els permisos s'avaluen amb tots els
+	 *                   rols, tambe a la interficie REACT encara que s'operi amb un de sol (veure
+	 *                   RolSeleccionatFilter), i amb aquest tros de clau un canvi de rols a l'IdP
+	 *                   no reaprofita el llistat calculat amb els rols anteriors.
 	 */
 	@Cacheable(value = "entitatsUsuari", key="#usuariCodi + '#' + #rolsUsuari")
 	public List<EntitatDto> findEntitatsAccessiblesUsuari(String usuariCodi, String rolsUsuari) {

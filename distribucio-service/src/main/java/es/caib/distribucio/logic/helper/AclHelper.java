@@ -13,6 +13,8 @@ import org.springframework.security.acls.model.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -274,18 +276,55 @@ public class AclHelper {
 	/**
 	 * Retorna la llista de SIDs de l'usuari autenticat.
 	 *
-	 * @return la llista de SIDs (principal + grantedAuthorities).
+	 * @return la llista de SIDs (principal + tots els rols de l'usuari, veure {@link #getRolsAcl(Authentication)}).
 	 */
 	public List<Sid> getCurrentUserSids() {
 		List<Sid> sids = new ArrayList<>();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth != null) {
 			sids.add(new PrincipalSid(auth.getName()));
-			for (GrantedAuthority ga: auth.getAuthorities()) {
-				sids.add(new GrantedAuthoritySid(ga.getAuthority()));
+			for (String rol: getRolsAcl(auth)) {
+				sids.add(new GrantedAuthoritySid(rol));
 			}
 		}
 		return sids;
+	}
+
+	/**
+	 * Retorna tots els rols de l'usuari per a avaluar-ne els permisos ACL.
+	 *
+	 * A la interfície REACT, RolSeleccionatFilter restringeix les authorities de cada petició al rol
+	 * amb què s'opera (capçalera X-App-Role), i aquestes authorities són les que han de decidir quines
+	 * operacions es poden fer. Però els permisos ACL sobre bústies i entitats es poden haver concedit a
+	 * qualsevol rol de l'usuari, també a rols de fora de la interfície (que no comencen per DIS_), i
+	 * s'han d'avaluar amb tots, igual que a la interfície JSP.
+	 *
+	 * El filtre conserva el principal original, que té totes les authorities de l'usuari: un
+	 * UserDetails a JBoss (preautenticació) i un OAuth2AuthenticatedPrincipal a Spring Boot (OIDC).
+	 * Per a qualsevol altre principal (per exemple un token bearer) s'usen les authorities de
+	 * l'autenticació. Sense la restricció (interfície JSP), les authorities del principal i les de
+	 * l'autenticació són les mateixes; s'uneixen perquè el resultat mai tingui menys rols que ara.
+	 *
+	 * @param auth
+	 *            l'autenticació de l'usuari.
+	 * @return els codis de tots els rols de l'usuari (sense repetits).
+	 */
+	public static List<String> getRolsAcl(Authentication auth) {
+		Set<String> rols = new LinkedHashSet<>();
+		if (auth != null) {
+			Object principal = auth.getPrincipal();
+			Collection<? extends GrantedAuthority> authoritiesPrincipal = null;
+			if (principal instanceof UserDetails) {
+				authoritiesPrincipal = ((UserDetails)principal).getAuthorities();
+			} else if (principal instanceof OAuth2AuthenticatedPrincipal) {
+				authoritiesPrincipal = ((OAuth2AuthenticatedPrincipal)principal).getAuthorities();
+			}
+			if (authoritiesPrincipal != null) {
+				authoritiesPrincipal.forEach(ga -> rols.add(ga.getAuthority()));
+			}
+			auth.getAuthorities().forEach(ga -> rols.add(ga.getAuthority()));
+		}
+		return new ArrayList<>(rols);
 	}
 
 	private MutableAcl getMutableAcl(

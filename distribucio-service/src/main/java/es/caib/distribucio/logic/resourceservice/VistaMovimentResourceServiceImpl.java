@@ -1,7 +1,7 @@
 package es.caib.distribucio.logic.resourceservice;
 
-import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
+import es.caib.distribucio.logic.helper.AclResourceHelper;
 import es.caib.distribucio.logic.helper.ConfigHelper;
 import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
@@ -10,12 +10,10 @@ import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.base.util.I18nUtil;
 import es.caib.distribucio.logic.intf.dto.FitxerDto;
 import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
-import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.model.ResourceType;
 import es.caib.distribucio.logic.intf.model.VistaMovimentResource;
 import es.caib.distribucio.logic.intf.registre.RegistreInteressatTipusEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
-import es.caib.distribucio.logic.intf.resourceservice.AclEntryResourceService;
 import es.caib.distribucio.logic.intf.resourceservice.VistaMovimentResourceService;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
@@ -61,8 +59,7 @@ public class VistaMovimentResourceServiceImpl
 		implements VistaMovimentResourceService {
 
 	private final RegistreInteressatResourceRepository registreInteressatResourceRepository;
-	private final AclEntryResourceService aclEntryResourceService;
-	private final AuthenticationHelper authenticationHelper;
+	private final AclResourceHelper aclResourceHelper;
 	private final ContingutLogRepository contingutLogRepository;
 
 	private static final DateTimeFormatter ENVIAMENT_EMAIL_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
@@ -190,11 +187,10 @@ public class VistaMovimentResourceServiceImpl
 				predicates.add(cb.equal(root.get("entitatId"), entitatActualId));
 			}
 
-			Set<Serializable> bustiesPermesesIds = aclEntryResourceService.findIdsWithAnyPermission(
+			// Amb tots els rols de l'usuari, no només el rol amb què opera
+			Set<Serializable> bustiesPermesesIds = aclResourceHelper.findIdsWithAnyPermission(
 					ResourceType.BUSTIA,
-					List.of(PermissionEnum.READ),
-					authenticationHelper.getCurrentUserName(),
-					new ArrayList<>(List.of(BaseConfig.ROLE_USER)));
+					List.of(PermissionEnum.READ));
 			if (bustiesPermesesIds.isEmpty()) {
 				return cb.disjunction();
 			}

@@ -17,7 +17,6 @@ import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
 import es.caib.distribucio.logic.intf.base.model.FieldOption;
 import es.caib.distribucio.logic.intf.base.model.ReportFileType;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
-import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.model.BustiaResource;
 import es.caib.distribucio.logic.intf.model.ResourceType;
@@ -122,14 +121,11 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
                 predicates.add(cb.equal(root.get("entitat").get("id"), entitatActualId));
             }
 
-            /// Permisos
+            /// Permisos (amb tots els rols de l'usuari, no només el rol amb què opera)
             if ( mapaNamedQueries.containsKey("WITH_PERMISION") ) {
                 Set<Serializable> ids = aclResourceHelper.findIdsWithAnyPermission(
                         ResourceType.BUSTIA,
-                        List.of(PermissionEnum.READ),
-                        authenticationHelper.getCurrentUserName(),
-                        new ArrayList<>(List.of(BaseConfig.ROLE_USER))
-                );
+                        List.of(PermissionEnum.READ));
 
                 if (ids.isEmpty()) {
                     return cb.disjunction();
