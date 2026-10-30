@@ -319,7 +319,7 @@ const translationEs = {
                     jaDefinitiu: 'El anexo "{{titol}}" de la anotación {{numero}} ya consta como Definitivo en Distribución',
                     expedientTancat: 'El expediente que contiene el anexo "{{titol}}" de la anotación {{numero}} está cerrado en el archivo',
                     definitiuArxiu: 'El documento anexo "{{titol}}" de la anotación {{numero}} ya estaba como definitivo en el archivo',
-                    mogutBackoffice: 'El documento anexo "{{titol}}" de la anotación {{numero}} se ha movido a un expediente del backoffice',
+                    mogutBackoffice: 'El documento anexo "{{titol}}" de la anotación {{numero}} se ha movido a un expediente de la aplicación de cliente',
                     updated: 'El anexo "{{titol}}" de la anotación {{numero}} se ha marcado como Definitivo',
                     errorUpdate: 'Ha ocurrido un error al crear/modificar en el archivo el anexo "{{titol}}" de la anotación {{numero}}',
                     errorArxiu: 'Error no controlado marcando el anexo "{{titol}}" de la anotación {{numero}} como definitivo',
@@ -637,7 +637,7 @@ const translationEs = {
                 PROCEDIMENT: 'Procedimientos',
                 SERVEI: 'Servicios',
                 DISTRIBUCIO: 'Distribución',
-                BACKOFFICE: 'Backoffice',
+                BACKOFFICE: 'Aplicación de cliente',
             },
             detail: {
                 title: 'Detalle',
@@ -783,7 +783,7 @@ const translationEs = {
                     aturar: 'Para',
                     icona: {
                         bustia: 'Buzón',
-                        backoffice: 'BackOffice',
+                        backoffice: 'Aplicación de cliente',
                         unitat: 'Unidad',
                     },
                 },
@@ -840,7 +840,7 @@ const translationEs = {
                     regla: 'Regla',
                 },
                 accio: {
-                    BACKOFFICE: 'Se distribuye en el backoffice',
+                    BACKOFFICE: 'Se distribuye en la aplicación de cliente',
                     UNITAT: 'Se reenvía a la U.O.',
                     BUSTIA_PER_DEFECTE: 'Se mueve al buzón principal',
                     BUSTIA: 'Se mueve al buzón',
@@ -916,17 +916,17 @@ const translationEs = {
             }
         },
         backoffice: {
-            title: "Backoffices",
+            title: "Aplicaciones de cliente",
             form: {
-                resourceTitle: "backoffice",
-                codi: "Código para identificar con qué Backoffice se ha distribuido la anotación",
+                resourceTitle: "aplicación de cliente",
+                codi: "Código para identificar con qué aplicación de cliente se ha distribuido la anotación",
                 url: "Clave del fichero de propiedades correspondiente a la URL para la conexión con formato ${clau.fitxer.propietats.url} o URL directamente",
                 usuari: "Clave del fichero de propiedades correspondiente al nombre de usuario para la conexión con formato ${clau.fitxer.propietats.usuari} o usuario directamente",
                 contrasenya: "Clave del fichero de propiedades correspondiente a la contraseña para la conexión con formato ${clau.fitxer.propietats.contrasenya} o contraseña directamente",
             },
             accio: {
                 new: {
-                    label: "Nuevo backoffice",
+                    label: "Nueva aplicación de cliente",
                 },
                 prova: {
                     label: "Prueba",
@@ -1023,8 +1023,8 @@ const translationEs = {
                 procesError: {
                     ARXIU_PENDENT: "Error al guardar la anotación de registro en el Archivo",
                     REGLA_PENDENT: "Error al aplicar la regla de distribución",
-                    BACK_PENDENT: "Error al enviar la anotación al backoffice",
-                    BACK_ERROR: "Procesada en el backoffice con errores",
+                    BACK_PENDENT: "Error al enviar la anotación a la aplicación de cliente",
+                    BACK_ERROR: "Procesada en la aplicación de cliente con errores",
                     default: "Anotación con error",
                 },
                 pendentExecucioMassiva: "Incluida en una acción masiva pendiente de ejecución",
@@ -1082,8 +1082,8 @@ const translationEs = {
                     ok: "La anotación con número \"{{numero}}\" se ha marcado para sobrescribir correctamente",
                 },
                 reenviarBackoffice: {
-                    label: "Reintenta el envío al backoffice",
-                    titleMassive: "Reintentar el envío al backoffice de {{num}} anotaciones",
+                    label: "Reintenta el envío a la aplicación de cliente",
+                    titleMassive: "Reintentar el envío a la aplicación de cliente de {{num}} anotaciones",
                     ok: "La anotación \"{{numero}}\" se ha procesado correctamente",
                 },
                 descargaMassiva: {
@@ -1260,28 +1260,28 @@ const translationEs = {
                     info: "La anotación ha sido procesada por el usuario",
                 },
                 BACK_PENDENT: {
-                    label: "Pendiente de comunicar al backoffice",
-                    info: "La anotación está pendiente de comunicar al backoffice de Distribución",
+                    label: "Pendiente de comunicar a la aplicación de cliente",
+                    info: "La anotación está pendiente de comunicar a la aplicación de cliente de Distribución",
                 },
                 BACK_COMUNICADA: {
-                    label: "Comunicada al backoffice",
-                    info: "La anotación se ha comunicado al backoffice y está pendiente de que el backoffice la reciba y procese. El cambio de estado ya depende del backoffice",
+                    label: "Comunicada a la aplicación de cliente",
+                    info: "La anotación se ha comunicado a la aplicación de cliente y está pendiente de que la aplicación de cliente la reciba y procese. El cambio de estado ya depende de la aplicación de cliente",
                 },
                 BACK_REBUDA: {
-                    label: "Recibida en el backoffice",
-                    info: "La anotación ha sido recibida por el backoffice de Distribución",
+                    label: "Recibida en la aplicación de cliente",
+                    info: "La anotación ha sido recibida por la aplicación de cliente de Distribución",
                 },
                 BACK_PROCESSADA: {
-                    label: "Procesada por el backoffice",
-                    info: "La anotación ha sido procesada por el backoffice de Distribución",
+                    label: "Procesada por la aplicación de cliente",
+                    info: "La anotación ha sido procesada por la aplicación de cliente de Distribución",
                 },
                 BACK_REBUTJADA: {
-                    label: "Rechazada por el backoffice",
-                    info: "La anotación ha sido procesada y rechazada por el backoffice de Distribución",
+                    label: "Rechazada por la aplicación de cliente",
+                    info: "La anotación ha sido procesada y rechazada por la aplicación de cliente de Distribución",
                 },
                 BACK_ERROR: {
-                    label: "Procesada en el backoffice con errores",
-                    info: "La anotación ha sido procesada con error por el backoffice de Distribución",
+                    label: "Procesada en la aplicación de cliente con errores",
+                    info: "La anotación ha sido procesada con error por la aplicación de cliente de Distribución",
                 },
             },
         },
@@ -1334,7 +1334,7 @@ const translationEs = {
                 interessats: "Interesados",
                 annexos: "Anexos",
                 arxiu: "Info. del archivo",
-                procesBack: "Procesamiento del backoffice",
+                procesBack: "Procesamiento de la aplicación de cliente",
                 procesAuto: "Procesamiento automático",
                 dades: "Datos",
                 copia: "Copias",

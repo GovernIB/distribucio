@@ -41,7 +41,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/regla")
 @Tag(
 		name = "Regla",
-		description = "API REST de creació de regles per backoffices i codi SIA. Per invocar els mètodes és necessari accedir amb un usuari que tengui el rol DIS_REGLA.")
+		description = "API REST de creació de regles per aplicacions de client i codi SIA. Per invocar els mètodes és necessari accedir amb un usuari que tengui el rol DIS_REGLA.")
 public class ReglaRestController {
 
 	@Autowired
@@ -58,9 +58,9 @@ public class ReglaRestController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
 	@Operation(
 			summary = "Alta de regla per codi SIA", 
-			description = "Dona d'alta una regla pel backoffice i codi SIA indicat per a l'entitat indicada. Per poder invocar aquest mètode "
+			description = "Dona d'alta una regla per l'aplicació de client i codi SIA indicat per a l'entitat indicada. Per poder invocar aquest mètode "
 					+ "és necessari una autenticació bàsica amb el rol DIS_REGLA."
-					+ " S'informarà del camp presencial per, si és valor és true, no desar la regla al backoffice.")
+					+ " S'informarà del camp presencial per, si és valor és true, no desar la regla a l'aplicació de client.")
 	@ResponseBody
 	public ResponseEntity<Object> add(HttpServletRequest request,
 			@Parameter(name = "entitat", description = "Entitat en la qual crear la regla.") 
@@ -71,7 +71,7 @@ public class ReglaRestController {
 			@RequestParam(required = false) String tipusSia,
             @Parameter(name = "tramit", description = "Codi del tramit associat al procediment o servei. Si s'informa només aplicarà la regla a les anotacions amb el mateix codi de tràmit. Paràmetre opcional.")
             @RequestParam(required = false) String tramit,
-			@Parameter(name = "backoffice", description = "Codi Backoffice per la regla al qual s'enviaran les anotacions.")
+			@Parameter(name = "backoffice", description = "Codi de l'aplicació de client per la regla a la qual s'enviaran les anotacions.")
 			@RequestParam(required = true) String backoffice,
 			@Parameter(name = "presencial", description = "Booleà per informar el filtre presencial de la regla. Paràmetre opcional.") 
 			@RequestParam(required = false) Boolean presencial) {
@@ -110,7 +110,7 @@ public class ReglaRestController {
 
 		// Definim els valors que no hi son als paràmetres
 		String nom = backoffice + " " + sia + (tramit!=null ?("-" + tramit) :"");
-		String descripcio = "Creació de regla en data de " + dataAra + " pel backoffice amb codi " + backoffice;
+		String descripcio = "Creació de regla en data de " + dataAra + " per l'aplicació de client amb codi " + backoffice;
         if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(tipSiaFinal)) {
             descripcio += " i codi de procediment " + sia;
             if (alertaSia)
@@ -124,7 +124,7 @@ public class ReglaRestController {
 		// Validar que es troba el backoffice
 		BackofficeDto backofficeDto = backofficeService.findByCodi(entitatDto.getId(), backoffice);
 		if (backofficeDto == null) {
-			return new ResponseEntity<Object>("No s'ha trobat el backoffice amb codi " + backoffice,
+			return new ResponseEntity<Object>("No s'ha trobat l'aplicació de client amb codi " + backoffice,
 					HttpStatus.NOT_FOUND);
 		}
 		// Cream l'objecte de tipus ReglaDto
@@ -151,7 +151,7 @@ public class ReglaRestController {
 			if (backofficeDto.getId().compareTo(regla.getBackofficeDestiId()) != 0) {
 				// KO Existeix una regla amb mateix codi SIA per un altre backoffice
 				return new ResponseEntity<Object>("Ja existeix la regla amb id " + regla.getId() + " i nom \""
-						+ regla.getNom() + "\" pel backoffice \"" + regla.getBackofficeDestiNom() + "\" a l'entitat \""
+						+ regla.getNom() + "\" per l'aplicació de client \"" + regla.getBackofficeDestiNom() + "\" a l'entitat \""
 						+ regla.getEntitatNom() + "\"", HttpStatus.NOT_ACCEPTABLE);
 			} else {
 				//En comprovar-se que ja existeix una regla amb el codi sia (procediment) idèntic 
@@ -159,7 +159,7 @@ public class ReglaRestController {
 				novaReglaDto.setId(regla.getId());
 				novaReglaDto = reglaService.update(entitatDto.getId(), novaReglaDto);
 				msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-				+ "\" actualitzada correctament pel backoffice " + backoffice + " pel codi SIA " + sia
+				+ "\" actualitzada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia
 				 + " a l'entitat " + entitat;
 				// OK Regla existent pel mateix backoffie
 				return new ResponseEntity<Object>(msg, HttpStatus.OK);
@@ -171,31 +171,31 @@ public class ReglaRestController {
                 ProcedimentDto procediment = procedimentService.findByCodiSia(entitatDto.getId(), sia);
                 if (procediment != null) {
                     msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-                            + "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia + " ("
+                            + "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia + " ("
                             + procediment.getNom() + ")" + " de la unitat " + " \""
                             + procediment.getUnitatOrganitzativa().getCodiAndNom() + "\"" + " a l'entitat " + entitat;
                 } else {
                     msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-                            + "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia
+                            + "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia
                             + "(Procediment no trobat)" + " a l'entitat " + entitat;
                 }
             } else if (RegistreClassificarTipusEnum.SERVEI.equals(tipSiaFinal)) {
                 ServeiDto servei = serveiService.findByCodiSia(entitatDto.getId(), sia);
                 if (servei != null) {
                     msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-                            + "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia + " ("
+                            + "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia + " ("
                             + servei.getNom() + ")" + " de la unitat " + " \""
                             + servei.getUnitatOrganitzativa().getCodiAndNom() + "\"" + " a l'entitat " + entitat;
                 } else {
                     msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-                            + "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia
+                            + "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia
                             + "(Servei no trobat)" + " a l'entitat " + entitat;
                 }
             }
 			logger.debug(msg);
 			return new ResponseEntity<Object>(msg, HttpStatus.OK);
 		} catch (Exception e) {
-			String errMsg = "Error creant la regla pel backoffice " + backoffice + " pel codi SIA " + sia + " a l'entitat " + entitat + ": " + e.getMessage(); 
+			String errMsg = "Error creant la regla per l'aplicació de client " + backoffice + " pel codi SIA " + sia + " a l'entitat " + entitat + ": " + e.getMessage();
 			logger.error(errMsg, e);
 			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -248,11 +248,11 @@ public class ReglaRestController {
 	@RequestMapping(value = "/consultarRegla", method = RequestMethod.GET)
 	@Operation(
 			summary = "Consultar regles per codi SIA",
-			description = "Consulta les regles per codi SIA que existeixin i esigui actives. En principi només hi pot haver una regla de tipus backoffice per codi SIA.")
+			description = "Consulta les regles per codi SIA que existeixin i estiguin actives. En principi només hi pot haver una regla de tipus 'aplicació de client' per codi SIA.")
 	@ResponseBody
 	public ResponseEntity<Object> consultarRegla(
 			HttpServletRequest request, 
-			@Parameter(name = "sia", description = "Codi SIA de la regla que identifica la regla de tipus backoffice.")
+			@Parameter(name = "sia", description = "Codi SIA de la regla que identifica la regla de tipus 'aplicació de client'.")
 			@RequestParam(required = true) String sia,
             @Parameter(name = "tramit", description = "Codi del tramit de la regla pel filtre per tramit.")
             @RequestParam(required = false) String tramit) {

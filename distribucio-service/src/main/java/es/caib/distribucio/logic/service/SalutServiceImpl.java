@@ -118,7 +118,7 @@ public class SalutServiceImpl implements SalutService {
         return List.of(
                 new ContextInfo()
                         .codi("BACK")
-                        .nom("Backoffice")
+                        .nom("Aplicació de client")
                         .path(baseUrl + "/distribucioback")
                         .manuals(List.of(
                                 new Manual().nom("Manual d'usuari").path("https://github.com/GovernIB/distribucio/blob/dis-1.0/doc/pdf/02_Distribucio_Manual_Usuari.pdf"),

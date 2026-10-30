@@ -233,7 +233,7 @@ public class ExecucioMassivaHelper {
 						entitatId, 
 						elementId);
 				correcte = throwable == null;
-				missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error: " + throwable.getMessage());
+				missatge = "Anotació reenviada a l'aplicació de client " + (correcte ? "correctament" : "amb error: " + throwable.getMessage());
 			}
 		} else if (this.isPendentArxiu(registre)||registre.getAnnexosEstatEsborrany()>0) {
 			correcte = registreService.reintentarProcessamentAdmin(
@@ -269,7 +269,7 @@ public class ExecucioMassivaHelper {
 					entitatId, 
 					elementId);
 			correcte = throwable == null;
-			missatge = "Anotació reenviada al backoffice " + (registre.getBackCodi()) + " " + (correcte ? "correctament" : "amb error: " + throwable.getMessage());
+			missatge = "Anotació reenviada a l'aplicació de client " + (registre.getBackCodi()) + " " + (correcte ? "correctament" : "amb error: " + throwable.getMessage());
 		}else {
 			correcte = false;
 			missatge = messageHelper.getMessage("execucio.massiva.helper.enviament.backoffice.estat.incompatible", new Object[] {elementId}); 

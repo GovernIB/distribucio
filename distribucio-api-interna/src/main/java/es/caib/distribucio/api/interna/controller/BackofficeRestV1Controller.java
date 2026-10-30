@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/v1/backoffice")
 @Tag(
-		name = "Backoffice V1",
-		description = "API REST de gestió de backoffices. Per invocar els mètodes és necessari accedir amb un usuari que tengui el rol DIS_BACKWS.")
+		name = "Aplicació de client V1",
+		description = "API REST de gestió de aplicacions de client. Per invocar els mètodes és necessari accedir amb un usuari que tengui el rol DIS_BACKWS.")
 public class BackofficeRestV1Controller {
 
 	private final String ROLE_DIS_BACKWS = "DIS_BACKWS";
@@ -98,7 +98,7 @@ public class BackofficeRestV1Controller {
 			// Canvi d'estat de "Comunicada al backoffice" a "Rebuda pel backoffice"
 			backofficeIntegracioWsService.canviEstatComunicadaARebuda(
 					id,
-					"Canvi a nivell de consulta des de l'estat comunicada a rebuda pel backoffice");
+					"Canvi a nivell de consulta des de l'estat comunicada a rebuda per l'aplicació de client");
             return new ResponseEntity<Object>(anotacio, HttpStatus.OK);
 		} catch(Exception e) {
 			String errMsg = "Error no controlat consultant l'anotació amb id " + (identificador!=null?identificador:indetificador) + " i clau " + clauAcces + ": " + e.getMessage();

@@ -43,8 +43,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Controller
 @RequestMapping("/backoffice")
 @Tag(
-		name = "Backoffice",
-		description = "API REST de gestió de backoffices. Per invocar els mètodes és necessari accedir amb un usuari que tengui el rol DIS_BACKWS.")
+		name = "Aplicació de client",
+		description = "API REST de gestió d'aplicacions de client. Per invocar els mètodes és necessari accedir amb un usuari que tengui el rol DIS_BACKWS.")
 public class BackofficeRestController {
 
 	private final String ROLE_DIS_BACKWS = "DIS_BACKWS";
@@ -64,14 +64,14 @@ public class BackofficeRestController {
 			method = RequestMethod.GET,
 			produces = "application/json")
 	@Operation(
-			summary = "Consulta d'una anotació de registre pendent d'enviar al Backoffice",
-			description = "Retorna totes les dades de l'anotació de registre pendents d'enviar al Backoffice consultada")
+			summary = "Consulta d'una anotació de registre pendent d'enviar a l'aplicació de client",
+			description = "Retorna totes les dades de l'anotació de registre pendents d'enviar a l'aplicació de client consultada")
 	public ResponseEntity<Object> consulta(
 			HttpServletRequest request,
 			@Parameter(name = "identificador", description = "Identificador de la anotació de registre, sol ser el número de registre", required = false)
 			String identificador,
 			@Parameter(name = "indetificador",
-						description = "Camp anterior a la versó 1.0.7 amb el terme incorrecte però que es manté per compatibilitat amb els backoffices existentss'ha corregit per \"identificador\".", 
+						description = "Camp anterior a la versó 1.0.7 amb el terme incorrecte però que es manté per compatibilitat amb les aplicacions de client existents s'ha corregit per \"identificador\".",
 						required = false, hidden = true)
 			String indetificador,
 			@Parameter(name = "clauAcces", description = "Clau de caràcters alfanumèrics proporcionada per Distribucio per poder consultar l'anotació", required = true)
@@ -91,7 +91,7 @@ public class BackofficeRestController {
 			// Canvi d'estat de "Comunicada al backoffice" a "Rebuda pel backoffice"
 			backofficeIntegracioWsService.canviEstatComunicadaARebuda(
 					id,
-					"Canvi a nivell de consulta des de l'estat comunicada a rebuda pel backoffice");
+					"Canvi a nivell de consulta des de l'estat comunicada a rebuda per l'aplicació de client");
 				return new ResponseEntity<Object>(anotacio, HttpStatus.OK);
 		} catch(Exception e) {
 			String errMsg = "Error no controlat consultant l'anotació amb id " + (identificador!=null?identificador:indetificador) + " i clau " + clauAcces + ": " + e.getMessage();
@@ -123,7 +123,7 @@ public class BackofficeRestController {
 			produces = "application/json")
 	@Operation(
 			summary = "Canvi d'estat d'una anotació de registre",
-			description = "Canvia l'estat d'una anotació de registre enviada a backoffice")
+			description = "Canvia l'estat d'una anotació de registre enviada a aplicació de client")
 	public ResponseEntity<Object> canviEstat(
 			HttpServletRequest request,
 			@io.swagger.v3.oas.annotations.parameters.RequestBody()

@@ -43,46 +43,46 @@ public enum FetEnum {
 	ANT_BST_PRC_EST_TOT("Totals anotacions distrib. processat", "Les anotacions totals amb i sense error per l'estat 'Distribuït marcant com a processat'"),
 	
 	// BACK_PENDENT
-	ANT_BCK_PND_OKY("Correctes pendents backoffice", "Les anotacions correctes processades per l'estat 'Anotació pendent d’enviar al backoffice'"),
-	ANT_BCK_PND_OKY_TOT("Totals correctes pendents backoffice", "Les anotacions correctes totals fins la data per l'estat 'Anotació pendent d’enviar al backoffice'"),
-	ANT_BCK_PND_ERR("Errors pendents backoffice", "Les anotacions amb error processades per l'estat 'Anotació pendent d’enviar al backoffice'"),
-	ANT_BCK_PND_ERR_TOT("Totals errors pendents backoffice", "Les anotacions amb error totals fins la data per l'estat 'Anotació pendent d’enviar al backoffice'"),
-	ANT_BCK_PND_EST_TOT("Totals anotacions pendents backoffice", "Les anotacions totals amb i sense error per l'estat 'Anotació pendent d’enviar al backoffice'"),
+	ANT_BCK_PND_OKY("Correctes pendents aplicació de client", "Les anotacions correctes processades per l'estat 'Anotació pendent d’enviar a l’aplicació de client'"),
+	ANT_BCK_PND_OKY_TOT("Totals correctes pendents aplicació de client", "Les anotacions correctes totals fins la data per l'estat 'Anotació pendent d’enviar a l’aplicació de client'"),
+	ANT_BCK_PND_ERR("Errors pendents aplicació de client", "Les anotacions amb error processades per l'estat 'Anotació pendent d’enviar a l’aplicació de client'"),
+	ANT_BCK_PND_ERR_TOT("Totals errors pendents aplicació de client", "Les anotacions amb error totals fins la data per l'estat 'Anotació pendent d’enviar a l’aplicació de client'"),
+	ANT_BCK_PND_EST_TOT("Totals anotacions pendents aplicació de client", "Les anotacions totals amb i sense error per l'estat 'Anotació pendent d’enviar a l’aplicació de client'"),
 	
 	// BACK_COMUNICADA
-	ANT_BCK_COM_OKY("Correctes comunicades backoffice", "Les anotacions correctes processades per l'estat 'Anotació comunicada al backoffice'"),
-	ANT_BCK_COM_OKY_TOT("Totals correctes comunicades backoffice", "Les anotacions correctes totals fins la data per l'estat 'Anotació comunicada al backoffice'"),
-	ANT_BCK_COM_ERR("Errors comunicades backoffice", "Les anotacions amb error processades per l'estat 'Anotació comunicada al backoffice'"),
-	ANT_BCK_COM_ERR_TOT("Totals errors comunicades backoffice", "Les anotacions amb error totals fins la data per l'estat 'Anotació comunicada al backoffice'"),
-	ANT_BCK_COM_EST_TOT("Totals anotacions comunicades backoffice", "Les anotacions totals amb i sense error per l'estat 'Anotació comunicada al backoffice'"),
+	ANT_BCK_COM_OKY("Correctes comunicades aplicació de client", "Les anotacions correctes processades per l'estat 'Anotació comunicada a l’aplicació de client'"),
+	ANT_BCK_COM_OKY_TOT("Totals correctes comunicades aplicació de client", "Les anotacions correctes totals fins la data per l'estat 'Anotació comunicada a l’aplicació de client'"),
+	ANT_BCK_COM_ERR("Errors comunicades aplicació de client", "Les anotacions amb error processades per l'estat 'Anotació comunicada a l’aplicació de client'"),
+	ANT_BCK_COM_ERR_TOT("Totals errors comunicades aplicació de client", "Les anotacions amb error totals fins la data per l'estat 'Anotació comunicada a l’aplicació de client'"),
+	ANT_BCK_COM_EST_TOT("Totals anotacions comunicades aplicació de client", "Les anotacions totals amb i sense error per l'estat 'Anotació comunicada a l’aplicació de client'"),
 	
 	// BACK_REBUDA
-	ANT_BCK_REB_OKY("Correctes rebudes backoffice", "Les anotacions correctes processades per l'estat 'Anotació rebuda al backoffice'"),
-	ANT_BCK_REB_OKY_TOT("Totals correctes rebudes backoffice", "Les anotacions correctes totals fins la data per l'estat 'Anotació rebuda al backoffice'"),
-	ANT_BCK_REB_ERR("Errors rebudes backoffice", "Les anotacions amb error processades per l'estat 'Anotació rebuda al backoffice'"),
-	ANT_BCK_REB_ERR_TOT("Totals errors rebudes backoffice", "Les anotacions amb error totals fins la data per l'estat 'Anotació rebuda al backoffice'"),
-	ANT_BCK_REB_EST_TOT("Totals anotacions rebudes backoffice", "Les anotacions totals amb i sense error per l'estat 'Anotació rebuda al backoffice'"),
+	ANT_BCK_REB_OKY("Correctes rebudes aplicació de client", "Les anotacions correctes processades per l'estat 'Anotació rebuda a l’aplicació de client'"),
+	ANT_BCK_REB_OKY_TOT("Totals correctes rebudes aplicació de client", "Les anotacions correctes totals fins la data per l'estat 'Anotació rebuda a l’aplicació de client'"),
+	ANT_BCK_REB_ERR("Errors rebudes aplicació de client", "Les anotacions amb error processades per l'estat 'Anotació rebuda a l’aplicació de client'"),
+	ANT_BCK_REB_ERR_TOT("Totals errors rebudes aplicació de client", "Les anotacions amb error totals fins la data per l'estat 'Anotació rebuda a l’aplicació de client'"),
+	ANT_BCK_REB_EST_TOT("Totals anotacions rebudes aplicació de client", "Les anotacions totals amb i sense error per l'estat 'Anotació rebuda a l’aplicació de client'"),
 	
 	// BACK_PROCESSADA
-	ANT_BCK_PRC_OKY("Correctes processades backoffice", "Les anotacions correctes processades per l'estat 'Anotació processada correctament pel backoffice'"),
-	ANT_BCK_PRC_OKY_TOT("Totals correctes processades backoffice", "Les anotacions correctes totals fins la data per l'estat 'Anotació processada correctament pel backoffice'"),
-	ANT_BCK_PRC_ERR("Errors processades backoffice", "Les anotacions amb error processades per l'estat 'Anotació processada correctament pel backoffice'"),
-	ANT_BCK_PRC_ERR_TOT("Totals errors processades backoffice", "Les anotacions amb error totals fins la data per l'estat 'Anotació processada correctament pel backoffice'"),
-	ANT_BCK_PRC_EST_TOT("Totals anotacions processades backoffice", "Les anotacions totals amb i sense error per l'estat 'Anotació processada correctament pel backoffice'"),
+	ANT_BCK_PRC_OKY("Correctes processades aplicació de client", "Les anotacions correctes processades per l'estat 'Anotació processada correctament per l’aplicació de client'"),
+	ANT_BCK_PRC_OKY_TOT("Totals correctes processades aplicació de client", "Les anotacions correctes totals fins la data per l'estat 'Anotació processada correctament per l’aplicació de client'"),
+	ANT_BCK_PRC_ERR("Errors processades aplicació de client", "Les anotacions amb error processades per l'estat 'Anotació processada correctament per l’aplicació de client'"),
+	ANT_BCK_PRC_ERR_TOT("Totals errors processades aplicació de client", "Les anotacions amb error totals fins la data per l'estat 'Anotació processada correctament per l’aplicació de client'"),
+	ANT_BCK_PRC_EST_TOT("Totals anotacions processades aplicació de client", "Les anotacions totals amb i sense error per l'estat 'Anotació processada correctament per l’aplicació de client'"),
 	
 	// BACK_REBUTJADA
-	ANT_BCK_RBJ_OKY("Correctes rebutjades backoffice", "Les anotacions correctes processades per l'estat 'Anotació rebutjada pel backoffice'"),
-	ANT_BCK_RBJ_OKY_TOT("Totals correctes rebutjades backoffice", "Les anotacions correctes totals fins la data per l'estat 'Anotació rebutjada pel backoffice'"),
-	ANT_BCK_RBJ_ERR("Errors rebutjades backoffice", "Les anotacions amb error processades per l'estat 'Anotació rebutjada pel backoffice'"),
-	ANT_BCK_RBJ_ERR_TOT("Totals errors rebutjades backoffice", "Les anotacions amb error totals fins la data per l'estat 'Anotació rebutjada pel backoffice'"),
-	ANT_BCK_RBJ_EST_TOT("Totals anotacions rebutjades backoffice", "Les anotacions totals amb i sense error per l'estat 'Anotació rebutjada pel backoffice'"),
+	ANT_BCK_RBJ_OKY("Correctes rebutjades aplicació de client", "Les anotacions correctes processades per l'estat 'Anotació rebutjada per l’aplicació de client'"),
+	ANT_BCK_RBJ_OKY_TOT("Totals correctes rebutjades aplicació de client", "Les anotacions correctes totals fins la data per l'estat 'Anotació rebutjada per l’aplicació de client'"),
+	ANT_BCK_RBJ_ERR("Errors rebutjades aplicació de client", "Les anotacions amb error processades per l'estat 'Anotació rebutjada per l’aplicació de client'"),
+	ANT_BCK_RBJ_ERR_TOT("Totals errors rebutjades aplicació de client", "Les anotacions amb error totals fins la data per l'estat 'Anotació rebutjada per l’aplicació de client'"),
+	ANT_BCK_RBJ_EST_TOT("Totals anotacions rebutjades aplicació de client", "Les anotacions totals amb i sense error per l'estat 'Anotació rebutjada per l’aplicació de client'"),
 	
 	// BACK_ERROR
-	ANT_BCK_ERR_OKY("Correctes amb errors backoffice", "Les anotacions correctes processades per l'estat 'Anotació processada al backoffice amb errors'"),
-	ANT_BCK_ERR_OKY_TOT("Totals correctes amb errors backoffice", "Les anotacions correctes totals fins la data per l'estat 'Anotació processada al backoffice amb errors'"),
-	ANT_BCK_ERR_ERR("Errors amb errors backoffice", "Les anotacions amb error processades per l'estat 'Anotació processada al backoffice amb errors'"),
-	ANT_BCK_ERR_ERR_TOT("Totals errors amb errors backoffice", "Les anotacions amb error totals fins la data per l'estat 'Anotació processada al backoffice amb errors'"),
-	ANT_BCK_ERR_EST_TOT("Totals anotacions amb errors backoffice", "Les anotacions totals amb i sense error per l'estat 'Anotació processada al backoffice amb errors'"),
+	ANT_BCK_ERR_OKY("Correctes amb errors aplicació de client", "Les anotacions correctes processades per l'estat 'Anotació processada a l’aplicació de client amb errors'"),
+	ANT_BCK_ERR_OKY_TOT("Totals correctes amb errors aplicació de client", "Les anotacions correctes totals fins la data per l'estat 'Anotació processada a l’aplicació de client amb errors'"),
+	ANT_BCK_ERR_ERR("Errors amb errors aplicació de client", "Les anotacions amb error processades per l'estat 'Anotació processada a l’aplicació de client amb errors'"),
+	ANT_BCK_ERR_ERR_TOT("Totals errors amb errors aplicació de client", "Les anotacions amb error totals fins la data per l'estat 'Anotació processada a l’aplicació de client amb errors'"),
+	ANT_BCK_ERR_EST_TOT("Totals anotacions amb errors aplicació de client", "Les anotacions totals amb i sense error per l'estat 'Anotació processada a l’aplicació de client amb errors'"),
 
     ANT_EST_UNKNOWN("Anotacions totals amb estat desconegut", "Les anotacions totals per un estat desconegut"),
     

@@ -319,7 +319,7 @@ const translationCa = {
                     jaDefinitiu: "L'annex \"{{titol}}\" de l'anotació {{numero}} ja consta com a Definitiu a Distribució",
                     expedientTancat: "L'expedient que conté l'annex \"{{titol}}\" de l'anotació {{numero}} està tancat a l'arxiu",
                     definitiuArxiu: "El document annex \"{{titol}}\" de l'anotació {{numero}} ja estava com a definitiu a l'arxiu",
-                    mogutBackoffice: "El document annex \"{{titol}}\" de l'anotació {{numero}} s'ha mogut a un expedient del backoffice",
+                    mogutBackoffice: "El document annex \"{{titol}}\" de l'anotació {{numero}} s'ha mogut a un expedient de l'aplicació de client",
                     updated: "L'annex \"{{titol}}\" de l'anotació {{numero}} s'ha marcat com a Definitiu",
                     errorUpdate: "Ha ocorregut un error en el moment de crear/modificar a l'arxiu l'annex \"{{titol}}\" de l'anotació {{numero}}",
                     errorArxiu: "Error no controlat marcant l'annex \"{{titol}}\" de l'anotació {{numero}} com a definitiu",
@@ -637,7 +637,7 @@ const translationCa = {
                 PROCEDIMENT: 'Procediments',
                 SERVEI: 'Serveis',
                 DISTRIBUCIO: 'Distribució',
-                BACKOFFICE: 'Backoffice',
+                BACKOFFICE: 'Aplicació de client',
             },
             detail: {
                 title: 'Detall',
@@ -783,7 +783,7 @@ const translationCa = {
                     aturar: 'Atura',
                     icona: {
                         bustia: 'Bústia',
-                        backoffice: 'BackOffice',
+                        backoffice: 'Aplicació de client',
                         unitat: 'Unitat',
                     },
                 },
@@ -840,7 +840,7 @@ const translationCa = {
                     regla: 'Regla',
                 },
                 accio: {
-                    BACKOFFICE: 'Es distribueix al backoffice',
+                    BACKOFFICE: "Es distribueix a l'aplicació de client",
                     UNITAT: 'Es reenvia a la U.O.',
                     BUSTIA_PER_DEFECTE: 'Es mou a la bústia principal',
                     BUSTIA: 'Es mou a la bústia',
@@ -916,17 +916,17 @@ const translationCa = {
             }
         },
         backoffice: {
-            title: "Backoffices",
+            title: "Aplicacions de client",
             form: {
-                resourceTitle: "backoffice",
-                codi: "Codi per identificar amb quin Backoffice s'ha distribuit l'anotació",
+                resourceTitle: "aplicació de client",
+                codi: "Codi per identificar amb quina aplicació de client s'ha distribuit l'anotació",
                 url: "Clau de el fitxer de propietats corresponent a la url per a la connexió amb format ${clau.fitxer.propietats.url} o url directament",
                 usuari: "Clau de el fitxer de propietats corresponent a el nom d'usuari per a la connexió amb format ${clau.fitxer.propietats.usuari} o usuari directament",
                 contrasenya: "Clau de el fitxer de propietats corresponent a la contrasenya per a la connexió amb format ${clau.fitxer.propietats.contrasenya} o contrasenya directament",
             },
             accio: {
                 new: {
-                    label: "Nou backoffice",
+                    label: "Nova aplicació de client",
                 },
                 prova: {
                     label: "Prova",
@@ -1023,8 +1023,8 @@ const translationCa = {
                 procesError: {
                     ARXIU_PENDENT: "Error en desar l'anotació de registre a l'Arxiu",
                     REGLA_PENDENT: "Error en aplicar la regla de distribució",
-                    BACK_PENDENT: "Error en enviar l'anotació al backoffice",
-                    BACK_ERROR: "Processada al backoffice amb errors",
+                    BACK_PENDENT: "Error en enviar l'anotació a l'aplicació de client",
+                    BACK_ERROR: "Processada a l'aplicació de client amb errors",
                     default: "Anotació amb error",
                 },
                 pendentExecucioMassiva: "Inclosa en una acció massiva pendent d'execució",
@@ -1082,8 +1082,8 @@ const translationCa = {
                     ok: "L'anotació amb número \"{{numero}}\" s'ha marcat per a sobreescriure correctament",
                 },
                 reenviarBackoffice: {
-                    label: "Reintenta l'enviament al backoffice",
-                    titleMassive: "Reintentar l'enviament al backoffice de {{num}} anotacions",
+                    label: "Reintenta l'enviament a l'aplicació de client",
+                    titleMassive: "Reintentar l'enviament a l'aplicació de client de {{num}} anotacions",
                     ok: "L'anotació \"{{numero}}\" s'ha processat correctament",
                 },
                 descargaMassiva: {
@@ -1260,28 +1260,28 @@ const translationCa = {
                     info: "L'anotació ha estat processada per l'usuari",
                 },
                 BACK_PENDENT: {
-                    label: "Pendent de comunicar backoffice",
-                    info: "L'anotació està pendent de comunicar al backoffice de Distribució",
+                    label: "Pendent de comunicar a l'aplicació de client",
+                    info: "L'anotació està pendent de comunicar a l'aplicació de client de Distribució",
                 },
                 BACK_COMUNICADA: {
-                    label: "Comunicada al backoffice",
-                    info: "L'anotació s'ha comunicat al backoffice i està pendent de que el backoffice la rebi i processi. El canvi d'estat ja depén del backoffice",
+                    label: "Comunicada a l'aplicació de client",
+                    info: "L'anotació s'ha comunicat a l'aplicació de client i està pendent de que l'aplicació de client la rebi i processi. El canvi d'estat ja depén de l'aplicació de client",
                 },
                 BACK_REBUDA: {
-                    label: "Rebuda al backoffice",
-                    info: "L'anotació ha estat rebuda pel backoffice de Distribució",
+                    label: "Rebuda a l'aplicació de client",
+                    info: "L'anotació ha estat rebuda per l'aplicació de client de Distribució",
                 },
                 BACK_PROCESSADA: {
-                    label: "Processada pel backoffice",
-                    info: "L'anotació ha estat processada pel backoffice de Distribució",
+                    label: "Processada per l'aplicació de client",
+                    info: "L'anotació ha estat processada per l'aplicació de client de Distribució",
                 },
                 BACK_REBUTJADA: {
-                    label: "Rebutjada pel backoffice",
-                    info: "L'anotació ha estat processada i rebutjada pel backoffice de Distribució",
+                    label: "Rebutjada per l'aplicació de client",
+                    info: "L'anotació ha estat processada i rebutjada per l'aplicació de client de Distribució",
                 },
                 BACK_ERROR: {
-                    label: "Processada al backoffice amb errors",
-                    info: "L'anotació ha estat processada amb error pel backoffice de Distribució",
+                    label: "Processada a l'aplicació de client amb errors",
+                    info: "L'anotació ha estat processada amb error per l'aplicació de client de Distribució",
                 },
             },
         },
@@ -1334,7 +1334,7 @@ const translationCa = {
                 interessats: "Interessats",
                 annexos: "Annexos",
                 arxiu: "Arxiu info.",
-                procesBack: "Processament backoffice",
+                procesBack: "Processament aplicació de client",
                 procesAuto: "Processament automàtic",
                 dades: "Dades",
                 copia: "Còpies",

@@ -240,13 +240,13 @@ public class EmailHelper {
             SimpleMailMessage missatge = new SimpleMailMessage();
             missatge.setTo(backoffice.getEmailResponsable());
             missatge.setFrom(getRemitent());
-            missatge.setSubject(this.getPrefixDistribucio() + " Error de comunicació a backoffice");
+            missatge.setSubject(this.getPrefixDistribucio() + " Error de comunicació a aplicació de client");
 
-            missatge.setText("Aquest és un correu informatiu enviat des de Distribucio SE. L'aplicació està tenint problemes a l'hora de comunicar anotacions pendents al backoffice '"
-                    + backoffice.getCodi() + " - " + backoffice.getNom() + "' on està el vostre email configurat com a responsable del backoffice");
+            missatge.setText("Aquest és un correu informatiu enviat des de Distribucio SE. L'aplicació està tenint problemes a l'hora de comunicar anotacions pendents a l'aplicació de client '"
+                    + backoffice.getCodi() + " - " + backoffice.getNom() + "' on està el vostre email configurat com a responsable de l'aplicació de client");
             mailSender.send(missatge);
         } catch (Exception e) {
-            logger.error("S'ha produit un error al intentar enviar correu al representant del backoffice " + backoffice.getCodi(), e.getMessage());
+            logger.error("S'ha produit un error al intentar enviar correu al representant de l'aplicació de client " + backoffice.getCodi(), e.getMessage());
         }
     }
 

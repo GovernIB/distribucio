@@ -112,7 +112,7 @@ public class RegistreAdminController extends BaseAdminController {
 		List<BackofficeDto> backoffices = backofficeService.findByEntitat(
 				entitatActual.getId());
 		BackofficeDto backNull = new BackofficeDto();
-		backNull.setNom("Sense backoffice");
+		backNull.setNom("Sense aplicació de client");
 		backNull.setCodi("senseBackoffice");
 		backoffices.add(backNull);
 		model.addAttribute("backoffices", backoffices);
@@ -717,7 +717,7 @@ public class RegistreAdminController extends BaseAdminController {
 					Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(entitatActual.getId(), 
 							registreId);
 					correcte = throwable == null;
-					missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error: " + throwable.getMessage());
+					missatge = "Anotació reenviada a l'aplicació de client " + (correcte ? "correctament" : "amb error: " + throwable.getMessage());
 				}
 			} else if (this.isPendentArxiu(registreDto)||registreDto.getAnnexosEstatEsborrany()>0) {
 				correcte = registreService.reintentarProcessamentAdmin(entitatActual.getId(), 

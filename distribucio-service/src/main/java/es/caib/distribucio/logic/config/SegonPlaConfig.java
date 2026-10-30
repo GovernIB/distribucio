@@ -468,7 +468,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     try {
                         value = configService.getConfigAsLong("es.caib.distribucio.tasca.enviar.anotacions.backoffice.temps.espera.execucio");
                     } catch (Exception e) {
-                        log.warn("Error consultant la propietat per la propera execució d'enviar anotacions pendents als backoffices: " + e.getMessage());
+                        log.warn("Error consultant la propietat per la propera execució d'enviar anotacions pendents a les aplicacions de client: " + e.getMessage());
                     }
                     if (value == null)
                         value = Long.valueOf("60000");
@@ -574,7 +574,7 @@ public class SegonPlaConfig implements SchedulingConfigurer {
                     try {
                         value = configService.getConfigAsLong("es.caib.distribucio.backoffice.interval.temps.reintentar.processament");
                     } catch (Exception e) {
-                        log.warn("Error consultant la propietat per la propera execució per reintentar l'enviament al backoffice");
+                        log.warn("Error consultant la propietat per la propera execució per reintentar l'enviament al aplicació de client");
                     }
                     if (value == null) {
                         value = Long.valueOf("60000");

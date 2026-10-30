@@ -1655,7 +1655,7 @@ public class RegistreServiceImpl implements RegistreService {
 	@Override
 	public AnotacioRegistreEntrada findOneForBackoffice(
 			AnotacioRegistreId id)  {
-		logger.debug("Obtenint anotació de registre per backoffice("
+		logger.debug("Obtenint anotació de registre per aplicació de client("
 				+ "id=" + id + ")");
 		AnotacioRegistreEntrada anotacioPerBackoffice = new AnotacioRegistreEntrada();
 		try {
@@ -1718,7 +1718,7 @@ public class RegistreServiceImpl implements RegistreService {
 	@Transactional(readOnly = true)
 	@Override
 	public List<AnotacioRegistreEntrada> findForBackoffice(String identificador, Date dataRegistre) {
-		logger.debug("Obtenint anotació de registres per backoffice("
+		logger.debug("Obtenint anotació de registres per aplicació de client("
 				+ "identificador=" + identificador + ")");
 		List<AnotacioRegistreEntrada> anotaciosPerBackoffice = new ArrayList<AnotacioRegistreEntrada>();
 		try {
@@ -3038,7 +3038,7 @@ public class RegistreServiceImpl implements RegistreService {
 	}
 	
 	private List<Annex> getAnnexosPerBackoffice(Long registreId) throws NotFoundException {
-		logger.debug("Obtenint annexos per enviar al backoffice (" + "registreId=" + registreId + ")");
+		logger.debug("Obtenint annexos per enviar a l''aplicació de client (" + "registreId=" + registreId + ")");
 		RegistreEntity registre = registreRepository.getReferenceById(registreId);
 		List<Annex> annexosPerBackoffice = new ArrayList<Annex>(); 
 		for (RegistreAnnexEntity annexEntity : registre.getAnnexos()) {

@@ -22,7 +22,7 @@ import javax.validation.Payload;
 @Constraint(validatedBy=BackofficeValidator.class)
 public @interface Backoffice {
 
-	String message() default "Error en la validació del backoffice.";
+	String message() default "Error en la validació de l'aplicació de client.";
 
 	Class<?>[] groups() default {};
 

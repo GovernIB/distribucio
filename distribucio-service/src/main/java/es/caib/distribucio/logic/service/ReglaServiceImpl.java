@@ -676,7 +676,7 @@ public class ReglaServiceImpl implements ReglaService {
 	public List<ReglaDto> findByEntitatAndBackofficeDestiId(
 			Long entitatId, 
 			Long backofficeDestiId) {
-		logger.debug("Cercant las regles del backoffice destí (" 
+		logger.debug("Cercant las regles de l'aplicació de client destí ("
 				+ "entitatId=" + entitatId 
 				+ ", " + "unitatCodi=" + backofficeDestiId
 				+ ")");
@@ -782,7 +782,7 @@ public class ReglaServiceImpl implements ReglaService {
 		Map<String, String> accioParams = new HashMap<String, String>();
 		accioParams.put("Accio sobre la regla", reglaGestioTipusEnumDto.name());
 		accioParams.put("Codi SIA", sia);
-		accioParams.put("Backoffice", backoffice);		
+		accioParams.put("Aplicació de client", backoffice);
       
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth!=null) {
@@ -803,9 +803,9 @@ public class ReglaServiceImpl implements ReglaService {
 			SubsistemesHelper.addSuccessOperation(SubsistemesEnum.BKE, System.currentTimeMillis() - start);
 			logger.trace(">>> Despres de cridar el servei de la gestió de la regla");
 		} catch (Exception ex) {
-			logger.error("Error al gestionar la regla en el servei web de backoffice integració (" + "sia="
+			logger.error("Error al gestionar la regla en el servei web d'aplicació de client integració (" + "sia="
 					+ sia + ex);
-			String errorDescripcio = "Error al gestionar la regla en el servei web de backoffice integració";
+			String errorDescripcio = "Error al gestionar la regla en el servei web d'aplicació de client integració";
 			integracioHelper.addAccioError(
 					IntegracioHelper.INTCODI_BACKOFFICE,
 					accioDescripcio,

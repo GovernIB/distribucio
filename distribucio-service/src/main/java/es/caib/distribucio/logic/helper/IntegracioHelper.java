@@ -345,7 +345,7 @@ public class IntegracioHelper {
 		} else if (INTCODI_DISTRIBUCIO.equals(codi)) {
 			integracio.setNom("Distribució");
 		} else if (INTCODI_BACKOFFICE.equals(codi)) {
-			integracio.setNom("Backoffice");
+			integracio.setNom("Aplicació de client");
 		}
 		return integracio;
 	}

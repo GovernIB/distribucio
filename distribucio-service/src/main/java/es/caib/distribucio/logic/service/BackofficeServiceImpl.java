@@ -169,7 +169,7 @@ public class BackofficeServiceImpl implements BackofficeService {
 	@Transactional
 	@Override
 	public BackofficeDto findByCodi(Long entitatId, String backofficeCodi) throws NotFoundException {
-		logger.debug("Consultant el backoffice per backoffice codi (" +
+		logger.debug("Consultant l'aplicació de client per codi (" +
 				"entitatId=" + entitatId +
 				"backofficeCodi=" + backofficeCodi + ")");
 		

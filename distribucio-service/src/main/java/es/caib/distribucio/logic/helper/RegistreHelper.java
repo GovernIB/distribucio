@@ -1436,10 +1436,10 @@ public class RegistreHelper {
 			
 			BackofficeEntity backofficeDesti = regla.getBackofficeDesti();
 			if (backofficeDesti == null) {
-				return new RuntimeException("No existeix cap backoffice destí per aplicar amb la regla " + regla.getNom());
+				return new RuntimeException("No existeix cap aplicació de client destí per aplicar amb la regla " + regla.getNom());
 			}
 			accioParams.put("Regla", regla.getId() + " - " + regla.getNom());
-			accioParams.put("Backoffice", backofficeDesti.getCodi());
+			accioParams.put("Aplicació de client", backofficeDesti.getCodi());
 
 
 			String clauSecreta = configHelper.getConfig(
@@ -1459,7 +1459,7 @@ public class RegistreHelper {
 					anotacioRegistreId.setClauAcces(RegistreHelper.encrypt(pendent.getNumero() + "_" + pendent.getId(),
 							clauSecreta));
 				} catch (Exception ex) {
-					String errMsg = "Error encriptant la clau d'accés \"" + pendent.getNumero() + "\" per comunicar anotacions al backoffice " + backofficeDesti;
+					String errMsg = "Error encriptant la clau d'accés \"" + pendent.getNumero() + "\" per comunicar anotacions a l'aplicació de client " + backofficeDesti;
 					logger.error(errMsg, ex);
 					return new RuntimeException(
 							errMsg,
@@ -1471,7 +1471,7 @@ public class RegistreHelper {
 			
 			exception = comunicarAnotacionsAlBackoffice(backofficeDesti, ids, accioParams);
 		} catch(Exception e) {
-			String errMsg = "Error no controlat comunicant " + pendentsIdsGroupedByRegla.size() + " annotacions al backoffice";
+			String errMsg = "Error no controlat comunicant " + pendentsIdsGroupedByRegla.size() + " annotacions a l'aplicació de client";
 			if (regla != null) {
 				errMsg += " " + regla.getBackofficeDesti().getNom() + " per la regla " + regla.getId() + " " + regla.getNom();
 			}
@@ -1490,7 +1490,7 @@ public class RegistreHelper {
 	public Exception provarConnexioBackoffice(BackofficeEntity backoffice) {
 		List<AnotacioRegistreId> ids = new ArrayList<>();
 		Map<String, String> accioParams = new HashMap<String, String>();
-		accioParams.put("Backoffice", backoffice.getCodi());
+		accioParams.put("Aplicació de client", backoffice.getCodi());
 		
 		return comunicarAnotacionsAlBackoffice(backoffice, ids, accioParams);
 	}
@@ -1506,7 +1506,7 @@ public class RegistreHelper {
 		} else {
 			accioDescripcio += ids.size() + " anotacions";
 		}
-		accioDescripcio += " al backoffice " + backofficeDesti.getCodi();
+		accioDescripcio += " a l'aplicació de client " + backofficeDesti.getCodi();
 		String usuari = null;
 		try {
 			usuari = backofficeDesti.getUsuari();
@@ -1521,7 +1521,7 @@ public class RegistreHelper {
 			if (url != null && !url.isEmpty() && url.startsWith("${") && url.endsWith("}")) {
 				url = configHelper.getConfig(backofficeDesti.getUrl().replaceAll("\\$\\{", "").replaceAll("\\}", ""));
 			}
-			logger.trace(">>> Abans de generar backoffice WS " + backofficeDesti.getCodi());
+			logger.trace(">>> Abans de generar aplicació de client WS " + backofficeDesti.getCodi());
 			if (backofficeDesti.getTipus().equals(BackofficeTipusEnumDto.REST)) {
 				String urlAmbMetode = url + "/comunicarAnotacionsPendents";
 				Client jerseyClient = generarClient();
@@ -1551,7 +1551,7 @@ public class RegistreHelper {
 						contrasenya,
 						null,
 						BackofficeWsService.class);
-				logger.trace(">>> Abans de cridar backoffice WS "+ backofficeDesti.getCodi());
+				logger.trace(">>> Abans de cridar aplicació de client WS "+ backofficeDesti.getCodi());
 				backofficeClient.comunicarAnotacionsPendents(ids);
 				
 				// RegistreNumero sí si només n'hi ha 1				
@@ -1575,19 +1575,19 @@ public class RegistreHelper {
 							System.currentTimeMillis() - t0);
 				}				
 			}
-			logger.trace(">>> Despres de cridar backoffice WS "+ backofficeDesti.getCodi());
+			logger.trace(">>> Despres de cridar aplicació de client WS "+ backofficeDesti.getCodi());
             BackofficeSalutHelper.addSuccessOperation(backofficeDesti, System.currentTimeMillis() - t0);
 			return null;
         } catch (Exception ex) {
             BackofficeSalutHelper.addErrorOperation(backofficeDesti);
 			String errorDescripcio = "";
 			if (!ids.isEmpty()) {
-				errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions al backoffice " + backofficeDesti.getNom();
+				errorDescripcio = "Error " + ex.getClass().getSimpleName() + " enviant " + ids.size() + "anotacions a l'aplicació de client " + backofficeDesti.getNom();
             } else {
                 if (ExceptionHelper.isExceptionOrCauseInstanceOf(ex, SOAPFaultException.class)) {
-                    errorDescripcio = "S'ha pogut establir connexió però s'ha produït un error intern al backoffice " + backofficeDesti.getCodi();
+                    errorDescripcio = "S'ha pogut establir connexió però s'ha produït un error intern a l'aplicació de client " + backofficeDesti.getCodi();
                 } else {
-                    errorDescripcio = "No s'ha pogut probar la connexió amb el backoffice " + backofficeDesti.getCodi();
+                    errorDescripcio = "No s'ha pogut probar la connexió amb l'aplicació de client " + backofficeDesti.getCodi();
                 }
 			}
 
@@ -1794,7 +1794,7 @@ public class RegistreHelper {
                                 backofficeDesti.setDarrerEmailResponsable(LocalDateTime.now());
                                 backofficeRepository.save(backofficeDesti);
                             } catch (Exception e) {
-                                logger.error("Error no controlat enviament de correu a representant de backoffice: " + e.getMessage());
+                                logger.error("Error no controlat enviament de correu a representant d'aplicació de client: " + e.getMessage());
                             }
                         }
                     }
@@ -1818,7 +1818,7 @@ public class RegistreHelper {
 		        	tempsEntreIntentsMs = tempsConfigMs.get(Math.max(0, Math.min(procesIntents-1, tempsConfigMs.size()-1)));
 		        }
 	        } catch (Exception e) {
-	            logger.error("Error no controlat obtenint el temps configurat entre reintents d'enviar a backoffice \"" 
+	            logger.error("Error no controlat obtenint el temps configurat entre reintents d'enviar a aplicació de client \""
 	            				+ configTempsEspera + "\": " + e.getMessage());
 	        }
 		}
@@ -2894,7 +2894,7 @@ public class RegistreHelper {
 			// Codifica només l'identificador com es feia fins la versió 0.9.43.1 
 			encryptedIdentificator = RegistreHelper.encrypt(id.getIdentificador(), clauSecreta);
 			if (encryptedIdentificator.equals(id.getClauAcces())) {
-				logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + id.getIdentificador() + " en la consulta pel backoffice");
+				logger.warn("S'han trobat " + registres.size() + " registres per l'identficiador " + id.getIdentificador() + " en la consulta per l'aplicació de client");
 				registres = contingutLogRepository.findByNumeroAndComunidaBackoffice(id.getIdentificador());
 				if (registres != null && !registres.isEmpty()) {
 					for (RegistreEntity r : registres) {

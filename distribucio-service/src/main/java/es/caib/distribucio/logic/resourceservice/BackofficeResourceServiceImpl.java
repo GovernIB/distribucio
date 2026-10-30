@@ -56,7 +56,7 @@ public class BackofficeResourceServiceImpl extends BaseMutableResourceService<Ba
 
         private ReturnedMessage toReturnedMessage(String codi, Exception exception) {
             if (exception == null) {
-                return new ReturnedMessage(codi, "success", "La conexió amb el backoffice " + codi + " ha sigut òptima");
+                return new ReturnedMessage(codi, "success", "La conexió amb l'aplicació de client " + codi + " ha sigut òptima");
             } else {
                 if ("SOAPFaultException".equals(exception.getClass().getSimpleName())) {
                     return new ReturnedMessage(codi, "warning", exception.getMessage());

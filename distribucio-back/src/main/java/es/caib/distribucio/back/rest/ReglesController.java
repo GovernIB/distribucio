@@ -112,7 +112,7 @@ public class ReglesController extends BaseUserController {
 		
 		// Definim els valors que no hi son als paràmetres
 		String nom = backoffice + " " + sia;
-		String descripcio = "Creació de regla per part de " + usuari + " en data de " + dataAra + " pel backoffice amb codi " + backoffice + " i codi de procediment " + sia;
+		String descripcio = "Creació de regla per part de " + usuari + " en data de " + dataAra + " per l'aplicació de client amb codi " + backoffice + " i codi de procediment " + sia;
 		ReglaTipusEnumDto tipus = ReglaTipusEnumDto.BACKOFFICE;		
 		
 		// Validar que la entitat existeix
@@ -124,7 +124,7 @@ public class ReglesController extends BaseUserController {
 		// Validar que es troba el backoffice
 		BackofficeDto backofficeDto = backofficeService.findByCodi(entitatDto.getId(), backoffice);
 		if (backofficeDto == null) {
-			return new ResponseEntity<Object>("No s'ha trobat el backoffice amb codi " + backoffice,
+			return new ResponseEntity<Object>("No s'ha trobat l'aplicació de client amb codi " + backoffice,
 					HttpStatus.NOT_FOUND);
 		}
 
@@ -147,7 +147,7 @@ public class ReglesController extends BaseUserController {
 			if (backofficeDto.getId().compareTo(regla.getBackofficeDestiId()) != 0) {
 				// KO Existeix una regla amb mateix codi SIA per un altre backoffice
 				return new ResponseEntity<Object>("Ja existeix la regla amb id " + regla.getId() + " i nom \""
-						+ regla.getNom() + "\" pel backoffice \"" + regla.getBackofficeDestiNom() + "\" a l'entitat \""
+						+ regla.getNom() + "\" per l'aplicació de client \"" + regla.getBackofficeDestiNom() + "\" a l'entitat \""
 						+ regla.getEntitatNom() + "\"", HttpStatus.NOT_ACCEPTABLE);
 			} else {
 				//En comprovar-se que ja existeix una regla amb el codi sia (procediment) idèntic 
@@ -155,7 +155,7 @@ public class ReglesController extends BaseUserController {
 				novaReglaDto.setId(regla.getId());
 				novaReglaDto = reglaService.update(entitatDto.getId(), novaReglaDto);
 				msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-				+ "\" actualitzada correctament pel backoffice " + backoffice + " pel codi SIA " + sia
+				+ "\" actualitzada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia
 				 + " a l'entitat " + entitat;
 				// OK Regla existent pel mateix backoffie
 				return new ResponseEntity<Object>(msg, HttpStatus.OK);
@@ -172,18 +172,18 @@ public class ReglesController extends BaseUserController {
 
 			if (siaResource != null) {
 				msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-						+ "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia + " ("
+						+ "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia + " ("
 						+ siaResource.getNom() + ")" + " de la unitat " + " \""
 						+ siaResource.getUnitatOrganitzativa().getDescription() + "\"" + " a l'entitat " + entitat;
 			} else {
 				msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-						+ "\" creada correctament pel backoffice " + backoffice + " pel codi SIA " + sia
+						+ "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia
 						+ "(SIa no trobat)" + " a l'entitat " + entitat;
 			}
 			logger.debug(msg);
 			return new ResponseEntity<Object>(msg, HttpStatus.OK);
 		} catch (Exception e) {
-			String errMsg = "Error creant la regla pel backoffice " + backoffice + " pel codi SIA " + sia + " a l'entitat " + entitat + ": " + e.getMessage(); 
+			String errMsg = "Error creant la regla per l'aplicació de client " + backoffice + " pel codi SIA " + sia + " a l'entitat " + entitat + ": " + e.getMessage();
 			logger.error(errMsg, e);
 			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
