@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -26,6 +27,7 @@ import org.springframework.security.core.authority.mapping.SimpleMappableAttribu
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails;
 import org.springframework.security.web.authentication.preauth.j2ee.J2eeBasedPreAuthenticatedWebAuthenticationDetailsSource;
@@ -91,6 +93,13 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 					invalidateHttpSession(true).
 					logoutSuccessUrl("/").
 					permitAll(false));
+			// L'API no la protegeix el contenidor (veure web.xml): sense sessió hi respon Spring, i
+			// la pre-autenticació J2EE no defineix cap entry point, així que per defecte seria un 403.
+			// DistribucioAuthProvider espera un 401 per tornar a iniciar la sessió amb una sola
+			// navegació (una redirecció per petició AJAX faria malbé la galeta d'estat de l'adaptador).
+			http.exceptionHandling(eh -> eh.defaultAuthenticationEntryPointFor(
+					new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
+					new AntPathRequestMatcher(BaseConfig.API_PATH + "/**")));
 		} else {
 			OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler = new OidcClientInitiatedLogoutSuccessHandler(
 					clientRegistrationRepository);

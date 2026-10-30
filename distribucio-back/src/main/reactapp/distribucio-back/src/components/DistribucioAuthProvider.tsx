@@ -77,10 +77,11 @@ const getBackendBaseUrl = (apiUrl: string) =>
     new URL(apiUrl, window.location.href).href.replace(/\/+$/, '').replace(/\/api$/, '');
 
 /**
- * Consulta l'usuari de la sessió. Retorna null si no hi ha sessió: el servidor respon amb una
- * redirecció cap al login (adaptador de JBoss, `invalidSessionUrl` de Spring), que amb
- * `redirect: 'manual'` arriba com a `opaqueredirect`, o bé amb un 401. Qualsevol altre error
- * (servidor aturat, xarxa) es propaga: no vol dir que la sessió hagi caducat.
+ * Consulta l'usuari de la sessió. Retorna null si no hi ha sessió: el servidor respon amb un 401
+ * (a JBoss l'API no la protegeix el contenidor, veure `WebSecurityConfig`) o amb una redirecció
+ * cap al login (`invalidSessionUrl` de Spring Boot), que amb `redirect: 'manual'` arriba com a
+ * `opaqueredirect`. Qualsevol altre error (servidor aturat, xarxa) es propaga: no vol dir que la
+ * sessió hagi caducat.
  */
 const consultarSessio = async (backendBaseUrl: string): Promise<SessioUsuari | null> => {
     const response = await fetch(backendBaseUrl + '/api/sessioUsuari', {

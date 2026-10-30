@@ -3,6 +3,14 @@
 		xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
 		version="4.0">
 	<display-name>distribucio</display-name>
+	<!-- Galeta de sessió HttpOnly: cap JavaScript (JSP ni REACT) no llegeix el JSESSIONID, i així un
+	     XSS no la pot robar. SameSite=Lax no es pot fixar des d'aquí amb JBoss EAP 7.2 (Servlet 4.0 /
+	     Undertow 2.0): queda pendent d'actualitzar el servidor d'aplicacions. -->
+	<session-config>
+		<cookie-config>
+			<http-only>true</http-only>
+		</cookie-config>
+	</session-config>
 	<login-config>
 		<auth-method>KEYCLOAK</auth-method>
 		<realm-name>Govern de les Illes Balears</realm-name>
@@ -38,11 +46,27 @@
 			<url-pattern>/webjars/*</url-pattern>
 			<url-pattern>/images/*</url-pattern>
 		</web-resource-collection>
+		<!-- L'API de la interfície REACT no la protegeix el contenidor, com a RIPEA i ConCSV: ho fa
+		     Spring Security, que hi exigeix usuari autenticat i, sense sessió, respon 401 (veure
+		     WebSecurityConfig). Si la protegís el contenidor, cada petició AJAX sense sessió rebria
+		     una redirecció al login de Keycloak, i cada redirecció sobreescriu la galeta d'estat
+		     OAuth_Token_Request_State (path "/", compartida amb les altres aplicacions del servidor):
+		     en tornar del login, l'estat no quadra i l'adaptador respon 400 Bad Request. L'usuari
+		     autenticat arriba igualment a Spring perquè l'autenticació del contenidor és proactiva.
+		     L'API REST clàssica (/api/rest) continua protegida pel contenidor (patró més específic a
+		     "All areas"). -->
+		<web-resource-collection>
+			<web-resource-name>API REACT</web-resource-name>
+			<url-pattern>/api</url-pattern>
+			<url-pattern>/api/*</url-pattern>
+		</web-resource-collection>
 	</security-constraint>
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>All areas</web-resource-name>
 			<url-pattern>/*</url-pattern>
+			<url-pattern>/api/rest</url-pattern>
+			<url-pattern>/api/rest/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>**</role-name>
