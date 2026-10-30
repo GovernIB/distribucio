@@ -146,6 +146,10 @@ public class WebSecurityConfig extends BaseWebSecurityConfig {
 				new AntPathRequestMatcher("/img/**/*"),
 				new AntPathRequestMatcher("/js/**/*"),
 				new AntPathRequestMatcher("/webjars/**/*"),
+				// Estàtics de la interfície REACT, públics també al contenidor (veure web.xml)
+				new AntPathRequestMatcher(BaseConfig.REACT_APP_PATH + "/assets/**"),
+				new AntPathRequestMatcher(BaseConfig.REACT_APP_PATH + "/favicon.png"),
+				new AntPathRequestMatcher(BaseConfig.REACT_APP_PATH + "/favicon.svg"),
 		};
 	}
 
