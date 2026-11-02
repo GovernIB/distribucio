@@ -37,7 +37,9 @@ const columns: MuiDataGridColDef[] = [
             <IntegracioEstat
                 value={params?.row?.estat}
                 excepcioMessage={params?.row?.excepcioMessage}
-            />
+            >
+                {params?.formattedValue}
+            </IntegracioEstat>
         ),
     },
 ];

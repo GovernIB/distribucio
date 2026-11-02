@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { StyledBadge } from '../../components/StyledBadge';
+import { tonal } from '../../util/tonal';
 import {useActions} from "./detail/IntegracioActions.tsx";
 
 export type IntegracioCodi = string;
@@ -67,7 +68,12 @@ export const useIntegracioTabs = (filterData?: any) => {
                     key={codi}
                     value={codi}
                     label={
-                        <StyledBadge badgeContent={counts[codi] ?? 0} badgecolor="error" max={999}>
+                        <StyledBadge
+                            badgeContent={counts[codi] ?? 0}
+                            max={999}
+                            // Comptador d'errors en color tonal (fons suau opac i text fosc/clar, ≥ 4,5:1)
+                            sx={(theme) => ({ '& .MuiBadge-badge': tonal('error')(theme) })}
+                        >
                             {t(`page.integracio.pipella.${codi}`)}
                         </StyledBadge>
                     }

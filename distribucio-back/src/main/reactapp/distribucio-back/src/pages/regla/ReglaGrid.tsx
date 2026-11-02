@@ -5,6 +5,7 @@ import { useGridApiRef } from '@mui/x-data-grid-pro';
 import { Box, Chip, Icon, Tooltip } from '@mui/material';
 import ScreenFrame from '../../components/ScreenFrame';
 import { icons } from '../../util/icons';
+import { tonal, type TonalColor } from '../../util/tonal';
 import StyledMuiGrid, { ToolbarButton } from '../../components/StyledMuiGrid';
 import { ReglaFilter } from './ReglaFilter';
 import ReglaFormContent from './ReglaFormContent';
@@ -52,7 +53,7 @@ const ReglaUnitatFiltreCell = ({ row }: any) => {
 /** Destinació: nom de la destinació + una etiqueta de color diferent segons el tipus de regla */
 const ReglaDestinacioCell = ({ row }: any) => {
     const { t } = useTranslation();
-    let color: 'info' | 'error' | 'success' | undefined;
+    let color: TonalColor;
     let nom: string | undefined;
     let label: string | undefined;
     if (row?.tipus === 'BUSTIA') {
@@ -74,7 +75,7 @@ const ReglaDestinacioCell = ({ row }: any) => {
     return (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', width: '100%', rowGap: 0.25 }}>
             <span>{nom}</span>
-            <Chip size="small" color={color} label={label} sx={{ ml: 'auto' }} />
+            <Chip size="small" label={label} sx={[{ ml: 'auto' }, tonal(color)]} />
         </Box>
     );
 };
