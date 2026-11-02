@@ -9,7 +9,7 @@ import {
 import { saveAs } from 'file-saver';
 import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
-import { useTheme, type Theme } from '@mui/material/styles';
+import { alpha, useTheme, type Theme } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import 'dayjs/locale/ca';
@@ -70,24 +70,26 @@ const getMenuColorSet = (theme: Theme, appearance: MenuEstil): MenuColorSet | un
     if (appearance !== MenuEstil.TEMA_INVERTIT) {
         return undefined;
     }
+    // L'accent i la selecció surten de la identitat: `primary.dark` sobre el fons blanc i
+    // `primary.light` sobre el fosc, com `accentColor` a theme.ts.
     if (theme.palette.mode === 'dark') {
         return {
             background: '#FFFFFF',
-            textPrimary: '#1F2937',
-            textSecondary: '#4B5563',
-            divider: '#D1D5DB',
-            accent: '#1976D2',
-            selectedBackground: 'rgba(25, 118, 210, 0.12)',
+            textPrimary: '#1E1E1E',
+            textSecondary: '#666666',
+            divider: '#E0E0E0',
+            accent: theme.palette.primary.dark,
+            selectedBackground: alpha(theme.palette.primary.main, 0.16),
             hoverBackground: 'rgba(0, 0, 0, 0.04)',
         };
     }
     return {
-        background: '#1E293B',
-        textPrimary: '#F8FAFC',
-        textSecondary: '#CBD5E1',
-        divider: '#475569',
-        accent: '#60A5FA',
-        selectedBackground: 'rgba(96, 165, 250, 0.18)',
+        background: '#2E2E2E',
+        textPrimary: '#F6F6F6',
+        textSecondary: '#D0D0D0',
+        divider: '#555555',
+        accent: theme.palette.primary.light,
+        selectedBackground: alpha(theme.palette.primary.main, 0.22),
         hoverBackground: 'rgba(255, 255, 255, 0.08)',
     };
 };

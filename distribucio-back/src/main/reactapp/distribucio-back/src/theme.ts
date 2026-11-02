@@ -112,9 +112,9 @@ const baseComponentStyles = {
     MuiCssBaseline: {
         styleOverrides: {
             // Contenidor del filtre dels llistats (veure components/StyledMuiFilter.tsx).
+            // Sense padding vertical: la separació amb la barra de títol i la graella és el `gap` de 15px
+            // (MAIN_GAP) del cos de ScreenFrame.
             '.styledFilter': {
-                paddingTop: '11px',
-                paddingBottom: '16px',
                 borderRadius: '4px',
                 backgroundColor: 'inherit',
             },
@@ -487,6 +487,13 @@ export const darkTheme = createTheme({
                 },
             },
         },
+        // El text d'ajuda d'un camp desactivat (p. ex. el nom de la propietat) és informació, no un
+        // control: amb el color de "desactivat" (blanc al 50%) queda a 4,41:1.
+        MuiFormHelperText: {
+            styleOverrides: {
+                root: { '&.Mui-disabled': { color: DARK_TEXT_SECONDARY } },
+            },
+        },
         MuiOutlinedInput: {
             styleOverrides: {
                 root: {
@@ -607,6 +614,13 @@ export const draculaTheme = createTheme({
                     backgroundImage: hatchPattern('#44475a'),
                     color: '#f8f8f2',
                 },
+            },
+        },
+        // El text d'ajuda d'un camp desactivat (p. ex. el nom de la propietat) és informació, no un
+        // control: amb el color de "desactivat" (blanc al 50%) queda a 4,41:1.
+        MuiFormHelperText: {
+            styleOverrides: {
+                root: { '&.Mui-disabled': { color: DRACULA_TEXT_SECONDARY } },
             },
         },
         MuiOutlinedInput: {

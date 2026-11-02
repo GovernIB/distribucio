@@ -9,6 +9,13 @@ import { accentColor } from '../theme';
 const borderColor = (theme: Theme) => alpha(accentColor(theme), 0.4);
 
 /**
+ * Text dels controls desactivats: el 55% del text del tema. Amb `action.disabled` (30%) el botó
+ * "Opcions" gairebé desapareixia (1,9:1 al clar, 2,6:1 als foscos); així es llegeix i continua
+ * clarament apagat respecte dels botons actius.
+ */
+const disabledColor = (theme: Theme) => alpha(theme.palette.text.primary, 0.55);
+
+/**
  * Vora dels botons outlined que van fora de la barra de títol (netejar el filtre, refrescar...) perquè
  * s'assemblin als de la barra: als temes foscos el tema els dona la vora blanca plena.
  */
@@ -46,7 +53,7 @@ export const titleBarControlsSx = {
             // que s'ha de veure igual que a la resta de botons.
             opacity: 1,
             backgroundColor: (theme: Theme) => theme.palette.background.paper,
-            color: (theme: Theme) => theme.palette.action.disabled,
+            color: disabledColor,
             borderColor,
         },
     },
@@ -54,7 +61,7 @@ export const titleBarControlsSx = {
     // només en perd el color.
     '& .MuiChip-root.Mui-disabled': {
         opacity: 1,
-        color: (theme: Theme) => theme.palette.action.disabled,
+        color: disabledColor,
     },
     // Separació entre els botons d'un grup (selector d'accions massives).
     '& .MuiButtonGroup-grouped:not(:last-of-type)': {
