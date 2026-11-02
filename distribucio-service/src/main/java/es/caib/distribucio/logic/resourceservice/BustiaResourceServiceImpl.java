@@ -54,10 +54,8 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
     private final UsuariResourceRepository usuariResourceRepository;
     private final UnitatOrganitzativaHelper unitatOrganitzativaHelper;
     private final AclResourceHelper aclResourceHelper;
-    private final PluginHelper pluginHelper;
     private final BustiaHelper bustiaHelper;
     private final EntitatRepository entitatRepository;
-    private final ContingutLogHelper contingutLogHelper;
     private final ContingutResourceRepository contingutResourceRepository;
     private final ReglaResourceRepository reglaResourceRepository;
 
@@ -98,18 +96,18 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
             List<String> params = new ArrayList<>();
             params.add("true");
 
-            contingutLogHelper.log(
-                    objectMappingHelper.newInstanceMap(entity, BustiaEntity.class),
-                    LogTipusEnumDto.PER_DEFECTE,
-                    params,
-                    false);
+//            contingutLogHelper.log(
+//                    objectMappingHelper.newInstanceMap(entity, BustiaEntity.class),
+//                    LogTipusEnumDto.PER_DEFECTE,
+//                    params,
+//                    false);
         }
 
         this.beforeSave(entity, resource);
 
-        contingutLogHelper.logCreacio(
-                objectMappingHelper.newInstanceMap(entity, BustiaEntity.class),
-                false);
+//        contingutLogHelper.logCreacio(
+//                objectMappingHelper.newInstanceMap(entity, BustiaEntity.class),
+//                false);
     }
 
     @Override
@@ -146,11 +144,12 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
             params.add(resource.getNom());
         if (unitatChanged)
             params.add(resource.getUnitatOrganitzativa().getDescription());
-        contingutLogHelper.log(
-                objectMappingHelper.newInstanceMap(entity, BustiaEntity.class),
-                LogTipusEnumDto.MODIFICACIO,
-                params,
-                false);
+
+//        contingutLogHelper.log(
+//                objectMappingHelper.newInstanceMap(entity, BustiaEntity.class),
+//                LogTipusEnumDto.MODIFICACIO,
+//                params,
+//                false);
     }
 
     @Override
