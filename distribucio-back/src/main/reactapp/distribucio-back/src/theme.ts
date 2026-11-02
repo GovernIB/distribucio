@@ -290,6 +290,28 @@ const baseComponentStyles = {
             }),
         },
     },
+    // Etiquetes dels camps (també fan de placeholder quan el camp és buit): cursiva, 14px i pes fi, igual
+    // que a la resta d'aplicacions de la família.
+    MuiFormLabel: {
+        styleOverrides: {
+            root: {
+                fontStyle: 'italic',
+                paddingRight: '2px',
+                fontSize: '14px',
+                fontWeight: 200,
+                '&.Mui-disabled': { fontStyle: 'italic', paddingRight: '2px' },
+                '&.Mui-focused': { fontStyle: 'italic', paddingRight: '2px' },
+            },
+            filled: {
+                fontStyle: 'italic',
+                paddingRight: '2px',
+                fontSize: '14px',
+                fontWeight: 200,
+                '&.Mui-disabled': { fontStyle: 'italic', paddingRight: '2px', opacity: 1 },
+                '&.Mui-focused': { fontStyle: 'italic', paddingRight: '2px' },
+            },
+        },
+    },
     MuiTypography: {
         styleOverrides: {
             h5: { fontSize: '1.8rem', lineHeight: 1.2, fontWeight: 400 },
