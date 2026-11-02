@@ -1999,6 +1999,7 @@ public class RegistreServiceImpl implements RegistreService {
 							entitat,
 							unitat.getId(),
 							bustia.getId(),
+                            anotacio.getExtracte(),
 							anotacio.getProcedimentCodi() != null
                                     ?anotacio.getProcedimentCodi()
                                     :anotacio.getServeiCodi(),
@@ -2700,6 +2701,7 @@ public class RegistreServiceImpl implements RegistreService {
 				entitat,
 				bustia.getUnitatOrganitzativa().getId(),
 				registre.getPare() != null? registre.getPare().getId() : null,
+                registre.getExtracte(),
 				registre.getProcedimentCodi() != null ?
                         registre.getProcedimentCodi()
                         :registre.getServeiCodi(),

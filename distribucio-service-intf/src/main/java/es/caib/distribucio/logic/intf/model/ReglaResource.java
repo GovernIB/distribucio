@@ -43,7 +43,7 @@ import java.util.List;
 @ReglaResourceValid
 @ResourceConfig(
         descriptionField = ReglaResource.Fields.nom,
-        quickFilterFields = { ReglaResource.Fields.nom, ReglaResource.Fields.assumpteCodiFiltre },
+        quickFilterFields = { ReglaResource.Fields.nom },
         accessConstraints = {
                 @ResourceAccessConstraint(
                         type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
@@ -140,8 +140,10 @@ public class ReglaResource extends BaseAuditableResource<Long> {
     private String descripcio;
 
     // ------------- FILTRE ----------------------
-    @Size(max = 16)
-    private String assumpteCodiFiltre;
+//    @Size(max = 16)
+//    private String assumpteCodiFiltre;
+    @Size(max = 1024)
+    private String extracteFiltre;
 //    @Size(max = 1024)
 //    private String procedimentCodiFiltre;
 //    @Size(max = 1024)
@@ -232,11 +234,12 @@ public class ReglaResource extends BaseAuditableResource<Long> {
 //        private String serveiCodi;
         private String siaCodi;
         private String tramitCodi;
-        @Size(max = 16)
-        private String assumpteCodi;
+//        @Size(max = 16)
+//        private String assumpteCodi;
         private ReglaPresencialEnumDto presencial;
         // Només informatiu: valor de la propietat "avaluar totes les regles", l'omple l'onChange inicial.
         private boolean avaluarTotes;
+        private String extracte;
     }
 
     /** Acció que faria la simulació (una fila del resultat). */

@@ -97,7 +97,8 @@ $(document).ready(function() {
 <%--		<dis:inputText name="serveiCodi" textKey="regla.simulador.form.camp.servei.codi"/>--%>
 		<dis:inputText name="siaCodi" textKey="regla.simulador.form.camp.sia.codi"/>
 		<dis:inputText name="tramitCodi" textKey="regla.simulador.form.camp.tramit.codi"/>
-		<dis:inputText name="assumpteCodi" textKey="regla.simulador.form.camp.assumpte.codi" required="false"/>
+<%--		<dis:inputText name="assumpteCodi" textKey="regla.simulador.form.camp.assumpte.codi" required="false"/>--%>
+		<dis:inputText name="extracte" textKey="regla.simulador.form.camp.extracte" required="false"/>
 		<dis:inputSelect name="presencial" textKey="regla.form.camp.presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial"/>
 		
 		<div class="col-xs-4"></div><div class="col-xs-8">

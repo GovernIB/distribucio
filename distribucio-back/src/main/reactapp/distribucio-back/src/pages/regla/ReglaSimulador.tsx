@@ -133,7 +133,8 @@ const ReglaSimuladorContingut: React.FC = () => {
                     {/*<GridFormField size={3} name="serveiCodi" />*/}
                     <GridFormField size={3} name="siaCodi" />
                     <GridFormField size={3} name="tramitCodi" />
-                    <GridFormField size={3} name="assumpteCodi" />
+                    {/*<GridFormField size={3} name="assumpteCodi" />*/}
+                    <GridFormField size={3} name="extracte" />
                     <SimulaFila onSimula={simula} loading={loading} />
                 </Grid>
             </MuiForm>

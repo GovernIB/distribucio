@@ -23,5 +23,6 @@ public class RegistreSimulatDto {
 	private String siaCodi;
 	private String tramitCodi;
 	private ReglaPresencialEnumDto presencial;
+    private String extracte;
 
 }

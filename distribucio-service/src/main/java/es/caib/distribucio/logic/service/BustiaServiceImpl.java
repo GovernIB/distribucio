@@ -1138,6 +1138,7 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				unitat.getId(),
 				bustia.getId(),
+                registreAnotacio.getExtracte(),
 				registreAnotacio.getProcedimentCodi() != null
                         ?registreAnotacio.getProcedimentCodi()
                         :registreAnotacio.getServeiCodi(),
@@ -1295,6 +1296,7 @@ public class BustiaServiceImpl implements BustiaService {
 				entitat,
 				unitat.getId(),
 				bustia.getId(),
+                registreAnotacio.getExtracte(),
 				registreAnotacio.getProcedimentCodi() != null
                         ?registreAnotacio.getProcedimentCodi()
                         :registreAnotacio.getServeiCodi(),

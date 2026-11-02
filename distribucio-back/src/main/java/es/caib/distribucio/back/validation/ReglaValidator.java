@@ -48,16 +48,16 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
 		EntitatDto entitatActual = EntitatHelper.getEntitatActual(request);
 		// Comprova que almenys un camp del firtre esta informat
 		if (command.getTipus() != ReglaTipusEnumDto.BACKOFFICE && // Si es Tipo UNITAT o BUSTIA
-			(command.getAssumpteCodiFiltre() == null || command.getAssumpteCodiFiltre().trim().isEmpty()) && 
+//			(command.getAssumpteCodiFiltre() == null || command.getAssumpteCodiFiltre().trim().isEmpty()) &&
 //			(command.getProcedimentCodiFiltre() == null || command.getProcedimentCodiFiltre().trim().isEmpty()) &&
 //			(command.getServeiCodiFiltre() == null || command.getServeiCodiFiltre().trim().isEmpty()) &&
 			(command.getSiaCodiFiltre() == null || command.getSiaCodiFiltre().trim().isEmpty()) &&
 			 command.getUnitatFiltreId() == null &&
 			 command.getBustiaFiltreId() == null) {
-			context.buildConstraintViolationWithTemplate(
-					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
-					.addNode("assumpteCodiFiltre")
-					.addConstraintViolation();	
+//			context.buildConstraintViolationWithTemplate(
+//					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
+//					.addNode("assumpteCodiFiltre")
+//					.addConstraintViolation();
 			context.buildConstraintViolationWithTemplate(
 					MessageHelper.getInstance().getMessage(codiMissatge + ".codi.buit", null, new RequestContext(request).getLocale()))
 					.addNode("procedimentCodiFiltre")
@@ -171,7 +171,7 @@ public class ReglaValidator implements ConstraintValidator<Regla, ReglaCommand> 
             ReglaFiltreDto filtre = new ReglaFiltreDto();
             filtre.setNom(command.getNom());
             filtre.setTipus(command.getTipus());
-            filtre.setCodiAssumpte(command.getAssumpteCodiFiltre());
+//            filtre.setCodiAssumpte(command.getAssumpteCodiFiltre());
             List<Long> ids = reglaService.findReglaIds(entitatActual.getId(), filtre);
             if (!ids.isEmpty() && (command.getId() == null || !ids.contains(command.getId()))) { // DIS_REGLA_MULT_UK
                 context.buildConstraintViolationWithTemplate(

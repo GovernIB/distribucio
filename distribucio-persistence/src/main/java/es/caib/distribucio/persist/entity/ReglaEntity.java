@@ -57,7 +57,10 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	// ------------- FILTRE ----------------------
 	@Column(name = "assumpte_codi", length = 16)
 	protected String assumpteCodiFiltre;
-	
+
+	@Column(name = "extracte", length = 1024)
+	private String extracteFiltre;
+
 //	@Column(name = "procediment_codi", length = 1024)
 //	private String procedimentCodiFiltre;
 //	@Column(name = "servei_codi", length = 1024)
@@ -143,7 +146,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		this.descripcio = descripcio;
 		this.tipus = tipus;
 		this.presencial = presencial;
-		this.assumpteCodiFiltre = assumpteCodiFiltre;
+//		this.assumpteCodiFiltre = assumpteCodiFiltre;
 		this.siaCodiFiltre = siaCodiFiltre;
 //		this.serveiCodiFiltre = serveiCodiFiltre;
 		this.tramitCodiFiltre = tramitCodiFiltre;
@@ -182,7 +185,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			String nom,
 			ReglaTipusEnumDto tipus,
 			ReglaPresencialEnumDto presencial,
-			String assumpteCodiFiltre,
+			String extracteFiltre,
 			String siaCodiFiltre,
 			String tramitCodiFiltre,
 			UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
@@ -193,7 +196,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				nom,
 				tipus,
 				presencial, 
-				assumpteCodiFiltre,
+				extracteFiltre,
                 siaCodiFiltre,
                 tramitCodiFiltre,
 				unitatOrganitzativaFiltre,
@@ -207,7 +210,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 				String nom,
 				ReglaTipusEnumDto tipus,
 				ReglaPresencialEnumDto presencial, 
-				String assumpteCodiFiltre,
+				String extracteFiltre,
 				String siaCodiFiltre,
 				String tramitCodiFiltre,
 				UnitatOrganitzativaEntity unitatOrganitzativaFiltre,
@@ -218,7 +221,8 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 			built.nom = nom;
 			built.tipus = tipus;
 			built.presencial = presencial;
-			built.assumpteCodiFiltre = assumpteCodiFiltre;
+//			built.assumpteCodiFiltre = assumpteCodiFiltre;
+			built.extracteFiltre = extracteFiltre;
 			built.siaCodiFiltre = siaCodiFiltre;
 			built.tramitCodiFiltre = tramitCodiFiltre;
 			built.unitatOrganitzativaFiltre = unitatOrganitzativaFiltre;
@@ -239,7 +243,7 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((assumpteCodiFiltre == null) ? 0 : assumpteCodiFiltre.hashCode());
+//		result = prime * result + ((assumpteCodiFiltre == null) ? 0 : assumpteCodiFiltre.hashCode());
 		result = prime * result + ((entitat == null) ? 0 : entitat.hashCode());
 		result = prime * result + ((nom == null) ? 0 : nom.hashCode());
 		result = prime * result + ((tipus == null) ? 0 : tipus.hashCode());
@@ -254,10 +258,15 @@ public class ReglaEntity extends DistribucioAuditable<Long> {
 		if (getClass() != obj.getClass())
 			return false;
 		ReglaEntity other = (ReglaEntity) obj;
-		if (assumpteCodiFiltre == null) {
-			if (other.assumpteCodiFiltre != null)
+//		if (assumpteCodiFiltre == null) {
+//			if (other.assumpteCodiFiltre != null)
+//				return false;
+//		} else if (!assumpteCodiFiltre.equals(other.assumpteCodiFiltre))
+//			return false;
+		if (extracteFiltre == null) {
+			if (other.extracteFiltre != null)
 				return false;
-		} else if (!assumpteCodiFiltre.equals(other.assumpteCodiFiltre))
+		} else if (!extracteFiltre.equals(other.extracteFiltre))
 			return false;
 		if (siaCodiFiltre == null) {
 			if (other.siaCodiFiltre != null)

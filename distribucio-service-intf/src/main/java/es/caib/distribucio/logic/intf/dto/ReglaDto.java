@@ -26,7 +26,8 @@ public class ReglaDto extends AuditoriaDto {
 //	private Date lastModifiedDate;
 
 	// ------------- FILRE ----------------------
-	private String assumpteCodiFiltre;
+//	private String assumpteCodiFiltre;
+    private String extracteFiltre;
 //	private String procedimentCodiFiltre;
 //	private String serveiCodiFiltre;
 	private String siaCodiFiltre;

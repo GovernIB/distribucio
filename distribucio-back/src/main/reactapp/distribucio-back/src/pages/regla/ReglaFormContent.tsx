@@ -64,7 +64,8 @@ export const ReglaFormContent: React.FC = () => {
             />
             <GridFormField size={6} name="tramitCodiFiltre" type="textarea" />
             <Grid container spacing={2} size={6}>
-                {data?.tipus !== 'BACKOFFICE' && <GridFormField size={12} name="assumpteCodiFiltre" />}
+                {/*{data?.tipus !== 'BACKOFFICE' && <GridFormField size={12} name="assumpteCodiFiltre" />}*/}
+                <GridFormField size={12} name="extracteFiltre" />
                 <GridFormField size={12} name="presencial" />
             </Grid>
 

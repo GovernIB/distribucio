@@ -166,7 +166,6 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 	/** Mètode per trobar les regles aplicables per entitat i per codi procediment i codi assumpte.
 	 * 
 	 * @param entitat
-	 * @param assumpteCodiFiltre
 	 * @return
 	 */
     @Query(	"from " +
@@ -176,18 +175,20 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
             "and r.activa = true " +
             "and (r.unitatOrganitzativaFiltre is null or r.unitatOrganitzativaFiltre.id = :unitatOrganitzativaFiltreId) " +
             "and (r.bustiaFiltre is null or r.bustiaFiltre.id = :bustiaId) " +
+            "and (r.extracteFiltre is null or :extracte like r.extracteFiltre) " +
             "and (r.siaCodiFiltre is null or (r.siaCodiFiltre like ('% '||:codiSia||' %') or r.siaCodiFiltre = :codiSia or r.siaCodiFiltre like (:codiSia||' %') or r.siaCodiFiltre like ('% '||:codiSia))) " +
             "and (r.tramitCodiFiltre is null or (r.tramitCodiFiltre like ('% '||:tramitCodiFiltre||' %') or r.tramitCodiFiltre = :tramitCodiFiltre or r.tramitCodiFiltre like (:tramitCodiFiltre||' %') or r.tramitCodiFiltre like ('% '||:tramitCodiFiltre))) " +
-            "and (r.assumpteCodiFiltre is null or r.assumpteCodiFiltre = :assumpteCodiFiltre) " +
+//            "and (r.assumpteCodiFiltre is null or r.assumpteCodiFiltre = :assumpteCodiFiltre) " +
 			"and ((r.presencial is null) or (:isPresencialNull is true or r.presencial = :presencial)) " +
 			"order by r.ordre asc")
 	List<ReglaEntity> findAplicables(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("unitatOrganitzativaFiltreId") Long unitatOrganitzativaFiltreId,
 			@Param("bustiaId") Long bustiaId,
+			@Param("extracte") String extracte,
 			@Param("codiSia") String codiSia,
 			@Param("tramitCodiFiltre") String tramitCodiFiltre,
-			@Param("assumpteCodiFiltre") String assumpteCodiFiltre,
+//			@Param("assumpteCodiFiltre") String assumpteCodiFiltre,
 			@Param("isPresencialNull") boolean isPresencialNull,
 			@Param("presencial") ReglaPresencialEnumDto presencial);
 
@@ -207,7 +208,7 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"and (:isRegistrePresencialNull = true or r.presencial = :registrePresencial) " +
 			"and (:bustiaFiltreIsNull = true or r.pare.id = :bustiaFiltreId) " +
 			"and (r.procedimentCodi in (:siaCodisFiltre) or r.serveiCodi in (:siaCodisFiltre)) " +
-			"and (:assumpteCodiFiltreIsNull = true or r.assumpteCodi = :assumpteCodiFiltre) " +
+//			"and (:assumpteCodiFiltreIsNull = true or r.assumpteCodi = :assumpteCodiFiltre) " +
 			"order by r.identificador asc")
 	List<RegistreEntity> findRegistres(
 			@Param("entitat") EntitatEntity entitat,
@@ -217,10 +218,11 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			@Param("registrePresencial") boolean registrePresencial,
 			@Param("bustiaFiltreIsNull") boolean bustiaFiltreIsNull,
 			@Param("bustiaFiltreId") Long bustiaFiltreId,
-			@Param("siaCodisFiltre") List<String> siaCodisFiltre,
+			@Param("siaCodisFiltre") List<String> siaCodisFiltre
 //			@Param("serveisCodisFiltre") List<String> serveisCodisFiltre,
-			@Param("assumpteCodiFiltreIsNull") boolean assumpteCodiFiltreIsNull,
-			@Param("assumpteCodiFiltre") String assumpteCodiFiltre);
+//			@Param("assumpteCodiFiltreIsNull") boolean assumpteCodiFiltreIsNull,
+//			@Param("assumpteCodiFiltre") String assumpteCodiFiltre
+    );
 
 	/** Consulta las reglas de tipo BACKOFFICE para el codi SIA dado */
 	@Query(	"from " +

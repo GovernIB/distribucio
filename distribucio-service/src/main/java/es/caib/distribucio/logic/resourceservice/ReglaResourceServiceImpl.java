@@ -426,7 +426,8 @@ public class ReglaResourceServiceImpl
 //                dto.setServeiCodi(params.getServeiCodi());
                 dto.setSiaCodi(params.getSiaCodi());
                 dto.setTramitCodi(params.getTramitCodi());
-                dto.setAssumpteCodi(params.getAssumpteCodi());
+//                dto.setAssumpteCodi(params.getAssumpteCodi());
+                dto.setExtracte(params.getExtracte());
                 dto.setPresencial(params.getPresencial());
                 return reglaHelper.simular(entitat, dto).stream().
                         map(accio -> new ReglaResource.SimulacioAccio(
@@ -505,7 +506,8 @@ public class ReglaResourceServiceImpl
                         entitatId,
                         resource.getNom(),
                         resource.getTipus(),
-                        resource.getAssumpteCodiFiltre(),
+//                        resource.getAssumpteCodiFiltre(),
+                        null,
                         reglaId)) {
             errors.add(reglaValidacioHelper.missatgeNomDuplicat());
         }
@@ -537,7 +539,7 @@ public class ReglaResourceServiceImpl
                 ReglaResource target) {
             if (ReglaTipusEnumDto.BACKOFFICE.equals(fieldValue)) {
                 target.setBustiaFiltre(null);
-                target.setAssumpteCodiFiltre(null);
+//                target.setAssumpteCodiFiltre(null);
             }
         }
     }

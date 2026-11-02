@@ -97,6 +97,7 @@ public class ReglaHelper {
 			ReglaEntity reglaActual,
 			Long unitatId,
 			Long bustiaId,
+			String extracte,
 			String codiSia,
 			String tramitCodi,
 			String assumpteCodi,
@@ -112,9 +113,10 @@ public class ReglaHelper {
 				entitat,
 				unitatId,
 				bustiaId,
+                extracte != null ? extracte : "",
                 codiSia != null ? codiSia : "",
 				tramitCodi != null ? tramitCodi : "",
-				assumpteCodi != null ? assumpteCodi : "",
+//				assumpteCodi != null ? assumpteCodi : "",
 				esPresencial == null,
 				esPresencial);
 		if (regles == null || regles.isEmpty()) {
@@ -145,6 +147,7 @@ public class ReglaHelper {
 			EntitatEntity entitat,
 			Long unitatId,
 			Long bustiaId,
+			String extracte,
 			String codiSia,
 			String tramitCodi,
 			String assumpteCodi,
@@ -159,9 +162,10 @@ public class ReglaHelper {
 					entitat,
 					unitatId,
 					bustiaId,
+                    extracte != null ? extracte : "",
                     codiSia != null ? codiSia : "",
 					tramitCodi != null ? tramitCodi : "",
-					assumpteCodi != null ? assumpteCodi : "",
+//					assumpteCodi != null ? assumpteCodi : "",
 					esPresencial == null,
 					esPresencial);
 		if (regles.size() > 0) {
@@ -217,10 +221,11 @@ public class ReglaHelper {
 				registrePresencial != null ? registrePresencial.booleanValue() : false,
 				regla.getBustiaFiltre() == null,
 				regla.getBustiaFiltre() != null ? regla.getBustiaFiltre().getId() : 0L,
-				codisSia,
-				regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(),
-				regla.getAssumpteCodiFiltre() != null && !regla.getAssumpteCodiFiltre().trim().isEmpty() ?
-						regla.getAssumpteCodiFiltre() : "-");
+				codisSia
+//				regla.getAssumpteCodiFiltre() == null || regla.getAssumpteCodiFiltre().trim().isEmpty(),
+//				regla.getAssumpteCodiFiltre() != null && !regla.getAssumpteCodiFiltre().trim().isEmpty() ?
+//						regla.getAssumpteCodiFiltre() : "-"
+        );
 	}
 
 	/** 
@@ -369,7 +374,8 @@ public class ReglaHelper {
 		RegistreSimulatDto simulat = new RegistreSimulatDto();
 		simulat.setUnitatId(dto.getUnitatId());
 		simulat.setBustiaId(dto.getBustiaId());
-		simulat.setAssumpteCodi(dto.getAssumpteCodi());
+//		simulat.setAssumpteCodi(dto.getAssumpteCodi());
+		simulat.setExtracte(dto.getExtracte());
 //		simulat.setProcedimentCodi(dto.getProcedimentCodi());
 //		simulat.setServeiCodi(dto.getServeiCodi());
 		simulat.setSiaCodi(dto.getSiaCodi());
@@ -451,6 +457,7 @@ public class ReglaHelper {
 						reglaToApply, 
 						registreSimulatDto.getUnitatId(),
 						registreSimulatDto.getBustiaId(),
+						registreSimulatDto.getExtracte(),
 //						registreSimulatDto.getProcedimentCodi() != null
 //                                ?registreSimulatDto.getProcedimentCodi()
 //                                :registreSimulatDto.getServeiCodi(),
@@ -464,6 +471,7 @@ public class ReglaHelper {
 						entitatEntity,
 						registreSimulatDto.getUnitatId(),
 						registreSimulatDto.getBustiaId(),
+						registreSimulatDto.getExtracte(),
 //                        registreSimulatDto.getProcedimentCodi() != null
 //                                ?registreSimulatDto.getProcedimentCodi()
 //                                :registreSimulatDto.getServeiCodi(),
@@ -646,6 +654,7 @@ public class ReglaHelper {
 							regla, 
 							bustia.getUnitatOrganitzativa().getId(),
 							bustia.getId(),
+                            registre.getExtracte(),
                             registre.getProcedimentCodi() != null
                                     ?registre.getProcedimentCodi()
                                     :registre.getServeiCodi(),
@@ -658,6 +667,7 @@ public class ReglaHelper {
 							registre.getEntitat(),
 							bustia.getUnitatOrganitzativa().getId(),
 							bustia.getId(),
+                            registre.getExtracte(),
                             registre.getProcedimentCodi() != null
                                     ?registre.getProcedimentCodi()
                                     :registre.getServeiCodi(),

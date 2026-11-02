@@ -44,14 +44,14 @@ public class ReglaResourceValidValidator implements ConstraintValidator<ReglaRes
 
         // Com a mínim un filtre informat, llevat de les regles de tipus BACKOFFICE.
         if (resource.getTipus() != ReglaTipusEnumDto.BACKOFFICE
-                && isBlank(resource.getAssumpteCodiFiltre())
+//                && isBlank(resource.getAssumpteCodiFiltre())
 //                && isBlank(resource.getProcedimentCodiFiltre())
 //                && isBlank(resource.getServeiCodiFiltre())
                 && isBlank(resource.getSiaCodiFiltre())
                 && resource.getUnitatOrganitzativaFiltre() == null
                 && resource.getBustiaFiltre() == null) {
             String message = i18n("regla.validacio.codi.buit");
-            addViolation(context, ReglaResource.Fields.assumpteCodiFiltre, message);
+//            addViolation(context, ReglaResource.Fields.assumpteCodiFiltre, message);
 //            addViolation(context, ReglaResource.Fields.procedimentCodiFiltre, message);
 //            addViolation(context, ReglaResource.Fields.serveiCodiFiltre, message);
             addViolation(context, ReglaResource.Fields.siaCodiFiltre, message);

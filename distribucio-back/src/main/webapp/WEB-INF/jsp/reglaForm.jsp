@@ -225,8 +225,9 @@ $(document).ready(function() {
 			<dis:inputTextarea name="siaCodiFiltre" textKey="regla.form.camp.sia.codi" comment="regla.form.camp.sia.codi.info" rows="2"/>
 <%--			<dis:inputTextarea name="serveiCodiFiltre" textKey="regla.form.camp.servei.codi" comment="regla.form.camp.servei.codi.info" rows="2"/>--%>
 			<dis:inputTextarea name="tramitCodiFiltre" textKey="regla.form.camp.tramit.codi" rows="2" />
-			<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>
-			
+<%--			<dis:inputText name="assumpteCodiFiltre" textKey="regla.form.camp.assumpte.codi" required="false"/>--%>
+			<dis:inputText name="extracteFiltre" textKey="regla.form.camp.extracteFiltre" required="false"/>
+
 			<dis:inputSelect name="presencial" textKey="regla.form.camp.presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial"/>
 
 			<legend><spring:message code="regla.form.legend.accio"/></legend>

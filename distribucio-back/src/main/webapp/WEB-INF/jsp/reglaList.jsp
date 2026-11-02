@@ -247,9 +247,9 @@
 			<div class="col-md-3">
 				<dis:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
 			</div>
-			<div class="col-md-3">
-				<dis:inputText name="codiAssumpte" inline="true" placeholderKey="regla.form.camp.assumpte.codi"/>
-			</div>
+<%--			<div class="col-md-3">--%>
+<%--				<dis:inputText name="codiAssumpte" inline="true" placeholderKey="regla.form.camp.assumpte.codi"/>--%>
+<%--			</div>--%>
             <div class="col-md-3">
                 <dis:inputText name="codiSIA" inline="true" placeholderKey="regla.list.columna.sia.single.codi"/>
             </div>
@@ -425,7 +425,7 @@
 						{{/if}}
 					</script>
 				</th>
-				<th data-col-name="assumpteCodiFiltre" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>
+<%--				<th data-col-name="assumpteCodiFiltre" data-orderable="false"><spring:message code="regla.list.columna.assumpte.codi"/></th>--%>
 <%--				<th data-col-name="procedimentCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.procediment.codi"/></th>--%>
 <%--				<th data-col-name="serveiCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.servei.codi"/></th>--%>
 				<th data-col-name="siaCodiFiltre" data-orderable="false" width="10%"> <spring:message code="regla.list.columna.sia.codi"/></th>

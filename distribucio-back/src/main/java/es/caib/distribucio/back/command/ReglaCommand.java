@@ -37,8 +37,9 @@ public class ReglaCommand {
 	private String descripcio;
 	
 	// ------------- FILRE ----------------------
-	@Size(max = 16, groups = {CreateUpdate.class})
-	private String assumpteCodiFiltre;
+//	@Size(max = 16, groups = {CreateUpdate.class})
+//	private String assumpteCodiFiltre;
+	private String extracteFiltre;
 //	@Size(max = 1024, groups = {CreateUpdate.class})
 //	private String procedimentCodiFiltre;
 //    @NotNull

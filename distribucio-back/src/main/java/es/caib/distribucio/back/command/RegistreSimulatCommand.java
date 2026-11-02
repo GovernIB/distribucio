@@ -26,8 +26,9 @@ public class RegistreSimulatCommand {
 
 	@NotNull
 	private Long unitatId;
-	@Size(max = 16)
-	private String assumpteCodi;
+//	@Size(max = 16)
+//	private String assumpteCodi;
+	private String extracte;
 	@Size(max = 64)
 //	private String procedimentCodi;
 //	private String serveiCodi;

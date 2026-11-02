@@ -50,9 +50,10 @@ class ReglaHelperTest {
                 eq(entitatActual),
                 eq(dto.getUnitatId()),
                 eq(dto.getBustiaId()),
+                eq(dto.getExtracte() != null ? dto.getExtracte() : ""),
                 eq(dto.getSiaCodi() != null ? dto.getSiaCodi() : ""),
                 eq(dto.getTramitCodi() != null ? dto.getTramitCodi() : ""),
-                eq(dto.getAssumpteCodi() != null ? dto.getAssumpteCodi() : ""),
+//                eq(dto.getAssumpteCodi() != null ? dto.getAssumpteCodi() : ""),
                 eq(dto.getPresencial() == null),
                 eq(dto.getPresencial())
         )).thenReturn(regles);
@@ -281,9 +282,10 @@ class ReglaHelperTest {
                 eq(false),
                 eq(true),
                 eq(0L),
-                eq(List.of("-")),
-                eq(true),
-                eq("-"))).thenReturn(esperats);
+                eq(List.of("-"))
+//                eq(true),
+//                eq("-")
+        )).thenReturn(esperats);
 
         // When
         List<RegistreEntity> resultat = reglaHelper.findRegistresAplicables(entitatActual, regla);
@@ -308,9 +310,10 @@ class ReglaHelperTest {
                 eq(true),
                 eq(true),
                 eq(0L),
-                eq(List.of("111", "222", "333")),
-                eq(false),
-                eq("ASS"))).thenReturn(esperats);
+                eq(List.of("111", "222", "333"))
+//                eq(false),
+//                eq("ASS")
+        )).thenReturn(esperats);
 
         // When / Then
         assertSame(esperats, reglaHelper.findRegistresAplicables(entitatActual, regla));
@@ -324,7 +327,7 @@ class ReglaHelperTest {
         RegistreEntity r2 = mock(RegistreEntity.class);
         when(r1.getNumero()).thenReturn("N1");
         when(r2.getNumero()).thenReturn("N2");
-        when(reglaRepository.findRegistres(any(), anyBoolean(), any(), anyBoolean(), anyBoolean(), anyBoolean(), any(), any(), anyBoolean(), any())).
+        when(reglaRepository.findRegistres(any(), anyBoolean(), any(), anyBoolean(), anyBoolean(), anyBoolean(), any(), any())).
                 thenReturn(List.of(r1, r2));
 
         // When
