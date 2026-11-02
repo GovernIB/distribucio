@@ -1,7 +1,10 @@
 package es.caib.distribucio.logic.resourceservice;
 
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
+import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
+import es.caib.distribucio.logic.intf.dto.PaginaDto;
+import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.model.SiaResource;
 import es.caib.distribucio.logic.intf.resourceservice.SiaResourceService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
@@ -28,6 +31,7 @@ public class SiaResourceServiceImpl extends BaseMutableResourceService<SiaResour
 
     private final EntitatResourceRepository entitatResourceRepository;
     private final SiaResourceRepository siaResourceRepository;
+    private final PaginacioHelper paginacioHelper;
 
     @Override
 	protected Specification<SiaResourceEntity> additionalSpecification(String[] namedQueries) {
@@ -75,5 +79,19 @@ public class SiaResourceServiceImpl extends BaseMutableResourceService<SiaResour
     public SiaResource findByEntitatIdAndCodiSia(Long entitatId, String cosiSia) {
         Optional<SiaResourceEntity> op = siaResourceRepository.findByEntitatIdAndCodiSia(entitatId, cosiSia);
         return op.map(siaResourceEntity -> objectMappingHelper.newInstanceMap(siaResourceEntity, SiaResource.class)).orElse(null);
+    }
+
+    // TODO: revisar si se puede hacer generio
+    @Override
+    public PaginaDto<SiaResource> findPage(String quickFilter, String filter, String[] namedQueries, String[] perspectives, PaginacioParamsDto pageable) {
+        return paginacioHelper.toPaginaDto(
+                this.findPage(
+                        quickFilter,
+                        filter,
+                        namedQueries,
+                        perspectives,
+                        paginacioHelper.toSpringDataPageable(pageable)
+                ),
+                SiaResource.class);
     }
 }

@@ -4,14 +4,11 @@ import es.caib.distribucio.back.command.ServeiFiltreCommand;
 import es.caib.distribucio.back.helper.DatatablesHelper;
 import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
-import es.caib.distribucio.logic.helper.PaginacioHelper;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.model.SiaResource;
 import es.caib.distribucio.logic.intf.resourceservice.SiaResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,8 +32,6 @@ public class SiaController extends BaseAdminController{
 	private static final String SESSION_ATTRIBUTE_SELECCIO = "SiaController.session.seleccio";
 
 	@Autowired private SiaResourceService siaResourceService;
-    @Autowired private PaginacioHelper paginacioHelper;
-
 
     @RequestMapping(method = RequestMethod.GET)
 	public String get(
@@ -105,18 +100,15 @@ public class SiaController extends BaseAdminController{
             filter.add("comu:true");
         }
 
-        Page<SiaResource> page = siaResourceService.findPage(
-                null,
-                String.join(" AND ", filter),
-                null,
-                null,
-                paginacioHelper.toSpringDataPageable(
-                        DatatablesHelper.getPaginacioDtoFromRequest(request))
-        );
-		
 		return DatatablesHelper.getDatatableResponse(
 				request,
-                paginacioHelper.toPaginaDto(page, SiaResource.class),
+                siaResourceService.findPage(
+                        null,
+                        String.join(" AND ", filter),
+                        null,
+                        null,
+                        DatatablesHelper.getPaginacioDtoFromRequest(request)
+                ),
 				"id", 
 				SESSION_ATTRIBUTE_SELECCIO);
 	}
