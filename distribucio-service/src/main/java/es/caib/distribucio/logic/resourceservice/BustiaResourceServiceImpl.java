@@ -4,34 +4,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import es.caib.distribucio.logic.base.helper.AuthenticationHelper;
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
-import es.caib.distribucio.logic.helper.AclResourceHelper;
-import es.caib.distribucio.logic.helper.PermisosHelper;
-import es.caib.distribucio.logic.helper.PluginHelper;
-import es.caib.distribucio.logic.helper.UnitatOrganitzativaHelper;
-import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
-import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
-import es.caib.distribucio.logic.intf.base.exception.PerspectiveApplicationException;
-import es.caib.distribucio.logic.intf.base.exception.ReportGenerationException;
-import es.caib.distribucio.logic.intf.base.model.BaseAuditableResource;
+import es.caib.distribucio.logic.helper.*;
+import es.caib.distribucio.logic.intf.base.exception.*;
 import es.caib.distribucio.logic.intf.base.model.DownloadableFile;
 import es.caib.distribucio.logic.intf.base.model.FieldOption;
 import es.caib.distribucio.logic.intf.base.model.ReportFileType;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
+import es.caib.distribucio.logic.intf.base.util.I18nUtil;
 import es.caib.distribucio.logic.intf.dto.*;
+import es.caib.distribucio.logic.intf.exception.ValidationException;
 import es.caib.distribucio.logic.intf.model.BustiaResource;
 import es.caib.distribucio.logic.intf.model.ResourceType;
 import es.caib.distribucio.logic.intf.resourceservice.BustiaResourceService;
 import es.caib.distribucio.logic.intf.service.BustiaService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.logic.intf.util.Utils;
-import es.caib.distribucio.persist.entity.AclEntryEntity;
-import es.caib.distribucio.persist.entity.AclSidEntity;
-import es.caib.distribucio.persist.entity.BustiaEntity;
+import es.caib.distribucio.persist.entity.*;
+import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.resourceentity.*;
-import es.caib.distribucio.persist.resourcerepository.BustiaResourceRepository;
-import es.caib.distribucio.persist.resourcerepository.UnitatOrganitzativaResourceRepository;
-import es.caib.distribucio.persist.resourcerepository.UsuariResourceRepository;
-import es.caib.distribucio.plugin.usuari.DadesUsuari;
+import es.caib.distribucio.persist.resourcerepository.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -64,6 +55,11 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
     private final UnitatOrganitzativaHelper unitatOrganitzativaHelper;
     private final AclResourceHelper aclResourceHelper;
     private final PluginHelper pluginHelper;
+    private final BustiaHelper bustiaHelper;
+    private final EntitatRepository entitatRepository;
+    private final ContingutLogHelper contingutLogHelper;
+    private final ContingutResourceRepository contingutResourceRepository;
+    private final ReglaResourceRepository reglaResourceRepository;
 
     @PostConstruct
     public void init() {
@@ -96,12 +92,123 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
 
     @Override
     protected void beforeCreateSave(BustiaResourceEntity entity, BustiaResource resource, Map<String, AnswerRequiredException.AnswerValue> answers) {
+        if (!this.hasAlternativaPerDefecte(entity)) {
+            entity.setPerDefecte(true);
+
+            List<String> params = new ArrayList<>();
+            params.add("true");
+
+            contingutLogHelper.log(
+                    objectMappingHelper.newInstanceMap(entity, BustiaEntity.class),
+                    LogTipusEnumDto.PER_DEFECTE,
+                    params,
+                    false);
+        }
+
         this.beforeSave(entity, resource);
+
+        contingutLogHelper.logCreacio(
+                objectMappingHelper.newInstanceMap(entity, BustiaEntity.class),
+                false);
     }
 
     @Override
     protected void beforeUpdateSave(BustiaResourceEntity entity, BustiaResource resource, Map<String, AnswerRequiredException.AnswerValue> answers) {
+        Long entitatActualId = SessioActualUtil.getEntitatId();
+        EntitatEntity entitat = entitatRepository.findById(entitatActualId).get();
+
+        boolean unitatChanged = !Objects.equals(entity.getUnitatOrganitzativa().getId(), resource.getUnitatOrganitzativa().getId());
+
+        if (unitatChanged) {
+            UnitatOrganitzativaResourceEntity unitatDesti = unitatOrganitzativaResourceRepository.findById(resource.getUnitatOrganitzativa().getId()).get();
+            boolean bustiaPerDefecteInUnitatDesti = bustiaHelper.findBustiaPerDefecte(entitat, unitatDesti.getCodi()) != null;
+            entity.setPerDefecte(!bustiaPerDefecteInUnitatDesti);
+
+            if (entity.isPerDefecte()) {
+                UnitatOrganitzativaResourceEntity unitatOrganitzativaSource = entity.getUnitatOrganitzativa();
+                boolean unitatSourceObsoleta = !UnitatOrganizzativaEstatEnumDto.V.equals(unitatOrganitzativaSource.getEstat());
+                if (!unitatSourceObsoleta && !this.hasAlternativaPerDefecte(entity)) {
+                    String missatgeError = "No es pot moure la bústia principal si no n'hi ha cap altra superior definida com principal (" +
+                            "bustiaId=" + entity.getId() + ", " +
+                            "unitatOrganitzativaCodi=" + entity.getUnitatOrganitzativa().getCodi() + ")";
+                    throw new ValidationException(
+                            entity.getId(),
+                            BustiaEntity.class,
+                            missatgeError);
+                }
+            }
+        }
+
         this.beforeSave(entity, resource);
+
+        List<String> params = new ArrayList<>();
+        if (!Objects.equals(entity.getNom(), resource.getNom()))
+            params.add(resource.getNom());
+        if (unitatChanged)
+            params.add(resource.getUnitatOrganitzativa().getDescription());
+        contingutLogHelper.log(
+                objectMappingHelper.newInstanceMap(entity, BustiaEntity.class),
+                LogTipusEnumDto.MODIFICACIO,
+                params,
+                false);
+    }
+
+    @Override
+    protected void beforeDelete(BustiaResourceEntity entity, Map<String, AnswerRequiredException.AnswerValue> answers) throws ResourceNotDeletedException {
+        // Valida que si s'esborra encara hi hagi una altra principal d'alternativa
+         if (entity.isPerDefecte() && !this.hasAlternativaPerDefecte(entity)) {
+            String missatgeError = "No es pot esborrar la bústia principal si no n'hi ha cap altra superior definida com principal (" +
+                    "bustiaId=" + entity.getId() + ", " +
+                    "unitatOrganitzativaCodi=" + entity.getUnitatOrganitzativa().getCodi() + ")";
+            throw new ValidationException(
+                    entity.getId(),
+                    BustiaEntity.class,
+                    missatgeError);
+        }
+        // cannot remove busties containing any anotacions
+        List<ContingutResourceEntity> continguts = contingutResourceRepository.findAllByPareId(entity.getId());
+        if (continguts != null && !continguts.isEmpty()) {
+            String missatgeError = "No es pot esborrar la bústia amb anotacions a dins (" +
+                    "bustiaId=" + entity.getId() + ")";
+            throw new ValidationException(
+                    entity.getId(),
+                    BustiaEntity.class,
+                    missatgeError);
+        }
+
+        // cannot remove busties with regles
+        List<ReglaResourceEntity> reglesBustiaDesti = reglaResourceRepository.findAllByBustiaDestiId(entity.getId());
+        List<ReglaResourceEntity> reglesBustiaFiltre = reglaResourceRepository.findAllByBustiaFiltreId(entity.getId());
+        if ((reglesBustiaDesti != null && !reglesBustiaDesti.isEmpty()) || (reglesBustiaFiltre != null && !reglesBustiaFiltre.isEmpty())) {
+            String missatgeError = I18nUtil.getInstance().getI18nMessage("bustia.service.esborrat.error.regles", new Object[] { entity.getId() });
+            throw new ValidationException(
+                    entity.getId(),
+                    BustiaEntity.class,
+                    missatgeError);
+        }
+    }
+
+    private boolean hasAlternativaPerDefecte(BustiaResourceEntity bustia) {
+        Long entitatActualId = SessioActualUtil.getEntitatId();
+        EntitatEntity entitat = entitatRepository.findById(entitatActualId).get();
+
+        BustiaEntity bustiaPerDefecteAlternativa = null;
+        List<UnitatOrganitzativaDto> path = unitatOrganitzativaHelper.findPath(
+                entitat.getCodiDir3(),
+                bustia.getUnitatOrganitzativa().getCodi());
+        if (path != null && !path.isEmpty()) {
+            BustiaEntity bustiaAux;
+            for (UnitatOrganitzativaDto unitat: path) {
+                bustiaAux = bustiaHelper.findBustiaPerDefecte(
+                        entitat,
+                        unitat.getCodi());
+                if (bustiaAux != null && ! bustiaAux.getId().equals(bustia.getId())) {
+                    bustiaPerDefecteAlternativa = bustiaAux;
+                    break;
+                }
+            }
+        }
+        return bustiaPerDefecteAlternativa != null;
     }
 
     @Override

@@ -93,7 +93,9 @@ public class ExecucioMassivaContingutEntity extends DistribucioAuditable<Long> {
 	
 	public void updateError(String error, Date dataFi) {
 		this.estat = ExecucioMassivaContingutEstatDto.ERROR;
-		this.error = error;
+		this.error = error.length() > 2046
+                ?error.substring(0, 2043) + "..."
+                :error;
 		this.dataFi = dataFi;
 	}
 	

@@ -226,7 +226,8 @@ export const RegistreGrid = () => {
 
     const additionalColumns: any[] = [
         ...columns(t, handleOpen),
-        ...(isPermesAssignarAnotacions ? [{ field: 'agafatPer', flex: 2 }] : []),
+        ...(isPermesAssignarAnotacions ? [{ field: 'agafatPer', flex: 2,
+            sortProcessor: (_field: string, sort: GridSortDirection) => [{ field: 'agafatPer.nom', sort }] }] : []),
         commentsColumn,
     ];
 

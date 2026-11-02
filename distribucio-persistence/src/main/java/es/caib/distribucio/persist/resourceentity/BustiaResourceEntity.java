@@ -1,5 +1,6 @@
 package es.caib.distribucio.persist.resourceentity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.model.BustiaResource;
 import es.caib.distribucio.persist.base.entity.ResourceEntity;
@@ -8,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entitat de base de dades del recurs {@link BustiaResource}.
@@ -35,5 +38,13 @@ public class BustiaResourceEntity extends ContingutResourceEntity<BustiaResource
 
 	@Column(name = "activa")
 	private boolean activa = true;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "bustia", fetch = FetchType.LAZY, orphanRemoval = true)
+    protected List<UsuariBustiaFavoritResourceEntity> favorites = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "bustia", fetch = FetchType.LAZY, orphanRemoval = true)
+    protected List<BustiaDefaultResourceEntity> defaults = new ArrayList<>();
 
 }

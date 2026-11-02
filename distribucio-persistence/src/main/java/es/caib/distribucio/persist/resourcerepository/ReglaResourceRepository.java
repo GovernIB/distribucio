@@ -19,4 +19,7 @@ public interface ReglaResourceRepository extends BaseRepository<ReglaResourceEnt
     /** Totes les regles de l'entitat ordenades per <code>ordre</code>, usat per recalcular l'ordre en moure'n una (accions AMUNT/AVALL/MOURE). */
     List<ReglaResourceEntity> findByEntitatOrderByOrdreAsc(EntitatResourceEntity entitat);
 
+    List<ReglaResourceEntity> findAllByBustiaDestiId(Long bustiaDestiId);
+
+    List<ReglaResourceEntity> findAllByBustiaFiltreId(Long bustiaFiltreId);
 }

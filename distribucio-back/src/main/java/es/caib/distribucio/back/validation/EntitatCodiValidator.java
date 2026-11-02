@@ -30,7 +30,8 @@ public class EntitatCodiValidator implements ConstraintValidator<EntitatCodi, En
     private void addViolation(ConstraintValidatorContext context, String field, String message) {
         context.buildConstraintViolationWithTemplate(message)
                 .addPropertyNode(field)
-                .addConstraintViolation();
+                .addConstraintViolation()
+                .disableDefaultConstraintViolation();
     }
 
 	@Override
