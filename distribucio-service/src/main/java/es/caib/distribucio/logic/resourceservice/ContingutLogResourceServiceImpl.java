@@ -3,13 +3,13 @@ package es.caib.distribucio.logic.resourceservice;
 import java.util.stream.Collectors;
 
 import es.caib.distribucio.logic.helper.ContingutLogResourceHelper;
+import es.caib.distribucio.persist.resourceentity.ContingutLogParamResourceEntity;
 import org.springframework.stereotype.Service;
 
 import es.caib.distribucio.logic.base.service.BaseMutableResourceService;
 import es.caib.distribucio.logic.intf.dto.LogObjecteTipusEnumDto;
 import es.caib.distribucio.logic.intf.model.ContingutLogResource;
 import es.caib.distribucio.logic.intf.resourceservice.ContingutLogResourceService;
-import es.caib.distribucio.persist.entity.ContingutLogParamEntity;
 import es.caib.distribucio.persist.resourceentity.ContingutLogResourceEntity;
 import es.caib.distribucio.persist.resourceentity.ContingutResourceEntity;
 import es.caib.distribucio.persist.resourceentity.UsuariResourceEntity;
@@ -55,10 +55,7 @@ public class ContingutLogResourceServiceImpl
 			}
 		}
 
-		resource.setParams(
-				entity.getParams().stream()
-						.map(ContingutLogParamEntity::getValor)
-						.collect(Collectors.toList()));
+        contingutLogResourceHelper.transferParams(entity, resource);
 
 		if (entity.getObjecteId() != null) {
 			resource.setObjecteNom(resoldreObjecteNom(entity.getObjecteTipus(), entity.getObjecteId()));

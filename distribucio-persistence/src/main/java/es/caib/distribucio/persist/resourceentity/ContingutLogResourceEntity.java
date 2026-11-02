@@ -6,9 +6,7 @@ import es.caib.distribucio.logic.intf.dto.LogTipusEnumDto;
 import es.caib.distribucio.logic.intf.model.ContingutLogResource;
 import es.caib.distribucio.persist.base.entity.BaseAuditableEntity;
 import es.caib.distribucio.persist.entity.ContingutLogParamEntity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,7 +42,9 @@ import java.util.List;
 @Table(name = BaseConfig.DB_PREFIX + "cont_log")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class ContingutLogResourceEntity extends BaseAuditableEntity<ContingutLogResource, Long> {
 
 	@Id
@@ -85,6 +85,6 @@ public class ContingutLogResourceEntity extends BaseAuditableEntity<ContingutLog
 
 	@OneToMany(mappedBy = "contingutLog", fetch = FetchType.LAZY, orphanRemoval = true)
 	@OrderBy("numero ASC")
-	private List<ContingutLogParamEntity> params = new ArrayList<>();
+	private List<ContingutLogParamResourceEntity> params = new ArrayList<>();
 
 }

@@ -58,6 +58,7 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
     private final EntitatRepository entitatRepository;
     private final ContingutResourceRepository contingutResourceRepository;
     private final ReglaResourceRepository reglaResourceRepository;
+    private final ContingutLogResourceHelper contingutLogResourceHelper;
 
     @PostConstruct
     public void init() {
@@ -90,28 +91,29 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
 
     @Override
     protected void beforeCreateSave(BustiaResourceEntity entity, BustiaResource resource, Map<String, AnswerRequiredException.AnswerValue> answers) {
+        this.beforeSave(entity, resource);
+    }
+
+    @Override
+    protected void afterCreateSave(BustiaResourceEntity entity, BustiaResource resource, Map<String, AnswerRequiredException.AnswerValue> answers, boolean anyOrderChanged) {
+        contingutLogResourceHelper.logCreacio(entity, false);
+
         if (!this.hasAlternativaPerDefecte(entity)) {
             entity.setPerDefecte(true);
 
             List<String> params = new ArrayList<>();
             params.add("true");
 
-//            contingutLogHelper.log(
-//                    objectMappingHelper.newInstanceMap(entity, BustiaEntity.class),
-//                    LogTipusEnumDto.PER_DEFECTE,
-//                    params,
-//                    false);
+            contingutLogResourceHelper.log(
+                    entity,
+                    LogTipusEnumDto.PER_DEFECTE,
+                    params,
+                    false);
         }
-
-        this.beforeSave(entity, resource);
-
-//        contingutLogHelper.logCreacio(
-//                objectMappingHelper.newInstanceMap(entity, BustiaEntity.class),
-//                false);
     }
 
     @Override
-    protected void beforeUpdateSave(BustiaResourceEntity entity, BustiaResource resource, Map<String, AnswerRequiredException.AnswerValue> answers) {
+    protected void beforeUpdateEntity(BustiaResourceEntity entity, BustiaResource resource, Map<String, AnswerRequiredException.AnswerValue> answers) {
         Long entitatActualId = SessioActualUtil.getEntitatId();
         EntitatEntity entitat = entitatRepository.findById(entitatActualId).get();
 
@@ -120,7 +122,7 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
         if (unitatChanged) {
             UnitatOrganitzativaResourceEntity unitatDesti = unitatOrganitzativaResourceRepository.findById(resource.getUnitatOrganitzativa().getId()).get();
             boolean bustiaPerDefecteInUnitatDesti = bustiaHelper.findBustiaPerDefecte(entitat, unitatDesti.getCodi()) != null;
-            entity.setPerDefecte(!bustiaPerDefecteInUnitatDesti);
+            resource.setPerDefecte(!bustiaPerDefecteInUnitatDesti);
 
             if (entity.isPerDefecte()) {
                 UnitatOrganitzativaResourceEntity unitatOrganitzativaSource = entity.getUnitatOrganitzativa();
@@ -137,19 +139,22 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
             }
         }
 
-        this.beforeSave(entity, resource);
-
         List<String> params = new ArrayList<>();
         if (!Objects.equals(entity.getNom(), resource.getNom()))
             params.add(resource.getNom());
         if (unitatChanged)
             params.add(resource.getUnitatOrganitzativa().getDescription());
 
-//        contingutLogHelper.log(
-//                objectMappingHelper.newInstanceMap(entity, BustiaEntity.class),
-//                LogTipusEnumDto.MODIFICACIO,
-//                params,
-//                false);
+        contingutLogResourceHelper.log(
+                entity,
+                LogTipusEnumDto.MODIFICACIO,
+                params,
+                false);
+    }
+
+    @Override
+    protected void beforeUpdateSave(BustiaResourceEntity entity, BustiaResource resource, Map<String, AnswerRequiredException.AnswerValue> answers) {
+        this.beforeSave(entity, resource);
     }
 
     @Override

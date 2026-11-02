@@ -1,15 +1,16 @@
 package es.caib.distribucio.logic.helper;
 
-import es.caib.distribucio.logic.base.helper.ObjectMappingHelper;
 import es.caib.distribucio.logic.intf.base.util.I18nUtil;
 import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.model.ContingutLogResource;
 import es.caib.distribucio.logic.intf.model.ContingutResource;
 import es.caib.distribucio.logic.intf.model.RegistreResource;
 import es.caib.distribucio.logic.intf.service.AplicacioService;
-import es.caib.distribucio.persist.entity.ContingutLogParamEntity;
-import es.caib.distribucio.persist.resourceentity.ContingutLogResourceEntity;
-import es.caib.distribucio.persist.resourceentity.RegistreResourceEntity;
+import es.caib.distribucio.persist.entity.*;
+import es.caib.distribucio.persist.resourceentity.*;
+import es.caib.distribucio.persist.resourcerepository.ContingutLogParamResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.ContingutLogResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.ContingutResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.RegistreResourceRepository;
 import fr.opensagres.xdocreport.converter.ConverterTypeTo;
 import fr.opensagres.xdocreport.converter.Options;
@@ -18,14 +19,11 @@ import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
 import fr.opensagres.xdocreport.template.IContext;
 import fr.opensagres.xdocreport.template.TemplateEngineKind;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Persistable;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -40,12 +38,14 @@ public class ContingutLogResourceHelper {
 
     private final RegistreResourceRepository registreResourceRepository;
     private final AplicacioService aplicacioService;
-    private final ObjectMappingHelper objectMappingHelper;
+    private final ContingutResourceRepository contingutResourceRepository;
+    private final ContingutLogResourceRepository contingutLogResourceRepository;
+    private final ContingutLogParamResourceRepository contingutLogParamResourceRepository;
 
     public void transferParams(ContingutLogResourceEntity entity, ContingutLogResource resource) {
         resource.setParams(
                 entity.getParams().stream()
-                        .map(ContingutLogParamEntity::getValor)
+                        .map(ContingutLogParamResourceEntity::getValor)
                         .collect(Collectors.toList()));
     }
 
@@ -211,7 +211,7 @@ public class ContingutLogResourceHelper {
 
         String plantilla = getPlantillaInformeTrasabilitat(locale.getLanguage());
 
-        // 1) Load ODT file and set Velocity template engine and cache it to the registry					
+        // 1) Load ODT file and set Velocity template engine and cache it to the registry
         InputStream in = null;
         if (plantilla != null)
             in = new FileInputStream(new File(plantilla));
@@ -261,5 +261,155 @@ public class ContingutLogResourceHelper {
         char c[] = string.toCharArray();
         c[0] = Character.toLowerCase(c[0]);
         return new String(c);
+    }
+
+    private LogObjecteTipusEnumDto getLogObjecteTipusPerContingut(
+            ContingutResourceEntity contingut) {
+        LogObjecteTipusEnumDto objecteTipus;
+        if (contingut instanceof BustiaResourceEntity) {
+            objecteTipus = LogObjecteTipusEnumDto.BUSTIA;
+        } else {
+            objecteTipus = LogObjecteTipusEnumDto.CONTINGUT;
+        }
+        return objecteTipus;
+    }
+
+    public ContingutLogResourceEntity logCreacio(
+            ContingutResourceEntity contingut,
+            boolean logContingutPare) {
+        List<String> params = new ArrayList<>();
+        params.add(contingut.getNom());
+        params.add((contingut.getPare() != null) ? contingut.getPare().getId().toString() : null);
+        return log(
+                contingut,
+                LogTipusEnumDto.CREACIO,
+                null,
+                contingut,
+                getLogObjecteTipusPerContingut(contingut),
+                null,
+                params,
+                logContingutPare);
+    }
+
+    public ContingutLogResourceEntity log(
+            ContingutResourceEntity contingut,
+            LogTipusEnumDto tipus,
+            List<String> params,
+            boolean logContingutPare) {
+        return log(
+                contingut,
+                tipus,
+                null,
+                null,
+                null,
+                null,
+                params,
+                logContingutPare);
+    }
+
+    private ContingutLogResourceEntity log(
+            ContingutResourceEntity contingut,
+            LogTipusEnumDto tipus,
+            ContingutMovimentResourceEntity contingutMoviment,
+            Persistable<? extends Serializable> objecte,
+            LogObjecteTipusEnumDto objecteTipus,
+            LogTipusEnumDto objecteLogTipus,
+            List<String> params,
+            boolean logContingutPare) {
+        ContingutLogResourceEntity logPare = logSave(
+                contingut,
+                tipus,
+                null,
+                contingutMoviment,
+                objecte,
+                objecteTipus,
+                objecteLogTipus,
+                params);
+        if (logContingutPare) {
+            if (contingutMoviment == null) {
+                if (contingut.getPare() != null) {
+                    logContingutSuperior(
+                            contingut,
+                            tipus,
+                            contingut.getPare(),
+                            logPare);
+                }
+            } else {
+                if (contingutMoviment.getOrigenId() != null) {
+                    ContingutResourceEntity contingutResourceEntity = contingutResourceRepository.findById(contingutMoviment.getOrigenId()).orElse(null);
+                    if (contingutResourceEntity != null)
+                        logContingutSuperior(
+                                contingut,
+                                tipus,
+                                contingutResourceEntity,
+                                logPare);
+                }
+                if (contingutMoviment.getDestiId() != null) {
+                    ContingutResourceEntity contingutResourceEntity = contingutResourceRepository.findById(contingutMoviment.getDestiId()).orElse(null);
+                    if (contingutResourceEntity != null)
+                        logContingutSuperior(
+                                contingut,
+                                tipus,
+                                contingutResourceEntity,
+                                logPare);
+                }
+            }
+        }
+        return logPare;
+    }
+
+    private ContingutLogResourceEntity logSave(
+            ContingutResourceEntity contingut,
+            LogTipusEnumDto tipus,
+            ContingutLogResourceEntity pare,
+            ContingutMovimentResourceEntity contingutMoviment,
+            Persistable<? extends Serializable> objecte,
+            LogObjecteTipusEnumDto objecteTipus,
+            LogTipusEnumDto objecteLogTipus,
+            List<String> params) {
+
+        ContingutLogResourceEntity.ContingutLogResourceEntityBuilder logBuilder = ContingutLogResourceEntity.builder()
+                .tipus(tipus)
+                .contingut(contingut)
+                .pare(pare)
+                .contingutMoviment(contingutMoviment)
+                .params(new ArrayList<>());
+        if (objecte != null) {
+            logBuilder.
+                    objecteId(objecte.getId().toString()).
+                    objecteTipus(objecteTipus).
+                    objecteLogTipus(objecteLogTipus);
+        }
+        ContingutLogResourceEntity contingutLogEntity = contingutLogResourceRepository.save(logBuilder.build());
+        if (params != null) {
+            for (int i = 0; i < params.size(); i++) {
+                if (params.get(i) != null) {
+                    ContingutLogParamResourceEntity contingutLogParamEntity = ContingutLogParamResourceEntity.builder()
+                            .contingutLog(contingutLogEntity)
+                            .numero(i + 1)
+                            .valor(params.get(i))
+                            .build();
+                    contingutLogParamResourceRepository.save(contingutLogParamEntity);
+                    contingutLogEntity.getParams().add(contingutLogParamEntity);
+                }
+            }
+        }
+        return contingutLogEntity;
+    }
+
+    private void logContingutSuperior(
+            ContingutResourceEntity contingut,
+            LogTipusEnumDto tipus,
+            ContingutResourceEntity contingutSuperior,
+            ContingutLogResourceEntity contingutLogPare) {
+        logSave(
+                contingutSuperior,
+                LogTipusEnumDto.MODIFICACIO,
+                contingutLogPare,
+                null,
+                contingut,
+                getLogObjecteTipusPerContingut(contingut),
+                tipus,
+                null);
     }
 }
