@@ -3,32 +3,13 @@ import {GridPage, useBaseAppContext, useMuiContentDialog, useMuiDataGridApiRef} 
 import ScreenFrame from '../../components/ScreenFrame';
 import { icons } from '../../util/icons';
 import StyledMuiGrid, {ToolbarButton} from "../../components/StyledMuiGrid.tsx";
-import {Box, Chip, LinearProgress} from "@mui/material";
+import {Chip} from "@mui/material";
+import TonalLinearProgress from "../../components/TonalLinearProgress.tsx";
+import {tonal, tonalNeutre} from "../../util/tonal.ts";
 import {useEMContent} from "./ExecucioMassivaContingutGrid.tsx";
 import ExecucioMassivaFilter from "./ExecucioMassivaFiltre.tsx";
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {useExecucioMassivaActions} from "./detail/ExecucioMassivaActions.tsx";
-
-const StyledLinearProgress = (props: any) => {
-    const {sx, textColor = "white", children, ...other} = props
-
-    return <Box position="relative" width="100%" sx={{ml: 1}}>
-        <LinearProgress variant="determinate" {...other} sx={{width: '100%', borderRadius: '4px', ...sx}}/>
-        <Box
-            color={textColor}
-            position="absolute"
-            top={0}
-            left={0}
-            width="100%"
-            height="100%"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-        >
-            {children}
-        </Box>
-    </Box>
-}
 
 const useToogleInterval = (time:number, fn: () => void) => {
     const [isRunning, setIsRunning] = useState(false);
@@ -68,20 +49,21 @@ const columns = [
     { field: 'exec', flex: 1.5,
         renderCell: (params:any) => (
             <>
-                <Chip label={params.formattedValue} color={params.row.estat == "CANCELADA" ?"warning" :"default"} />
-                <StyledLinearProgress
+                <Chip label={params.formattedValue} sx={params.row.estat == "CANCELADA" ?tonal('warning') :tonalNeutre} />
+                <TonalLinearProgress
                     color={'success'}
                     value={params.row.percExec}
+                    boxSx={{ml: 1}}
                     sx={{height: '20px'}}
                 >
                     {params.row.percExec}%
-                </StyledLinearProgress>
+                </TonalLinearProgress>
             </>
         )
     },
     { field: 'errors', flex: 0.5,
         renderCell: (params:any) => (
-            <Chip label={params.formattedValue} color={params.formattedValue > 0 ?"error" :"default"} />
+            <Chip label={params.formattedValue} sx={params.formattedValue > 0 ?tonal('error') :tonalNeutre} />
         ),
     },
     { field: 'dataInici', flex: 1 },
