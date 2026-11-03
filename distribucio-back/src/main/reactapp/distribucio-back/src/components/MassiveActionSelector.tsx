@@ -153,7 +153,7 @@ const MassiveActionSelector: React.FC<MassiveActionSelectorProps> = (props: Mass
                                             alignItems: 'center',
                                         }}
                                     >
-                                        <Icon color="action" sx={{ m: 0 }}>
+                                        <Icon color="inherit" sx={{ m: 0 }}>
                                             {action?.icon}
                                         </Icon>
                                         {action?.title && (

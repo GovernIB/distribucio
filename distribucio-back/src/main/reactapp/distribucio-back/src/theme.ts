@@ -563,6 +563,11 @@ export const darkTheme = createTheme({
                     '& .MuiDataGrid-row.Mui-selected .MuiCheckbox-root.Mui-checked': {
                         color: `${GRID_ROW_CHECKED_DARK} !important`,
                     },
+                    // Enllaços d'una fila seleccionada: el color primari es confon amb el fons de la fila;
+                    // en el color del text es distingeixen pel subratllat.
+                    '& .MuiDataGrid-row.Mui-selected .MuiLink-root': {
+                        color: `#ffffff !important`,
+                    },
                 },
                 row: {
                     ...(baseComponentStyles.MuiDataGrid?.styleOverrides?.row as object),
@@ -691,6 +696,11 @@ export const draculaTheme = createTheme({
                     // Casella marcada d'una fila seleccionada: gairebé blanca, es veu sobre el fons fosc
                     '& .MuiDataGrid-row.Mui-selected .MuiCheckbox-root.Mui-checked': {
                         color: `${GRID_ROW_CHECKED_DARK} !important`,
+                    },
+                    // Enllaços d'una fila seleccionada: el color primari es confon amb el fons de la fila;
+                    // en el color del text es distingeixen pel subratllat.
+                    '& .MuiDataGrid-row.Mui-selected .MuiLink-root': {
+                        color: `#f8f8f2 !important`,
                     },
                 },
                 row: {
