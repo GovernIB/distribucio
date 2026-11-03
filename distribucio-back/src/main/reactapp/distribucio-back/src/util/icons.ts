@@ -31,7 +31,7 @@ export const icons = {
     bustia: 'inbox',
     unitatOrganitzativa: 'account_tree',
     backoffice: 'wifi',
-    config: 'settings',
+    config: 'display_settings',
     limitCanviEstat: 'date_range',
     usuariCanviCodis: 'manage_accounts',
     annex: 'attach_file',
