@@ -891,8 +891,9 @@ public class ContingutHelper {
 				assumpteTipusDescripcio(registreOriginal.getAssumpteTipusDescripcio()).
 				assumpteCodi(registreOriginal.getAssumpteCodi()).
 				assumpteDescripcio(registreOriginal.getAssumpteDescripcio()).
-				procedimentCodi(registreOriginal.getProcedimentCodi()).
-				serveiCodi(registreOriginal.getServeiCodi()).
+//				procedimentCodi(registreOriginal.getProcedimentCodi()).
+//				serveiCodi(registreOriginal.getServeiCodi()).
+				siaCodi(registreOriginal.getSiaCodi()).
 				referencia(registreOriginal.getReferencia()).
 				expedientNumero(registreOriginal.getExpedientNumero()).
 				numeroOrigen(registreOriginal.getNumeroOrigen()).

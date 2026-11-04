@@ -30,17 +30,15 @@ const RegistreAvisos = ({ entity }: any) => {
             {entity.enviatPerEmail && (
                 <Tooltip
                     title={
-                        <>
+                        <Box>
                             {t('page.registre.avisos.enviatPerEmail')}
-                            {entity.enviamentsPerEmail.map?.((e: string) => (
-                                <>
-                                    <br /> {'>'} {e}
-                                </>
+                            {entity.enviamentsPerEmail.map?.((e: string, i:number) => (
+                                <Box key={i}>{'>'} {e}</Box>
                             ))}
-                        </>
+                        </Box>
                     }
                 >
-                    <Icon fontSize="small" title={t('page.registre.avisos.enviatPerEmail')}>
+                    <Icon fontSize="small">
                         {icons.correu}
                     </Icon>
                 </Tooltip>
@@ -197,7 +195,7 @@ const columns = (t: any, handleEstat: () => void) => [
     },
     { field: 'interessatsString', flex: 4, sortable: false },
 ];
-const perspectives = ['DARRER_MOVIMENT', 'COMMENT_NUM'];
+const perspectives = ['DARRER_MOVIMENT', 'COMMENT_NUM', 'ENVIAT_EMAIL'];
 const sortModel: any = [{ field: 'data', sort: 'desc' }];
 
 export const RegistreGrid = () => {

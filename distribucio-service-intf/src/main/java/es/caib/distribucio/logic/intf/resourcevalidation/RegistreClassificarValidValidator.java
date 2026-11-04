@@ -30,17 +30,17 @@ public class RegistreClassificarValidValidator implements ConstraintValidator<Re
     public boolean isValid(RegistreResource.ClassificarForm resource, ConstraintValidatorContext context) {
         boolean valid = true;
 
-        if (RegistreClassificarTipusEnum.PROCEDIMENT.equals( resource.getTipus() )
-                && resource.getProcediment() == null) {
-            this.notNullViolation(context, RegistreResource.ClassificarForm.Fields.procediment);
-            valid = false;
-        }
-
-        if (RegistreClassificarTipusEnum.SERVEI.equals( resource.getTipus() )
-                && resource.getServei() == null) {
-            this.notNullViolation(context, RegistreResource.ClassificarForm.Fields.procediment);
-            valid = false;
-        }
+//        if (RegistreClassificarTipusEnum.PROCEDIMENT.equals( resource.getTipus() )
+//                && resource.getProcediment() == null) {
+//            this.notNullViolation(context, RegistreResource.ClassificarForm.Fields.procediment);
+//            valid = false;
+//        }
+//
+//        if (RegistreClassificarTipusEnum.SERVEI.equals( resource.getTipus() )
+//                && resource.getServei() == null) {
+//            this.notNullViolation(context, RegistreResource.ClassificarForm.Fields.procediment);
+//            valid = false;
+//        }
 
         return valid;
     }

@@ -65,8 +65,9 @@ public class RegistreDto extends ContingutDto {
 	private String assumpteTipusDescripcio;
 	private String assumpteCodi;
 	private String assumpteDescripcio;
-	private String procedimentCodi;
-	private String serveiCodi;
+//	private String procedimentCodi;
+//	private String serveiCodi;
+	private String siaCodi;
 	private String referencia;
 	private String expedientNumero;
 	private String numeroOrigen;

@@ -248,7 +248,7 @@ public class RegistreHelper {
 		anotacio.setAssumpteTipusDescripcio(entity.getAssumpteTipusDescripcio());
 		anotacio.setAssumpteCodi(entity.getAssumpteCodi());
 		anotacio.setAssumpteDescripcio(entity.getAssumpteDescripcio());
-		anotacio.setProcedimentCodi(entity.getProcedimentCodi());
+		anotacio.setProcedimentCodi(entity.getSiaCodi());
 		anotacio.setReferencia(entity.getReferencia());
 		anotacio.setExpedientNumero(entity.getExpedientNumero());
 		anotacio.setIdiomaCodi(entity.getIdiomaCodi());
@@ -338,8 +338,9 @@ public class RegistreHelper {
 					registreAnotacio.getAssumpteTipusDescripcio(),
 					registreAnotacio.getAssumpteCodi(),
 					registreAnotacio.getAssumpteDescripcio(),
-					registreAnotacio.getProcedimentCodi(),
-					registreAnotacio.getServeiCodi(),
+					registreAnotacio.getProcedimentCodi() != null
+                            ?registreAnotacio.getProcedimentCodi()
+                            :registreAnotacio.getServeiCodi(),
 					registreAnotacio.getReferencia(),
 					registreAnotacio.getExpedientNumero(),
 					registreAnotacio.getNumeroOrigen(),
@@ -411,8 +412,13 @@ public class RegistreHelper {
 			assumpteTipusDescripcio(registreAnotacio.getAssumpteTipusDescripcio()).
 			assumpteCodi(registreAnotacio.getAssumpteCodi()).
 			assumpteDescripcio(registreAnotacio.getAssumpteDescripcio()).
-			procedimentCodi(registreAnotacio.getProcedimentCodi()).
-			serveiCodi(registreAnotacio.getServeiCodi()).
+//			procedimentCodi(registreAnotacio.getProcedimentCodi()).
+//			serveiCodi(registreAnotacio.getServeiCodi()).
+			siaCodi(
+                    registreAnotacio.getProcedimentCodi() != null
+                            ?registreAnotacio.getProcedimentCodi()
+                            :registreAnotacio.getServeiCodi()
+            ).
 			referencia(registreAnotacio.getReferencia()).
 			expedientNumero(registreAnotacio.getExpedientNumero()).
 			numeroOrigen(registreAnotacio.getNumeroOrigen()).
@@ -2388,7 +2394,8 @@ public class RegistreHelper {
 				DistribucioRegistreAnotacio.class);
 		distribucioRegistreAnotacio.setId(registreId);
 		distribucioRegistreAnotacio.setUnitatOrganitzativaCodi(registreEntity.getEntitat() != null ? registreEntity.getEntitat().getCodiDir3() : null);
-		distribucioRegistreAnotacio.setProcedimentCodi(registreEntity.getProcedimentCodi());
+		// TODO: revisar codi sia
+        distribucioRegistreAnotacio.setProcedimentCodi(registreEntity.getSiaCodi());
 		return distribucioRegistreAnotacio;
 	}
 

@@ -5,6 +5,7 @@ import GridFormField from "../../../components/GridFormField.tsx";
 import FormActionDialog from "../../../components/FormActionDialog.tsx";
 import {DetailField, DetailExpandCard} from "../../../components/CardData.tsx";
 import Alert from "@mui/material/Alert";
+import {useMemo} from "react";
 
 const Detail = ({expanded}:any) => {
     const { t } = useTranslation();
@@ -35,6 +36,8 @@ const ClassificarForm = () => {
     const { t } = useTranslation();
     const { data } = useFormContext()
 
+    const namedQueriesSia = useMemo(() => [`BUSTIA#${data.bustiaId}`], [data.bustiaId])
+
     return <Grid container direction={"row"} columnSpacing={1} rowSpacing={1}>
 
         <Grid size={12}>
@@ -52,9 +55,10 @@ const ClassificarForm = () => {
             </MuiDetail>
         </Grid>)}
 
-        <GridFormField size={12} name="tipus" required/>
-        <GridFormField size={12} name="procediment" namedQueries={[`BUSTIA#${data.bustiaId}`]} hidden={data.tipus != "PROCEDIMENT"} required/>
-        <GridFormField size={12} name="servei" namedQueries={[`BUSTIA#${data.bustiaId}`]} hidden={data.tipus != "SERVEI"} required/>
+        {/*<GridFormField size={12} name="tipus" required/>*/}
+        {/*<GridFormField size={12} name="procediment" namedQueries={[`BUSTIA#${data.bustiaId}`]} hidden={data.tipus != "PROCEDIMENT"} required/>*/}
+        {/*<GridFormField size={12} name="servei" namedQueries={[`BUSTIA#${data.bustiaId}`]} hidden={data.tipus != "SERVEI"} required/>*/}
+        <GridFormField size={12} name="sia" namedQueries={namedQueriesSia} required/>
     </Grid>
 }
 

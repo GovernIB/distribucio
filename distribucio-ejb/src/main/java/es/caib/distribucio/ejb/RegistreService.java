@@ -259,15 +259,15 @@ public class RegistreService extends AbstractService<es.caib.distribucio.logic.i
 			Long entitatId,
 			Long registreId,
             String tipus,
-			String procedimentCodi,
-			String serveiCodi,
+//			String procedimentCodi,
+//			String serveiCodi,
+			String siaCodi,
 			String titol) throws NotFoundException {
 		return getDelegateService().classificar(
 				entitatId,
 				registreId,
                 tipus,
-				procedimentCodi,
-				serveiCodi,
+                siaCodi,
 				titol);
 	}
 

@@ -58,16 +58,8 @@ const RegistreFilterForm: React.FC<any> = ({ isAdmin }: any) => {
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="sobreescriure" hidden={!isAdmin} />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2.75 }} name="nombreAnnexes" />
                     <GridFormField
-                        size={{ xs: 12, sm: 6, md: 3.5 }}
-                        name="procediment"
-                        valueField={'codiSia'}
-                        additionalOpctions={(q) =>
-                            q ? [{ id: q, description: t('common.optionNotFound', { value: q }) }] : []
-                        }
-                    />
-                    <GridFormField
                         size={{ xs: 12, sm: 6, md: 3 }}
-                        name="servei"
+                        name="sia"
                         valueField={'codiSia'}
                         additionalOpctions={(q) =>
                             q ? [{ id: q, description: t('common.optionNotFound', { value: q }) }] : []
@@ -145,8 +137,9 @@ const springFilterBuilder = (data: any, setNamedQuery?: (value:string[]) => void
         builder.eq('procesEstat', `'${data.procesEstat}'`),
         data?.ambErrors && builder.neq('procesError', null),
         data?.isAdmin && data?.sobreescriure && builder.eq('sobreescriure', data?.sobreescriure),
-        builder.eq('procedimentCodi', `'${data?.procediment?.id}'`),
-        builder.eq('serveiCodi', `'${data?.servei?.id}'`),
+        // builder.eq('procedimentCodi', `'${data?.procediment?.id}'`),
+        // builder.eq('serveiCodi', `'${data?.servei?.id}'`),
+        builder.eq('siaCodi', `'${data?.sia?.id}'`),
     );
 };
 

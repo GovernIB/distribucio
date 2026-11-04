@@ -1,13 +1,15 @@
 package es.caib.distribucio.back.controller;
 
+import es.caib.distribucio.logic.intf.base.util.RequestSessionUtil;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
-import es.caib.distribucio.logic.intf.dto.ServeiDto;
-import es.caib.distribucio.logic.intf.service.ProcedimentService;
-import es.caib.distribucio.logic.intf.service.ServeiService;
+import es.caib.distribucio.logic.intf.model.SiaResource;
+import es.caib.distribucio.logic.intf.model.UserSession;
+import es.caib.distribucio.logic.intf.resourceservice.SiaResourceService;
+import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,13 +30,11 @@ import java.util.List;
 @Controller
 @RequestMapping("/procedimentserveiajax")
 public class AjaxProcedimentServeiController extends BaseAdminController{
-	
-	@Autowired
-	private ProcedimentService procedimentService;
-	@Autowired
-	private ServeiService serveiService;
-	
-	@RequestMapping(value = "/procedimentservei/{elementId}", method = RequestMethod.GET)
+
+    @Autowired
+    private SiaResourceService siaResourceService;
+
+    @RequestMapping(value = "/procedimentservei/{elementId}", method = RequestMethod.GET)
 	@ResponseBody
 	public Object getByCodi(
 			HttpServletRequest request, 
@@ -42,13 +42,11 @@ public class AjaxProcedimentServeiController extends BaseAdminController{
 			Model model) {
 
 		EntitatDto entitatActual = getEntitatActualComprovantPermisAdminLectura(request);
-		ProcedimentDto procediment = procedimentService.findByCodiSia( entitatActual.getId(), elementId );
-        ServeiDto servei = serveiService.findByCodiSia( entitatActual.getId(), elementId );
-		if (procediment != null) {
-            return procediment;
-        }
-		if (servei != null) {
-            return servei;
+//		ProcedimentDto procediment = procedimentService.findByCodiSia( entitatActual.getId(), elementId );
+//        ServeiDto servei = serveiService.findByCodiSia( entitatActual.getId(), elementId );
+        SiaResource siaResource = siaResourceService.findByEntitatIdAndCodiSia( entitatActual.getId(), elementId );
+		if (siaResource != null) {
+            return siaResource;
         }
         return this.getProcedimentNoTrobat(request, elementId);
 	}
@@ -68,15 +66,29 @@ public class AjaxProcedimentServeiController extends BaseAdminController{
 		}
         List<Object> result = new ArrayList<>();
 		EntitatDto entitatActual = getEntitatActual(request);
-		List<ProcedimentDto> procediments = procedimentService.findByNomOrCodiSia(
-				entitatActual.getId(),
-				decodedToUTF8);
-        result.addAll(procediments);
 
-		List<ServeiDto> serveis = serveiService.findByNomOrCodiSia(
-				entitatActual.getId(),
-				decodedToUTF8);
-        result.addAll(serveis);
+        Long entitatActualId = SessioActualUtil.getEntitatId();
+        if (entitatActualId == null)
+            RequestSessionUtil.setRequestSession(new UserSession(entitatActual.getId()));
+
+//		List<ProcedimentDto> procediments = procedimentService.findByNomOrCodiSia(
+//				entitatActual.getId(),
+//				decodedToUTF8);
+//        result.addAll(procediments);
+//
+//		List<ServeiDto> serveis = serveiService.findByNomOrCodiSia(
+//				entitatActual.getId(),
+//				decodedToUTF8);
+//        result.addAll(serveis);
+
+        List<SiaResource> sias = siaResourceService.findPage(
+                decodedToUTF8,
+                null,
+                null,
+                null,
+                Pageable.unpaged()
+        ).getContent();
+        result.addAll(sias);
 		
 		if (result.isEmpty()) {
             result.add(this.getProcedimentNoTrobat(request, text));
@@ -84,8 +96,8 @@ public class AjaxProcedimentServeiController extends BaseAdminController{
 		return result;
 	}
 	
-	private ProcedimentDto getProcedimentNoTrobat(HttpServletRequest request, String elementId) {
-		ProcedimentDto noTrobat = new ProcedimentDto();
+	private SiaResource getProcedimentNoTrobat(HttpServletRequest request, String elementId) {
+        SiaResource noTrobat = new SiaResource();
 		noTrobat.setCodi(elementId);
 		noTrobat.setCodiSia(elementId);
 		noTrobat.setNom("(" + getMessage(request, "comu.no.trobat") + ")");

@@ -284,11 +284,10 @@ public interface RegistreService {
 	 *            Atribut id de l'entitat.
 	 * @param registreId
 	 *            Atribut id del l'anotació que es vol classificar.
-	 * @param procedimentCodi
+	 * @param siaCodi
 	 *            Codi del procediment que es vol assignar a l'anotació.
 	 * @param titol
 	 *            nou titol pel l'anotació.
-	 * @param string 
 	 * @return true si l'anotació ha canviat de bústia o d'estat, false en cas contrari.
 	 * @throws NotFoundException
 	 *             Si no s'ha trobat l'objecte amb l'id especificat.
@@ -298,8 +297,9 @@ public interface RegistreService {
 			Long entitatId,
 			Long registreId,
             String tipus,
-			String procedimentCodi,
-			String serveiCodi,
+//			String procedimentCodi,
+//			String serveiCodi,
+			String siaCodi,
 			String titol) throws NotFoundException;
 
 	/** 

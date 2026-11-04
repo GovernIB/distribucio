@@ -9,6 +9,8 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import es.caib.distribucio.logic.intf.model.SiaResource;
+import es.caib.distribucio.logic.intf.resourceservice.SiaResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -30,10 +32,8 @@ import es.caib.distribucio.back.helper.RequestSessionHelper;
 import es.caib.distribucio.logic.intf.dto.ContingutDto;
 import es.caib.distribucio.logic.intf.dto.ContingutLogDetallsDto;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.RegistreDto;
 import es.caib.distribucio.logic.intf.service.ContingutService;
-import es.caib.distribucio.logic.intf.service.ProcedimentService;
 
 /**
  * Controlador per a la consulta d'arxius pels administradors.
@@ -48,11 +48,11 @@ public class ContingutAdminController extends BaseAdminController {
 
 	@Autowired
 	private ContingutService contingutService;
-	@Autowired
-	private ProcedimentService procedimentService;
+    @Autowired
+    private SiaResourceService siaResourceService;
 
 
-	@RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
 	public String get(
 			HttpServletRequest request,
 			Model model) {
@@ -138,17 +138,17 @@ public class ContingutAdminController extends BaseAdminController {
 					true);
 			
 			// Dades del procediment
-			String codiSia = ((RegistreDto)contingutDto).getProcedimentCodi();
-			if (codiSia != null) {
-				ProcedimentDto procediment = procedimentService.findByCodiSia(entitatActual.getId(), codiSia);
-				if (procediment == null) {
-					procediment = new ProcedimentDto();
-					procediment.setCodi(codiSia);
-					procediment.setCodiSia(codiSia);
-					procediment.setNom(getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia}));
-				}
-				model.addAttribute("procedimentDades", procediment);				
-			}
+            String codiSia = ((RegistreDto)contingutDto).getSiaCodi();
+            if (codiSia != null) {
+                SiaResource siaResource = siaResourceService.findByEntitatIdAndCodiSia(entitatActual.getId(), codiSia);
+                if (siaResource == null) {
+                    siaResource = new SiaResource();
+                    siaResource.setCodi(codiSia);
+                    siaResource.setCodiSia(codiSia);
+                    siaResource.setNom(getMessage(request, "registre.detalls.camp.sia.no.trobat", new Object[] {codiSia}));
+                }
+                model.addAttribute("siaDades", siaResource);
+            }
 
 			return "registreDetall";
 		}

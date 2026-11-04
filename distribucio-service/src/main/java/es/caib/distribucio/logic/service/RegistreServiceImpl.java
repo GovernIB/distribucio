@@ -612,7 +612,7 @@ public class RegistreServiceImpl implements RegistreService {
 					unitat,
 					filtre.getSobreescriure() == null,
 					filtre.getSobreescriure() != null ? (filtre.getSobreescriure() == RegistreMarcatPerSobreescriureEnumDto.SI ? true : false) : null,
-					filtre.getProcedimentCodi() == null, 
+					filtre.getProcedimentCodi() == null,
 					filtre.getProcedimentCodi() != null ? filtre.getProcedimentCodi() : "", 
 					filtre.getNombreAnnexes(),
 					filtre.isAmbAnnexosInterns(),
@@ -703,8 +703,8 @@ public class RegistreServiceImpl implements RegistreService {
 			UnitatOrganitzativaEntity unitatOrganitzativa,
 			boolean esNullSobreescriure,
 			Boolean sobreescriure,
-			boolean esNullProcedimentCodi,
-			String procedimentCodi,
+			boolean esNullSiaCodi,
+			String siaCodi,
 			RegistreNombreAnnexesEnumDto nombreAnnexos,
 			boolean annexosInterns,
 			boolean esNullUsuariAssignatCodi,
@@ -844,9 +844,9 @@ public class RegistreServiceImpl implements RegistreService {
             parametres.put("maxRegla", maxRegla!=null ?Integer.parseInt(maxRegla) :0);
             parametres.put("maxError", maxError!=null ?Integer.parseInt(maxError) :0);
         }
-		if (!esNullProcedimentCodi) {
-			sqlWhere.append("and (r.procedimentCodi = :procedimentCodi or r.serveiCodi = :procedimentCodi) ");
-			parametres.put("procedimentCodi", procedimentCodi);
+		if (!esNullSiaCodi) {
+			sqlWhere.append("and r.siaCodi = :siaCodi ");
+			parametres.put("siaCodi", siaCodi);
 		}
 		if (!esNullUsuariAssignatCodi && !mostrarSenseAssignar) {
 			sqlWhere.append("and r.agafatPer is not null and r.agafatPer.codi = :usuariAssignatCodi ");
@@ -1680,11 +1680,7 @@ public class RegistreServiceImpl implements RegistreService {
 			anotacioPerBackoffice.setAssumpteTipusCodi(registreEntity.getAssumpteTipusCodi());
 			anotacioPerBackoffice.setAssumpteTipusDescripcio(registreEntity.getAssumpteTipusDescripcio());
 			anotacioPerBackoffice.setAssumpteCodiCodi(registreEntity.getAssumpteCodi());
-			// Per evitar problemes als backoffices se seguirá informant en el codi de procediment el codi SIA del servei
-			anotacioPerBackoffice.setProcedimentCodi(registreEntity.getProcedimentCodi() != null ? 
-					registreEntity.getProcedimentCodi()
-					:registreEntity.getServeiCodi());
-			anotacioPerBackoffice.setServeiCodi(registreEntity.getServeiCodi());
+			anotacioPerBackoffice.setSiaCodi(registreEntity.getSiaCodi());
 			anotacioPerBackoffice.setAssumpteCodiDescripcio(registreEntity.getAssumpteDescripcio());
 			anotacioPerBackoffice.setTransportTipusCodi(registreEntity.getTransportTipusCodi());
 			anotacioPerBackoffice.setTransportTipusDescripcio(registreEntity.getTransportTipusDescripcio());
@@ -1745,7 +1741,7 @@ public class RegistreServiceImpl implements RegistreService {
 				anotacioPerBackoffice.setAssumpteTipusCodi(registreEntity.getAssumpteTipusCodi());
 				anotacioPerBackoffice.setAssumpteTipusDescripcio(registreEntity.getAssumpteTipusDescripcio());
 				anotacioPerBackoffice.setAssumpteCodiCodi(registreEntity.getAssumpteCodi());
-				anotacioPerBackoffice.setProcedimentCodi(registreEntity.getProcedimentCodi());
+				anotacioPerBackoffice.setSiaCodi(registreEntity.getSiaCodi());
 				anotacioPerBackoffice.setAssumpteCodiDescripcio(registreEntity.getAssumpteDescripcio());
 				anotacioPerBackoffice.setTransportTipusCodi(registreEntity.getTransportTipusCodi());
 				anotacioPerBackoffice.setTransportTipusDescripcio(registreEntity.getTransportTipusDescripcio());
@@ -2000,9 +1996,7 @@ public class RegistreServiceImpl implements RegistreService {
 							unitat.getId(),
 							bustia.getId(),
                             anotacio.getExtracte(),
-							anotacio.getProcedimentCodi() != null
-                                    ?anotacio.getProcedimentCodi()
-                                    :anotacio.getServeiCodi(),
+                            anotacio.getSiaCodi(),
 							anotacio.getTramitCodi(),
 							anotacio.getAssumpteCodi(),
 							presencial);
@@ -2518,7 +2512,7 @@ public class RegistreServiceImpl implements RegistreService {
 				RegistreAnnexDto.class);
 		if (annex.getFitxerNom().contains(".xml")) {
 			Map<String, String> metadadesMap = new HashMap<String, String>();
-			metadadesMap.put("eni:id_tramite", registre.getProcedimentCodi());
+			metadadesMap.put("eni:id_tramite", registre.getSiaCodi());
 			annex.setMetaDadesMap(metadadesMap);
 		}
 		return annex;
@@ -2649,15 +2643,13 @@ public class RegistreServiceImpl implements RegistreService {
 			Long entitatId,
 			Long registreId,
             String tipus,
-			String procedimentCodi,
-			String serveiCodi,			
+			String siaCodi,
 			String titol)
 			throws NotFoundException {
 		logger.debug("classificant l'anotació de registre (" +
 				"entitatId=" + entitatId + ", " +
 				"registreId=" + registreId + ", " +
-				"procedimentCodi=" + procedimentCodi + ", " +
-				"serveiCodi=" + serveiCodi + ")");
+				"siaCodi=" + siaCodi + ")");
 		EntitatEntity entitat = entityComprovarHelper.comprovarEntitat(
 				entitatId,
 				true,
@@ -2674,27 +2666,13 @@ public class RegistreServiceImpl implements RegistreService {
 		BustiaEntity bustia = entityComprovarHelper.comprovarBustia(
 				entitat,
 				registre.getPareId(),
-				this.comprovarPermisLectura());		
+				this.comprovarPermisLectura());
 		
-//		if (procedimentCodi == null && registre.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_REBUTJADA)) {
-//			registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense procediment " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
-//			registre.updateProcedimentCodi(procedimentCodi);
-//		}
-		
-		if ((procedimentCodi == null || serveiCodi == null) && registre.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_REBUTJADA)) {
-			if (procedimentCodi == null && serveiCodi == null) {
-				registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense procediment i sense servei " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));				
-			} else {
-				if (procedimentCodi == null) {
-					registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense procediment " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
-				} else {
-					registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense servei " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
-				}
-			}			
-		} 
-		registre.updateProcedimentCodi(procedimentCodi);
-		registre.updateServeiCodi(serveiCodi);		
-		
+		if (siaCodi == null && registre.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_REBUTJADA)) {
+            registre.updateBackEstat(RegistreProcesEstatEnum.BUSTIA_PENDENT, "Classificada sense sia " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+		}
+		registre.setSiaCodi(siaCodi);
+
 		if (titol != null) registre.updateTitol(titol);
 		
 		ReglaEntity reglaAplicable = reglaHelper.findAplicable(
@@ -2702,9 +2680,7 @@ public class RegistreServiceImpl implements RegistreService {
 				bustia.getUnitatOrganitzativa().getId(),
 				registre.getPare() != null? registre.getPare().getId() : null,
                 registre.getExtracte(),
-				registre.getProcedimentCodi() != null ?
-                        registre.getProcedimentCodi()
-                        :registre.getServeiCodi(),
+				registre.getSiaCodi(),
                 registre.getTramitCodi(),
 				registre.getAssumpteCodi(),
 				registre.getPresencial());
@@ -2775,11 +2751,7 @@ public class RegistreServiceImpl implements RegistreService {
         List<String> params = new ArrayList<>();
 
         params.add(tipus);
-        if (RegistreClassificarTipusEnum.PROCEDIMENT.name().equals(tipus)) {
-            params.add(registrePerClassificar.getProcedimentCodi());
-        } else if (RegistreClassificarTipusEnum.SERVEI.name().equals(tipus)){
-            params.add(registrePerClassificar.getServeiCodi());
-        }
+        params.add(registrePerClassificar.getSiaCodi());
 
 		contingutLogHelper.logMoviment(
 				registrePerClassificar,

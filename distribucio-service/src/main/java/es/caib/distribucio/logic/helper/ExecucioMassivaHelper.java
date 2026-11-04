@@ -1,13 +1,7 @@
 package es.caib.distribucio.logic.helper;
 
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -89,15 +83,13 @@ public class ExecucioMassivaHelper {
 	public ClassificacioResultatDto classificarNewTransaction(Long entitatId, Long elementId, String parametres) {
 		String titol = getValorParametre(parametres, "titol", String.class);
         String tipus = getValorParametre(parametres, "tipus", String.class);
-		String procedimentCodi = getValorParametre(parametres, "codiProcediment", String.class);
-		String serveiCodi = getValorParametre(parametres, "codiServei", String.class);
+		String codiSia = getValorParametre(parametres, "codiSia", String.class);
 		
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatId, 
 				elementId,
                 tipus,
-				procedimentCodi, 
-				serveiCodi, 
+                codiSia,
 				titol);
 
 		return resultat;

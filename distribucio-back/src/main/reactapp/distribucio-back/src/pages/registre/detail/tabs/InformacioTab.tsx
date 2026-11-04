@@ -1,16 +1,21 @@
-import { useBaseAppContext, MuiDetail } from 'reactlib';
+import {useBaseAppContext, MuiDetail, useDetailContext} from 'reactlib';
 import { Box, Grid, Icon, IconButton } from '@mui/material';
 import { DetailCard, DetailExpandCard, DetailField } from '../../../../components/CardData.tsx';
 import Load from '../../../../components/Load.tsx';
 import { ROLE_ADMIN, ROLE_ADMIN_LECTURA, useDistribucioContext } from '../../../../components/DistribucioContext.ts';
 import { useActions } from '../RegistreActions.tsx';
 import { icons } from '../../../../util/icons';
+import {useMemo} from "react";
 
 export const InformacioRegistre = ({ entity }: any) => {
     const { t } = useBaseAppContext();
     const { currentRole } = useDistribucioContext();
+    const { data, fields } = useDetailContext();
     const isAdmin = currentRole == ROLE_ADMIN || currentRole == ROLE_ADMIN_LECTURA;
     // TODO: els dos camps on es fa servir isAdmin, sembla que per la condicio no ensenya el mateix valor que en el .jsp
+
+    const tipusSiaField = useMemo(() => fields?.find?.((item: any) => item?.name === 'tipusSia'), []);
+    const tipusSia = useMemo(() => tipusSiaField?.options?.[data?.tipusSia] ?? undefined, []);
 
     const { justificant } = useActions();
 
@@ -72,8 +77,7 @@ export const InformacioRegistre = ({ entity }: any) => {
             </DetailCard>
 
             <DetailCard title={t('component.RegistreDetail.titles.opcional')} size={6}>
-                <DetailField name={'procediment'} inline hidden={entity.serveiCodi} />
-                <DetailField name={'servei'} inline hidden={!entity.serveiCodi} />
+                <DetailField name={'sia'} label={tipusSia} inline />
                 <DetailField name={'tramitNom'} inline>
                     {entity.tramitCodi} - {entity.tramitNom}
                 </DetailField>

@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(
 		name = "Bústia",
 		description = "API REST d'alta de registres d'entrada a l'aplicació Distribució.")
+@Deprecated
 public class BustiaController {
 	
 	@Autowired
@@ -34,7 +35,7 @@ public class BustiaController {
 					+ "o a una altra bústia, aplicant el filtre per regla segons "
 					+ "la unitat organitzativa i el codi SIA indicats a la petició.")
 	@ResponseBody
-    public ResponseEntity<String> altaAnotacio(@RequestBody DadesAltaAnotacio dadesAlta) {
+    public ResponseEntity<String> altaAnotacio(@RequestBody DadesAltaAnotacio<RegistreAnotacio> dadesAlta) {
 		String entitatCodi = dadesAlta.getEntitatCodi();
 		String unitatAdministrativaCodi = dadesAlta.getUnitatAdministrativaCodi();
 		RegistreAnotacio registreAnotacio = dadesAlta.getRegistreAnotacio();

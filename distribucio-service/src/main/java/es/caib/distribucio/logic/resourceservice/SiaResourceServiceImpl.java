@@ -9,10 +9,13 @@ import es.caib.distribucio.logic.intf.model.SiaResource;
 import es.caib.distribucio.logic.intf.resourceservice.SiaResourceService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.logic.intf.util.Utils;
+import es.caib.distribucio.persist.resourceentity.BustiaResourceEntity;
 import es.caib.distribucio.persist.resourceentity.EntitatResourceEntity;
 import es.caib.distribucio.persist.resourceentity.SiaResourceEntity;
+import es.caib.distribucio.persist.resourcerepository.BustiaResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.EntitatResourceRepository;
 import es.caib.distribucio.persist.resourcerepository.SiaResourceRepository;
+import es.caib.distribucio.persist.resourcerepository.UnitatOrganitzativaResourceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -32,6 +35,8 @@ public class SiaResourceServiceImpl extends BaseMutableResourceService<SiaResour
     private final EntitatResourceRepository entitatResourceRepository;
     private final SiaResourceRepository siaResourceRepository;
     private final PaginacioHelper paginacioHelper;
+    private final BustiaResourceRepository bustiaResourceRepository;
+    private final UnitatOrganitzativaResourceRepository unitatOrganitzativaResourceRepository;
 
     @Override
 	protected Specification<SiaResourceEntity> additionalSpecification(String[] namedQueries) {
@@ -44,14 +49,38 @@ public class SiaResourceServiceImpl extends BaseMutableResourceService<SiaResour
             /// Entitat
             if (entitatActualId != null) {
                 predicates.add(cb.equal(root.get("entitat").get("id"), entitatActualId));
+            } else {
+                return cb.disjunction();
+            }
+
+            /// BUSTIA
+            if (mapaNamedQueries.containsKey("BUSTIA")) {
+                String id = mapaNamedQueries.get("BUSTIA");
+                if (id != null) {
+                    BustiaResourceEntity bustia = bustiaResourceRepository.findById(Long.valueOf(id)).get();
+
+                    List<Long> idsJerarquia = unitatOrganitzativaResourceRepository.findUnitatAndAllDescendentsIds(
+                            bustia.getUnitatOrganitzativa().getId() );
+                    if (idsJerarquia.isEmpty()) {
+                        return cb.disjunction(); // No existe tal unidad, no devolver nada
+                    }
+
+                    int chunkSize = 900;
+                    List<Predicate> orPredicates = new ArrayList<>();
+
+                    for (int i = 0; i < idsJerarquia.size(); i += chunkSize) {
+                        List<Long> chunk = idsJerarquia.subList(i, Math.min(i + chunkSize, idsJerarquia.size()));
+                        orPredicates.add(root.get("unitatOrganitzativa").get("id").in(chunk));
+                    }
+
+                    predicates.add( cb.or(orPredicates.toArray(new Predicate[0])) );
+                } else {
+                    return cb.disjunction();
+                }
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
-	}
-
-	@Override
-	protected void afterConversion(SiaResourceEntity entity, SiaResource resource) {
 	}
 
 	@Override

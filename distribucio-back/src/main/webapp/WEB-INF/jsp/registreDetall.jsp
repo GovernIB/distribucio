@@ -984,43 +984,29 @@ li[id^="anotacio_"] {
 				<tr>
 					<td><strong><spring:message code="registre.detalls.camp.extracte"/></strong></td>
 					<td colspan="5">${registre.extracte}</td>
-				</tr>			
-				<c:set var="codisProcedimentServei" value="${procedimentDades != null && serveiDades != null}"></c:set>				
+				</tr>
 				<tr>
 					<td>
-						<c:if test="${procedimentDades != null || serveiDades == null}">
+						<c:if test="${siaDades.tipus == 'PROCEDIMENT'}">
 							<strong><spring:message code="registre.detalls.camp.procediment"/></strong>
 						</c:if>
-						<c:if test="${codisProcedimentServei}">
-							<br/>
-						</c:if>
-						<c:if test="${serveiDades != null }">
+						<c:if test="${siaDades.tipus == 'SERVEI'}">
 							<strong><spring:message code="registre.detalls.camp.servei"/></strong>
+						</c:if>
+						<c:if test="${siaDades.tipus == null}">
+							<strong><spring:message code="registre.detalls.camp.sia"/></strong>
 						</c:if>
 					</td>
 					<td colspan="3">
-						<c:if test="${procedimentDades != null }">
-							${procedimentDades.codiSia} - ${procedimentDades.nom}
-							<c:if test="${procedimentDades.estat == 'EXTINGIT'}">
-								 <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.procediment.extingit"/>'> </span>
-							</c:if>		
-						</c:if>
-						<c:if test="${codisProcedimentServei}">
-							<br/>
-						</c:if>
-						<c:if test="${serveiDades != null }">
-							${serveiDades.codiSia} - ${serveiDades.nom}
-							<c:if test="${serveiDades.estat == 'EXTINGIT'}">
-								 <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.servei.extingit"/>'> </span>
-							</c:if>		
-						</c:if>
-						<c:if test="${codisProcedimentServei}">
-							<div class="panel-body">
-									<div class="alert alert-danger">
-										<spring:message code="regla.validacio.codis.procediment.servei"/>
-									</div>
-							</div>						
-						</c:if>
+                        ${siaDades.codiSia} - ${siaDades.nom}
+                        <c:if test="${siaDades.estat == 'EXTINGIT'}">
+                            <c:if test="${siaDades.tipus == 'PROCEDIMENT'}">
+                                <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.procediment.extingit"/>'> </span>
+                            </c:if>
+                            <c:if test="${siaDades.tipus == 'SERVEI'}">
+                                <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.servei.extingit"/>'> </span>
+                            </c:if>
+                        </c:if>
 					</td>
 					<td><strong><spring:message code="registre.detalls.camp.numexp"/></strong></td>
 					<td>${registre.expedientNumero}</td>
@@ -1504,21 +1490,14 @@ li[id^="anotacio_"] {
 							<tbody>
 								<tr>
 									<td colspan="2">
-                                        <c:if test="${procedimentDades != null}">
+                                        <c:if test="${siaDades.tipus == 'PROCEDIMENT'}">
                                             <strong><spring:message code="registre.detalls.camp.procediment"/></strong>
                                         </c:if>
-                                        <c:if test="${serveiDades != null }">
+                                        <c:if test="${siaDades.tipus == 'SERVEI'}">
                                             <strong><spring:message code="registre.detalls.camp.servei"/></strong>
                                         </c:if>
                                     </td>
-									<td colspan="2">
-                                        <c:if test="${procedimentDades != null }">
-                                            ${procedimentDades.codiSia} - ${procedimentDades.nom}
-                                        </c:if>
-                                        <c:if test="${serveiDades != null }">
-                                            ${serveiDades.codiSia} - ${serveiDades.nom}
-                                        </c:if>
-									</td>
+									<td colspan="2">${siaDades.codiSia} - ${siaDades.nom}</td>
 								</tr>
 								<tr>
 									<td colspan="2"><strong><spring:message code="registre.detalls.camp.tramit"/></strong></td>

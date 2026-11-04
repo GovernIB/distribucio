@@ -1,4 +1,4 @@
-import { useBaseAppContext } from 'reactlib';
+import {useBaseAppContext, useDetailContext} from 'reactlib';
 import { Box, Grid, Icon, IconButton, Typography } from '@mui/material';
 import { DetailCard, DetailExpandCard, DetailField } from '../../../../components/CardData.tsx';
 import { ROLE_ADMIN, ROLE_ADMIN_LECTURA, useDistribucioContext } from '../../../../components/DistribucioContext.ts';
@@ -6,14 +6,19 @@ import { useActions } from '../RegistreActions.tsx';
 import { InteressatsGrid } from './InteressatsTab.tsx';
 import { AnnexGrid } from './AnnexosTab.tsx';
 import { icons } from '../../../../util/icons';
+import {useMemo} from "react";
 
 export const Resum = ({ entity }: any) => {
     const { t } = useBaseAppContext();
     const { currentRole } = useDistribucioContext();
+    const { data, fields } = useDetailContext();
     const isAdmin = currentRole == ROLE_ADMIN || currentRole == ROLE_ADMIN_LECTURA;
     const senseCodi = ['ARXIU_PENDENT', 'REGLA_PENDENT', 'BUSTIA_PENDENT', 'BUSTIA_PROCESSADA'].includes(
         entity.procesEstat
     );
+
+    const tipusSiaField = useMemo(() => fields?.find?.((item: any) => item?.name === 'tipusSia'), []);
+    const tipusSia = useMemo(() => tipusSiaField?.options?.[data?.tipusSia] ?? undefined, []);
 
     const { justificant } = useActions();
 
@@ -48,25 +53,13 @@ export const Resum = ({ entity }: any) => {
                     {t(`common.boolean.${entity.presencial}`)}
                 </DetailField>
                 <DetailField size={12} name={'extracte'} inline />
-                <DetailField size={6} name={'procediment'} isObject inline hidden={entity.serveiCodi}>
+                <DetailField size={6} name={'sia'} label={tipusSia} isObject inline>
                     <Box display={'flex'}>
                         <Typography variant="inherit" color="text.primary">
-                            {entity.procediment?.description}
+                            {entity.sia?.description}
                         </Typography>
                         {entity.siaExtingit && (
                             <Icon title={t('page.procediments.extingit')} fontSize={'small'} color={'warning'}>
-                                {icons.advertencia}
-                            </Icon>
-                        )}
-                    </Box>
-                </DetailField>
-                <DetailField size={6} name={'servei'} isObject inline hidden={!entity.serveiCodi}>
-                    <Box display={'flex'}>
-                        <Typography variant="inherit" color="text.primary">
-                            {entity.servei?.description}
-                        </Typography>
-                        {entity.siaExtingit && (
-                            <Icon title={t('page.serveis.extingit')} fontSize={'small'} color={'warning'}>
                                 {icons.advertencia}
                             </Icon>
                         )}

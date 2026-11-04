@@ -112,4 +112,8 @@ public class SiaResource extends BaseResource<Long> {
     public String getCodiNom() {
         return codiSia + " - " + nom;
     }
+
+    public String getCodiNomEstat() {
+        return codiSia + " - " + nom + " => " + estat;
+    }
 }

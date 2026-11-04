@@ -1,12 +1,6 @@
 package es.caib.distribucio.back.controller;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +11,8 @@ import es.caib.distribucio.back.command.*;
 import es.caib.distribucio.back.helper.*;
 import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
+import es.caib.distribucio.logic.intf.model.SiaResource;
+import es.caib.distribucio.logic.intf.resourceservice.SiaResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +63,8 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 	private AnnexosService annexosService;
 	@Autowired
 	private BustiaService bustiaService;
+    @Autowired
+    private SiaResourceService siaResourceService;
 
     private ExecucioMassivaFiltreCommand getFiltreCommand(
             HttpServletRequest request) {
@@ -355,25 +353,18 @@ public class ExecucioMassivaController extends BaseUserOAdminController {
 			@Valid RegistreClassificarCommand command,
 			Model model) {
 		String titol = command.getTitol();
-		String codiProcediment = command.getCodiProcediment();
-		String codiServei = command.getCodiServei();
-		
-		if (command.getTipus() == null || !command.getTipus().equals(RegistreClassificarTipusEnum.PROCEDIMENT.name())) {
-			codiProcediment = null;
-		}
-		if (command.getTipus() == null || !command.getTipus().equals(RegistreClassificarTipusEnum.SERVEI.name())) {
-			codiServei = null;
-		}
+
+        EntitatDto entitatActual = EntitatHelper.getEntitatActual(request);
+        SiaResource siaResource = siaResourceService.findByEntitatIdAndCodiSia(entitatActual.getId(), command.getCodiSia());
 		
 		try {
 			List<RegistreDto> registresSeleccionats = obtenirSeleccioRegistres(request, rol, false);
 			
 			Map<String, Object> params = new HashMap<>();
 		    params.put("titol", titol);
-            params.put("tipus", command.getTipus());
-		    params.put("codiProcediment", codiProcediment);
-		    params.put("codiServei", codiServei);
-		    
+            params.put("tipus", siaResource.getTipus());
+		    params.put("codiSia", siaResource.getCodiSia());
+
 			return executarAccioMassivaRegistres(
 					request, 
 					rol, 

@@ -26,6 +26,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -42,6 +44,8 @@ import es.caib.distribucio.logic.intf.registre.RegistreTipusEnum;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter
+@Setter
 @Entity
 @Table(name = BaseConfig.DB_PREFIX + "registre",
 		uniqueConstraints = {
@@ -89,10 +93,12 @@ public class RegistreEntity extends ContingutEntity {
 	private String assumpteCodi;
 	@Column(name = "assumpte_desc", length = 255)
 	private String assumpteDescripcio;
-	@Column(name = "procediment_codi", length = 64)
-	private String procedimentCodi;
-	@Column(name = "servei_codi", length = 64)
-	private String serveiCodi;
+//	@Column(name = "procediment_codi", length = 64)
+//	private String procedimentCodi;
+//	@Column(name = "servei_codi", length = 64)
+//	private String serveiCodi;
+	@Column(name = "sia_codi", length = 64)
+	private String siaCodi;
 	@Column(name = "referencia", length = 16)
 	private String referencia;
 	@Column(name = "expedient_num", length = 80)
@@ -255,21 +261,12 @@ public class RegistreEntity extends ContingutEntity {
 	private String tramitCodi;
 	@Column(name = "tramit_nom", length = 255)
 	private String tramitNom;
-	
-	public boolean isEnviatPerEmail() {
-		return enviatPerEmail;
-	}
+
 	public void updateEnviatPerEmail(boolean enviatPerEmail) {
 		this.enviatPerEmail = enviatPerEmail;
 	}
-	public RegistreAnnexEntity getJustificant() {
-		return justificant;
-	}
 	public void updateJustificant(RegistreAnnexEntity justificant) {
 		this.justificant = justificant;
-	}
-	public boolean isJustificantDescarregat() {
-		return justificantDescarregat;
 	}
 	public void updateJustificantDescarregat(boolean justificantDescarregat) {
 		this.justificantDescarregat = justificantDescarregat;
@@ -277,208 +274,20 @@ public class RegistreEntity extends ContingutEntity {
 	public RegistreTipusEnum getRegistreTipus() {
 		return RegistreTipusEnum.valorAsEnum(registreTipus);
 	}
-	public String getUnitatAdministrativa() {
-		return unitatAdministrativa;
-	}
-	public String getUnitatAdministrativaDescripcio() {
-		return unitatAdministrativaDescripcio;
-	}
-	public String getNumero() {
-		return numero;
-	}
-	public Date getData() {
-		return data;
-	}
-	public Date getDataOrigen() {
-		return dataOrigen;
-	}
-	public String getIdentificador() {
-		return identificador;
-	}
-	public String getEntitatCodi() {
-		return entitatCodi;				
-	}
-	public String getEntitatDescripcio() {
-		return entitatDescripcio;
-	}
-	public String getOficinaCodi() {
-		return oficinaCodi;
-	}
-	public String getOficinaDescripcio() {
-		return oficinaDescripcio;
-	}
-	public String getOficinaOrigenCodi() {
-		return oficinaOrigenCodi;
-	}
-	public String getOficinaOrigenDescripcio() {
-		return oficinaOrigenDescripcio;
-	}
-	public String getLlibreCodi() {
-		return llibreCodi;
-	}
-	public String getLlibreDescripcio() {
-		return llibreDescripcio;
-	}
-	public Boolean getPresencial() {
-		return presencial;
-	}
-	public String getExtracte() {
-		return extracte;
-	}
-	public String getAssumpteTipusCodi() {
-		return assumpteTipusCodi;
-	}
-	public String getAssumpteTipusDescripcio() {
-		return assumpteTipusDescripcio;
-	}
-	public String getAssumpteCodi() {
-		return assumpteCodi;
-	}
-	public String getAssumpteDescripcio() {
-		return assumpteDescripcio;
-	}
-	public String getProcedimentCodi() {
-		return procedimentCodi;
-	}
-	public String getServeiCodi() {
-		return serveiCodi;
-	}
-	public String getReferencia() {
-		return referencia;
-	}
-	public String getExpedientNumero() {
-		return expedientNumero;
-	}
-	public String getExpedientArxiuUuid() {
-		return expedientArxiuUuid;
-	}
-	public String getNumeroOrigen() {
-		return numeroOrigen;
-	}
-	public String getIdiomaCodi() {
-		return idiomaCodi;
-	}
-	public String getIdiomaDescripcio() {
-		return idiomaDescripcio;
-	}
-	public String getTransportTipusCodi() {
-		return transportTipusCodi;
-	}
-	public String getTransportTipusDescripcio() {
-		return transportTipusDescripcio;
-	}
-	public String getTransportNumero() {
-		return transportNumero;
-	}
-	public String getUsuariNom() {
-		return usuariNom;
-	}
-	public String getUsuariContacte() {
-		return usuariContacte;
-	}
-	public String getAplicacioCodi() {
-		return aplicacioCodi;
-	}
-	public String getAplicacioVersio() {
-		return aplicacioVersio;
-	}
-	public String getDocumentacioFisicaCodi() {
-		return documentacioFisicaCodi;
-	}
-	public String getDocumentacioFisicaDescripcio() {
-		return documentacioFisicaDescripcio;
-	}
-	public String getObservacions() {
-		return observacions;
-	}
-	public String getExposa() {
-		return exposa;
-	}
-	public String getSolicita() {
-		return solicita;
-	}
-	public String getMotiuRebuig() {
-		return motiuRebuig;
-	}
-	public String getUsuariCodi() {
-		return usuariCodi;
-	}
-	public Date getProcesData() {
-		return procesData;
-	}
-	public RegistreProcesEstatEnum getProcesEstat() {
-		return procesEstat;
-	}
-	/** Retorna true si està pendent de processament. */
-	public Boolean getPendent() {
-		return pendent;
-	}
-	public RegistreProcesEstatSistraEnum getProcesEstatSistra() {
-		return procesEstatSistra;
-	}
-	public String getProcesError() {
-		return procesError;
-	}
 	public Integer getProcesIntents() {
 		return procesIntents;
-	}
-	public List<RegistreInteressatEntity> getInteressats() {
-		return interessats;
-	}
-	public List<RegistreAnnexEntity> getAnnexos() {
-		return annexos;
-	}
-	public String getJustificantArxiuUuid() {
-		return justificantArxiuUuid;
-	}
-	public ReglaEntity getRegla() {
-		return regla;
-	}
-	public Boolean getLlegida() {
-		return llegida;
 	}
 	public Integer getNumeroCopia() {
 		return numeroCopia != null? numeroCopia : 0;
 	}
-	public String getBackCodi() {
-		return backCodi;
-	}
-	public Date getBackRetryEnviarData() {
-		return backRetryEnviarData;
-	}
-	public Date getBackPendentData() {
-		return backPendentData;
-	}
-	public Date getBackRebudaData() {
-		return backRebudaData;
-	}
-	public String getBackObservacions() {
-		return backObservacions;
-	}
-	public UsuariEntity getAgafatPer() {
-		return agafatPer;
-	}
-	public String getTramitCodi() {
-		return tramitCodi;
-	}
-	public String getTramitNom() {
-		return tramitNom;
-	}
 	public void updateAgafatPer(UsuariEntity usuari) {
 		this.agafatPer = usuari;
-	}
-	// Informació sobre el tancament del registre
-	public Date getDataTancament() {
-		return this.dataTancament;
 	}
 	public boolean getArxiuTancat() {
 		return this.arxiuTancat != null ? this.arxiuTancat.booleanValue() : false;
 	}
 	public boolean getArxiuTancatError() {
 		return this.arxiuTancatError != null ? this.arxiuTancatError.booleanValue() : false;
-	}
-	public boolean isReactivat() {
-		return reactivat;
 	}
 	public void updateReactivat(boolean reactivat) {
 		this.reactivat = reactivat;
@@ -585,9 +394,6 @@ public class RegistreEntity extends ContingutEntity {
 		this.backRebudaData = backRebudaData;
 		this.procesError = null;
 	}
-	public Date getBackProcesRebutjErrorData() {
-		return backProcesRebutjErrorData;
-	}
 	public void updateBackProcesRebutjErrorData(Date backProcesRebutjErrorData) {
 		this.backProcesRebutjErrorData = backProcesRebutjErrorData;
 	}
@@ -616,12 +422,6 @@ public class RegistreEntity extends ContingutEntity {
 	public void updateTitol(String titol) {
 		this.extracte = titol;
 	}
-	public void updateProcedimentCodi(String procedimentCodi) {
-		this.procedimentCodi = procedimentCodi;
-	}
-	public void updateServeiCodi(String serveiCodi) {
-		this.serveiCodi = serveiCodi;
-	}
 	public void updateLlegida(Boolean llegida) {
 		this.llegida = llegida;
 	}
@@ -634,17 +434,8 @@ public class RegistreEntity extends ContingutEntity {
 	public void updatePresencial(Boolean presencial) {
 		this.presencial = presencial;
 	}
-	public boolean isSobreescriure() {
-		return sobreescriure;
-	}
 	public void updateSobreescriure(boolean sobreescriure) {
 		this.sobreescriure = sobreescriure;
-	}
-	public int getAnnexosEstatEsborrany() {
-		return annexosEstatEsborrany;
-	}
-	public void setAnnexosEstatEsborrany(int annexosEstatEsborrany) {
-		this.annexosEstatEsborrany = annexosEstatEsborrany;
 	}
 	public static Builder getBuilder(
 			EntitatEntity entitat,
@@ -762,12 +553,8 @@ public class RegistreEntity extends ContingutEntity {
 			built.assumpteDescripcio = assumpteDescripcio;
 			return this;
 		}
-		public Builder procedimentCodi(String procedimentCodi) {
-			built.procedimentCodi = procedimentCodi;
-			return this;
-		}
-		public Builder serveiCodi(String serveiCodi) {
-			built.serveiCodi = serveiCodi;
+		public Builder siaCodi(String siaCodi) {
+			built.siaCodi = siaCodi;
 			return this;
 		}
 		public Builder referencia(String referencia) {
@@ -907,8 +694,9 @@ public class RegistreEntity extends ContingutEntity {
 			String assumpteTipusDescripcio,
 			String assumpteCodi,
 			String assumpteDescripcio,
-			String procedimentCodi,
-			String serveiCodi,
+//			String procedimentCodi,
+//			String serveiCodi,
+			String siaCodi,
 			String referencia,
 			String expedientNumero,
 			String numeroOrigen,
@@ -967,8 +755,9 @@ public class RegistreEntity extends ContingutEntity {
 		this.assumpteTipusDescripcio = assumpteTipusDescripcio;
 		this.assumpteCodi = assumpteCodi;
 		this.assumpteDescripcio = assumpteDescripcio;
-		this.procedimentCodi = procedimentCodi;
-		this.serveiCodi = serveiCodi;
+//		this.procedimentCodi = procedimentCodi;
+//		this.serveiCodi = serveiCodi;
+		this.siaCodi = siaCodi;
 		this.referencia = referencia;
 		this.expedientNumero = expedientNumero;
 		this.numeroOrigen = numeroOrigen;

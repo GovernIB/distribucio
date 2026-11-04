@@ -274,7 +274,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
 			"			) > 0 ) " + 
 			"and (:esNullSobreescriure = true or r.sobreescriure = :sobreescriure) " + 
-			"and (:esNullProcedimentCodi = true or r.procedimentCodi = :procedimentCodi)")
+			"and (:esNullProcedimentCodi = true or r.siaCodi = :procedimentCodi)")
 	public Page<RegistreEntity> findRegistreByPareAndFiltre(
 			@Param("entitat") EntitatEntity entitat,
 			@Param("esBustiesTotes") boolean esBustiesTotes,
@@ -352,7 +352,7 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			"					or lower(interessat.raoSocial) like lower('%'||:interessat||'%'))" +
 			"			) > 0 ) " + 
 			"and (:esNullSobreescriure = true or r.sobreescriure = :sobreescriure) " + 
-			"and (:esNullProcedimentCodi = true or r.procedimentCodi = :procedimentCodi) " +
+			"and (:esNullProcedimentCodi = true or r.siaCodi = :procedimentCodi) " +
 			"and (:esNullLlistaIdRegistresAnnex = true or "
 			+ "										(r.id in (:llista1) or r.id in (:llista2) or r.id in (:llista3) or r.id in (:llista4) or r.id in (:llista5) or r.id in (:llista6) or r.id in (:llista7) ) )")
 //			"and (:esNullNombreAnnexes = true or r.id in (select rae.registre.id from RegistreAnnexEntity rae "

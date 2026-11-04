@@ -14,6 +14,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import es.caib.distribucio.logic.intf.dto.*;
+import es.caib.distribucio.logic.intf.model.SiaResource;
+import es.caib.distribucio.logic.intf.resourceservice.SiaResourceService;
 import es.caib.distribucio.logic.intf.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(
 		name = "Regla",
 		description = "API REST de creació de regles per aplicacions de client i codi SIA. Per invocar els mètodes és necessari accedir amb un usuari que tengui el rol DIS_REGLA.")
+@Deprecated
 public class ReglaRestController {
 
 	@Autowired
@@ -50,10 +53,8 @@ public class ReglaRestController {
 	private BackofficeService backofficeService;
 	@Autowired
 	private EntitatService entitatService;
-	@Autowired
-	private ProcedimentService procedimentService;
     @Autowired
-    private ServeiService serveiService;
+    private SiaResourceService siaResourceService;
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
 	@Operation(
@@ -166,31 +167,16 @@ public class ReglaRestController {
 			}
 		}
 		try {
-			novaReglaDto = reglaService.create(entitatDto.getId(), novaReglaDto);
-            if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(tipSiaFinal)) {
-                ProcedimentDto procediment = procedimentService.findByCodiSia(entitatDto.getId(), sia);
-                if (procediment != null) {
-                    msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-                            + "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia + " ("
-                            + procediment.getNom() + ")" + " de la unitat " + " \""
-                            + procediment.getUnitatOrganitzativa().getCodiAndNom() + "\"" + " a l'entitat " + entitat;
-                } else {
-                    msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-                            + "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia
-                            + "(Procediment no trobat)" + " a l'entitat " + entitat;
-                }
-            } else if (RegistreClassificarTipusEnum.SERVEI.equals(tipSiaFinal)) {
-                ServeiDto servei = serveiService.findByCodiSia(entitatDto.getId(), sia);
-                if (servei != null) {
-                    msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-                            + "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia + " ("
-                            + servei.getNom() + ")" + " de la unitat " + " \""
-                            + servei.getUnitatOrganitzativa().getCodiAndNom() + "\"" + " a l'entitat " + entitat;
-                } else {
-                    msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
-                            + "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia
-                            + "(Servei no trobat)" + " a l'entitat " + entitat;
-                }
+            SiaResource siaResource = siaResourceService.findByEntitatIdAndCodiSia(entitatDto.getId(), sia);
+            if (siaResource != null) {
+                msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
+                        + "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia + " ("
+                        + siaResource.getNom() + ")" + " de la unitat " + " \""
+                        + siaResource.getUnitatOrganitzativa().getDescription() + "\"" + " a l'entitat " + entitat;
+            } else {
+                msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
+                        + "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia
+                        + "(Sia no trobat)" + " a l'entitat " + entitat;
             }
 			logger.debug(msg);
 			return new ResponseEntity<Object>(msg, HttpStatus.OK);

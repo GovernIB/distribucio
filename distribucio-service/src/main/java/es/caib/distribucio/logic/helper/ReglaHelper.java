@@ -458,9 +458,6 @@ public class ReglaHelper {
 						registreSimulatDto.getUnitatId(),
 						registreSimulatDto.getBustiaId(),
 						registreSimulatDto.getExtracte(),
-//						registreSimulatDto.getProcedimentCodi() != null
-//                                ?registreSimulatDto.getProcedimentCodi()
-//                                :registreSimulatDto.getServeiCodi(),
                         registreSimulatDto.getSiaCodi(),
 						registreSimulatDto.getTramitCodi(),
 						registreSimulatDto.getAssumpteCodi(),
@@ -472,9 +469,6 @@ public class ReglaHelper {
 						registreSimulatDto.getUnitatId(),
 						registreSimulatDto.getBustiaId(),
 						registreSimulatDto.getExtracte(),
-//                        registreSimulatDto.getProcedimentCodi() != null
-//                                ?registreSimulatDto.getProcedimentCodi()
-//                                :registreSimulatDto.getServeiCodi(),
                         registreSimulatDto.getSiaCodi(),
                         registreSimulatDto.getTramitCodi(),
 						registreSimulatDto.getAssumpteCodi(), 
@@ -655,9 +649,7 @@ public class ReglaHelper {
 							bustia.getUnitatOrganitzativa().getId(),
 							bustia.getId(),
                             registre.getExtracte(),
-                            registre.getProcedimentCodi() != null
-                                    ?registre.getProcedimentCodi()
-                                    :registre.getServeiCodi(),
+                            registre.getSiaCodi(),
 							registre.getTramitCodi(),
 							registre.getAssumpteCodi(),
 							presencial);
@@ -668,9 +660,7 @@ public class ReglaHelper {
 							bustia.getUnitatOrganitzativa().getId(),
 							bustia.getId(),
                             registre.getExtracte(),
-                            registre.getProcedimentCodi() != null
-                                    ?registre.getProcedimentCodi()
-                                    :registre.getServeiCodi(),
+                            registre.getSiaCodi(),
 							registre.getTramitCodi(),
 							registre.getAssumpteCodi(),
 							presencial);

@@ -46,7 +46,7 @@ public class RegistreHelper extends BaseController{
 								"presencial",
 								"documentacio.fisica",
 								"numero.annexes", 
-								"procediment",
+								"sia",
 								"observacions",
 								"origenNum",
 								"origenData",
@@ -94,7 +94,7 @@ public class RegistreHelper extends BaseController{
 			
 			fila[7] = String.valueOf(registre.getAnnexos().size());
 			
-			fila[8] = registre.getProcedimentCodi();
+			fila[8] = registre.getSiaCodi();
 			
 			fila[9] = registre.getObservacions();
 			

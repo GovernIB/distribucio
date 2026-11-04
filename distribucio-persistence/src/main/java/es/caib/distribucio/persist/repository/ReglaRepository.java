@@ -207,7 +207,8 @@ public interface ReglaRepository extends JpaRepository<ReglaEntity, Long> {
 			"and (:unitatOrganitzativaFiltreIsNull = true or r.pare.id in (:bustiesUnitatOrganitzativaIds)) " +
 			"and (:isRegistrePresencialNull = true or r.presencial = :registrePresencial) " +
 			"and (:bustiaFiltreIsNull = true or r.pare.id = :bustiaFiltreId) " +
-			"and (r.procedimentCodi in (:siaCodisFiltre) or r.serveiCodi in (:siaCodisFiltre)) " +
+//			"and (r.procedimentCodi in (:siaCodisFiltre) or r.serveiCodi in (:siaCodisFiltre)) " +
+			"and (r.siaCodi in (:siaCodisFiltre)) " +
 //			"and (:assumpteCodiFiltreIsNull = true or r.assumpteCodi = :assumpteCodiFiltre) " +
 			"order by r.identificador asc")
 	List<RegistreEntity> findRegistres(

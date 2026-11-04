@@ -14,6 +14,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import es.caib.distribucio.logic.intf.model.SiaResource;
+import es.caib.distribucio.logic.intf.resourceservice.SiaResourceService;
 import es.caib.distribucio.logic.intf.service.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
@@ -50,12 +52,10 @@ import es.caib.distribucio.logic.intf.dto.EntitatDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto.OrdreDireccioDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
 import es.caib.distribucio.logic.intf.dto.RegistreDto;
 import es.caib.distribucio.logic.intf.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.logic.intf.dto.RegistreTipusDocFisicaEnumDto;
-import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganitzativaDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
@@ -90,12 +90,10 @@ public class RegistreAdminController extends BaseAdminController {
 	private BeanGeneratorHelper beanGeneratorHelper;
 	@Autowired
 	private AplicacioService aplicacioService;
-	@Autowired
-	private ProcedimentService procedimentService;
-	@Autowired
-	private ServeiService serveiService;
     @Autowired
     private ConfigService configService;
+    @Autowired
+    private SiaResourceService siaResourceService;
 
     @RequestMapping(method = RequestMethod.GET)
 	public String registreAdminGet(
@@ -205,28 +203,17 @@ public class RegistreAdminController extends BaseAdminController {
 				numeroAnnexosPendentsArxiu = this.numeroAnnexosPendentsArxiu((RegistreDto)registreDto);
 				numeroAnnexosFirmaInvalida = this.numeroAnnexosFirmaInvalida((RegistreDto)registreDto);
 				numeroAnnexosEstatEsborrany = this.numeroAnnexosEstatEsborrany((RegistreDto)registreDto);
-				String codiSia = ((RegistreDto)registreDto).getProcedimentCodi();
-				if (codiSia != null) {
-					ProcedimentDto procediment = procedimentService.findByCodiSia(entitatActual.getId(), codiSia);
-					if (procediment == null) {
-						procediment = new ProcedimentDto();
-						procediment.setCodi(codiSia);
-						procediment.setCodiSia(codiSia);
-						procediment.setNom(getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia}));
-					}
-					model.addAttribute("procedimentDades", procediment);
-				}
-				String codiServei = registre.getServeiCodi();
-				if (codiServei != null) {
-					ServeiDto servei = serveiService.findByCodiSia(entitatActual.getId(), codiServei);
-					if (servei == null) {
-						servei = new ServeiDto();
-						servei.setCodi(codiServei);
-						servei.setCodiSia(codiServei);
-						servei.setNom(getMessage(request, "registre.detalls.camp.servei.no.trobat", new Object[] {codiServei}));
-					}
-					model.addAttribute("serveiDades", servei);				
-				}
+                String codiSia = ((RegistreDto)registreDto).getSiaCodi();
+                if (codiSia != null) {
+                    SiaResource siaResource = siaResourceService.findByEntitatIdAndCodiSia(entitatActual.getId(), codiSia);
+                    if (siaResource == null) {
+                        siaResource = new SiaResource();
+                        siaResource.setCodi(codiSia);
+                        siaResource.setCodiSia(codiSia);
+                        siaResource.setNom(getMessage(request, "registre.detalls.camp.sia.no.trobat", new Object[] {codiSia}));
+                    }
+                    model.addAttribute("siaDades", siaResource);
+                }
 			}
 			model.addAttribute("registre", registreDto);
 			model.addAttribute("annexId", annexId);

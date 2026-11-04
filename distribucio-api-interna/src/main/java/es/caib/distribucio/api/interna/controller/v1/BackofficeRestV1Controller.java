@@ -1,4 +1,4 @@
-package es.caib.distribucio.api.interna.controller;
+package es.caib.distribucio.api.interna.controller.v1;
 
 import es.caib.distribucio.api.interna.model.InfoCanviEstat;
 import es.caib.distribucio.logic.intf.dto.LimitCanviEstatDto;

@@ -46,10 +46,12 @@ public class RegistreResourceEntity extends ContingutResourceEntity<RegistreReso
     private String identificador;
     @Column(name = "extracte", length = 240)
     private String extracte;
-    @Column(name = "procediment_codi", length = 64)
-    private String procedimentCodi;
-    @Column(name = "servei_codi", length = 64)
-    private String serveiCodi;
+//    @Column(name = "procediment_codi", length = 64)
+//    private String procedimentCodi;
+//    @Column(name = "servei_codi", length = 64)
+//    private String serveiCodi;
+    @Column(name = "sia_codi", length = 64)
+    private String siaCodi;
     @Column(name = "referencia", length = 16)
     private String referencia;
     @Column(name = "expedient_num", length = 80)

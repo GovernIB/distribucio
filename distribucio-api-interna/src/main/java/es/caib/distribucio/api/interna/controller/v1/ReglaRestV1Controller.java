@@ -1,0 +1,311 @@
+/**
+ * 
+ */
+package es.caib.distribucio.api.interna.controller.v1;
+
+import es.caib.distribucio.logic.intf.dto.*;
+import es.caib.distribucio.logic.intf.model.SiaResource;
+import es.caib.distribucio.logic.intf.resourceservice.SiaResourceService;
+import es.caib.distribucio.logic.intf.service.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+/**
+ * Controlador REST per a l'API REST de creació, canvi d'estat, consulta i actualtizació de regles de Distribucio per a 
+ * que els backoffices puguin crear regles sense haver d'entrar a Distribucio. Per invocar
+ * aquesta API és necessari el rol DIS_REGLA.
+ * 
+ * @author Limit Tecnologies <limit@limit.es>
+ */
+@Controller
+@RequestMapping("/v1/regla")
+@Tag(
+		name = "Regla V1",
+		description = "API REST de creació de regles per aplicacions de client i codi SIA. Per invocar els mètodes és necessari accedir amb un usuari que tengui el rol DIS_REGLA.")
+public class ReglaRestV1Controller {
+
+	@Autowired
+	private ReglaService reglaService;
+	@Autowired
+	private BackofficeService backofficeService;
+	@Autowired
+	private EntitatService entitatService;
+    @Autowired
+    private SiaResourceService siaResourceService;
+
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+	@Operation(
+			summary = "Alta de regla per codi SIA", 
+			description = "Dona d'alta una regla per l'aplicació de client i codi SIA indicat per a l'entitat indicada. Per poder invocar aquest mètode "
+					+ "és necessari una autenticació bàsica amb el rol DIS_REGLA."
+					+ " S'informarà del camp presencial per, si és valor és true, no desar la regla a l'aplicació de client.")
+	@ResponseBody
+	public ResponseEntity<Object> add(HttpServletRequest request,
+			@Parameter(name = "entitat", description = "Entitat en la qual crear la regla.") 
+			@RequestParam(required = true) String entitat,
+			@Parameter(name = "sia", description = "Codi SIA de la regla pel filtre per procediment.")
+			@RequestParam(required = true) String sia,
+            @Parameter(name = "tramit", description = "Codi del tramit associat al procediment o servei. Si s'informa només aplicarà la regla a les anotacions amb el mateix codi de tràmit. Paràmetre opcional.")
+            @RequestParam(required = false) String tramit,
+			@Parameter(name = "backoffice", description = "Codi de l'aplicació de client per la regla a la qual s'enviaran les anotacions.")
+			@RequestParam(required = true) String backoffice,
+			@Parameter(name = "presencial", description = "Booleà per informar el filtre presencial de la regla. Paràmetre opcional.") 
+			@RequestParam(required = false) Boolean presencial) {
+		// Per posar la data a la descripció
+		String msg = "";
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		String dataAra = sdf.format(new Date());
+        // Validar que la entitat existeix
+        EntitatDto entitatDto = entitatService.findByCodiDir3(entitat);
+        if (entitatDto == null ) {
+            return new ResponseEntity<Object>("No s'ha trobat l'entitat " + entitat, HttpStatus.NOT_FOUND);
+        }
+
+		// Definim els valors que no hi son als paràmetres
+		String nom = backoffice + " " + sia + (tramit!=null ?("-" + tramit) :"");
+		String descripcio = "Creació de regla en data de " + dataAra + " per l'aplicació de client amb codi " + backoffice + " i codi de sia " + sia;
+
+		ReglaTipusEnumDto tipus = ReglaTipusEnumDto.BACKOFFICE;
+		// Validar que es troba el backoffice
+		BackofficeDto backofficeDto = backofficeService.findByCodi(entitatDto.getId(), backoffice);
+		if (backofficeDto == null) {
+			return new ResponseEntity<Object>("No s'ha trobat l'aplicació de client amb codi " + backoffice,
+					HttpStatus.NOT_FOUND);
+		}
+		// Cream l'objecte de tipus ReglaDto
+		ReglaDto novaReglaDto = new ReglaDto();
+		novaReglaDto.setNom(nom);
+		novaReglaDto.setDescripcio(descripcio);
+		novaReglaDto.setTipus(tipus);
+		novaReglaDto.setBackofficeDestiId(backofficeDto.getId());
+		novaReglaDto.setBackofficeDestiNom(backoffice);
+
+        novaReglaDto.setSiaCodiFiltre(sia);
+        novaReglaDto.setTramitCodiFiltre(tramit);
+		if (presencial != null) {
+			novaReglaDto.setPresencial(presencial.booleanValue() ? ReglaPresencialEnumDto.SI : ReglaPresencialEnumDto.NO );
+		}
+		// Validar que no hi ha cap altra regla pel SIA per un backoffice diferent
+        List<ReglaDto> reglesPerSia = new ArrayList<>(reglaService.findReglaBackofficeByCodiSiaAndTramit(sia, tramit));
+		for (ReglaDto regla : reglesPerSia) {
+			if (backofficeDto.getId().compareTo(regla.getBackofficeDestiId()) != 0) {
+				// KO Existeix una regla amb mateix codi SIA per un altre backoffice
+				return new ResponseEntity<Object>("Ja existeix la regla amb id " + regla.getId() + " i nom \""
+						+ regla.getNom() + "\" per l'aplicació de client \"" + regla.getBackofficeDestiNom() + "\" a l'entitat \""
+						+ regla.getEntitatNom() + "\"", HttpStatus.NOT_ACCEPTABLE);
+			} else {
+				//En comprovar-se que ja existeix una regla amb el codi sia (procediment) idèntic 
+				//al mateix backoffice es llança un update amb les noves dades i es finalitza el servei.
+				novaReglaDto.setId(regla.getId());
+				novaReglaDto = reglaService.update(entitatDto.getId(), novaReglaDto);
+				msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
+				+ "\" actualitzada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia
+				 + " a l'entitat " + entitat;
+				// OK Regla existent pel mateix backoffie
+				return new ResponseEntity<Object>(msg, HttpStatus.OK);
+			}
+		}
+		try {
+			novaReglaDto = reglaService.create(entitatDto.getId(), novaReglaDto);
+
+            SiaResource siaResource = siaResourceService.findByEntitatIdAndCodiSia(entitatDto.getId(), sia);
+            if (siaResource != null) {
+                msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
+                        + "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia + " ("
+                        + siaResource.getNom() + ")" + " de la unitat " + " \""
+                        + siaResource.getUnitatOrganitzativa().getDescription() + "\"" + " a l'entitat " + entitat;
+            } else {
+                msg = "Regla amb id " + novaReglaDto.getId() + " \"" + novaReglaDto.getNom()
+                        + "\" creada correctament per l'aplicació de client " + backoffice + " pel codi SIA " + sia
+                        + "(Sia no trobat)" + " a l'entitat " + entitat;
+            }
+			logger.debug(msg);
+			return new ResponseEntity<Object>(msg, HttpStatus.OK);
+		} catch (Exception e) {
+			String errMsg = "Error creant la regla per l'aplicació de client " + backoffice + " pel codi SIA " + sia + " a l'entitat " + entitat + ": " + e.getMessage();
+			logger.error(errMsg, e);
+			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "/canviEstat", method = RequestMethod.POST)
+	@Operation(
+			summary = "Activar/Desactivar regla", 
+			description = "Depenent del seu estat, activa o desactiva una regla en concret.")
+	@ResponseBody
+	public ResponseEntity<String> canviEstat(
+			HttpServletRequest request, 
+			@Parameter(name = "sia", description = "Codi SIA de la regla")
+			@RequestParam(required = true) String sia,
+            @Parameter(name = "tramit", description = "Codi del tramit de la regla. Paràmetre opcional.")
+            @RequestParam(required = false) String tramit,
+			@Parameter(name = "activa", description = "Paràmetre opcional per activar o desactivar la regla. Si on s'especifica es canvia segons el valor que tingui actualment.")
+			@RequestParam(required = false) Boolean activa){
+		List<ReglaDto> regles = reglaService.findReglaBackofficeByCodiSiaAndTramit(sia, tramit);
+		ReglaDto regla;
+		String response = "";
+		if (regles == null || regles.isEmpty()) {
+			return new ResponseEntity<String>("La regla amb el codi " + sia + (tramit != null ?" i tramit " + tramit :"") + " no existeix", HttpStatus.CONFLICT);
+		} else if (regles.size() > 1) {
+			logger.warn("S'han trobat " + regles.size() + " regles pel codi SIA " + sia + (tramit != null ?" i tramit " + tramit :"") + ", es consultarà només la primera regla.");
+		}
+		regla = regles.get(0);
+		try {
+			if (activa == null) {
+				activa = !regla.isActiva();
+			}
+			reglaService.updateActiva(
+					regla.getEntitatId(), 
+					regla.getId(),
+					sia,
+					activa);
+			if (activa) {
+				response = "La regla amb codi " + sia + (tramit != null ?" i tramit " + tramit :"") + " s'ha activat correctament.";
+			}else {
+				response = "La regla amb codi " + sia + (tramit != null ?" i tramit " + tramit :"") + " s'ha desactivat correctament.";
+			}
+		} catch(Exception e) {
+			String errMsg = "error fent l'update de la regla " + regla.getNom() + " pel codi SIA " + sia + (tramit != null ?" i tramit " + tramit :"") + ":" + e.getMessage();
+			logger.error(errMsg, e);
+			return new ResponseEntity<String>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<String>(response, HttpStatus.OK);	
+	}
+
+	@RequestMapping(value = "/consultarRegla", method = RequestMethod.GET)
+	@Operation(
+			summary = "Consultar regles per codi SIA",
+			description = "Consulta les regles per codi SIA que existeixin i estiguin actives. En principi només hi pot haver una regla de tipus 'aplicació de client' per codi SIA.")
+	@ResponseBody
+	public ResponseEntity<Object> consultarRegla(
+			HttpServletRequest request, 
+			@Parameter(name = "sia", description = "Codi SIA de la regla que identifica la regla de tipus 'aplicació de client'.")
+			@RequestParam(required = true) String sia,
+            @Parameter(name = "tramit", description = "Codi del tramit de la regla pel filtre per tramit.")
+            @RequestParam(required = false) String tramit) {
+		List<ReglaDto> reglesDto = reglaService.findReglaBackofficeByCodiSiaAndAnyTramit(sia, tramit);
+		if (reglesDto.size() > 1) {
+			logger.warn("S'han trobat " + reglesDto.size() + " regles pel codi SIA " + sia + (tramit != null ?" i tramit " + tramit :"") + ".");
+		}
+		List<Map<String, Object>> regles = new ArrayList<>();
+		if (reglesDto == null || reglesDto.isEmpty()) {
+			return new ResponseEntity<Object>("No s'ha trobat cap regla amb el codi SIA " + sia
+                    + (tramit != null ?" i el tramit " + tramit :""), HttpStatus.NOT_FOUND);
+		}
+		for (ReglaDto regla : reglesDto) {
+            regles.add(this.reglaToMap(regla));
+		}
+		return new ResponseEntity<Object>(regles, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")	
+	@Operation(
+			method = "POST",
+			summary = "Actualitzar qualsevol camp de la regla",
+			description = "Servei Update per canviar els estats dels camps booleans 'activa' i 'presencial'.")
+	public ResponseEntity<Object> update(HttpServletRequest request,
+			@Parameter(name = "sia", description = "Codi SIA de la regla")
+			@RequestParam(required = true) String sia,
+            @Parameter(name = "tramit", description = "Codi del tramit de la regla")
+            @RequestParam(required = false) String tramit,
+			@Parameter(name = "activa", description = "Paràmetre opcional per activar o desactivar la regla. Si no s'especifica es canvia segons el valor que tingui actualment.") 
+			@RequestParam(required = false) Boolean activa,
+			@Parameter(name = "presencial", description = "Paràmetre per fixar el valor del filtre segons si l'anotació és prensencial, no presencial o no té valor.")
+			@RequestParam(required = false) Boolean presencial){
+		List<ReglaDto> regles = reglaService.findReglaBackofficeByCodiSiaAndTramit(sia, tramit);
+		ReglaDto regla;
+		ReglaPresencialEnumDto presencialEnum;
+		if (regles == null || regles.isEmpty()) {
+			return new ResponseEntity<Object>("La regla amb el codi " + sia + (tramit != null ?" i el tramit " + tramit :"") + " no existeix", HttpStatus.CONFLICT);
+		} else if (regles.size() > 1) {
+			logger.warn("S'han trobat " + regles.size() + " regles pel codi SIA " + sia
+                    + (tramit != null ?" i tramit " + tramit  :"")
+					+ ", es consultarà només la primera regla.");
+		}
+		regla = regles.get(0);
+		if (activa == null) {
+			activa = !regla.isActiva();
+		}
+		if(presencial == null) {
+			 presencialEnum = null;
+		}else {
+			presencialEnum = presencial.booleanValue() ? ReglaPresencialEnumDto.SI : ReglaPresencialEnumDto.NO;
+		}
+		String response = "";
+		try {
+			// Actualiza valors de regla
+			regla = reglaService.updateActivaPresencial(
+					regla.getEntitatId(), 
+					regla.getId(), 
+					activa, 
+					presencialEnum,
+					sia);
+			response = "Regla amb id " + regla.getId() + " actualitzada correctament.";
+		} catch (Exception e) {
+			String errMsg = "Error actualitzant la regla " + regla.getNom() + " amb id " + regla.getId() + " pel codi SIA " + sia + (tramit != null ?" i tramit " + tramit :"") + ": " + e.getMessage();
+			logger.error(errMsg, e);
+			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<Object>(response, HttpStatus.OK);
+	}
+
+	/** Transforma una regla en un Map<String, Object> per facilitar la conversió a JSON.
+	 * 
+	 * @param regla
+	 * @return
+	 */
+	private Map<String, Object> reglaToMap(ReglaDto regla) {
+		Map<String, Object> r = new HashMap<>();
+		if (regla != null) {
+			r.put("id", regla.getId());
+			r.put("nom", regla.getNom());
+			Date data = regla.getCreatedDate();
+			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			r.put("data", dateFormat.format(data));
+			r.put("entitat", regla.getEntitatNom());
+			r.put("activa", regla.isActiva());
+//			r.put("tipusSia", regla.getProcedimentCodiFiltre() != null
+//                    ? RegistreClassificarTipusEnum.PROCEDIMENT.name()
+//                    : RegistreClassificarTipusEnum.SERVEI.name());
+			if (regla.getPresencial() != null) {
+				switch(regla.getPresencial()) {
+				case NO:
+					r.put("presencial", false);
+					break;
+				default:
+					r.put("presencial", true);
+					break;
+				}
+			}
+			BackofficeDto backofficeDto = backofficeService.findById(regla.getEntitatId(), regla.getBackofficeDestiId());
+			if (backofficeDto != null) {
+				r.put("backofficeDesti", backofficeDto.getNom());
+			}
+//			r.put("sia", regla.getProcedimentCodiFiltre() != null
+//                    ? regla.getProcedimentCodiFiltre()
+//                    : regla.getServeiCodiFiltre());
+			r.put("sia", regla.getSiaCodiFiltre());
+			r.put("tramit", regla.getTramitCodiFiltre());
+		}
+		return r;
+	}
+
+	private static final Logger logger = LoggerFactory.getLogger(ReglaRestV1Controller.class);
+
+}

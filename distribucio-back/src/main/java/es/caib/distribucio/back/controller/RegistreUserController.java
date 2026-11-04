@@ -6,22 +6,24 @@ package es.caib.distribucio.back.controller;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import es.caib.distribucio.logic.intf.base.util.RequestSessionUtil;
+import es.caib.distribucio.logic.intf.model.SiaResource;
+import es.caib.distribucio.logic.intf.model.UserSession;
+import es.caib.distribucio.logic.intf.resourceservice.SiaResourceService;
+import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -69,14 +71,12 @@ import es.caib.distribucio.logic.intf.dto.HistogramPendentsEntryDto;
 import es.caib.distribucio.logic.intf.dto.PaginaDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto.OrdreDireccioDto;
-import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
 import es.caib.distribucio.logic.intf.dto.RegistreDto;
 import es.caib.distribucio.logic.intf.dto.RegistreProcesEstatSimpleEnumDto;
 import es.caib.distribucio.logic.intf.dto.RegistreTipusDocFisicaEnumDto;
 import es.caib.distribucio.logic.intf.dto.ResultatConsultaDto;
 import es.caib.distribucio.logic.intf.dto.ResultatDominiDto;
-import es.caib.distribucio.logic.intf.dto.ServeiDto;
 import es.caib.distribucio.logic.intf.dto.UsuariDto;
 import es.caib.distribucio.logic.intf.dto.UsuariPermisDto;
 import es.caib.distribucio.logic.intf.exception.DominiException;
@@ -92,9 +92,7 @@ import es.caib.distribucio.logic.intf.service.ConfigService;
 import es.caib.distribucio.logic.intf.service.ContingutService;
 import es.caib.distribucio.logic.intf.service.DominiService;
 import es.caib.distribucio.logic.intf.service.MetaDadaService;
-import es.caib.distribucio.logic.intf.service.ProcedimentService;
 import es.caib.distribucio.logic.intf.service.RegistreService;
-import es.caib.distribucio.logic.intf.service.ServeiService;
 
 /**
  * Controlador per al manteniment de registres.
@@ -129,12 +127,10 @@ public class RegistreUserController extends BaseUserController {
 	private BeanGeneratorHelper beanGeneratorHelper;
 	@Autowired
 	private DominiService dominiService;
-	@Autowired
-	private ProcedimentService procedimentService;
-	@Autowired
-	private ServeiService serveiService;
     @Autowired
     private BackofficeService backofficeService;
+    @Autowired
+    private SiaResourceService siaResourceService;
 
     @RequestMapping(method = RequestMethod.GET)
 	public String registreUserGet(
@@ -438,32 +434,17 @@ public class RegistreUserController extends BaseUserController {
 				List<ContingutDto> path = registreService.getPathContingut(entitatActual.getId(), destiLogic);
 				registre.setPath(path);
 			}
-			// Nom del procediment
 
-			String codiSia = registre.getProcedimentCodi();
+			String codiSia = registre.getSiaCodi();
 			if (codiSia != null) {
-				ProcedimentDto procediment = procedimentService.findByCodiSia(entitatActual.getId(), codiSia);
-				if (procediment == null) {
-					procediment = new ProcedimentDto();
-					procediment.setCodi(codiSia);
-					procediment.setCodiSia(codiSia);
-					procediment.setNom(getMessage(request, "registre.detalls.camp.procediment.no.trobat", new Object[] {codiSia}));
+                SiaResource siaResource = siaResourceService.findByEntitatIdAndCodiSia(entitatActual.getId(), codiSia);
+				if (siaResource == null) {
+					siaResource = new SiaResource();
+					siaResource.setCodi(codiSia);
+					siaResource.setCodiSia(codiSia);
+					siaResource.setNom(getMessage(request, "registre.detalls.camp.sia.no.trobat", new Object[] {codiSia}));
 				}
-				model.addAttribute("procedimentDades", procediment);				
-			}
-
-			// Nom del servei
-
-			String codiServei = registre.getServeiCodi();
-			if (codiServei != null) {
-				ServeiDto servei = serveiService.findByCodiSia(entitatActual.getId(), codiServei);
-				if (servei == null) {
-					servei = new ServeiDto();
-					servei.setCodi(codiServei);
-					servei.setCodiSia(codiServei);
-					servei.setNom(getMessage(request, "registre.detalls.camp.servei.no.trobat", new Object[] {codiServei}));
-				}
-				model.addAttribute("serveiDades", servei);				
+				model.addAttribute("siaDades", siaResource);
 			}
 
 			model.addAttribute("registre", registre);
@@ -1810,19 +1791,17 @@ public class RegistreUserController extends BaseUserController {
 			Model model) {
 		try {			
 			EntitatDto entitatActual = getEntitatActualComprovantPermisUsuari(request);
+            Long entitatActualId = SessioActualUtil.getEntitatId();
+            if (entitatActualId == null)
+                RequestSessionUtil.setRequestSession(new UserSession(entitatActual.getId()));
+
 			RegistreClassificarCommand command = new RegistreClassificarCommand();
 			RegistreDto registre = this.emplenarModelClassificar(
 					entitatActual, 
 					registreId,
 					model);
-			if (registre.getServeiCodi() != null) {
-				command.setTipus(RegistreClassificarTipusEnum.SERVEI.name());
-			} else {				
-				command.setTipus(RegistreClassificarTipusEnum.PROCEDIMENT.name());
-			}
 			command.setContingutId(registreId);
-			command.setCodiProcediment(registre.getProcedimentCodi());
-			command.setCodiServei(registre.getServeiCodi());
+			command.setCodiSia(registre.getSiaCodi());
 			model.addAttribute(command);
 
 		} catch (Exception e) {
@@ -1854,16 +1833,19 @@ public class RegistreUserController extends BaseUserController {
 				EnumHelper.getOptionsForEnum(
 						RegistreClassificarTipusEnum.class,
 						"registre.classificar.tipus.enum."));
-		this.emplenarModelProcedimentClassificar(
-				entitatActual,
-				registre,
-				model);
-		this.emplenarModelServeiClassificar(
-				entitatActual,
-				registre,
-				model);
-		
-		return registre;
+
+        model.addAttribute(
+                "sias",
+                siaResourceService.findPage(
+                        null,
+                                null,
+                                new String[]{"BUSTIA#"+registre.getPareId()},
+                                null,
+                                Pageable.unpaged())
+                        .getContent()
+        );
+
+        return registre;
 	}
 
 	@RequestMapping(value = "/classificar/{registreId}", method = RequestMethod.POST)
@@ -1881,24 +1863,18 @@ public class RegistreUserController extends BaseUserController {
 					model);
 			return "registreClassificar";
 		}
+        SiaResource siaResource = siaResourceService.findByEntitatIdAndCodiSia(entitatActual.getId(), command.getCodiSia());
+
         RegistreDto registreDto = registreService.findOne(
                 entitatActual.getId(),
                 registreId,
                 false);
-		String codiProcediment = null;
-		if (command.getTipus() != null && RegistreClassificarTipusEnum.PROCEDIMENT.name().equals(command.getTipus()) ) {
-				codiProcediment = command.getCodiProcediment();
-		}
-		String codiServei = null;
-		if (command.getTipus() != null && RegistreClassificarTipusEnum.SERVEI.name().equals(command.getTipus()) ) {
-				codiServei = command.getCodiServei();
-		}
+
 		ClassificacioResultatDto resultat = registreService.classificar(
 				entitatActual.getId(),
 				registreId,
-                command.getTipus(),
-				codiProcediment,
-				codiServei,
+                siaResource.getTipus().name(),
+                siaResource.getCodiSia(),
 				command.getTitol());
 		switch (resultat.getResultat()) {
 		case SENSE_CANVIS:
@@ -1940,32 +1916,16 @@ public class RegistreUserController extends BaseUserController {
 							null));
 			break;
 		}
-        if (command.getCodiProcediment() != null) {
-            ProcedimentDto procediment = procedimentService.findByCodiSia(
-                    entitatActual.getId(),
-                    command.getCodiProcediment()
-            );
-
+        if (command.getCodiSia() != null) {
             return getModalControllerReturnValueSuccess(
                     request,
                     "redirect:/registreUser/registre/" + registreId,
-                    "bustia.controller.pendent.contingut.classificat.ok.procediment",
+                    es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum.PROCEDIMENT.equals(siaResource.getTipus())
+                            ?"bustia.controller.pendent.contingut.classificat.ok.procediment"
+                            :"bustia.controller.pendent.contingut.classificat.ok.servei",
                     new Object[]{
                             registreDto.getNumero(),
-                            procediment.getCodiSia() + " - " + procediment.getNom()
-                    });
-        } else if (command.getCodiServei() != null) {
-            ServeiDto servei = serveiService.findByCodiSia(
-                    entitatActual.getId(),
-                    command.getCodiServei()
-            );
-            return getModalControllerReturnValueSuccess(
-                    request,
-                    "redirect:/registreUser/registre/" + registreId,
-                    "bustia.controller.pendent.contingut.classificat.ok.servei",
-                    new Object[]{
-                            registreDto.getNumero(),
-                            servei.getCodiSia() + " - " + servei.getNom()
+                            siaResource.getCodiNom()
                     });
         } else {
             return getModalControllerReturnValueSuccess(
@@ -2279,34 +2239,6 @@ public class RegistreUserController extends BaseUserController {
 		}
 		
 		return filtreCommand;
-	}
-
-	private String emplenarModelProcedimentClassificar(
-			EntitatDto entitatActual,
-			RegistreDto registre,		
-			Model model) {		
-		
-		model.addAttribute(
-				"procediments",
-				registreService.classificarFindProcediments(
-						entitatActual.getId(),
-						registre.getPareId()));		
-		
-		return registre.getProcedimentCodi();
-	}
-	
-	private String emplenarModelServeiClassificar(
-			EntitatDto entitatActual,
-			RegistreDto registre,		
-			Model model) {		
-		
-		model.addAttribute(
-				"serveis",
-				registreService.classificarFindServeis(
-						entitatActual.getId(),
-						registre.getPareId()));		
-		
-		return registre.getServeiCodi();
 	}
 	
 	private List<RegistreDto> emplenarModelCopies(

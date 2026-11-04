@@ -41,26 +41,16 @@ function formatServeiSelect(item) {
 }
 
 $(document).ready(function() {
-	if ((${fn:length(procediments)} > 0) ||	(${fn:length(serveis)} > 0)) {
+	if (${fn:length(sias) > 0}) {
 		$('#accio-classificar').removeAttr('disabled');
 	}
 	
-	$('input:radio[name=tipus]').change(function(){
-		mostarProcedimentServei($(this).val());
-	});
-	$('input:radio[name=tipus]:checked').change();	
+	// $('input:radio[name=tipus]').change(function(){
+	// 	mostarProcedimentServei($(this).val());
+	// });
+	// $('input:radio[name=tipus]:checked').change();
 });
 
-
-function mostarProcedimentServei (tipus) {
-	if (tipus == 'SERVEI') {
-		$('#codiProcediment').closest('.form-group').hide();
-		$('#codiServei').closest('.form-group').show();
-	} else {
-		$('#codiProcediment').closest('.form-group').show();
-		$('#codiServei').closest('.form-group').hide();		
-	}
-}
 </script>
 </head>
 <body>
@@ -120,54 +110,32 @@ function mostarProcedimentServei (tipus) {
 			<dis:inputText name="titol" textKey="bustia.pendent.classificar.camp.titol" />
 		</c:if>
 		<form:hidden path="contingutId"/>
-		<dis:inputRadio
-					name="tipus" 
-					textKey="bustia.pendent.classificar.camp.tipus" 
-					optionItems="${tipus}" 
-					optionValueAttribute="value" 
-					optionTextKeyAttribute="text" 
-					required="false"/>
+<%--		<dis:inputRadio--%>
+<%--					name="tipus" --%>
+<%--					textKey="bustia.pendent.classificar.camp.tipus" --%>
+<%--					optionItems="${tipus}" --%>
+<%--					optionValueAttribute="value" --%>
+<%--					optionTextKeyAttribute="text" --%>
+<%--					required="false"/>--%>
 		<c:choose>
-			<c:when test="${empty procediments}">
-				<dis:inputFixed name="codiProcediment" textKey="bustia.pendent.classificar.camp.codi.procediment">
+			<c:when test="${empty sias}">
+				<dis:inputFixed name="codiSia" textKey="bustia.pendent.classificar.camp.codi.sia">
 					<p class="text-danger">
-						<spring:message code="bustia.pendent.classificar.no.procediments"/>
+						<spring:message code="bustia.pendent.classificar.no.sias"/>
 					</p>
 				</dis:inputFixed>
 			</c:when>
 			<c:otherwise>
 				<dis:inputSelect 
-					name="codiProcediment" 
-					textKey="bustia.pendent.classificar.camp.codi.procediment" 
-					optionItems="${procediments}" 
+					name="codiSia"
+					textKey="bustia.pendent.classificar.camp.codi.sia"
+					optionItems="${sias}"
 					optionValueAttribute="codiSia" 
-					optionTextAttribute="codiNomEstat" 
+					optionTextAttribute="codiNomEstat"
 					emptyOption="true"
 					required="false"
-					placeholderKey="bustia.pendent.classificar.camp.codi.procediment"
-					optionMinimumResultsForSearch="0" 
-					optionTemplateFunction="formatProcedimentSelect"/>
-			</c:otherwise>
-		</c:choose>
-		<c:choose>
-			<c:when test="${empty serveis}">
-				<dis:inputFixed name="codiServei" textKey="bustia.pendent.classificar.camp.codi.servei">
-					<p class="text-danger">
-						<spring:message code="bustia.pendent.classificar.no.serveis"/>
-					</p>
-				</dis:inputFixed>
-			</c:when>
-			<c:otherwise>
-				<dis:inputSelect 
-					name="codiServei" 
-					textKey="bustia.pendent.classificar.camp.codi.servei" 
-					optionItems="${serveis}" 
-					optionValueAttribute="codiSia" 
-					optionTextAttribute="codiNomEstat" 
-					emptyOption="true"
-					required="false"
-					placeholderKey="bustia.pendent.classificar.camp.codi.servei"
-					optionMinimumResultsForSearch="0" 
+					placeholderKey="bustia.pendent.classificar.camp.codi.sia"
+					optionMinimumResultsForSearch="0"
 					optionTemplateFunction="formatServeiSelect"/>
 			</c:otherwise>
 		</c:choose>

@@ -11,7 +11,6 @@ import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.registre.FileNameOption;
 import es.caib.distribucio.logic.intf.resourcevalidation.EmailValid;
-import es.caib.distribucio.logic.intf.resourcevalidation.RegistreClassificarValid;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatEnum;
 import es.caib.distribucio.logic.intf.registre.RegistreProcesEstatSistraEnum;
@@ -297,8 +296,9 @@ public class RegistreResource extends ContingutResource {
     private Date data;
     private String identificador;
     private String extracte;
-    private String procedimentCodi;
-    private String serveiCodi;
+//    private String procedimentCodi;
+//    private String serveiCodi;
+    private String siaCodi;
     private String referencia;
     private String expedientNumero;
     private String expedientArxiuUuid;
@@ -365,8 +365,10 @@ public class RegistreResource extends ContingutResource {
     @Transient private int maxReintents;
     @Transient private ArxiuDetallDto arxiuDetall;
 
-    @Transient private ResourceReference<ProcedimentResource, Long> procediment;
-    @Transient private ResourceReference<ServeiResource, Long> servei;
+//    @Transient private ResourceReference<ProcedimentResource, Long> procediment;
+//    @Transient private ResourceReference<ServeiResource, Long> servei;
+    @Transient private ResourceReference<SiaResource, Long> sia;
+    @Transient private RegistreClassificarTipusEnum tipusSia;
 
     @Transient private List<String> enviamentsPerEmail = new ArrayList<>();
 
@@ -445,20 +447,22 @@ public class RegistreResource extends ContingutResource {
         private boolean ambErrors;
         private boolean sobreescriure;
         private RegistreNombreAnnexesEnumDto nombreAnnexes;
-        private ResourceReference<ProcedimentResource, Long> procediment;
-        private ResourceReference<ServeiResource, Long> servei;
+//        private ResourceReference<ProcedimentResource, Long> procediment;
+//        private ResourceReference<ServeiResource, Long> servei;
+        private ResourceReference<SiaResource, Long> sia;
         private boolean reintents;
     }
 
     @Getter
     @Setter
-    @RegistreClassificarValid
+//    @RegistreClassificarValid
     @FieldNameConstants
     public static class ClassificarForm extends MassiveForm {
-        @NotNull
-        private RegistreClassificarTipusEnum tipus = RegistreClassificarTipusEnum.PROCEDIMENT;
-        private ResourceReference<ProcedimentResource, Long> procediment;
-        private ResourceReference<ServeiResource, Long> servei;
+//        @NotNull
+//        private RegistreClassificarTipusEnum tipus = RegistreClassificarTipusEnum.PROCEDIMENT;
+//        private ResourceReference<ProcedimentResource, Long> procediment;
+//        private ResourceReference<ServeiResource, Long> servei;
+        @NotNull private ResourceReference<SiaResource, Long> sia;
 
         private Long bustiaId;
     }

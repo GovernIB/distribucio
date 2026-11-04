@@ -35,7 +35,7 @@ public class RegistreResourceHelper {
     private static final DateTimeFormatter FORMAT_DATA = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     private static final String[] COLUMNES_RAW = {
             "numero", "titol", "data", "data.presentacio", "oficina",
-            "presencial", "documentacio.fisica", "numero.annexes", "procediment",
+            "presencial", "documentacio.fisica", "numero.annexes", "sia",
             "observacions", "origenNum", "origenData", "origenOficina",
             "interessats", "estat", "uo", "bustia"
     };
@@ -79,7 +79,7 @@ public class RegistreResourceHelper {
                         && (r.getJustificantArxiuUuid() == null || !r.getJustificantArxiuUuid().equals(p.getFitxerArxiuUuid()))
                         && (!rols.contains("tothom") || p.getSicresTipusDocument() == null || !RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor().equals(p.getSicresTipusDocument())) )
                 .count());
-        fila[8] = r.getProcedimentCodi();
+        fila[8] = r.getSiaCodi();
         fila[9] = r.getObservacions();
         fila[10] = r.getNumeroOrigen();
         fila[11] = formatarData(r.getDataOrigen());

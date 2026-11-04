@@ -79,6 +79,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private final DominiService dominiService;
     private final ContingutLogResourceRepository contingutLogResourceRepository;
     private final AclEntryResourceService aclEntryResourceService;
+    private final SiaResourceRepository siaResourceRepository;
 
     @PostConstruct
     public void init() {
@@ -389,33 +390,21 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
             resource.setProcesEstatSimple(RegistreProcesEstatSimpleEnumDto.PROCESSAT);
         }
 
-        if (resource.getProcedimentCodi() != null) {
-            procedimentResourceRepository.findByEntitatIdAndCodiSia(entitatActualId, resource.getProcedimentCodi())
+        if (entity.getSiaCodi() != null) {
+            siaResourceRepository.findByEntitatIdAndCodiSia(entitatActualId, entity.getSiaCodi())
                     .ifPresentOrElse(
-                            (procediment) -> {
-                                resource.setProcediment(ResourceReference.toResourceReference(
-                                        procediment.getId(), procediment.getCodiSia() + " - " + procediment.getNom()));
+                            (siaEntity) -> {
+                                resource.setTipusSia(siaEntity.getTipus());
+                                resource.setSiaExtingit(
+                                        ServeiEstatEnumDto.EXTINGIT.equals(siaEntity.getEstat())
+                                );
+                                resource.setSia(ResourceReference.toResourceReference(
+                                        siaEntity.getId(), siaEntity.getCodiSia() + " - " + siaEntity.getNom()));
                             },
                             () -> {
-                                resource.setProcediment(ResourceReference.toResourceReference(
-                                        -1L, resource.getProcedimentCodi() + " - " +
-                                                I18nUtil.getInstance().getI18nMessage("registre.detalls.camp.procediment.no.trobat", resource.getProcedimentCodi())
-                                ));
-                            }
-                    );
-        }
-
-        if (resource.getServeiCodi() != null) {
-            serveiResourceRepository.findByEntitatIdAndCodiSia(entitatActualId, resource.getServeiCodi())
-                    .ifPresentOrElse(
-                            (servei) -> {
-                                resource.setServei(ResourceReference.toResourceReference(
-                                        servei.getId(), servei.getCodiSia() + " - " + servei.getNom()));
-                            },
-                            () -> {
-                                resource.setProcediment(ResourceReference.toResourceReference(
-                                        -1L, resource.getProcedimentCodi() + " - " +
-                                                I18nUtil.getInstance().getI18nMessage("registre.detalls.camp.servei.no.trobat", resource.getProcedimentCodi())
+                                resource.setSia(ResourceReference.toResourceReference(
+                                        -1L, resource.getSiaCodi() + " - " +
+                                                I18nUtil.getInstance().getI18nMessage("registre.detalls.camp.sia.no.trobat", resource.getSiaCodi())
                                 ));
                             }
                     );
@@ -558,19 +547,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                     .count());
             resource.setNumDada((int) dadaResourceRepository.countByRegistreId(entity.getId()));
             resource.setNumCopies((int) registreResourceRepository.countByNumero(entity.getNumero()));
-
-            if ( resource.getProcediment() != null && resource.getProcediment().getId() != -1 ) {
-                procedimentResourceRepository.findById(resource.getProcediment().getId())
-                        .ifPresent(p -> resource.setSiaExtingit(
-                                ProcedimentEstatEnumDto.EXTINGIT.equals(p.getEstat())
-                        ));
-            }
-            if ( resource.getServei() != null && resource.getServei().getId() != -1 ) {
-                serveiResourceRepository.findById(resource.getServei().getId())
-                        .ifPresent(s -> resource.setSiaExtingit(
-                                ServeiEstatEnumDto.EXTINGIT.equals(s.getEstat())
-                        ));
-            }
         }
     }
     protected class EnviatEmailPerspectiveApplicator implements PerspectiveApplicator<RegistreResourceEntity, RegistreResource> {
@@ -770,26 +746,16 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         @Override
         public HashMap exec(String code, RegistreResourceEntity entity, RegistreResource.ClassificarForm params) throws ActionExecutionException {
             Long entitatActualId = SessioActualUtil.getEntitatId();
-            String codiSia;
 
-            if (RegistreClassificarTipusEnum.PROCEDIMENT.equals(params.getTipus())) {
-                ProcedimentResourceEntity procediment = procedimentResourceRepository.findById(params.getProcediment().getId()).get();
-                codiSia = procediment.getCodiSia();
-            } else {
-                ServeiResourceEntity servei = serveiResourceRepository.findById(params.getServei().getId()).get();
-                codiSia = servei.getCodiSia();
-            }
+            SiaResourceEntity siaEntity = siaResourceRepository.findById(params.getSia().getId()).get();
 
             if (params.isMassive()) {
                 List<RegistreResourceEntity> registreList = registreResourceRepository.findAllById(params.getIds());
                 if (this.isSameBustia( registreList )) {
                     Map<String, Object> map = new HashMap<>();
                     map.put("titol", null);
-                    map.put("tipus", params.getTipus());
-                    map.put("codiProcediment", RegistreClassificarTipusEnum.PROCEDIMENT.equals(params.getTipus())
-                            ?codiSia :null);
-                    map.put("codiServei", RegistreClassificarTipusEnum.SERVEI.equals(params.getTipus())
-                            ?codiSia :null);
+                    map.put("tipus", siaEntity.getTipus());
+                    map.put("codiSia", siaEntity.getCodiSia());
 
                     try {
                         execucioMassivaResourceHelper.executarAccioMassivaRegistres(
@@ -816,11 +782,8 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 ClassificacioResultatDto resultat = registreService.classificar(
                         entitatActualId,
                         registre.getId(),
-                        params.getTipus().name(),
-                        (RegistreClassificarTipusEnum.PROCEDIMENT.equals(params.getTipus())
-                                ?codiSia :null),
-                        (RegistreClassificarTipusEnum.SERVEI.equals(params.getTipus())
-                                ?codiSia :null),
+                        siaEntity.getTipus().name(),
+                        siaEntity.getCodiSia(),
                         null);
 
                 Map<String, String> mssg = new HashMap<>();
@@ -856,14 +819,8 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                     map.put("message", mssg);
 
                 map.put("numero", registre.getNumero());
-                if (RegistreClassificarTipusEnum.PROCEDIMENT.equals( params.getTipus() )) {
-                    map.put("tipus", RegistreClassificarTipusEnum.PROCEDIMENT.name());
-                    map.put("sia", params.getProcediment().getDescription());
-                }
-                if (RegistreClassificarTipusEnum.SERVEI.equals( params.getTipus() )) {
-                    map.put("tipus", RegistreClassificarTipusEnum.SERVEI.name());
-                    map.put("sia", params.getProcediment().getDescription());
-                }
+                map.put("tipus", siaEntity.getTipus());
+                map.put("sia", siaEntity.getCodiSia());
                 return new HashMap<>(map);
             }
             return null;
@@ -893,24 +850,12 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
                     target.setBustiaId(registre.getPare().getId());
 
-                    if (registre.getProcedimentCodi() != null) {
-                        target.setTipus(RegistreClassificarTipusEnum.PROCEDIMENT);
-                        procedimentResourceRepository.findByEntitatIdAndCodiSia(entitatActualId, registre.getProcedimentCodi())
-                                .ifPresent(procediment -> {
-                                    target.setProcediment(ResourceReference.toResourceReference(
-                                            procediment.getId(), procediment.getCodiSia() + " - " + procediment.getNom()
-                                    ));
-                                });
-                    }
-                    if (registre.getServeiCodi() != null) {
-                        target.setTipus(RegistreClassificarTipusEnum.SERVEI);
-                        serveiResourceRepository.findByEntitatIdAndCodiSia(entitatActualId, registre.getServeiCodi())
-                                .ifPresent(servei -> {
-                                    target.setServei(ResourceReference.toResourceReference(
-                                            servei.getId(), servei.getCodiSia() + " - " + servei.getNom()
-                                    ));
-                                });
-                    }
+                    siaResourceRepository.findByEntitatIdAndCodiSia(entitatActualId, registre.getSiaCodi())
+                            .ifPresent(siaEntity -> {
+                                target.setSia(ResourceReference.toResourceReference(
+                                        siaEntity.getId(), siaEntity.getCodiSia() + " - " + siaEntity.getNom()
+                                ));
+                            });
                 }
             }
         }

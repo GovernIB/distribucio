@@ -19,10 +19,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DadesAltaAnotacio {
+public class DadesAltaAnotacio<R> {
 
 	private String entitatCodi;
 	private String unitatAdministrativaCodi;
-	private RegistreAnotacio registreAnotacio;
+	private R registreAnotacio;
 	
 }
