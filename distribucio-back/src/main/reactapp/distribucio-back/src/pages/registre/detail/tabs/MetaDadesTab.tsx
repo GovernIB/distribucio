@@ -27,6 +27,7 @@ const DadaField = ({ index, metaDada, value, onChange, required, disabled, ...ot
         <FormField
             label={''}
             name={`${metaDada.id}-${index}`}
+            field={{}}
             type={type}
             value={value}
             onChange={(e: any) => {
