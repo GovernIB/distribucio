@@ -52,7 +52,7 @@ const RegistreFilterForm: React.FC<any> = ({ isAdmin }: any) => {
                         hidden={!isAdmin}
                     />
                     <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="backoffice"
-                                   additionalOpctions={() => [{id: null, description: "Sense backoffice"}]} valueField={'codi'} />
+                                   additionalOpctions={() => [{id: -1, description: "Sense backoffice"}]} valueField={'codi'} />
                     <GridFormField size={{ xs: 12, sm: 6, md: 1.25 }} name="estat" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="procesEstat" />
                     <GridButtonField icon={icons.error} size={{ xs: 12, sm: 1, md: 0.5 }} name="ambErrors" />
@@ -141,7 +141,7 @@ const springFilterBuilder = (data: any, setNamedQuery?: (value:string[]) => void
         ),
 
         data?.documentacio && builder.eq('documentacioFisicaCodi', data?.documentacio == 'PAPER' ?1 : data?.documentacio == 'DIGIT_PAPER' ?2 :3),
-        builder.eq('backCodi', data?.backoffice?.id == null ?null :`'${data?.backoffice?.id}'`),
+        builder.eq('backCodi', data?.backoffice?.id == -1 ?null :`'${data?.backoffice?.id}'`),
         data?.estat && builder.equals('pendent', true, data?.estat == 'PENDENT'),
         builder.eq('procesEstat', `'${data.procesEstat}'`),
         data?.ambErrors && builder.neq('procesError', null),

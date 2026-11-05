@@ -214,6 +214,10 @@ const translationEs = {
                 // El diálogo de la cuadrícula compone el título con el verbo de la acción ("Crea" o
                 // "Modifica") más este nombre de recurso.
                 resourceTitle: 'entidad',
+                legend: {
+                    clar: 'Configuración para el tema claro',
+                    oscur: 'Configuración para el tema oscuro',
+                },
             },
             accio: {
                 new: "Nueva entidad",
@@ -1425,6 +1429,10 @@ const translationEs = {
         UserLastConection: {
             lastConnection: "Fecha y hora de la última conexión del usuario",
             darreraConnexio: "Última conexión:",
+        },
+        DownloadManuals: {
+            manual: "Manual de usuario",
+            manualAdmin: "Manual de administrador",
         },
     },
 };

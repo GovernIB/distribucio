@@ -214,6 +214,10 @@ const translationCa = {
                 // El diàleg de la graella compon el títol amb el verb de l'acció ("Crea" o
                 // "Modifica") més aquest nom de recurs.
                 resourceTitle: 'entitat',
+                legend: {
+                    clar: 'Configuració per el tema clar',
+                    oscur: 'Configuració per el tema fosc',
+                },
             },
             accio: {
                 new: "Nova entitat",
@@ -1425,6 +1429,10 @@ const translationCa = {
         UserLastConection: {
             lastConnection: "Data i hora de la darrera connexió de l'usuari",
             darreraConnexio: "Darrera connexió:",
+        },
+        DownloadManuals: {
+            manual: "Manual d'usuari",
+            manualAdmin: "Manual d'administrador",
         },
     },
 };

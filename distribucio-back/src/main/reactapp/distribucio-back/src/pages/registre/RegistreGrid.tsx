@@ -32,15 +32,13 @@ const RegistreAvisos = ({ entity }: any) => {
                     title={
                         <>
                             {t('page.registre.avisos.enviatPerEmail')}
-                            {entity.enviamentsPerEmail.map?.((e: string) => (
-                                <>
-                                    <br /> {'>'} {e}
-                                </>
+                            {entity.enviamentsPerEmail.map?.((e: string, i:number) => (
+                                <Box key={i}>{'>'} {e}</Box>
                             ))}
                         </>
                     }
                 >
-                    <Icon fontSize="small" title={t('page.registre.avisos.enviatPerEmail')}>
+                    <Icon fontSize="small">
                         {icons.correu}
                     </Icon>
                 </Tooltip>

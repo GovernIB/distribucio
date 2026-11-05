@@ -1,6 +1,5 @@
 import StyledMuiGrid, { ToolbarButton } from '../../../../components/StyledMuiGrid.tsx';
 import { FormField, MuiForm, useBaseAppContext, useFormApiRef, useFormContext, useResourceApiService } from 'reactlib';
-import { useMemo } from 'react';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Icon from '@mui/material/Icon';
@@ -10,7 +9,7 @@ import { fieldType } from '../../../metadada/MetaDadaGrid.tsx';
 import { icons } from '../../../../util/icons';
 import Box from '@mui/material/Box';
 
-const DadaField = ({ index, metaDada, value, onChange, required, ...other }: any) => {
+const DadaField = ({ index, metaDada, value, onChange, required, disabled, ...other }: any) => {
     const { fields } = useFormContext();
 
     const fieldDomini = fields?.filter((i) => i.name == 'domini')[0];
@@ -37,7 +36,8 @@ const DadaField = ({ index, metaDada, value, onChange, required, ...other }: any
             componentProps={{ size: 'small' }}
             required={required}
             decimalScale={decimalScale}
-            disabled={metaDada.readOnly}
+            disabled={disabled || metaDada.readOnly}
+            readOnly={disabled || metaDada.readOnly}
             {...additionalProps}
             {...other}
         />
@@ -84,6 +84,7 @@ const MetaDadaColumn = ({ metaDada }: any) => {
     const values = data.dades[metaDada.id] || [];
     const isMultiple = metaDada.multiplicitat === 'M_0_N' || metaDada.multiplicitat === 'M_1_N';
     const isRequired = metaDada.multiplicitat === 'M_1' || metaDada.multiplicitat === 'M_1_N';
+    const disabled = !data.potModificar
 
     return (
         <Grid container direction="column" rowSpacing={1} width="100%">
@@ -95,6 +96,7 @@ const MetaDadaColumn = ({ metaDada }: any) => {
                             metaDada={metaDada}
                             value={value}
                             onChange={(newValue: string) => handleUpdateValue(index, newValue)}
+                            disabled={disabled}
                         />
                     </Grid>
                     {isMultiple && (
@@ -110,7 +112,7 @@ const MetaDadaColumn = ({ metaDada }: any) => {
             {isMultiple && (
                 <Grid container direction={'row'} size={12} columnSpacing={1} rowSpacing={1}>
                     <Grid size={11}>
-                        <DadaField index={'new'} value={data[`${metaDada.id}-new`]} metaDada={metaDada} />
+                        <DadaField index={'new'} value={data[`${metaDada.id}-new`]} metaDada={metaDada} disabled={disabled} />
                     </Grid>
                     <Grid size={1}>
                         <IconButton
@@ -134,6 +136,7 @@ const MetaDadaColumn = ({ metaDada }: any) => {
                             metaDada={metaDada}
                             required={isRequired}
                             onChange={(newValue: string) => handleUpdateValue(0, newValue)}
+                            disabled={disabled}
                         />
                     </Grid>
                 </Grid>
@@ -142,7 +145,15 @@ const MetaDadaColumn = ({ metaDada }: any) => {
     );
 };
 
-const columns = [{ field: 'nom', flex: 1 }];
+const columns = [
+    { field: 'nom', flex: 1 },
+    {
+        field: 'id',
+        flex: 1,
+        headerName: '',
+        renderCell: (params: any) => <MetaDadaColumn metaDada={params.row} />,
+    },
+];
 const sortModel: any = [{ field: 'ordre', sort: 'asc' }];
 
 export const MetaDadesTab = ({ entity, refresh }: any) => {
@@ -165,19 +176,6 @@ export const MetaDadesTab = ({ entity, refresh }: any) => {
         }
     };
 
-    const additionalColumns = useMemo(
-        () => [
-            ...columns,
-            {
-                field: 'id',
-                flex: 1,
-                headerName: '',
-                renderCell: (params: any) => <MetaDadaColumn metaDada={params.row} />,
-            },
-        ],
-        []
-    );
-
     const desaButton = (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
             <ToolbarButton icon={icons.desa} onClick={save}>
@@ -198,16 +196,17 @@ export const MetaDadesTab = ({ entity, refresh }: any) => {
                 resourceTypeCode={'UPDATE_DADES'}
                 hiddenToolbar
                 componentProps={{ sx: { mt: 0 } }}
+                additionalData={{ potModificar: entity?.potModificar }}
                 hiddenSaveButton
                 hiddenBackButton
                 hiddenRevertButton
                 hiddenDeleteButton
                 initOnChangeRequest
             >
-                {desaButton}
+                {entity?.potModificar && desaButton}
                 <StyledMuiGrid
                     resourceName={'metaDadaResource'}
-                    columns={additionalColumns}
+                    columns={columns}
                     filter={builder.eq('activa', true)}
                     fixedSortModel={sortModel}
                     disableColumnSorting
