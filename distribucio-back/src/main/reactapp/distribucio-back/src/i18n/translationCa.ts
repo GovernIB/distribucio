@@ -964,7 +964,17 @@ const translationCa = {
                 usuarisBustia: {
                     label: 'Usuaris',
                     ok: "El document s'ha descarregat correctament",
-                }
+                },
+                usersPermis: {
+                    label: 'Permisos per usuari...',
+                    title: "Permisos per usuari de la bústia '{{nom}}'",
+                    grid: {
+                        codi: 'Codi',
+                        nom: 'Nom',
+                        hasUsuariPermission: 'Per usuari?',
+                        rols: 'Rols',
+                    }
+                },
             },
         },
         config: {

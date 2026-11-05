@@ -361,14 +361,9 @@ public class BustiaResourceServiceImpl extends BaseMutableResourceService<Bustia
         }
     }
     private class UsuarisPermisPerspectiveApplicator implements PerspectiveApplicator<BustiaResourceEntity, BustiaResource> {
-
         @Override
         public void applySingle(String code, BustiaResourceEntity entity, BustiaResource resource) throws PerspectiveApplicationException {
-            resource.setUsuarisPermis(
-                    bustiaService.getUsuarisPerBustia(entity.getId()).stream()
-                            .map(u -> new FieldOption(u.getCodi(), u.getNom()))
-                            .collect(Collectors.toList())
-            );
+            resource.setUsuarisPermis(bustiaService.getUsuarisPerBustia(entity.getId()));
         }
     }
     private class ActivaActionExecutor implements ActionExecutor<BustiaResourceEntity, BustiaResource.DesactivarForm, Serializable> {

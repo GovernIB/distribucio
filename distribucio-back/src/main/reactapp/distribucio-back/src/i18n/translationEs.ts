@@ -964,7 +964,17 @@ const translationEs = {
                 usuarisBustia: {
                     label: "Usuarios",
                     ok: "El documento se ha descargado correctamente",
-                }
+                },
+                usersPermis: {
+                    label: 'Permisos por usuario...',
+                    title: "Permisos por usuario del buzón '{{nom}}'",
+                    grid: {
+                        codi: 'Código',
+                        nom: 'Nombre',
+                        hasUsuariPermission: '¿Por usuario?',
+                        rols: 'Roles',
+                    }
+                },
             },
         },
         config: {

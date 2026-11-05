@@ -4,6 +4,7 @@ import {useMoureAnotacions} from "../actions/MoureAnotacions.tsx";
 import {iniciaDescargaBlob} from "../../../util/downloadUtils.ts";
 import {useDesactivar} from "../actions/Desactivar.tsx";
 import { icons } from '../../../util/icons';
+import {useUsuarisAmbPermis} from "./UsuarisAmbPermis.tsx";
 
 export const useActions = (refresh?: () => void) => {
     const { t } = useTranslation();
@@ -79,8 +80,15 @@ export const useBustiaActions = (refresh?: () => void) => {
     const { perDefecte, activar, desactivar } = useActions(refresh)
     const {handleShow, content} = useMoureAnotacions(refresh)
     const {handleShow: handleDesactivarDialog, content: contentDesactivarDialog} = useDesactivar(refresh)
+    const {handleOpen: handleUsersPermis, component: componentUsersPermis} = useUsuarisAmbPermis()
 
     const actions:any[] = [
+        {
+            label: t('page.bustia.accio.usersPermis.label'),
+            icon: icons.usuariCanviCodis,
+            showInMenu: true,
+            onClick: handleUsersPermis,
+        },
         {
             label: t('page.bustia.accio.perDefecte.label'),
             icon: icons.seleccionaTot,
@@ -119,6 +127,7 @@ export const useBustiaActions = (refresh?: () => void) => {
     const components = <>
         {content}
         {contentDesactivarDialog}
+        {componentUsersPermis}
     </>
 
     return {
