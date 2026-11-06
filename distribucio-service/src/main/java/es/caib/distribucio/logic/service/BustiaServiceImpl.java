@@ -889,12 +889,12 @@ public class BustiaServiceImpl implements BustiaService {
 				false,
 				false);
 		// Obté la llista d'id's amb permisos per a l'usuari
-		List<BustiaEntity> busties;		
-		if (mostrarInactives) {
-			busties = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
-		} else {
-			busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc(entitat);
-		}
+		List<BustiaEntity> busties = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
+//		if (mostrarInactives) {
+//			busties = bustiaRepository.findByEntitatAndPareNotNullOrderByNomAsc(entitat);
+//		} else {
+//			busties = bustiaRepository.findByEntitatAndActivaTrueAndPareNotNullOrderByNomAsc(entitat);
+//		}
 		
 		final Timer findPermesesPerUsuariTimerfilterGrantedAll = metricRegistry.timer(MetricRegistry.name(BustiaServiceImpl.class, "findPermesesPerUsuari.filterGrantedAll"));
 		Timer.Context findPermesesPerUsuariContextfilterGrantedAll = findPermesesPerUsuariTimerfilterGrantedAll.time();
