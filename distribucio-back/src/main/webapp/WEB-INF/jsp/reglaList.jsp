@@ -247,17 +247,9 @@
 			<div class="col-md-3">
 				<dis:inputText name="nom" inline="true" placeholderKey="bustia.list.filtre.nom"/>
 			</div>
-<%--			<div class="col-md-3">--%>
-<%--				<dis:inputText name="codiAssumpte" inline="true" placeholderKey="regla.form.camp.assumpte.codi"/>--%>
-<%--			</div>--%>
             <div class="col-md-3">
                 <dis:inputText name="codiSIA" inline="true" placeholderKey="regla.list.columna.sia.single.codi"/>
             </div>
-<%--            <div class="col-md-3">--%>
-<%--                <dis:inputText name="codiServei" inline="true" placeholderKey="regla.list.columna.servei.single.codi"/>--%>
-<%--            </div>--%>
-		</div>
-		<div class="row">
             <div class="col-md-3">
                 <dis:inputText name="codiTramit" inline="true" placeholderKey="regla.list.columna.tramit.single.codi"/>
             </div>
@@ -274,7 +266,8 @@
                         suggestText="codiAndNom"
                         optionTemplateFunction="formatSelectUnitat"/>
             </div>
-
+		</div>
+		<div class="row">
 			<div class="col-md-3">		
 				<c:url value="/bustiaajax/bustia" var="urlConsultaInicial"/>
 				<c:url value="/bustiaajax/llistaBusties" var="urlConsultaLlistat"/>			
@@ -304,17 +297,18 @@
 				</button>
 				<dis:inputHidden name="activa"/> --%> 
 			</div>
+
+            <div class="col-md-3">
+                <dis:inputSelect name="presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial" inline="true"/>
+            </div>
 		</div>
 
 		<div class="row">
             <div class="col-md-3">
-                <dis:inputSelect name="presencial" optionEnum="ReglaPresencialEnumDto" emptyOption="true" placeholderKey="regla.list.columna.presencial" inline="true"/>
-            </div>
-            <div class="col-md-3">
                 <dis:inputSelect id="tipusSelect" name="tipus" optionEnum="ReglaTipusEnumDto" emptyOption="true" placeholderKey="regla.list.columna.tipus" inline="true"/>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div id="camps_tipus_UNITAT" style="display: none">
                     <c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>
                     <c:url value="/unitatajax/unitats" var="urlConsultaLlistat"/>
@@ -356,7 +350,6 @@
                 </div>
             </div>
 
-			<div class="col-md-3"></div>
 			<div class="col-md-3 d-flex pull-right justify-content-end">
 				<button style="display:none" type="submit" name="accio" value="filtrar" ><span class="fa fa-filter"></span></button>
 				<button type="submit" name="accio" value="netejar" class="btn btn-default"><spring:message code="comu.boto.netejar"/></button>

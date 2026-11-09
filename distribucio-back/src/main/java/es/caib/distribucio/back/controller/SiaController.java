@@ -4,8 +4,11 @@ import es.caib.distribucio.back.command.ServeiFiltreCommand;
 import es.caib.distribucio.back.helper.DatatablesHelper;
 import es.caib.distribucio.back.helper.DatatablesHelper.DatatablesResponse;
 import es.caib.distribucio.back.helper.RequestSessionHelper;
+import es.caib.distribucio.logic.intf.base.util.RequestSessionUtil;
 import es.caib.distribucio.logic.intf.dto.EntitatDto;
+import es.caib.distribucio.logic.intf.model.UserSession;
 import es.caib.distribucio.logic.intf.resourceservice.SiaResourceService;
+import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +102,11 @@ public class SiaController extends BaseAdminController{
         if (serveiFiltreCommand.isNomesComu()) {
             filter.add("comu:true");
         }
+
+        EntitatDto entitatActual = getEntitatActual(request);
+        Long entitatActualId = SessioActualUtil.getEntitatId();
+        if (entitatActualId == null)
+            RequestSessionUtil.setRequestSession(new UserSession(entitatActual.getId()));
 
 		return DatatablesHelper.getDatatableResponse(
 				request,

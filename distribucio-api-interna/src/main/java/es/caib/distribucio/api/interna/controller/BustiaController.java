@@ -1,5 +1,6 @@
 package es.caib.distribucio.api.interna.controller;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(
 		name = "Bústia",
 		description = "API REST d'alta de registres d'entrada a l'aplicació Distribució.")
-@Deprecated
+@Hidden
 public class BustiaController {
 	
 	@Autowired

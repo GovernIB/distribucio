@@ -43,7 +43,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Controller
 @RequestMapping("/backoffice")
 @Tag(
-		name = "Aplicació de client",
+		name = "~ Aplicació de client",
 		description = "API REST de gestió d'aplicacions de client. Per invocar els mètodes és necessari accedir amb un usuari que tengui el rol DIS_BACKWS.")
 @Deprecated
 public class BackofficeRestController {

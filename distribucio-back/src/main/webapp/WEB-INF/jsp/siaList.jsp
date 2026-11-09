@@ -88,7 +88,7 @@
 				<dis:inputText name="codiSia" inline="true" placeholderKey="servei.list.columna.codiSia"/>
 			</div>
 			<div class="col-md-3">
-				<dis:inputText name="nom" inline="true" placeholderKey="registre.admin.list.filtre.servei"/>
+				<dis:inputText name="nom" inline="true" placeholderKey="registre.admin.list.filtre.procedimentservei"/>
 			</div>			
 			<div class="col-md-3">
 				<c:url value="/unitatajax/unitat" var="urlConsultaInicial"/>

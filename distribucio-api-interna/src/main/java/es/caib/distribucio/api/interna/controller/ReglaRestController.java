@@ -42,7 +42,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Controller
 @RequestMapping("/regla")
 @Tag(
-		name = "Regla",
+		name = "~ Regla",
 		description = "API REST de creació de regles per aplicacions de client i codi SIA. Per invocar els mètodes és necessari accedir amb un usuari que tengui el rol DIS_REGLA.")
 @Deprecated
 public class ReglaRestController {
