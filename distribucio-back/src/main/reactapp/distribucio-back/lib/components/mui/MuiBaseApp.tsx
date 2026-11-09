@@ -40,6 +40,9 @@ export type MuiBaseAppProps = Omit<BaseAppProps, 'contentComponentSlots'> & {
     headerAdditionalComponents?: React.ReactElement | React.ReactElement[];
     headerAdditionalAuthComponents?: React.ReactElement | React.ReactElement[];
     headerAuthBadgeIcon?: string;
+    headerAuthOnEditClick?: () => void;
+    headerAuthCurrentUserCode?: string;
+    headerAuthCurrentUserName?: string;
     offline?: React.ReactElement;
     footer?: React.ReactElement;
     footerHeight?: number;
@@ -161,6 +164,7 @@ const MuiComponentsConfigurer: React.FC = () => {
 };
 
 const useMenu = (
+    code: string,
     menuTitle: string | undefined,
     menuEntries: MenuEntry[] | undefined,
     menuOnTitleClose: (() => void) | undefined,
@@ -168,7 +172,7 @@ const useMenu = (
     menuFooterHeight: number | undefined,
     menuPanelWidth: number | undefined
 ) => {
-    const { shrink, iconClicked, buttonComponent: menuButton } = useToolbarMenuIcon();
+    const { shrink, iconClicked, buttonComponent: menuButton } = useToolbarMenuIcon(code);
     const menuComponent =
         menuEntries != null ? (
             <Menu
@@ -195,6 +199,7 @@ const useMenu = (
 
 export const MuiBaseApp: React.FC<MuiBaseAppProps> = (props) => {
     const {
+        code,
         headerTitle,
         headerVersion,
         headerLogo,
@@ -205,6 +210,9 @@ export const MuiBaseApp: React.FC<MuiBaseAppProps> = (props) => {
         headerAdditionalComponents,
         headerAdditionalAuthComponents,
         headerAuthBadgeIcon,
+        headerAuthOnEditClick,
+        headerAuthCurrentUserCode,
+        headerAuthCurrentUserName,
         offline,
         footer,
         footerHeight,
@@ -221,6 +229,7 @@ export const MuiBaseApp: React.FC<MuiBaseAppProps> = (props) => {
     } = props;
     const mergedFormFieldComponents = [...baseFormFieldComponents, ...(formFieldComponents ?? [])];
     const { menuButton, menuComponent } = useMenu(
+        code,
         menuTitle,
         menuEntries,
         menuOnTitleClose,
@@ -242,6 +251,9 @@ export const MuiBaseApp: React.FC<MuiBaseAppProps> = (props) => {
                 backgroundColor={headerAppbarBackgroundColor}
                 backgroundImg={headerAppbarBackgroundImg}
                 authBadgeIcon={headerAuthBadgeIcon}
+                authOnEditClick={headerAuthOnEditClick}
+                authCurrentUserCode={headerAuthCurrentUserCode}
+                authCurrentUserName={headerAuthCurrentUserName}
             />
         ) : undefined;
     const offlineComponent = offline ?? <OfflineMessage />;
@@ -252,6 +264,7 @@ export const MuiBaseApp: React.FC<MuiBaseAppProps> = (props) => {
     };
     return (
         <BaseApp
+            code={code}
             formFieldComponents={mergedFormFieldComponents}
             detailFieldComponent={MuiDetailField}
             {...otherProps}

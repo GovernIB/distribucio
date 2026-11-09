@@ -1,5 +1,4 @@
 export { AuthContext, useAuthContext } from './components/AuthContext';
-export { AuthProvider as KeycloakAuthProvider } from './components/KeycloakAuthProvider';
 export { AuthProvider as OidcAuthProvider } from './components/OidcAuthProvider';
 export { AuthProvider as ContainerAuthProvider } from './components/ContainerAuthProvider';
 export { ResourceApiContext, useResourceApiContext } from './components/ResourceApiContext';
@@ -81,11 +80,12 @@ export {
     isoDateToDate,
     isoDateTimeToDate,
 } from './util/dateFormat';
-export { parseIsoDuration } from './util/durationFormat';
+export { durationParseIso, durationFormat, durationAddSeconds } from './util/durationFormat';
 export { toolbarBackgroundStyle } from './util/toolbar';
 export { toAbsolutePath } from './util/url';
 export { toBase64 } from './util/files';
 export { useDebounce } from './util/useDebounce';
+export { shallowEqual, deepEqual } from './util/equals';
 export * as springFilterBuilder from './util/springFilterBuilder';
 
 export type { DialogButton } from './components/BaseAppContext';
