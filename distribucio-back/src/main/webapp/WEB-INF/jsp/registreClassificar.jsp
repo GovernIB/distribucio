@@ -34,7 +34,7 @@ function formatProcedimentSelect(item) {
 function formatServeiSelect(item) {
 	const serveiSplit = item.text.split(" => ");
 	if (serveiSplit[1] == 'EXTINGIT') {
-		return $("<span>" + serveiSplit[0] + " <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.servei.extingit"/>'> </span> </span>");
+		return $("<span>" + serveiSplit[0] + " <span class='fa fa-exclamation-triangle text-warning' title='<spring:message code="bustia.pendent.classificar.sia.extingit"/>'> </span> </span>");
 	}else{
 		return $("<span>" + serveiSplit[0] + " </span>");
 	}
