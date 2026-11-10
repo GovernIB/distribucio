@@ -206,10 +206,10 @@ export const useSincronitzar = () => {
                         if (ref?.current)
                             descargarPDF(ref?.current);
                         break;
-                    case 'sinc': sync(false); break;
-                    case 'forzar': sync(true);  break;
+                    case 'sinc': sync(false); handleClose(); break;
+                    case 'forzar': sync(true); handleClose(); break;
+                    case 'close': handleClose(); break;
                 }
-                handleClose();
             }}
         >
             <Load value={info}>

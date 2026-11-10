@@ -113,7 +113,7 @@ const EMGrid = ({ autoHeight = true }: { autoHeight?: boolean }) => {
                 disableColumnSorting
                 toolbarShowFilterCount
                 rowAdditionalActions={additionalActions}
-                toolbarHideRefresh
+                // toolbarHideRefresh
                 toolbarElementsWithPositions={[
                     {
                         position: 2,
@@ -128,6 +128,17 @@ const EMGrid = ({ autoHeight = true }: { autoHeight?: boolean }) => {
                             </ToolbarButton>
                         ),
                     },
+                    // {
+                    //     position: 2,
+                    //     element: (
+                    //         <ToolbarButton
+                    //             title={t('common.refresh')}
+                    //             icon={icons.refresca}
+                    //             onClick={refresh}
+                    //             sx={{ color: (theme: Theme) => theme.palette.primary.contrastText }}
+                    //         />
+                    //     ),
+                    // },
                 ]}
                 paginationActive
                 autoHeight={autoHeight}
