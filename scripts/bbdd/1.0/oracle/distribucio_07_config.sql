@@ -1,7 +1,9 @@
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('GENERAL',null,'0','Configuracions generals');
-Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SCHEDULLED_ARXIU','SCHEDULLED','1','Tasca periòdica de guardar annexos a l''arxiu');
+INSERT INTO DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) VALUES ('GENERAL_COMUNES','GENERAL',0,'Configuracions comunes');
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('EMAIL',null,'1','Enviament de correus');
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SCHEDULLED',null,'2','Configuració de les tasques periodiques');
+Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('SCHEDULLED_ARXIU','SCHEDULLED','1','Tasca periòdica de guardar annexos a l''arxiu');
+INSERT INTO DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) VALUES ('SCHEDULLED_COMUNES','SCHEDULLED',0,'Configuració comuna de les tasques periòdiques');
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('ARXIU',null,'3','Configuració de l''arxiu');
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('UNITATS',null,'4','Configuració del plugin d''unitats organitzatives');
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('GES_DOC',null,'5','Gestió documental (Sistema de fitxers)');
@@ -25,7 +27,9 @@ INSERT INTO DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) VALUES ('SC
 INSERT INTO DIS_CONFIG_GROUP (POSITION, CODE, DESCRIPTION) VALUES (5, 'LOGS', 'Logs del servidor' );
 INSERT INTO DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) VALUES ('SCHEDULLED_EMAIL_ANOTACIO_ERROR_PROCESAR', 'SCHEDULLED', 24, 'Enviament periòdic per correu de les anotacions amb error de processament');
 INSERT INTO DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) VALUES ('VALID_SIGN_AGIL',null,'12','Plugin de validació de firmes àgils');
+INSERT INTO DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) VALUES ('SCHEDULLED_EXCEPCIONS','SCHEDULLED',23,'Tasca periòdica d''esborrat de les excepcions antigues');
 
+    
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('BOOL',null);
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('TEXT',null);
 Insert into DIS_CONFIG_TYPE (CODE,VALUE) values ('INT',null);
@@ -196,7 +200,7 @@ Insert INTO DIS_CONFIG (KEY,VALUE, description, group_code, jboss_property, type
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) values('es.caib.distribucio.tasca.monitor.integracio.actualitzar.serveis', '0 0 17 * * *', 'Especificar l''expressió ''cron'' indicant l''interval de temps de les actualitzacions dels serveis en segon pla. Per defecte s''aplicarà el cron corresponent per actualitzar cada divendres a les 15:30h', 'SCHEDULLED_SERVEI', 0, 0, 'TEXT', null, 0, null, null);
 
 Insert into DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,LASTMODIFIEDBY_CODI,LASTMODIFIEDDATE) VALUES ('es.caib.distribucio.segonpla.cron.execucio.massiva',null,'Especificar l''expressió ''cron'' indicant l''interval de temps de les execucions de la tasca','SCHEDULLED_EXECUCIONS_MASSIVES','0','0','CRON',null,null);
-
+INSERT INTO DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE,CONFIGURABLE)  VALUES (0,'SCHEDULLED_EXECUCIONS_MASSIVES','es.caib.distribucio.segonpla.timeout.execucio.massiva', 10,'Temps màxim en minuts per executar cada acció individual (per defecte 10)',1,'INT',0);
 
 Insert into DIS_CONFIG_GROUP (CODE,PARENT_CODE,POSITION,DESCRIPTION) values ('GENERAL_LIMIT_CANVI_ESTAT','GENERAL','26','Configuració de limit de canvis d''estat');
 INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE) VALUES ('es.caib.distribucio.horari.laboral', '* * 7-16 * * MON-FRI', 'Horari laboral', 'GENERAL_LIMIT_CANVI_ESTAT', '1', '0', 'CRON');
@@ -238,6 +242,14 @@ INSERT INTO DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION
     (0,'GENERAL_EXPORT_ZIP','es.caib.distribucio.exportar.annex.zip.caducitat', 10,'Nombre de dies que es guardarà el fitxer ZIP abans de que s''esborri automàticament',3,'INT',0);
 INSERT INTO DIS_CONFIG (JBOSS_PROPERTY,GROUP_CODE,KEY,VALUE,DESCRIPTION,POSITION,TYPE_CODE,CONFIGURABLE) VALUES
     (0,'GENERAL_EXPORT_ZIP','es.caib.distribucio.exportar.annex.zip.caducitat.cron', '0 0 0 * * *','Tasca periòdica per esborrar documents .ZIP temporals de descàrrega massiva de documents',4,'CRON',0);
+
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,CONFIGURABLE) VALUES
+    ('es.caib.distribucio.tasca.excepcions.esborrar.antics.cron','0 0 3 * * *','Expressió cron de la tasca d''esborrat de les excepcions antigues. Per defecte cada dia a les 3:00 (0 0 3 * * *)','SCHEDULLED_EXCEPCIONS',0,0,'CRON',0);
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,CONFIGURABLE) VALUES
+    ('es.caib.distribucio.tasca.excepcions.esborrar.antics.dies','45','Dies màxim d''antiguitat de les excepcions guardades. Per defecte 45 dies','SCHEDULLED_EXCEPCIONS',1,0,'INT',0);
+
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE,CONFIGURABLE) VALUES
+    ('es.caib.distribucio.interface.defecte','REACT','Interfície (JSP o REACT) amb la que s''entra a l''aplicació quan l''usuari no n''ha triat cap al seu perfil','GENERAL',24,0,'TEXT',0);
 
 -- Actualització de les propietats que poden ser configurables a nivell d'entitat
 

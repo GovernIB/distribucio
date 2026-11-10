@@ -27,7 +27,13 @@ CREATE TABLE DIS_USUARI
   ROL_ACTUAL            character varying(64),
   entitat_defecte_id    BIGINT,
   NUM_ELEMENTS_PAGINA   BIGINT,
-  EMAIL_ERROR_ANOTACIO  boolean DEFAULT false
+  EMAIL_ERROR_ANOTACIO  boolean DEFAULT false,
+  DARRER_PERIODE        timestamp without time zone,
+  DARRERA_ACTIVITAT     timestamp without time zone,
+  INTERFICIE_USUARI     character varying(5),
+  TEMA_APLICACIO VARCHAR(16 CHAR),
+  ESTIL_MENU VARCHAR(16 CHAR) DEFAULT 'TEMA' NOT NULL
+  
 );
 
 
@@ -48,7 +54,10 @@ CREATE TABLE DIS_ENTITAT
   FECHA_ACTUALIZACION  TIMESTAMP WITHOUT TIME ZONE,
   FECHA_SINCRONIZACION TIMESTAMP WITHOUT TIME ZONE,
   COLOR_FONS           character varying(32),
-  COLOR_LLETRA         character varying(32)
+  COLOR_LLETRA         character varying(32),
+  COLOR_FONS_DARK      character varying(32),
+  COLOR_LLETRA_DARK    character varying(32),
+  LOGO_CAP_DARK         BYTEA 
 );
 
 CREATE TABLE DIS_CONTINGUT
@@ -746,4 +755,24 @@ CREATE TABLE dis_limit_canvi_estat (
     lim_min_nolab INTEGER,
     lim_dia_lab INTEGER,
     lim_dia_nolab INTEGER
+);
+
+
+CREATE TABLE DIS_EXCEPCIO_LOG (
+    ID                  BIGINT NOT NULL,
+	CREATEDDATE 		TIMESTAMP (6), 
+    TIPUS               VARCHAR(512),
+    OBJECT_ID           VARCHAR(512),
+    OBJECT_CLASS        VARCHAR(512),
+    URI                 VARCHAR(1024),
+    ORIGEN              VARCHAR(512),
+    PARAM1              VARCHAR(512),
+    PARAM2              VARCHAR(512),
+    MESSAGE             VARCHAR(4000),
+    STACKTRACE          CLOB,
+    ENTITAT_CODI        VARCHAR(64),
+    CREATEDBY_CODI      VARCHAR(64),
+    CREATEDDATE         TIMESTAMP (6),
+    LASTMODIFIEDBY_CODI VARCHAR(64),
+    LASTMODIFIEDDATE    TIMESTAMP (6)
 );
