@@ -89,7 +89,7 @@ public class ExecucioMassivaHelper {
     @Autowired
     private EmailHelper emailHelper;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ClassificacioResultatDto classificarNewTransaction(Long entitatId, Long elementId, String parametres) throws Exception {
     	ClassificacioResultatDto resultat = null;
 		int minuts = this.getTimeoutExecucioMassivaProperty();
@@ -119,7 +119,7 @@ public class ExecucioMassivaHelper {
 		return resultat;
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void reenviarNewTransaction(Long entitatId, Long elementId, String parametres) throws Exception {
 		
 		int minuts = this.getTimeoutExecucioMassivaProperty();
@@ -151,7 +151,7 @@ public class ExecucioMassivaHelper {
 		}
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void marcarProcessatNewTransaction(Long entitatId, Long elementId, String parametres) throws Exception {
 		int minuts = this.getTimeoutExecucioMassivaProperty();
 		AtomicBoolean timeoutLlencat = new AtomicBoolean();
@@ -179,7 +179,7 @@ public class ExecucioMassivaHelper {
 		}
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void marcarPendentNewTransaction(Long entitatId, Long elementId, String parametres) throws Exception {
 		int minuts = this.getTimeoutExecucioMassivaProperty();
 		AtomicBoolean timeoutLlencat = new AtomicBoolean();
@@ -203,7 +203,7 @@ public class ExecucioMassivaHelper {
 		}
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void enviarViaEmailNewTransaction(Long entitatId, Long elementId, String parametres) throws Exception {
 		int minuts = this.getTimeoutExecucioMassivaProperty();
 		AtomicBoolean timeoutLlencat = new AtomicBoolean();
@@ -236,7 +236,7 @@ public class ExecucioMassivaHelper {
 		}
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public String custodiarAnnexosNewTransaction(Long elementId) throws Exception {
 		int minuts = this.getTimeoutExecucioMassivaProperty();
 		AtomicBoolean timeoutLlencat = new AtomicBoolean();
@@ -277,7 +277,7 @@ public class ExecucioMassivaHelper {
 		}
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public String reintentarProcessamentNewTransaction(Long entitatId, Long elementId) throws Exception {
 		int minuts = this.getTimeoutExecucioMassivaProperty();
 		AtomicBoolean timeoutLlencat = new AtomicBoolean();
@@ -341,7 +341,7 @@ public class ExecucioMassivaHelper {
 		}
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public String reintentarBackofficeNewTransaction(Long entitatId, Long elementId) throws Exception {
 		
     	String missatge = null;
@@ -377,7 +377,7 @@ public class ExecucioMassivaHelper {
 		return missatge;
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public String sobreescriureNewTransaction(Long entitatId, Long elementId) throws Exception {
 		int minuts = this.getTimeoutExecucioMassivaProperty();
 		AtomicBoolean timeoutLlencat = new AtomicBoolean();
