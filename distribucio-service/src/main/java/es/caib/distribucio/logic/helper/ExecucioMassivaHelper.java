@@ -8,11 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import javax.mail.MessagingException;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import es.caib.distribucio.logic.intf.base.util.ThreadLocalUtil;
 import es.caib.distribucio.logic.intf.dto.ClassificacioResultatDto;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
 import es.caib.distribucio.logic.intf.dto.ExecucioMassivaEstatDto;
@@ -52,8 +54,10 @@ import es.caib.distribucio.persist.repository.EntitatRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaContingutRepository;
 import es.caib.distribucio.persist.repository.ExecucioMassivaRepository;
 import es.caib.distribucio.persist.repository.RegistreRepository;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class ExecucioMassivaHelper {
 
 	private static final ObjectMapper mapper = new ObjectMapper();
@@ -85,96 +89,159 @@ public class ExecucioMassivaHelper {
     @Autowired
     private EmailHelper emailHelper;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-	public ClassificacioResultatDto classificarNewTransaction(Long entitatId, Long elementId, String parametres) {
-		String titol = getValorParametre(parametres, "titol", String.class);
-        String tipus = getValorParametre(parametres, "tipus", String.class);
-		String procedimentCodi = getValorParametre(parametres, "codiProcediment", String.class);
-		String serveiCodi = getValorParametre(parametres, "codiServei", String.class);
-		
-		ClassificacioResultatDto resultat = registreService.classificar(
-				entitatId, 
-				elementId,
-                tipus,
-				procedimentCodi, 
-				serveiCodi, 
-				titol);
-
+    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+    public ClassificacioResultatDto classificarNewTransaction(Long entitatId, Long elementId, String parametres) throws Exception {
+    	ClassificacioResultatDto resultat = null;
+		int minuts = this.getTimeoutExecucioMassivaProperty();
+		AtomicBoolean timeoutLlencat = new AtomicBoolean();
+        ScheduledExecutorService scheduler = ThreadLocalUtil.setTimeout(minuts, TimeUnit.MINUTES, timeoutLlencat);
+        try {
+    		String titol = getValorParametre(parametres, "titol", String.class);
+            String tipus = getValorParametre(parametres, "tipus", String.class);
+    		String procedimentCodi = getValorParametre(parametres, "codiProcediment", String.class);
+    		String serveiCodi = getValorParametre(parametres, "codiServei", String.class);
+    		
+    		resultat = registreService.classificar(
+    				entitatId, 
+    				elementId,
+                    tipus,
+    				procedimentCodi, 
+    				serveiCodi, 
+    				titol);
+		} catch (Exception e) {
+			if (timeoutLlencat.get()) {
+                e = new Exception("L'execució massiva s'ha interromput després de superar el temps màxim de " + minuts + " minuts.", e);
+            }
+            throw e;
+		} finally {
+	        scheduler.shutdownNow();
+		}
 		return resultat;
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void reenviarNewTransaction(Long entitatId, Long elementId, String parametres) throws InterruptedException {
-		Long[] destins = getValorParametre(parametres, "destins", Long[].class);
-		Map<Long, String> destinsUsuari = getValorParametre(parametres, "destinsUsuari", new TypeReference<Map<Long, String>>() {});
-		Boolean deixarCopia = getValorParametre(parametres, "deixarCopia", Boolean.class);
-		String comentari= getValorParametre(parametres, "comentari", String.class);
-		Long[] perConeixement = getValorParametre(parametres, "perConeixement", Long[].class);
+	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	public void reenviarNewTransaction(Long entitatId, Long elementId, String parametres) throws Exception {
 		
-		bustiaService.registreReenviar(
-				entitatId,
-				destins,
-				elementId,
-				deixarCopia,
-				comentari,
-				perConeixement,
-				destinsUsuari,
-				null);
+		int minuts = this.getTimeoutExecucioMassivaProperty();
+		AtomicBoolean timeoutLlencat = new AtomicBoolean();
+        ScheduledExecutorService scheduler = ThreadLocalUtil.setTimeout(minuts, TimeUnit.MINUTES, timeoutLlencat);
+        try {
+    		Long[] destins = getValorParametre(parametres, "destins", Long[].class);
+    		Map<Long, String> destinsUsuari = getValorParametre(parametres, "destinsUsuari", new TypeReference<Map<Long, String>>() {});
+    		Boolean deixarCopia = getValorParametre(parametres, "deixarCopia", Boolean.class);
+    		String comentari= getValorParametre(parametres, "comentari", String.class);
+    		Long[] perConeixement = getValorParametre(parametres, "perConeixement", Long[].class);
+    		
+    		bustiaService.registreReenviar(
+    				entitatId,
+    				destins,
+    				elementId,
+    				deixarCopia,
+    				comentari,
+    				perConeixement,
+    				destinsUsuari,
+    				null);
+		} catch (Exception e) {
+			if (timeoutLlencat.get()) {
+                e = new Exception("L'execució massiva s'ha interromput després de superar el temps màxim de " + minuts + " minuts.", e);
+            }
+            throw e;
+		} finally {
+	        scheduler.shutdownNow();
+		}
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void marcarProcessatNewTransaction(Long entitatId, Long elementId, String parametres) {
-		String motiu = getValorParametre(parametres, "motiu", String.class);
-		RegistreDto registre = registreService.findOne(entitatId, elementId, false);
-		
-		revisarEstatPerMarcarProcessat(registre);
-		
-		contingutService.marcarProcessat(
-				entitatId, 
-				elementId,
-				"<span class='label label-default'>" + 
-						messageHelper.getMessage("execucio.massiva.helper.accio.marcat.processat") + 
-				"</span> " + motiu, 
-				"DIS_ADMIN");
+	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	public void marcarProcessatNewTransaction(Long entitatId, Long elementId, String parametres) throws Exception {
+		int minuts = this.getTimeoutExecucioMassivaProperty();
+		AtomicBoolean timeoutLlencat = new AtomicBoolean();
+        ScheduledExecutorService scheduler = ThreadLocalUtil.setTimeout(minuts, TimeUnit.MINUTES, timeoutLlencat);
+        try {
+    		String motiu = getValorParametre(parametres, "motiu", String.class);
+    		RegistreDto registre = registreService.findOne(entitatId, elementId, false);
+    		
+    		revisarEstatPerMarcarProcessat(registre);
+    		
+    		contingutService.marcarProcessat(
+    				entitatId, 
+    				elementId,
+    				"<span class='label label-default'>" + 
+    						messageHelper.getMessage("execucio.massiva.helper.accio.marcat.processat") + 
+    				"</span> " + motiu, 
+    				"DIS_ADMIN");
+		} catch (Exception e) {
+			if (timeoutLlencat.get()) {
+                e = new Exception("L'execució massiva s'ha interromput després de superar el temps màxim de " + minuts + " minuts.", e);
+            }
+            throw e;
+		} finally {
+	        scheduler.shutdownNow();
+		}
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void marcarPendentNewTransaction(Long entitatId, Long elementId, String parametres) {
-		String motiu = getValorParametre(parametres, "motiu", String.class);
-		
-		registreService.marcarPendent(
-				entitatId, 
-				elementId,
-				"<span class='label label-default'>" + 
-						messageHelper.getMessage("execucio.massiva.helper.accio.marcat.pendent") + 
-				"</span> " + motiu, 
-				"DIS_ADMIN");
+	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	public void marcarPendentNewTransaction(Long entitatId, Long elementId, String parametres) throws Exception {
+		int minuts = this.getTimeoutExecucioMassivaProperty();
+		AtomicBoolean timeoutLlencat = new AtomicBoolean();
+        ScheduledExecutorService scheduler = ThreadLocalUtil.setTimeout(minuts, TimeUnit.MINUTES, timeoutLlencat);
+        try {
+    		String motiu = getValorParametre(parametres, "motiu", String.class);
+    		registreService.marcarPendent(
+    				entitatId, 
+    				elementId,
+    				"<span class='label label-default'>" + 
+    						messageHelper.getMessage("execucio.massiva.helper.accio.marcat.pendent") + 
+    				"</span> " + motiu, 
+    				"DIS_ADMIN");
+		} catch (Exception e) {
+			if (timeoutLlencat.get()) {
+                e = new Exception("L'execució massiva s'ha interromput després de superar el temps màxim de " + minuts + " minuts.", e);
+            }
+            throw e;
+		} finally {
+	        scheduler.shutdownNow();
+		}
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void enviarViaEmailNewTransaction(Long entitatId, Long elementId, String parametres) throws MessagingException {
-		boolean isVistaMoviments = getValorParametre(parametres, "isVistaMoviments", Boolean.class);
-		String adreces = getValorParametre(parametres, "destinataris", String.class);
-		String motiu = getValorParametre(parametres, "motiu", String.class);
-		
-		adreces = revisarAdreces(adreces);
-		
-		RegistreDto registre = registreService.findOne(entitatId, elementId, false);
-		
-		revisarEstatPerEnviarViaEmail(registre);
-		
-		bustiaService.registreAnotacioEnviarPerEmail(
-				entitatId,
-				elementId,
-				adreces, 
-				motiu,
-				isVistaMoviments,
-				"DIS_ADMIN");
+	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	public void enviarViaEmailNewTransaction(Long entitatId, Long elementId, String parametres) throws Exception {
+		int minuts = this.getTimeoutExecucioMassivaProperty();
+		AtomicBoolean timeoutLlencat = new AtomicBoolean();
+        ScheduledExecutorService scheduler = ThreadLocalUtil.setTimeout(minuts, TimeUnit.MINUTES, timeoutLlencat);
+        try {
+    		boolean isVistaMoviments = getValorParametre(parametres, "isVistaMoviments", Boolean.class);
+    		String adreces = getValorParametre(parametres, "destinataris", String.class);
+    		String motiu = getValorParametre(parametres, "motiu", String.class);
+    		
+    		adreces = revisarAdreces(adreces);
+    		
+    		RegistreDto registre = registreService.findOne(entitatId, elementId, false);
+    		
+    		revisarEstatPerEnviarViaEmail(registre);
+    		
+    		bustiaService.registreAnotacioEnviarPerEmail(
+    				entitatId,
+    				elementId,
+    				adreces, 
+    				motiu,
+    				isVistaMoviments,
+    				"DIS_ADMIN");
+		} catch (Exception e) {
+			if (timeoutLlencat.get()) {
+                e = new Exception("L'execució massiva s'ha interromput després de superar el temps màxim de " + minuts + " minuts.", e);
+            }
+            throw e;
+		} finally {
+	        scheduler.shutdownNow();
+		}
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public String custodiarAnnexosNewTransaction(Long elementId) {
-		try {
+	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	public String custodiarAnnexosNewTransaction(Long elementId) throws Exception {
+		int minuts = this.getTimeoutExecucioMassivaProperty();
+		AtomicBoolean timeoutLlencat = new AtomicBoolean();
+        ScheduledExecutorService scheduler = ThreadLocalUtil.setTimeout(minuts, TimeUnit.MINUTES, timeoutLlencat);
+        try {
 			String missatge = null;
 			ResultatAnnexDefinitiuDto resultatAnnexDefinitiu = annexosService.guardarComADefinitiu(elementId);
 			
@@ -201,114 +268,154 @@ public class ExecucioMassivaHelper {
 				throw new RuntimeException(missatge);
 			}
 		} catch (Exception e) {
-			throw e;
+			if (timeoutLlencat.get()) {
+                e = new Exception("L'execució massiva s'ha interromput després de superar el temps màxim de " + minuts + " minuts.", e);
+            }
+            throw e;
+		} finally {
+	        scheduler.shutdownNow();
 		}
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public String reintentarProcessamentNewTransaction(Long entitatId, Long elementId) {
-		RegistreDto registre = registreService.findOne(entitatId, elementId, false);
-		boolean correcte = false;
-		String missatge = null;
-		
-		if (registre.getPare() == null) {
-			// Restaura la bústia per defecte i la la regla aplicable si s'escau
-			correcte = registreService.reintentarBustiaPerDefecte(
-					entitatId,
-					elementId);
-			registre = registreService.findOne(entitatId, elementId, false);
-			missatge = messageHelper.getMessage("execucio.massiva.helper.reintentar.processament.pare.restaurat");
-		} else if ( ArrayUtils.contains(estatsReprocessables, registre.getProcesEstat())) {
-			if (registre.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT 
-				|| registre.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT) 
-			{
-				// Pendent de processament d'arxiu o regla
-				correcte = registreService.reintentarProcessamentAdmin(
-						entitatId, 
-						elementId);
-				missatge = "Anotació reprocessada " + (correcte ? "correctament" : "amb error");
-			} else {
-				// Pendent d'enviar a backoffice
-				Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(
-						entitatId, 
-						elementId);
-				correcte = throwable == null;
-				missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error: " + throwable.getMessage());
-			}
-		} else if (this.isPendentArxiu(registre)||registre.getAnnexosEstatEsborrany()>0) {
-			correcte = registreService.reintentarProcessamentAdmin(
-					entitatId, 
-					elementId);
-			missatge = messageHelper.getMessage("execucio.massiva.helper.registre.desat.arxiu." + (correcte ? "ok" : "error"), null);
-		} else {
-			missatge = messageHelper.getMessage("execucio.massiva.helper.reintentar.processament.reprocessables.no.detectat");
-			correcte = true;
-		}
-		
-		if (correcte) {
-			return missatge;
-		} else {
-			String error = messageHelper.getMessage(
-					"execucio.massiva.helper.reintentar.processament.error",
-					new Object[] {
-							elementId, 
-							missatge});
-			throw new RuntimeException(error);
+	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	public String reintentarProcessamentNewTransaction(Long entitatId, Long elementId) throws Exception {
+		int minuts = this.getTimeoutExecucioMassivaProperty();
+		AtomicBoolean timeoutLlencat = new AtomicBoolean();
+        ScheduledExecutorService scheduler = ThreadLocalUtil.setTimeout(minuts, TimeUnit.MINUTES, timeoutLlencat);
+        try {
+    		RegistreDto registre = registreService.findOne(entitatId, elementId, false);
+    		boolean correcte = false;
+    		String missatge = null;
+    		
+    		if (registre.getPare() == null) {
+    			// Restaura la bústia per defecte i la la regla aplicable si s'escau
+    			correcte = registreService.reintentarBustiaPerDefecte(
+    					entitatId,
+    					elementId);
+    			registre = registreService.findOne(entitatId, elementId, false);
+    			missatge = messageHelper.getMessage("execucio.massiva.helper.reintentar.processament.pare.restaurat");
+    		} else if ( ArrayUtils.contains(estatsReprocessables, registre.getProcesEstat())) {
+    			if (registre.getProcesEstat() == RegistreProcesEstatEnum.ARXIU_PENDENT 
+    				|| registre.getProcesEstat() == RegistreProcesEstatEnum.REGLA_PENDENT) 
+    			{
+    				// Pendent de processament d'arxiu o regla
+    				correcte = registreService.reintentarProcessamentAdmin(
+    						entitatId, 
+    						elementId);
+    				missatge = "Anotació reprocessada " + (correcte ? "correctament" : "amb error");
+    			} else {
+    				// Pendent d'enviar a backoffice
+    				Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(
+    						entitatId, 
+    						elementId);
+    				correcte = throwable == null;
+    				missatge = "Anotació reenviada al backoffice " + (correcte ? "correctament" : "amb error: " + throwable.getMessage());
+    			}
+    		} else if (this.isPendentArxiu(registre)||registre.getAnnexosEstatEsborrany()>0) {
+    			correcte = registreService.reintentarProcessamentAdmin(
+    					entitatId, 
+    					elementId);
+    			missatge = messageHelper.getMessage("execucio.massiva.helper.registre.desat.arxiu." + (correcte ? "ok" : "error"), null);
+    		} else {
+    			missatge = messageHelper.getMessage("execucio.massiva.helper.reintentar.processament.reprocessables.no.detectat");
+    			correcte = true;
+    		}
+    		
+    		if (correcte) {
+    			return missatge;
+    		} else {
+    			String error = messageHelper.getMessage(
+    					"execucio.massiva.helper.reintentar.processament.error",
+    					new Object[] {
+    							elementId, 
+    							missatge});
+    			throw new RuntimeException(error);
+    		}
+		} catch (Exception e) {
+			if (timeoutLlencat.get()) {
+                e = new Exception("L'execució massiva s'ha interromput després de superar el temps màxim de " + minuts + " minuts.", e);
+            }
+            throw e;
+		} finally {
+	        scheduler.shutdownNow();
 		}
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public String reintentarBackofficeNewTransaction(Long entitatId, Long elementId) {
+	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	public String reintentarBackofficeNewTransaction(Long entitatId, Long elementId) throws Exception {
 		
-		RegistreDto registre = registreService.findOne(entitatId, elementId, false);
-		boolean correcte = true;
-		String missatge = null;
-		
-		if (ArrayUtils.contains(estatsReenviablesBackoffices, registre.getProcesEstat())) {
-			Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(
-					entitatId, 
-					elementId);
-			correcte = throwable == null;
-			missatge = "Anotació reenviada al backoffice " + (registre.getBackCodi()) + " " + (correcte ? "correctament" : "amb error: " + throwable.getMessage());
-		}else {
-			correcte = false;
-			missatge = messageHelper.getMessage("execucio.massiva.helper.enviament.backoffice.estat.incompatible", new Object[] {elementId}); 
-		}
+    	String missatge = null;
+		int minuts = this.getTimeoutExecucioMassivaProperty();
+		AtomicBoolean timeoutLlencat = new AtomicBoolean();
+        ScheduledExecutorService scheduler = ThreadLocalUtil.setTimeout(minuts, TimeUnit.MINUTES, timeoutLlencat);
+        try {
+        	RegistreDto registre = registreService.findOne(entitatId, elementId, false);
+    		boolean correcte = true;
+    		
+    		if (ArrayUtils.contains(estatsReenviablesBackoffices, registre.getProcesEstat())) {
+    			Throwable throwable = registreService.reintentarEnviamentBackofficeAdmin(
+    					entitatId, 
+    					elementId);
+    			correcte = throwable == null;
+    			missatge = "Anotació reenviada al backoffice " + (registre.getBackCodi()) + " " + (correcte ? "correctament" : "amb error: " + throwable.getMessage());
+    		}else {
+    			correcte = false;
+    			missatge = messageHelper.getMessage("execucio.massiva.helper.enviament.backoffice.estat.incompatible", new Object[] {elementId}); 
+    		}
 
-		if (!correcte) {
-			throw new RuntimeException(missatge);
+    		if (!correcte) {
+    			throw new RuntimeException(missatge);
+    		}
+    	} catch (Exception e) {
+			if (timeoutLlencat.get()) {
+                e = new Exception("L'execució massiva s'ha interromput després de superar el temps màxim de " + minuts + " minuts.", e);
+            }
+            throw e;
+		} finally {
+	        scheduler.shutdownNow();
 		}
-		
 		return missatge;
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public String sobreescriureNewTransaction(Long entitatId, Long elementId) {
-		RegistreDto registre = registreService.findOne(entitatId, elementId, false);
-		boolean correcte = false;
-		String missatge = null;
-		
-		if (RegistreProcesEstatEnum.isPendent(registre.getProcesEstat()) && !registre.isArxiuTancat()) {
-			registreService.marcarSobreescriure(
-					entitatId, 
-					elementId);
-			missatge = messageHelper.getMessage(
-					"execucio.massiva.helper.marcar.sobreescriure.ok", 
-					new Object[] {elementId});
-			correcte = true;
-		} else {
-			missatge = messageHelper.getMessage(
-					"execucio.massiva.helper.marcar.sobreescriure.estat.error", 
-					new Object[] {
-							elementId, 
-							registre.getProcesEstat()});
-			correcte = false;
-		}
-		
-		if (correcte) {
-			return missatge;
-		} else {
-			throw new RuntimeException(missatge);
+	@Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 600)
+	public String sobreescriureNewTransaction(Long entitatId, Long elementId) throws Exception {
+		int minuts = this.getTimeoutExecucioMassivaProperty();
+		AtomicBoolean timeoutLlencat = new AtomicBoolean();
+        ScheduledExecutorService scheduler = ThreadLocalUtil.setTimeout(minuts, TimeUnit.MINUTES, timeoutLlencat);
+        try {
+    		RegistreDto registre = registreService.findOne(entitatId, elementId, false);
+    		boolean correcte = false;
+    		String missatge = null;
+    		
+    		if (RegistreProcesEstatEnum.isPendent(registre.getProcesEstat()) && !registre.isArxiuTancat()) {
+    			registreService.marcarSobreescriure(
+    					entitatId, 
+    					elementId);
+    			missatge = messageHelper.getMessage(
+    					"execucio.massiva.helper.marcar.sobreescriure.ok", 
+    					new Object[] {elementId});
+    			correcte = true;
+    		} else {
+    			missatge = messageHelper.getMessage(
+    					"execucio.massiva.helper.marcar.sobreescriure.estat.error", 
+    					new Object[] {
+    							elementId, 
+    							registre.getProcesEstat()});
+    			correcte = false;
+    		}
+    		
+    		if (correcte) {
+    			return missatge;
+    		} else {
+    			throw new RuntimeException(missatge);
+    		}
+    	} catch (Exception e) {
+			if (timeoutLlencat.get()) {
+                e = new Exception("L'execució massiva s'ha interromput després de superar el temps màxim de " + minuts + " minuts.", e);
+            }
+            throw e;
+		} finally {
+	        scheduler.shutdownNow();
 		}
 	}
 
@@ -673,4 +780,25 @@ public class ExecucioMassivaHelper {
 			RegistreProcesEstatEnum.BACK_PROCESSADA,
 			RegistreProcesEstatEnum.BACK_REBUTJADA,
 	};    
+	
+
+	/**
+	 * Consulta la propietat amb el timeout en minuts d'execució massiva per una
+	 * acció massiva.
+	 */
+	private int getTimeoutExecucioMassivaProperty() {
+		// Per defecte 10 minuts
+		Integer timeout = 10;
+		String value = configHelper.getConfig("es.caib.distribucio.segonpla.timeout.execucio.massiva", "10");
+		if (value != null) {
+			try {
+				timeout = Integer.valueOf(value);
+			} catch (Exception e) {
+				log.error(
+						"Error llegint la propietat integer es.caib.distribucio.segonpla.timeout.execucio.massiva="
+								+ value);
+			}
+		}
+		return timeout;
+	}	
 }

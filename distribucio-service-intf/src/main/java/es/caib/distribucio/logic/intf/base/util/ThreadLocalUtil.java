@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Helper per a gestionar informació del TreadLocal. La llibreria base-boot
@@ -45,7 +46,7 @@ public class ThreadLocalUtil {
 		}
 	}
 
-    public static ScheduledExecutorService setTimeout(int timeout, TimeUnit format) {
+    public static ScheduledExecutorService setTimeout(int timeout, TimeUnit format, AtomicBoolean timeoutLlencat) {
         // Programa l'interrupció del thrad actual
         final Thread currentThread = Thread.currentThread();
         ScheduledExecutorService scheduler =
@@ -54,6 +55,7 @@ public class ThreadLocalUtil {
         scheduler.schedule(new Runnable() {
             @Override
             public void run() {
+            	timeoutLlencat.set(true);
                 currentThread.interrupt();
             }
         }, timeout, format);
