@@ -75,6 +75,15 @@ const translationCa = {
         avisos: {
             mostra: "Mostra el detall de l'avís",
             amaga: "Amaga el detall de l'avís",
+            tanca: "Minimitza l'avís",
+            nivell: {
+                INFO: 'Informació',
+                WARNING: 'Advertència',
+                ERROR: 'Error',
+            },
+            chip: '{{nivell}}: {{count}}',
+            chipRestaura: 'Mostra els avisos de nivell «{{nivell}}» que has minimitzat',
+            chipBuit: 'Cap avís de nivell «{{nivell}}»',
         },
         interficie: {
             classica: 'Interfície clàssica',

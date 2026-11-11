@@ -20,6 +20,8 @@ import reactlibCa from '../i18n/reactlibCa';
 import reactlibEs from '../i18n/reactlibEs';
 import AppFormFieldReference from './AppFormFieldReference';
 import AvisosBanner from './AvisosBanner';
+import AvisosChips from './AvisosChips';
+import { AvisosProvider } from './AvisosProvider';
 import Offline from './Offline';
 import { UserProfileMenu, UserProfileFormDialog, useUserPreferences } from './UserProfile';
 import { EntitatRolMenu, getRolBadgeIcon } from './EntitatRolSelector';
@@ -249,61 +251,64 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
     // l'idioma i recarregui la pantalla.
     const { idioma } = useUserPreferences();
     return (
-        <Box sx={{ ...frameSx, ...menuColorSetSx }}>
-        <MuiBaseApp
-            code={code}
-            headerTitle={title}
-            headerLogo={logo}
-            headerLogoStyle={logoStyle}
-            headerAppbarBackgroundColor={appbarBackgroundColor}
-            headerAppbarStyle={appbarStyle}
-            headerVersion={version}
-            headerAdditionalComponents={[
-                <Box key="interficie_classica" sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-                    <InterficieClassicaButton />
-                </Box>,
-            ]}
-            headerAuthBadgeIcon={getRolBadgeIcon(rolActual)}
-            headerAdditionalAuthComponents={[
-                <UserLastConection key="user_last_conection" />,
-                <Box key="user_profile" sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <UserProfileMenu formDialogApiRef={formDialogApiRef} />
-                </Box>,
-                <DownloadManuals key="manuals"/>,
-                <EntitatRolMenu key="entitat_rol" />,
-            ]}
-            offline={<Offline />}
-            footer={footer}
-            footerHeight={footerHeight}
-            // Sense `persistentLanguage`: la llibreria guardaria l'idioma al localStorage i el
-            // rellegiria en arrencar, competint amb el perfil. Amb dues fonts, un canvi no desat
-            // sobrevivia a la recàrrega i el perfil l'havia de desfer després, amb el refresc
-            // corresponent. La preferència desada a la base de dades és l'única font.
-            i18nUseTranslation={useTranslation}
-            i18nCurrentLanguage={idiomaAplicacio(idioma)}
-            i18nHandleLanguageChange={i18nHandleLanguageChange}
-            i18nAddResourceBundleCallback={i18nAddResourceBundleCallback}
-            routerGoBack={goBack}
-            routerNavigate={navigate}
-            routerUseBlocker={useBlocker}
-            routerUseLocationPath={useLocationPath}
-            routerAnyHistoryEntryExist={anyHistoryEntryExist}
-            linkComponent={Link}
-            // Els marges d'`<main>` els posa frameSx (la llibreria els deixa a 16px 24px).
-            marginsDisabled
-            saveAs={saveAs}
-            formFieldComponents={[{ type: 'reference', component: AppFormFieldReference }]}
-            menuEntries={menuEntries}
-        >
-            <CustomLocalizationProvider>
-                <UserProfileFormDialog formDialogApiRef={formDialogApiRef} />
-                {/* Damunt del contingut i a totes les pantalles, com l'acordió d'avisos de la
+        <AvisosProvider>
+            <Box sx={{ ...frameSx, ...menuColorSetSx }}>
+                <MuiBaseApp
+                    code={code}
+                    headerTitle={title}
+                    headerLogo={logo}
+                    headerLogoStyle={logoStyle}
+                    headerAppbarBackgroundColor={appbarBackgroundColor}
+                    headerAppbarStyle={appbarStyle}
+                    headerVersion={version}
+                    headerAdditionalComponents={[
+                        <Box key="interficie_classica" sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                            <InterficieClassicaButton />
+                        </Box>,
+                        <AvisosChips key="avisos" />,
+                    ]}
+                    headerAuthBadgeIcon={getRolBadgeIcon(rolActual)}
+                    headerAdditionalAuthComponents={[
+                        <UserLastConection key="user_last_conection" />,
+                        <Box key="user_profile" sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <UserProfileMenu formDialogApiRef={formDialogApiRef} />
+                        </Box>,
+                        <DownloadManuals key="manuals" />,
+                        <EntitatRolMenu key="entitat_rol" />,
+                    ]}
+                    offline={<Offline />}
+                    footer={footer}
+                    footerHeight={footerHeight}
+                    // Sense `persistentLanguage`: la llibreria guardaria l'idioma al localStorage i el
+                    // rellegiria en arrencar, competint amb el perfil. Amb dues fonts, un canvi no desat
+                    // sobrevivia a la recàrrega i el perfil l'havia de desfer després, amb el refresc
+                    // corresponent. La preferència desada a la base de dades és l'única font.
+                    i18nUseTranslation={useTranslation}
+                    i18nCurrentLanguage={idiomaAplicacio(idioma)}
+                    i18nHandleLanguageChange={i18nHandleLanguageChange}
+                    i18nAddResourceBundleCallback={i18nAddResourceBundleCallback}
+                    routerGoBack={goBack}
+                    routerNavigate={navigate}
+                    routerUseBlocker={useBlocker}
+                    routerUseLocationPath={useLocationPath}
+                    routerAnyHistoryEntryExist={anyHistoryEntryExist}
+                    linkComponent={Link}
+                    // Els marges d'`<main>` els posa frameSx (la llibreria els deixa a 16px 24px).
+                    marginsDisabled
+                    saveAs={saveAs}
+                    formFieldComponents={[{ type: 'reference', component: AppFormFieldReference }]}
+                    menuEntries={menuEntries}
+                >
+                    <CustomLocalizationProvider>
+                        <UserProfileFormDialog formDialogApiRef={formDialogApiRef} />
+                        {/* Damunt del contingut i a totes les pantalles, com l'acordió d'avisos de la
                     interfície JSP. */}
-                <AvisosBanner />
-                {children}
-            </CustomLocalizationProvider>
-        </MuiBaseApp>
-        </Box>
+                        <AvisosBanner />
+                        {children}
+                    </CustomLocalizationProvider>
+                </MuiBaseApp>
+            </Box>
+        </AvisosProvider>
     );
 };
 
