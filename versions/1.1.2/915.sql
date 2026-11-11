@@ -1,0 +1,6 @@
+INSERT INTO DIS_CONFIG_GROUP (CODE, PARENT_CODE, POSITION, DESCRIPTION) VALUES ('SOFFID', 'USUARIS', 2, 'Configuració del plugin d''usuaris (soffid)');
+
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.soffid.serverurl', NULL, 'Url del servidor de Soffid', 'SOFFID', 0, 1, 'TEXT');
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.soffid.username', NULL, 'Nom de l''usuari de Soffid', 'SOFFID', 1, 1, 'TEXT');
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.soffid.password', NULL, 'Contrasenya de l''usuari de Soffid', 'SOFFID', 2, 1, 'CREDENTIALS');
+INSERT INTO DIS_CONFIG (KEY,VALUE,DESCRIPTION,GROUP_CODE,POSITION,JBOSS_PROPERTY,TYPE_CODE) VALUES ('es.caib.distribucio.plugin.dades.usuari.pluginsib.userinformation.soffid.entorn', NULL, 'Entorn del client de Soffid', 'SOFFID', 3, 1, 'TEXT');
