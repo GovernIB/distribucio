@@ -57,7 +57,8 @@ CREATE TABLE DIS_ENTITAT
   COLOR_LLETRA         character varying(32),
   COLOR_FONS_DARK      character varying(32),
   COLOR_LLETRA_DARK    character varying(32),
-  LOGO_CAP_DARK         BYTEA 
+  LOGO_CAP             BYTEA,
+  LOGO_CAP_DARK        BYTEA 
 );
 
 CREATE TABLE DIS_CONTINGUT
