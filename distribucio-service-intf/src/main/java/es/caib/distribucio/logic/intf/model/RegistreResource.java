@@ -260,6 +260,17 @@ import java.util.*;
                                 ),
                         }
                 ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_PROCESSAR_ANNEXOS_CODE,
+                        requiresId = true,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = { BaseConfig.ROLE_ADMIN }
+                                ),
+                        }
+                ),
         }
 )
 public class RegistreResource extends ContingutResource {
@@ -290,6 +301,7 @@ public class RegistreResource extends ContingutResource {
     public static final String ACTION_RESERVAR_CODE = "RESERVAR";
     public static final String ACTION_ALLIBERAR_CODE = "ALLIBERAR";
     public static final String ACTION_ASSIGNAR_CODE = "ASSIGNAR";
+    public static final String ACTION_PROCESSAR_ANNEXOS_CODE = "PROCESSAR_ANNEXOS";
 
     private RegistreTipusEnum registreTipus;
     private String numero;

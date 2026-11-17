@@ -95,6 +95,19 @@ export const useActions = (refresh?: () => void) => {
         }
     }
 
+    const processarAnnexos = (id:any) => {
+        if (apiIsReady) {
+            apiAction(id, { code: "PROCESSAR_ANNEXOS" })
+                .then((response) => {
+                    refresh?.()
+                    temporalMessageShow(null, t('page.registre.accio.processarAnnexos.ok', {numero: response.numero}), 'success');
+                })
+                .catch((error) => {
+                    temporalMessageShow(null, error?.message, 'error');
+                });
+        }
+    }
+
     const informeLogs = (id:any) => {
         if (apiIsReady) {
             apiReport(id, {code: "INFORME_LOGS", fileType: 'PDF'})
@@ -159,7 +172,8 @@ export const useActions = (refresh?: () => void) => {
         reenviarBackoffice,
         tornarProcessar,
         bloquejar,
-        alliberar
+        alliberar,
+        processarAnnexos,
     }
 }
 

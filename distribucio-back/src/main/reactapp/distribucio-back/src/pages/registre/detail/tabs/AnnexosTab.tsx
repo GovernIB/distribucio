@@ -1,9 +1,9 @@
 import { useResourceApiService } from 'reactlib';
-import { Box, Grid, Icon, Tooltip } from '@mui/material';
-import React from 'react';
+import {Box, Grid, Icon, Tooltip, Typography} from '@mui/material';
+import React, { useMemo } from 'react';
 import { DetailCardContent, DetailExpandCard } from '../../../../components/CardData.tsx';
 import { formatDate } from '../../../../util/dateUtils.ts';
-import StyledMuiGrid from '../../../../components/StyledMuiGrid.tsx';
+import StyledMuiGrid, {ToolbarButton} from '../../../../components/StyledMuiGrid.tsx';
 import * as builder from '../../../../util/springFilterUtils';
 import Load from '../../../../components/Load.tsx';
 import AnnexDetailContent from '../../../annex/actions/AnnexDetailContent.tsx';
@@ -11,12 +11,20 @@ import { useTranslation } from 'react-i18next';
 import useVisualitzar from '../../../annex/actions/AnnexVisualitzar.tsx';
 import { REPORT_DESCARREGAR_IMPRIMIBLE, useDescarregarAnnex } from '../../../annex/AnnexAccions.tsx';
 import { icons } from '../../../../util/icons';
+import Alert from "@mui/material/Alert";
+import {ROLE_ADMIN, ROLE_USER, useDistribucioContext} from "../../../../components/DistribucioContext.ts";
+import {useActions} from "../RegistreActions.tsx";
 
 const annexPerspectives = ['FIRMES'];
 
 export const AnnexTab = ({ entity }: any) => {
+    const {t} = useTranslation()
+    const {currentRole} = useDistribucioContext()
     const { isReady: apiIsReady, find: apiFind } = useResourceApiService('registreAnnexResource');
     const [annexos, setAnnexos] = React.useState<any>();
+
+    const isAdmin = currentRole == ROLE_ADMIN;
+    const isUser = currentRole == ROLE_USER;
 
     const refresh = () => {
         apiFind({
@@ -27,18 +35,87 @@ export const AnnexTab = ({ entity }: any) => {
         }).then((response) => setAnnexos(response.rows));
     };
 
+    const {processarAnnexos, reenviarBackoffice} = useActions(refresh)
+
     React.useEffect(() => {
         if (apiIsReady && entity) {
             refresh();
         }
     }, [apiIsReady, entity]);
 
+    const numNoGordat = useMemo(() => {
+        return annexos?.filter((a:any) => !a?.fitxerArxiuUuid)?.length
+    },[annexos])
+
+    const numEsborrany = useMemo(() => {
+        return annexos?.filter((a:any) => a?.arxiuEstat === 'ESBORRANY')?.length
+    },[annexos])
+
+    const numFirmaInvalida = useMemo(() => {
+        return annexos?.filter((a:any) => a?.validacioFirmaEstat === 'FIRMA_INVALIDA' || a?.validacioFirmaEstat === 'ERROR_VALIDANT')?.length
+    },[annexos])
+
     return (
         <Grid container columnSpacing={1} rowSpacing={1}>
+            {numEsborrany > 0 && <Grid size={12}>
+                <Alert icon={<Icon>{icons.error}</Icon>}
+                       severity={'warning'}>{t('page.annex.detall.alert.esborranys', {num: numEsborrany})}</Alert>
+            </Grid>}
+            {numFirmaInvalida > 0 && <Grid size={12}>
+                <Alert icon={<Icon>edit_square</Icon>}
+                       severity={'warning'}>{t('page.annex.detall.alert.firmaInvalida', {num: numFirmaInvalida})}</Alert>
+            </Grid>}
+            {numNoGordat > 0 && <Grid size={12}>
+                <Alert severity={'warning'} action={
+                    <ToolbarButton icon={icons.refresca} onClick={() => processarAnnexos(entity.id)} hidden={!isAdmin}>
+                        {t('page.registre.accio.processarAnnexos.label')}
+                    </ToolbarButton>
+                }>{t('page.annex.detall.alert.noGodatsAxiu', {num: numNoGordat})}</Alert>
+            </Grid>}
+
+            {(isAdmin || (isUser && entity.potModificar))
+                && (entity.procesEstat == 'BACK_PENDENT' && entity.procesError == null && entity.procesIntents >= 0)
+                && <Grid size={12}>
+                    <ToolbarButton icon={icons.refresca} onClick={() => reenviarBackoffice(entity.id)}>
+                        {t('page.registre.accio.reenviarBackoffice.label')}
+                    </ToolbarButton>
+                </Grid>}
+
             <Load value={annexos}>
                 {annexos?.map((annex: any) => (
-                    <DetailExpandCard key={annex.id} title={annex.titol}>
-                        <AnnexDetailContent annex={annex} />
+                    <DetailExpandCard
+                        key={annex.id}
+                        header={<Box display={'flex'} alignItems={'center'} gap={1}>
+                            <AnnexIcon fitxerExtension={annex?.fitxerExtension}/>
+
+                            <Typography mt={0.5} variant={'overline'} sx={{fontWeight: 600, color: 'primary.dark'}}>
+                                {annex.titol}
+                            </Typography>
+
+                            {!annex?.fitxerArxiuUuid && (
+                                <Tooltip title={t('page.annex.grid.arxiuEstat.buitAvis')}>
+                                    <Icon fontSize="small" color="warning" sx={{verticalAlign: 'middle'}}>
+                                        {icons.advertencia}
+                                    </Icon>
+                                </Tooltip>
+                            )}
+                            {(annex?.validacioFirmaEstat === 'FIRMA_INVALIDA' || annex?.validacioFirmaEstat === 'ERROR_VALIDANT') && (
+                                <Tooltip title={t('page.annex.grid.arxiuEstat.firmaInvalida')}>
+                                    <Icon fontSize="small" color="warning" sx={{verticalAlign: 'middle'}}>
+                                        edit_square
+                                    </Icon>
+                                </Tooltip>
+                            )}
+                            {annex?.arxiuEstat === 'ESBORRANY' && (
+                                <Tooltip title={t('page.annex.grid.arxiuEstat.esborrany')}>
+                                    <Icon fontSize="small" color="warning" sx={{verticalAlign: 'middle'}}>
+                                        {icons.error}
+                                    </Icon>
+                                </Tooltip>
+                            )}
+                        </Box>}
+                    >
+                        <AnnexDetailContent annex={annex}/>
                     </DetailExpandCard>
                 ))}
             </Load>
@@ -46,24 +123,34 @@ export const AnnexTab = ({ entity }: any) => {
     );
 };
 
-const displayOpacity = (params:any) => {
+const displayOpacity = (params: any) => {
     return <Box sx={{opacity: params.row?.fitxerExtension == 'pdf' ? 1 : 0.5}}>
         {params?.formattedValue}
     </Box>
 }
 
+const AnnexIcon = ({fitxerExtension, ...other}:any) => {
+    const icon = fitxerExtension == 'pdf' ? 'picture_as_pdf'
+        : fitxerExtension == 'xml' ?'code_xml'
+        : fitxerExtension == 'jpeg' ?'image'
+        // : fitxerExtension == 'msword' ?'description'
+        // : fitxerExtension == 'xsig' ?'description'
+        : 'description'
+
+    return <Icon {...other}>{icon}</Icon>
+}
+
 const annexColumns = [
-    { field: 'titol', flex: 1,
-        renderCell: (params:any) => {
-            return <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, opacity: params.row?.fitxerExtension == 'pdf' ?1 :0.5 }}>
-                {
-                    params.row?.fitxerExtension == 'pdf' ?<Icon>picture_as_pdf</Icon>
-                        : params.row?.fitxerExtension == 'xml' ?<Icon>code_xml</Icon>
-                        : params.row?.fitxerExtension == 'jpeg' ?<Icon>image</Icon>
-                        : params.row?.fitxerExtension == 'msword' ?<Icon>description</Icon>
-                        : params.row?.fitxerExtension == 'xsig' ?<Icon>draft</Icon>
-                        : <Icon>draft</Icon>
-                }
+    {
+        field: 'titol', flex: 1,
+        renderCell: (params: any) => {
+            return <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: 1,
+                opacity: params.row?.fitxerExtension == 'pdf' ? 1 : 0.5
+            }}>
+                <AnnexIcon fitxerExtension={params.row?.fitxerExtension}/>
                 {params?.formattedValue}
             </Box>
         }

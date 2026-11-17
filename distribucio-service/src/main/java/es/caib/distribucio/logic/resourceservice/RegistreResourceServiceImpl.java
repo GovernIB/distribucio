@@ -106,6 +106,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(RegistreResource.ACTION_RESERVAR_CODE, new ReservarActionExecutor());
         register(RegistreResource.ACTION_ALLIBERAR_CODE, new AlliberarActionExecutor());
         register(RegistreResource.ACTION_ASSIGNAR_CODE, new AssignarActionExecutor());
+        register(RegistreResource.ACTION_PROCESSAR_ANNEXOS_CODE, new ProcessarAnnexosActionExecutor());
     }
 
     @Override
@@ -1565,6 +1566,27 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
         @Override
         public void onChange(Serializable id, RegistreResource.AssignarForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.AssignarForm target) {
+        }
+    }
+    protected class ProcessarAnnexosActionExecutor implements ActionExecutor<RegistreResourceEntity, Serializable, Serializable> {
+
+        @Override
+        public Serializable exec(String code, RegistreResourceEntity entity, Serializable params) throws ActionExecutionException {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
+            boolean processatOk = registreService.processarAnnexosAdmin(entitatActualId, entity.getId());
+            if (!processatOk) {
+                throw new ActionExecutionException(
+                        RegistreResourceEntity.class,
+                        entity.getId(),
+                        code,
+                        I18nUtil.getInstance().getI18nMessage("contingut.admin.controller.registre.desat.arxiu.error")
+                );
+            }
+            return null;
+        }
+
+        @Override
+        public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
         }
     }
 

@@ -398,6 +398,8 @@ const translationEs = {
                 },
                 arxiuEstat: {
                     buitAvis: 'Este anexo no está guardado dentro del Arxiu',
+                    firmaInvalida: "Este anexo contiene una firma no válida o no se ha podido validar",
+                    esborrany: "Este anexo se encuentra en estado de borrador en el Archivo",
                 },
             },
             accio: {
@@ -596,6 +598,11 @@ const translationEs = {
                     validarFirmes: 'Valida firmas',
                     validarICustodiar: 'Valida y custodia',
                     descarregarFirma: 'Descarga firma',
+                },
+                alert: {
+                    esborranys: "Hay {{num}} anexos en estado de borrador en el Archivo",
+                    noGodatsAxiu: "Hay {{num}} anexos pendientes de guardar en el Archivo",
+                    firmaInvalida: "Hay {{num}} anexos con una firma no válida o con errores en la validación",
                 },
             },
         },
@@ -1206,6 +1213,10 @@ const translationEs = {
                     reassignaLabel: "Reasigna...",
                     title: "Asignación de la anotación de registro a un usuario",
                     ok: "La anotación {{numero}} se ha asignado correctamente",
+                },
+                processarAnnexos: {
+                    label: "Procesar el guardado de anexos",
+                    ok: "El guardado en el Archivo se ha procesado correctamente",
                 },
             },
         },

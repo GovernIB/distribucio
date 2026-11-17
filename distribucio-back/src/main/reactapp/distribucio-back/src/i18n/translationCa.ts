@@ -398,6 +398,8 @@ const translationCa = {
                 },
                 arxiuEstat: {
                     buitAvis: "Aquest annex no està guardat dins l'Arxiu",
+                    firmaInvalida: "Aquest annex conté una firma invàlida o no s'ha pogut validar",
+                    esborrany: "Aquest annex es troba en estat esborrany a l'Arxiu",
                 },
             },
             accio: {
@@ -596,6 +598,11 @@ const translationCa = {
                     validarFirmes: 'Valida firmes',
                     validarICustodiar: 'Valida i custodia',
                     descarregarFirma: 'Descarrega firma',
+                },
+                alert: {
+                    esborranys: "Hi ha {{num}} annexos en estat esborrany a l'Arxiu",
+                    noGodatsAxiu: "Hi ha {{num}} annexos pendents de guardar a l'Arxiu",
+                    firmaInvalida: "Hi ha {{num}} annexos amb firma invàlida o amb error en la validació",
                 },
             },
         },
@@ -1206,6 +1213,10 @@ const translationCa = {
                     reassignaLabel: "Reassigna...",
                     title: "Assignació de l'anotació de registre a un usuari",
                     ok: "L'anotació {{numero}} s'ha assignat correctament",
+                },
+                processarAnnexos: {
+                    label: "Processar el desat d'annexos",
+                    ok: "El desat a l'Arxiu s'ha processat correctament",
                 },
             },
         },
