@@ -406,6 +406,7 @@ const translationEs = {
                 concsv: 'Enlace a ConCSV',
                 descarregarOriginal: 'Descarga original',
                 descarregarImprimible: 'Descarga imprimible',
+                previsualitzar: 'Previsualizar',
                 guardarDefinitiu: {
                     label: 'Custodia',
                     jaDefinitiu: 'El anexo "{{titol}}" de la anotación {{numero}} ya consta como Definitivo en Distribución',

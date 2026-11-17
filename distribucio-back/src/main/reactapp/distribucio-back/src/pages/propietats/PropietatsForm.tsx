@@ -63,7 +63,7 @@ export const getFieldFromItem = (item:any, t: TranslateFn) => {
                 .map((v: string) => [v, configTypeValueLabel(t, item.type.id, v)])
         )
         : undefined;
-    const value = item.value != null ?item.value :item.alternativeValue
+    const value = (item.value != null && !item.jbossProperty) ?item.value :item.alternativeValue
 
     return {
         label: item.description,

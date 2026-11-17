@@ -46,13 +46,33 @@ export const AnnexTab = ({ entity }: any) => {
     );
 };
 
+const displayOpacity = (params:any) => {
+    return <Box sx={{opacity: params.row?.fitxerExtension == 'pdf' ? 1 : 0.5}}>
+        {params?.formattedValue}
+    </Box>
+}
+
 const annexColumns = [
-    { field: 'titol', flex: 1 },
-    { field: 'ntiTipusDocument', flex: 1 },
-    { field: 'observacions', flex: 1 },
-    { field: 'dataCaptura', flex: 1 },
-    { field: 'origenCiutadaAdmin', flex: 1 },
-    { field: 'ntiElaboracioEstat', flex: 1 },
+    { field: 'titol', flex: 1,
+        renderCell: (params:any) => {
+            return <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, opacity: params.row?.fitxerExtension == 'pdf' ?1 :0.5 }}>
+                {
+                    params.row?.fitxerExtension == 'pdf' ?<Icon>picture_as_pdf</Icon>
+                        : params.row?.fitxerExtension == 'xml' ?<Icon>code_xml</Icon>
+                        : params.row?.fitxerExtension == 'jpeg' ?<Icon>image</Icon>
+                        : params.row?.fitxerExtension == 'msword' ?<Icon>description</Icon>
+                        : params.row?.fitxerExtension == 'xsig' ?<Icon>draft</Icon>
+                        : <Icon>draft</Icon>
+                }
+                {params?.formattedValue}
+            </Box>
+        }
+    },
+    { field: 'ntiTipusDocument', flex: 1, renderCell: displayOpacity },
+    { field: 'observacions', flex: 1, renderCell: displayOpacity },
+    { field: 'dataCaptura', flex: 1, renderCell: displayOpacity },
+    { field: 'origenCiutadaAdmin', flex: 1, renderCell: displayOpacity },
+    { field: 'ntiElaboracioEstat', flex: 1, renderCell: displayOpacity },
 ];
 const annexSortModel: any = [{ field: 'id', sort: 'asc' }];
 export const AnnexGrid = ({ entity }: any) => {
@@ -84,7 +104,11 @@ export const AnnexGrid = ({ entity }: any) => {
                 perspectives={annexPerspectives}
                 fixedSortModel={annexSortModel}
                 rowAdditionalActions={actions}
-                onRowClick={(params) => handleOpen(params.row)}
+                onRowClick={(params) => {
+                    if (params.row?.fitxerExtension == 'pdf') {
+                        handleOpen(params.row)
+                    }
+                }}
                 getDetailPanelHeight={() => 'auto'}
                 getDetailPanelContent={(params) => {
                     let index = 0;

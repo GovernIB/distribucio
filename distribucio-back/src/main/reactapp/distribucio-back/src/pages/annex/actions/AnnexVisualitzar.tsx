@@ -20,7 +20,7 @@ const useVisualitzar = () => {
     const handleOpen = (entity:any) => {
         // event.stopPropagation();
         dialogShow(
-            t("Previsualitzar"),
+            t("page.annex.accio.previsualitzar"),
             <AnnexVisualitzar entity={entity}/>,
             [],
             { maxWidth: 'md', fullWidth: true }

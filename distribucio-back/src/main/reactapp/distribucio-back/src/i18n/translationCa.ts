@@ -406,6 +406,7 @@ const translationCa = {
                 concsv: 'Enllaç al ConCSV',
                 descarregarOriginal: 'Descàrrega original',
                 descarregarImprimible: 'Descàrrega imprimible',
+                previsualitzar: 'Previsualitzar',
                 guardarDefinitiu: {
                     label: 'Custòdia',
                     jaDefinitiu: "L'annex \"{{titol}}\" de l'anotació {{numero}} ja consta com a Definitiu a Distribució",

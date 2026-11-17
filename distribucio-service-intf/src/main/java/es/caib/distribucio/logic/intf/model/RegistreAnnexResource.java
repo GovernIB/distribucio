@@ -197,6 +197,12 @@ public class RegistreAnnexResource extends BaseResource<Long> {
 	/** Indica si es pot generar una versió imprimible del document de l'annex. */
 	private Boolean potGenerarVersioImprimible;
 
+    public String getFitxerExtension() {
+        if (fitxerNom == null || fitxerNom.isBlank())
+            return null;
+        return fitxerNom.substring(fitxerNom.lastIndexOf(".") + 1);
+    }
+
 	@Getter
 	@Setter
 	public static class FormFilter implements Serializable {
