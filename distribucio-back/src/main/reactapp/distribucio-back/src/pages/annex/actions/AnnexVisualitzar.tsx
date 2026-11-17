@@ -6,10 +6,10 @@ const AnnexVisualitzar = (props:any) => {
     const {entity} = props;
     const { getUrl } = useToProgramaAntic();
 
-    /// TODO: revisar visualización de documento
+    const url = getUrl(`/contingut/annex/${entity.id}/arxiu/content`)
 
-    return <Load value={entity}>
-        <Iframe isPDF src={getUrl(`/contingut/registre/${entity.registre.id}/annex/${entity.id}/arxiu/content/DOCUMENT`)}/>
+    return <Load value={entity && url}>
+        <Iframe isPDF src={url}/>
     </Load>
 }
 

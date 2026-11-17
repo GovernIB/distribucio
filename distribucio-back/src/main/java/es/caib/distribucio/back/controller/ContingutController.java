@@ -159,6 +159,21 @@ public class ContingutController extends BaseUserController {
 		return fitxer;
 	}
 
+	@RequestMapping(value = "/contingut/annex/{annexId}/arxiu/content", method = RequestMethod.GET)
+	@ResponseBody
+	public void descarregarBase64(
+			HttpServletResponse response,
+			@PathVariable Long annexId) {
+        try {
+            FitxerDto fitxer = registreService.getAnnexFitxer(annexId, true);
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "inline; filename=\""+fitxer.getNom()+"\"");
+            response.getOutputStream().write(fitxer.getContingut());
+        } catch (Exception e) {
+            logger.error("Error al recuperar l'annex "+annexId+" per previsualitzar.", e);
+        }
+	}
+
 	@RequestMapping(value = {	"/contingut/{contingutId}/registre/{registreId}/annex/{annexId}/arxiu/{tipus}", // URL antiga
 								"/contingut/registre/{registreId}/annex/{annexId}/arxiu/{tipus}"},
 								method = RequestMethod.GET)
