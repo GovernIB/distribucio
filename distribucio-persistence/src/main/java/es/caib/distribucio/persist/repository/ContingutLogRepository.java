@@ -28,6 +28,9 @@ public interface ContingutLogRepository extends JpaRepository<ContingutLogEntity
 
 	List<ContingutLogEntity> findByContingutOrderByCreatedDateAsc(
 			ContingutEntity contingut);
+
+	List<ContingutLogEntity> findByContingutOrderByCreatedDateDesc(
+			ContingutEntity contingut);
 	
 	List<ContingutLogEntity> findByContingutIdInAndTipusOrderByCreatedDateAsc(
 			java.util.Collection<Long> contingutIds,

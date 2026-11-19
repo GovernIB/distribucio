@@ -2,6 +2,7 @@ package es.caib.distribucio.api.interna.controller.v1;
 
 import es.caib.distribucio.api.interna.model.InfoCanviEstat;
 import es.caib.distribucio.logic.intf.dto.LimitCanviEstatDto;
+import es.caib.distribucio.logic.intf.exception.ReversioRebuigNoPermesaException;
 import es.caib.distribucio.logic.intf.exception.SistemaExternException;
 import es.caib.distribucio.logic.intf.service.ConfigService;
 import es.caib.distribucio.logic.intf.service.LimitCanviEstatService;
@@ -187,7 +188,10 @@ public class BackofficeRestV1Controller {
 					estat,
 					infoCanviEstat.getObservacions());
 			return new ResponseEntity<>(HttpStatus.OK);
-		} catch(Exception e) {
+		} catch(ReversioRebuigNoPermesaException ex) {
+            String errMsg = "Error al canviar estat d'un registre d'entrada rebutjat";
+            return new ResponseEntity<Object>(errMsg, HttpStatus.CONFLICT);
+        } catch(Exception e) {
 			String errMsg = "Error no controlat canviant l'estat a l'anotació amb informació d'entrada infoCanviEstat =  " + infoCanviEstat + ": " + e.getMessage();
 			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

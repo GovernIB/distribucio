@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import es.caib.distribucio.logic.intf.exception.ReversioRebuigNoPermesaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -215,6 +216,22 @@ public class BackofficeIntegracioWsServiceImpl implements BackofficeIntegracioWs
             );
 			SubsistemesHelper.addSuccessOperation(SubsistemesEnum.BKE, System.currentTimeMillis() - start);
             logger.trace(">>> Despres de cridar el servei de canvi d'estat");
+        } catch (ReversioRebuigNoPermesaException ex) {
+            logger.error("Error al canviar estat de registre d'entrada en el servei web de backoffice integració (" + "id="
+                    + id + ex);
+            String errorDescripcio = "Error al canviar estat d'un registre d'entrada rebutjat";
+            integracioHelper.addAccioError(
+                    IntegracioHelper.INTCODI_BACKOFFICE,
+                    id.getIdentificador(),
+                    accioDescripcio,
+                    usuariIntegracio,
+                    accioParams,
+                    IntegracioAccioTipusEnumDto.RECEPCIO,
+                    System.currentTimeMillis() - t0,
+                    errorDescripcio,
+                    ex);
+            SubsistemesHelper.addErrorOperation(SubsistemesEnum.BKE);
+            throw ex;
         } catch (Exception ex) {
             logger.error("Error al canviar estat de registre d'entrada en el servei web de backoffice integració (" + "id="
                     + id + ex);

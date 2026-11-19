@@ -44,6 +44,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.ws.soap.SOAPFaultException;
 
+import es.caib.distribucio.persist.entity.*;
 import org.apache.commons.io.FilenameUtils;
 import org.fundaciobit.pluginsib.utils.signature.SignatureCommonUtils;
 import org.slf4j.Logger;
@@ -119,17 +120,6 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
 import es.caib.distribucio.logic.service.RegistreServiceImpl;
 import es.caib.distribucio.logic.service.SegonPlaServiceImpl.GuardarAnotacioPendentThread;
-import es.caib.distribucio.persist.entity.BackofficeEntity;
-import es.caib.distribucio.persist.entity.ContingutComentariEntity;
-import es.caib.distribucio.persist.entity.ContingutEntity;
-import es.caib.distribucio.persist.entity.EntitatEntity;
-import es.caib.distribucio.persist.entity.RegistreAnnexEntity;
-import es.caib.distribucio.persist.entity.RegistreAnnexFirmaEntity;
-import es.caib.distribucio.persist.entity.RegistreEntity;
-import es.caib.distribucio.persist.entity.RegistreFirmaDetallEntity;
-import es.caib.distribucio.persist.entity.RegistreInteressatEntity;
-import es.caib.distribucio.persist.entity.ReglaEntity;
-import es.caib.distribucio.persist.entity.UsuariEntity;
 import es.caib.distribucio.persist.repository.BackofficeRepository;
 import es.caib.distribucio.persist.repository.ContingutComentariRepository;
 import es.caib.distribucio.persist.repository.ContingutLogRepository;
@@ -2912,6 +2902,23 @@ public class RegistreHelper {
 		}
 		return resultat;
 	}
+
+    public boolean isCanviRebutjadaRebudaValid(RegistreEntity registre) {
+        List<LogTipusEnumDto> whiteList = new ArrayList<>(List.of( LogTipusEnumDto.AGAFAR, LogTipusEnumDto.ALLIBERAR, LogTipusEnumDto.ASSIGNAR, LogTipusEnumDto.ENVIAMENT_EMAIL ));
+
+        List<ContingutLogEntity> logs = contingutLogRepository.findByContingutOrderByCreatedDateDesc(registre);
+
+        for (ContingutLogEntity log:logs) {
+            if (LogTipusEnumDto.BACK_REBUTJADA.equals(log.getTipus())) {
+                return true;
+            }
+            if (!whiteList.contains(log.getTipus())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 	
 	private static final Logger logger = LoggerFactory.getLogger(RegistreHelper.class);
 }

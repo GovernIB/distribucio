@@ -30,6 +30,7 @@ import java.util.zip.ZipOutputStream;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import es.caib.distribucio.logic.intf.exception.ReversioRebuigNoPermesaException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
@@ -89,7 +90,6 @@ import es.caib.distribucio.logic.intf.dto.PaginacioParamsDto;
 import es.caib.distribucio.logic.intf.dto.ProcedimentDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
 import es.caib.distribucio.logic.intf.dto.RegistreAnnexFirmaDto;
-import es.caib.distribucio.logic.intf.dto.RegistreClassificarTipusEnum;
 import es.caib.distribucio.logic.intf.dto.RegistreDto;
 import es.caib.distribucio.logic.intf.dto.RegistreEnviatPerEmailEnumDto;
 import es.caib.distribucio.logic.intf.dto.RegistreFiltreDto;
@@ -1803,22 +1803,29 @@ public class RegistreServiceImpl implements RegistreService {
 		try {
 			// L'obté amb bloqueig per si s'està actualitzant
 			RegistreEntity registre = registreRepository.findOneAmbBloqueig(registreId);
-			
-			// Si el backoffice comunica que està rebuda i l'anotació està pendent de regla o processada llavors no es canvia l'estat
-			if (estat.equals(Estat.REBUDA)) {
-				if (registre.getProcesEstat().equals(RegistreProcesEstatEnum.REGLA_PENDENT) || 
-						registre.getProcesEstat().equals(RegistreProcesEstatEnum.BACK_PROCESSADA)) {
-					return;
-				}
-			}
 
-            // Si el backoffice comunica que està rebuda i l'anotació està pendent de regla o processada llavors no es canvia l'estat
-            if (estat.equals(Estat.REBUDA)) {
+			// Si el backoffice comunica que està rebuda i l'anotació està pendent de regla o processada llavors no es canvia l'estat
+			if (estat.equals(Estat.REBUDA) || estat.equals(Estat.PENDENT)) {
                 if (RegistreProcesEstatEnum.REGLA_PENDENT.equals(registre.getProcesEstat())
                         || RegistreProcesEstatEnum.BACK_PROCESSADA.equals(registre.getProcesEstat())
                         || (RegistreProcesEstatEnum.BUSTIA_PROCESSADA.equals(registre.getProcesEstat()) && registre.getArxiuTancat())
                 ) {
                     return;
+                }
+			}
+            // Si el backoffice comunica una anotació rebutjada llavors es comprova si es pot dur a terme
+            if (RegistreProcesEstatEnum.BACK_REBUTJADA.equals(registre.getProcesEstat())) {
+                switch (estat) {
+                    case REBUTJADA:
+                        return;
+                    case PENDENT:
+                    case REBUDA:
+                        if ( registreHelper.isCanviRebutjadaRebudaValid(registre) ) {
+                            break;
+                        }
+                    default:
+                        throw new ReversioRebuigNoPermesaException(
+                                messageHelper.getMessage("es.caib.distribucio.error.handling.ReversioRebuigNoPermesaException.message"));
                 }
             }
 
@@ -1881,6 +1888,8 @@ public class RegistreServiceImpl implements RegistreService {
 						false);
 				break;
 			}
+		} catch (ReversioRebuigNoPermesaException ex) {
+			throw ex;
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
