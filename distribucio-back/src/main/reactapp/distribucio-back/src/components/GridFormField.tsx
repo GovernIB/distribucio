@@ -19,6 +19,7 @@ import Load from './Load';
 import { isTypingFieldType, useFilterAutoApply } from './FilterAutoApplyContext';
 import { FormFieldRefOptionsResponse } from '../../lib/components/mui/form/FormFieldReference.tsx';
 import { GridSortModel } from '@mui/x-data-grid-pro';
+import { OPTIONS_PAGE_SIZE } from './AppFormFieldReference';
 
 type ResponsiveStyleValue<T> = T | Array<T | null> | { [key in Breakpoint]?: T | null };
 
@@ -49,10 +50,14 @@ export const CombinedIcon = (props: any) => {
 
 /** Botó que ocupa una cel·la del Grid; per sota de `iconOnlyBreakpoint` amaga el text. */
 export const GridButton = (props: any) => {
-    const { title, icon, size, children, hidden, sx, iconOnlyBreakpoint = 'md', iconSx, ...other } = props;
+    const { title, icon, size, children, hidden, sx, iconOnlyBreakpoint = 'md', iconOnlyFrom, iconSx, ...other } = props;
 
     const theme = useTheme();
-    const iconOnly = useMediaQuery(theme.breakpoints.down(iconOnlyBreakpoint));
+    // `iconOnlyFrom`: només icona entre aquest breakpoint i `iconOnlyBreakpoint` (p. ex. a xs el bloc ocupa
+    // tota l'amplada i el text hi cap); sense ell, només icona per sota de `iconOnlyBreakpoint`.
+    const iconOnly = useMediaQuery(
+        iconOnlyFrom ? theme.breakpoints.between(iconOnlyFrom, iconOnlyBreakpoint) : theme.breakpoints.down(iconOnlyBreakpoint)
+    );
 
     const iconNode =
         typeof icon === 'string' ? <Icon sx={{ mr: !iconOnly && children ? 0.5 : 0, ...iconSx }}>{icon}</Icon> : icon;
@@ -78,7 +83,7 @@ export const GridButton = (props: any) => {
  * el botó queda "contained" mentre està actiu.
  */
 export const GridButtonField = (props: any) => {
-    const { name, whitLabel, icon, title, ...other } = props;
+    const { name, whitLabel, icon, title, text, ...other } = props;
     const { data, apiRef, fields } = useFormContext();
 
     const active = !!data?.[name];
@@ -94,7 +99,7 @@ export const GridButtonField = (props: any) => {
                 icon={typeof icon === 'function' ? icon?.(active) : icon}
                 {...other}
             >
-                {whitLabel && label}
+                {text != null ? (typeof text === 'function' ? text(active) : text) : whitLabel && label}
             </GridButton>
         </Load>
     );
@@ -174,11 +179,14 @@ const GridFormField: React.FC<GridFormFieldProps> = (props) => {
     const field = fields?.find?.((item: any) => item?.name === props.name);
 
     const { requestHref } = useResourceApiContext();
-    const optionsRequest = (q: any) => {
+    // `pageNumber` el passa FormFieldReference en carregar la pàgina següent (scroll infinit).
+    const optionsRequest = (q: any, pageNumber: number = 0) => {
         const dataSource = field.dataSource;
         const valueField = vField || dataSource.valueField;
         const labelField = dataSource.labelField;
-        const pageArgs = props.optionsUnpaged ? { page: 'UNPAGED' } : { page: 0, size: props.optionsPageSize };
+        const pageArgs = props.optionsUnpaged
+            ? { page: 'UNPAGED' }
+            : { page: pageNumber, size: props.optionsPageSize ?? OPTIONS_PAGE_SIZE };
         const sorts =
             props.sortModel && props.sortModel?.length
                 ? props.sortModel?.map((sm: any) => sm.field + ',' + sm.sort)
@@ -202,10 +210,14 @@ const GridFormField: React.FC<GridFormFieldProps> = (props) => {
                             ? { data: Object.fromEntries(optionDataFields.map((f) => [f, e.data[f]])) }
                             : {}),
                     }));
-                    if (additionalOpctions) options.push(...(additionalOpctions?.(q) || []));
+                    // Les opcions addicionals van al final de la llista, i per això només s'afegeixen
+                    // amb la darrera pàgina: si no, es repetirien a cada pàgina carregada.
+                    const page = state.data.page;
+                    const darreraPagina = page == null || page.number + 1 >= page.totalPages;
+                    if (additionalOpctions && darreraPagina) options.push(...(additionalOpctions?.(q) || []));
                     const response = {
                         options,
-                        page: state.data.page,
+                        page,
                     };
                     resolve(response);
                 })

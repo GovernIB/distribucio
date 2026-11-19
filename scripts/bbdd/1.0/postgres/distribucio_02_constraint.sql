@@ -248,3 +248,6 @@ ALTER TABLE dis_usuari
         FOREIGN KEY (entitat_defecte_id)
             REFERENCES dis_entitat(id)
             ON DELETE SET NULL;
+
+ALTER TABLE DIS_EXCEPCIO_LOG 
+	ADD CONSTRAINT DIS_EXCEPCIO_LOG_PK PRIMARY KEY (ID);

@@ -17,14 +17,14 @@ export const icons = {
     entitat: 'account_balance',
     configuracio: 'settings',
     // Grup de menú «Configurar» (ajustos de l'aplicació): la mateixa que fa servir ConCSV per a la configuració.
-    ajustos: 'tune',
+    ajustos: 'settings',
     avis: 'campaign',
     monitoritzacio: 'monitor',
     consulta: 'search',
     // Mateixa icona que les opcions principals de RIPEA "Procediments i serveis" i "Acció massiva".
-    procediment: 'integration_instructions',
-    servei: 'integration_instructions',
-    sia: 'integration_instructions',
+    procediment: 'assignment',
+    servei: 'assignment',
+    sia: 'assignment',
     massiva: 'list_alt',
     // La mateixa que fa servir RIPEA als botons de permisos (p. ex. pages/entitat/EntitatGrid.tsx).
     permis: 'key',
@@ -46,6 +46,7 @@ export const icons = {
     metaDada: 'data_object',
     domini: 'domain',
     regla: 'rule',
+    accessibilitat: 'accessibility',
 
     // --- Accions -----------------------------------------------------------------------------
     crea: 'add',
@@ -91,6 +92,7 @@ export const icons = {
     interficieClassica: 'fast_rewind',
 
     // --- Estats i avisos ---------------------------------------------------------------------
+    informacio: 'info',
     advertencia: 'warning',
     error: 'error',
     problema: 'report_problem',

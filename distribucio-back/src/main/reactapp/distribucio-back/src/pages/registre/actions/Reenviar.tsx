@@ -30,11 +30,11 @@ const UsuarisPermis = ({rows}:any) => {
                     <TableBody>
                         {rows && rows.length > 0 ? (
                             rows.map((row: any) => (
-                                <TableRow key={row.value} hover>
+                                <TableRow key={row.codi} hover>
                                     <TableCell component="th" scope="row">
-                                        {row.value}
+                                        {row.codi}
                                     </TableCell>
-                                    <TableCell>{row.description}</TableCell>
+                                    <TableCell>{row.nom}</TableCell>
                                 </TableRow>
                             ))
                         ) : (

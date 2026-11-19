@@ -2,6 +2,9 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import { Link as RouterLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { toolbarBackgroundStyle } from 'reactlib';
 import drassanaLogo from '../assets/drassana.png';
 import { FOOTER_HEIGHT } from '../util/layout';
@@ -14,6 +17,7 @@ type DrassanaFooterProps = {
 
 export const DrassanaFooter: React.FC<DrassanaFooterProps> = (props) => {
     const { title, backgroundColor, style } = props;
+    const { t } = useTranslation();
     const toolbarRef = React.useRef<HTMLDivElement | null>(null);
     const [buildTimestamp, setBuildTimestamp] = React.useState<string | null>(null);
     const [scmRevision, setScmRevision] = React.useState<string | null>(null);
@@ -83,6 +87,23 @@ export const DrassanaFooter: React.FC<DrassanaFooterProps> = (props) => {
                     ({buildTimestamp} | Revisió: {scmRevision})
                 </span>
             </Typography>
+            <Link
+                component={RouterLink}
+                to="/accessibilitat"
+                variant="body2"
+                underline="hover"
+                sx={{
+                    color: '#F6F6F6',
+                    mr: 2,
+                    mt: 1,
+                    alignSelf: 'flex-start',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    minHeight: 24,
+                    minWidth: 24,
+                }}>
+                {t('app.footer.accessibilitat')}
+            </Link>
             <Box sx={{ mr: 0, pt: 0, pr: 0, height: FOOTER_HEIGHT + 'px', cursor: 'pointer' }}>
                 <img src={drassanaLogo} alt="foot_logo" style={{ maxHeight: FOOTER_HEIGHT + 'px' }} />
             </Box>

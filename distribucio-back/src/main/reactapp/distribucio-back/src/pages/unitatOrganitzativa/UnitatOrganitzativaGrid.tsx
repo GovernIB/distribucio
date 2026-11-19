@@ -8,7 +8,7 @@ import UnitatOrganitzativaFilter from "./UnitatOrganitzativaFilter.tsx";
 import {useUnitatOrganitzativaOrganigrama} from "./UnitatOrganitzativaOrganigrama.tsx";
 import {ROLE_ADMIN, useDistribucioContext} from "../../components/DistribucioContext.ts";
 import {useSincronitzar} from "./actions/Sincronitzar.tsx";
-import {Icon, Tooltip} from "@mui/material";
+import {Icon, Theme, Tooltip} from "@mui/material";
 import {formatDate} from "../../util/dateUtils.ts";
 import {GridSortDirection} from "@mui/x-data-grid-pro";
 
@@ -46,7 +46,7 @@ export const UnitatOrganitzativaGrid = () => {
                                 <strong>{t('page.unitatOrganitzativa.grid.dataSinc')}:</strong> {formatDate(currentEntitat?.fechaSincronizacion) || " - "}<br/>
                                 <strong>{t('page.unitatOrganitzativa.grid.dataDarrerSinc')}:</strong> {formatDate(currentEntitat?.fechaActualizacion) || " - "}
                             </>}>
-                                <Icon color={'primary'}>{icons.detall}</Icon>
+                                <Icon sx={{ color: (theme: Theme) => theme.palette.primary.contrastText }} >{icons.detall}</Icon>
                             </Tooltip>
                         },
                         {

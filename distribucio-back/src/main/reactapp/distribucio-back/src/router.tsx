@@ -32,6 +32,7 @@ import UsuariCanviCodis from './pages/usuari/UsuariCanviCodis.tsx';
 import {MetaDadaGrid} from "./pages/metadada/MetaDadaGrid.tsx";
 import {DominiGrid} from "./pages/domini/DominiGrid.tsx";
 import SiaGrid from "./pages/sia/SiaGrid.tsx";
+import Accesibilitat from './pages/Accesibilitat';
 
 export const router = createBrowserRouter(
     [
@@ -343,6 +344,11 @@ export const router = createBrowserRouter(
                             handle: { titol: 'page.domini.title' },
                         },
                     ],
+                },
+                {
+                    path: 'accessibilitat',
+                    element: <Accesibilitat />,
+                    handle: { titol: 'page.accesibilitat.title' },
                 },
                 // Necessari perquè OidcAuthProvider (App -> AuthProvider) es munti també quan
                 // l'iframe de renovació silenciosa de sessió (oidc-client-ts) navega a

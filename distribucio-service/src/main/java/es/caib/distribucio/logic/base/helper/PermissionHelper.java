@@ -62,12 +62,13 @@ public class PermissionHelper extends BasePermissionHelper {
                     } else {
                         ContingutResourceEntity<?> pare = registre.getPare();
                         if (pare.getTipus() == ContingutTipusEnumDto.BUSTIA) {
+                            // Els permisos ACL s'avaluen amb tots els rols de l'usuari, no només
+                            // amb el rol amb què opera (roles)
                             return aclResourceHelper.anyPermissionGranted(
                                     ResourceType.BUSTIA,
                                     pare.getId(),
                                     List.of(PermissionEnum.WRITE),
-                                    auth.getName(),
-                                    roles
+                                    auth
                             );
                         }
                     }

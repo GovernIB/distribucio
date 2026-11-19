@@ -12,13 +12,16 @@ import Typography from '@mui/material/Typography';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import { useBaseAppContext } from '../BaseAppContext';
 import { useSmallScreen, useSmallHeader } from '../../util/useSmallScreen';
+import { Badge, BadgeProps } from '@mui/material';
 
 export type MenuEntry = {
     id: string;
     title?: string;
+    badgeProps?: BadgeProps;
     description?: string;
     to?: string;
     icon: string;
+    onClick?: () => void;
     children?: MenuEntry[];
     divider?: boolean;
 };
@@ -46,9 +49,6 @@ type ListMenuContentProps = MenuProps & {
 
 type MenuItemProps = React.PropsWithChildren & {
     entry: MenuEntry;
-    primary: string;
-    to?: string;
-    icon?: string;
     level?: number;
     selected?: boolean;
     shrink?: boolean;
@@ -93,7 +93,6 @@ const ShrinkableDrawer = styled(Drawer, {
         ...(open && {
             ...openedMixin(theme, width),
             '& .MuiDrawer-paper': openedMixin(theme, width),
-            overflowWrap: 'anywhere',
         }),
         ...(!open && {
             ...closedMixin(theme),
@@ -111,6 +110,9 @@ const StyledList = styled(List)<{ component?: React.ElementType }>({
     '& .MuiListItemIcon-root': {
         minWidth: 0,
         marginRight: 16,
+    },
+    '& .MuiListItemText-root': {
+        overflowWrap: 'anywhere',
     },
     '& .MuiSvgIcon-root': {
         fontSize: 20,
@@ -149,9 +151,6 @@ const menuItemIconClassName = 'menu-item-icon';
 const MenuItem: React.FC<MenuItemProps> = (props) => {
     const {
         entry,
-        primary,
-        to,
-        icon,
         level = 0,
         selected,
         shrink,
@@ -166,7 +165,7 @@ const MenuItem: React.FC<MenuItemProps> = (props) => {
     const itemButtonSx = {
         minHeight: 48,
         justifyContent: !shrink ? 'initial' : 'center',
-        '& :before':
+        '&>:before':
             level > 0 && !shrink
                 ? {
                       content: '""',
@@ -195,19 +194,32 @@ const MenuItem: React.FC<MenuItemProps> = (props) => {
             fontWeight: boldPrimary ? 'bold' : undefined,
         },
     };
+    const primary = entry.title ?? '';
+    const to = entry.to;
+    const icon = entry.icon;
     const handleMenuItemClick = () => {
-        if (children != null) {
-            setExpanded((expanded) => !expanded);
+        if (entry.onClick) {
+            entry.onClick();
         } else {
-            onMenuItemClick?.(entry);
+            if (children != null) {
+                setExpanded((expanded) => !expanded);
+            } else {
+                onMenuItemClick?.(entry);
+            }
         }
     };
-    const expandedIconComponent = children != null ? (
+    const expandedIconComponent =
+        children != null ? (
             <Icon fontSize={'small'}>{expanded ? 'expand_less' : 'expand_more'}</Icon>
-    ) : null;
-    const iconComponent = icon ? (
+        ) : null;
+    const iconComponent = <Icon fontSize={'small'}>{icon}</Icon>;
+    const listItemIconComponent = icon ? (
         <ListItemIcon className={menuItemIconClassName} sx={itemIconSx}>
-            <Icon fontSize={'small'}>{icon}</Icon>
+            {entry.badgeProps ? (
+                <Badge {...entry.badgeProps}>{iconComponent}</Badge>
+            ) : (
+                iconComponent
+            )}
         </ListItemIcon>
     ) : null;
     return (
@@ -227,8 +239,8 @@ const MenuItem: React.FC<MenuItemProps> = (props) => {
                     style={{
                         paddingLeft: shrink ? '40px' : 24 + 16 * level + (level > 0 ? 8 : 0) + 'px',
                     }}>
-                    {iconComponent}
-                    <ListItemText primary={primary} sx={itemTextSx} />
+                    {listItemIconComponent}
+                    {!shrink && <ListItemText primary={primary} sx={itemTextSx} />}
                     {expandedIconComponent}
                 </ListItemButton>
             )}
@@ -260,9 +272,6 @@ const ListMenuContent: React.FC<ListMenuContentProps> = (props) => {
                     <MenuItem
                         key={index}
                         entry={item}
-                        primary={item.title ?? ''}
-                        to={item.to}
-                        icon={item.icon}
                         level={level}
                         selected={selected}
                         shrink={shrink}
@@ -374,7 +383,7 @@ export const Menu: React.FC<MenuProps> = (props) => {
             clearTimeout(closeTimeoutRef.current);
             closeTimeoutRef.current = null;
         }
-    }
+    };
     const handleCompactEntryMouseEnter = (entry: MenuEntry) => {
         if (!compactMode || !window.matchMedia('(hover: hover)').matches) {
             return;
@@ -420,7 +429,7 @@ export const Menu: React.FC<MenuProps> = (props) => {
                                 width: compactPanelWidth,
                                 borderRight: `1px solid ${theme.palette.divider}`,
                                 backgroundColor: theme.palette.background.paper,
-                                color:  theme.palette.text.primary,
+                                color: theme.palette.text.primary,
                                 overflowY: 'auto',
                                 zIndex: theme.zIndex.drawer + 1,
                             })}>
@@ -431,6 +440,7 @@ export const Menu: React.FC<MenuProps> = (props) => {
                                     backgroundColor: theme.palette.background.paper,
                                     borderBottom: `1px solid ${theme.palette.divider}`,
                                     minHeight: submenuTitleHeight,
+                                    overflowWrap: 'anywhere',
                                 })}>
                                 <Typography
                                     variant="subtitle1"
@@ -456,8 +466,7 @@ export const Menu: React.FC<MenuProps> = (props) => {
                                 sx={{
                                     [`& .${menuItemIconClassName}`]: { ml: -1 },
                                     overflowWrap: 'anywhere',
-                                }}
-                            >
+                                }}>
                                 <ListMenuContent
                                     entries={compactPanelEntry.children}
                                     level={0}
@@ -476,7 +485,7 @@ export const Menu: React.FC<MenuProps> = (props) => {
                     onMenuItemClick={handleMenuItemClick}
                 />
             )}
-            {footerHeight && <Box sx={{ mb: footerHeight + 'px' }} />}
+            {footerHeight ? <Box sx={{ mb: footerHeight + 'px' }} /> : undefined}
         </>
     );
     return !smallScreen ? (

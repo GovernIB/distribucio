@@ -9,7 +9,7 @@ import {
 import { saveAs } from 'file-saver';
 import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
-import { useTheme, type Theme } from '@mui/material/styles';
+import { alpha, useTheme, type Theme } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import 'dayjs/locale/ca';
@@ -18,16 +18,20 @@ import { MuiBaseApp, type MenuEntry, useBaseAppContext, useMuiFormDialogApiRef }
 import i18n from '../i18n/i18n';
 import reactlibCa from '../i18n/reactlibCa';
 import reactlibEs from '../i18n/reactlibEs';
+import AppFormFieldReference from './AppFormFieldReference';
 import AvisosBanner from './AvisosBanner';
+import AvisosChips from './AvisosChips';
+import { AvisosProvider } from './AvisosProvider';
 import Offline from './Offline';
 import { UserProfileMenu, UserProfileFormDialog, useUserPreferences } from './UserProfile';
-import { EntitatSelector, RolSelector, getRolBadgeIcon } from './EntitatRolSelector';
+import { EntitatRolMenu, getRolBadgeIcon } from './EntitatRolSelector';
 import { InterficieClassicaButton } from './InterficieClassica';
 import { useDistribucioContext } from './DistribucioContext';
 import { MenuEstil } from '../theme';
 import { idiomaAplicacio } from '../util/idioma';
 import { MAIN_GAP, MAIN_PADDING } from '../util/layout';
 import {UserLastConection} from "./UserLastConection.tsx";
+import {DownloadManuals} from "./DownloadManuals.tsx";
 
 export type BaseAppProps = React.PropsWithChildren & {
     code: string;
@@ -69,24 +73,26 @@ const getMenuColorSet = (theme: Theme, appearance: MenuEstil): MenuColorSet | un
     if (appearance !== MenuEstil.TEMA_INVERTIT) {
         return undefined;
     }
+    // L'accent i la selecció surten de la identitat: `primary.dark` sobre el fons blanc i
+    // `primary.light` sobre el fosc, com `accentColor` a theme.ts.
     if (theme.palette.mode === 'dark') {
         return {
             background: '#FFFFFF',
-            textPrimary: '#1F2937',
-            textSecondary: '#4B5563',
-            divider: '#D1D5DB',
-            accent: '#1976D2',
-            selectedBackground: 'rgba(25, 118, 210, 0.12)',
+            textPrimary: '#1E1E1E',
+            textSecondary: '#666666',
+            divider: '#E0E0E0',
+            accent: theme.palette.primary.dark,
+            selectedBackground: alpha(theme.palette.primary.main, 0.16),
             hoverBackground: 'rgba(0, 0, 0, 0.04)',
         };
     }
     return {
-        background: '#1E293B',
-        textPrimary: '#F8FAFC',
-        textSecondary: '#CBD5E1',
-        divider: '#475569',
-        accent: '#60A5FA',
-        selectedBackground: 'rgba(96, 165, 250, 0.18)',
+        background: '#2E2E2E',
+        textPrimary: '#F6F6F6',
+        textSecondary: '#D0D0D0',
+        divider: '#555555',
+        accent: theme.palette.primary.light,
+        selectedBackground: alpha(theme.palette.primary.main, 0.22),
         hoverBackground: 'rgba(255, 255, 255, 0.08)',
     };
 };
@@ -245,62 +251,64 @@ export const BaseApp: React.FC<BaseAppProps> = (props) => {
     // l'idioma i recarregui la pantalla.
     const { idioma } = useUserPreferences();
     return (
-        <Box sx={{ ...frameSx, ...menuColorSetSx }}>
-        <MuiBaseApp
-            code={code}
-            headerTitle={title}
-            headerLogo={logo}
-            headerLogoStyle={logoStyle}
-            headerAppbarBackgroundColor={appbarBackgroundColor}
-            headerAppbarStyle={appbarStyle}
-            headerVersion={version}
-            headerAdditionalComponents={[
-                <Box key="interficie_classica" sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-                    <InterficieClassicaButton />
-                </Box>,
-                <Box key="entitat_selector" sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-                    <EntitatSelector />
-                </Box>,
-            ]}
-            headerAuthBadgeIcon={getRolBadgeIcon(rolActual)}
-            headerAdditionalAuthComponents={[
-                <UserLastConection key="user_last_conection" />,
-                <Box key="user_profile" sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
-                    <UserProfileMenu formDialogApiRef={formDialogApiRef} />
-                </Box>,
-                <RolSelector key="rol_selector" />,
-            ]}
-            offline={<Offline />}
-            footer={footer}
-            footerHeight={footerHeight}
-            // Sense `persistentLanguage`: la llibreria guardaria l'idioma al localStorage i el
-            // rellegiria en arrencar, competint amb el perfil. Amb dues fonts, un canvi no desat
-            // sobrevivia a la recàrrega i el perfil l'havia de desfer després, amb el refresc
-            // corresponent. La preferència desada a la base de dades és l'única font.
-            i18nUseTranslation={useTranslation}
-            i18nCurrentLanguage={idiomaAplicacio(idioma)}
-            i18nHandleLanguageChange={i18nHandleLanguageChange}
-            i18nAddResourceBundleCallback={i18nAddResourceBundleCallback}
-            routerGoBack={goBack}
-            routerNavigate={navigate}
-            routerUseBlocker={useBlocker}
-            routerUseLocationPath={useLocationPath}
-            routerAnyHistoryEntryExist={anyHistoryEntryExist}
-            linkComponent={Link}
-            // Els marges d'`<main>` els posa frameSx (la llibreria els deixa a 16px 24px).
-            marginsDisabled
-            saveAs={saveAs}
-            menuEntries={menuEntries}
-        >
-            <CustomLocalizationProvider>
-                <UserProfileFormDialog formDialogApiRef={formDialogApiRef} />
-                {/* Damunt del contingut i a totes les pantalles, com l'acordió d'avisos de la
+        <AvisosProvider>
+            <Box sx={{ ...frameSx, ...menuColorSetSx }}>
+                <MuiBaseApp
+                    code={code}
+                    headerTitle={title}
+                    headerLogo={logo}
+                    headerLogoStyle={logoStyle}
+                    headerAppbarBackgroundColor={appbarBackgroundColor}
+                    headerAppbarStyle={appbarStyle}
+                    headerVersion={version}
+                    headerAdditionalComponents={[
+                        <Box key="interficie_classica" sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                            <InterficieClassicaButton />
+                        </Box>,
+                        <AvisosChips key="avisos" />,
+                    ]}
+                    headerAuthBadgeIcon={getRolBadgeIcon(rolActual)}
+                    headerAdditionalAuthComponents={[
+                        <UserLastConection key="user_last_conection" />,
+                        <Box key="user_profile" sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <UserProfileMenu formDialogApiRef={formDialogApiRef} />
+                        </Box>,
+                        <DownloadManuals key="manuals" />,
+                        <EntitatRolMenu key="entitat_rol" />,
+                    ]}
+                    offline={<Offline />}
+                    footer={footer}
+                    footerHeight={footerHeight}
+                    // Sense `persistentLanguage`: la llibreria guardaria l'idioma al localStorage i el
+                    // rellegiria en arrencar, competint amb el perfil. Amb dues fonts, un canvi no desat
+                    // sobrevivia a la recàrrega i el perfil l'havia de desfer després, amb el refresc
+                    // corresponent. La preferència desada a la base de dades és l'única font.
+                    i18nUseTranslation={useTranslation}
+                    i18nCurrentLanguage={idiomaAplicacio(idioma)}
+                    i18nHandleLanguageChange={i18nHandleLanguageChange}
+                    i18nAddResourceBundleCallback={i18nAddResourceBundleCallback}
+                    routerGoBack={goBack}
+                    routerNavigate={navigate}
+                    routerUseBlocker={useBlocker}
+                    routerUseLocationPath={useLocationPath}
+                    routerAnyHistoryEntryExist={anyHistoryEntryExist}
+                    linkComponent={Link}
+                    // Els marges d'`<main>` els posa frameSx (la llibreria els deixa a 16px 24px).
+                    marginsDisabled
+                    saveAs={saveAs}
+                    formFieldComponents={[{ type: 'reference', component: AppFormFieldReference }]}
+                    menuEntries={menuEntries}
+                >
+                    <CustomLocalizationProvider>
+                        <UserProfileFormDialog formDialogApiRef={formDialogApiRef} />
+                        {/* Damunt del contingut i a totes les pantalles, com l'acordió d'avisos de la
                     interfície JSP. */}
-                <AvisosBanner />
-                {children}
-            </CustomLocalizationProvider>
-        </MuiBaseApp>
-        </Box>
+                        <AvisosBanner />
+                        {children}
+                    </CustomLocalizationProvider>
+                </MuiBaseApp>
+            </Box>
+        </AvisosProvider>
     );
 };
 

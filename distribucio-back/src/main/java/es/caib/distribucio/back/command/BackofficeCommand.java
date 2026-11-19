@@ -2,6 +2,7 @@ package es.caib.distribucio.back.command;
 
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import es.caib.distribucio.back.helper.ConversioTipusHelper;
@@ -32,7 +33,8 @@ public class BackofficeCommand {
     private Integer tempsEntreIntents;
     
     private Long entitatId;
-    
+
+    @NotNull
     private BackofficeTipusEnumDto tipus;
 
     private Boolean enviamentEmail;

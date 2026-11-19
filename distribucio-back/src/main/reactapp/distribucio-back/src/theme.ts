@@ -112,9 +112,9 @@ const baseComponentStyles = {
     MuiCssBaseline: {
         styleOverrides: {
             // Contenidor del filtre dels llistats (veure components/StyledMuiFilter.tsx).
+            // Sense padding vertical: la separació amb la barra de títol i la graella és el `gap` de 15px
+            // (MAIN_GAP) del cos de ScreenFrame.
             '.styledFilter': {
-                paddingTop: '11px',
-                paddingBottom: '16px',
                 borderRadius: '4px',
                 backgroundColor: 'inherit',
             },
@@ -290,6 +290,29 @@ const baseComponentStyles = {
             }),
         },
     },
+    // Etiquetes dels camps (també fan de placeholder quan el camp és buit): cursiva, 14px i pes fi, igual
+    // que a la resta d'aplicacions de la família.
+    MuiFormLabel: {
+        styleOverrides: {
+            root: ({ theme }: { theme: Theme }) => ({
+                fontStyle: 'italic',
+                paddingRight: '2px',
+                fontSize: '14px',
+                fontWeight: 300,
+                ...(theme.palette.mode === 'light' && { color: 'rgba(0, 0, 0, 0.74)' }),
+                '&.Mui-disabled': { fontStyle: 'italic', paddingRight: '2px' },
+                '&.Mui-focused': { fontStyle: 'italic', paddingRight: '2px' },
+            }),
+            filled: {
+                fontStyle: 'italic',
+                paddingRight: '2px',
+                fontSize: '14px',
+                fontWeight: 300,
+                '&.Mui-disabled': { fontStyle: 'italic', paddingRight: '2px', opacity: 1 },
+                '&.Mui-focused': { fontStyle: 'italic', paddingRight: '2px' },
+            },
+        },
+    },
     MuiTypography: {
         styleOverrides: {
             h5: { fontSize: '1.8rem', lineHeight: 1.2, fontWeight: 400 },
@@ -386,6 +409,7 @@ const LIGHT_GREY_BACKGROUND = '#e7e7e7';
 export const lightTheme = createTheme({
     palette: {
         mode: 'light',
+        text: { disabled: '#6e6e6e' },
         primary: { main: LIGHT_PRIMARY_MAIN, dark: PRIMARY_DARK },
         error: { main: '#d32f2f', contrastText: '#f8f8f2' },
         warning: { main: '#ed6c02', contrastText: '#f8f8f2' },
@@ -464,6 +488,7 @@ const DARK_PRIMARY_SOFT = darken(PRIMARY_MAIN, 0.7);
 export const darkTheme = createTheme({
     palette: {
         mode: 'dark',
+        text: { disabled: '#a0a0a0' },
         primary: { light: DARK_PRIMARY_LIGHT, main: DARK_PRIMARY_MAIN, dark: PRIMARY_DARK },
         error: { main: '#c62828', contrastText: '#f8f8f2' },
         warning: { main: '#e65100', contrastText: '#f8f8f2' },
@@ -485,6 +510,13 @@ export const darkTheme = createTheme({
                     backgroundImage: hatchPattern('#2c2c2c'),
                     color: DARK_PRIMARY_CONTRAST_TEXT,
                 },
+            },
+        },
+        // El text d'ajuda d'un camp desactivat (p. ex. el nom de la propietat) és informació, no un
+        // control: amb el color de "desactivat" (blanc al 50%) queda a 4,41:1.
+        MuiFormHelperText: {
+            styleOverrides: {
+                root: { '&.Mui-disabled': { color: DARK_TEXT_SECONDARY } },
             },
         },
         MuiOutlinedInput: {
@@ -533,6 +565,11 @@ export const darkTheme = createTheme({
                     // Casella marcada d'una fila seleccionada: gairebé blanca, es veu sobre el fons fosc
                     '& .MuiDataGrid-row.Mui-selected .MuiCheckbox-root.Mui-checked': {
                         color: `${GRID_ROW_CHECKED_DARK} !important`,
+                    },
+                    // Enllaços d'una fila seleccionada: el color primari es confon amb el fons de la fila;
+                    // en el color del text es distingeixen pel subratllat.
+                    '& .MuiDataGrid-row.Mui-selected .MuiLink-root': {
+                        color: `#ffffff !important`,
                     },
                 },
                 row: {
@@ -585,7 +622,7 @@ export const draculaTheme = createTheme({
         },
         secondary: { main: '#f8f8f2' },
         background: { default: '#282a36', paper: '#303341' },
-        text: { primary: '#f8f8f2', secondary: '#d6d6c2' },
+        text: { primary: '#f8f8f2', secondary: '#d6d6c2', disabled: '#a8aab8' },
         error: { main: '#c62828', contrastText: '#f8f8f2' },
         warning: { main: '#e65100', contrastText: '#f8f8f2' },
         success: { main: '#1b5e20', contrastText: '#f8f8f2' },
@@ -607,6 +644,13 @@ export const draculaTheme = createTheme({
                     backgroundImage: hatchPattern('#44475a'),
                     color: '#f8f8f2',
                 },
+            },
+        },
+        // El text d'ajuda d'un camp desactivat (p. ex. el nom de la propietat) és informació, no un
+        // control: amb el color de "desactivat" (blanc al 50%) queda a 4,41:1.
+        MuiFormHelperText: {
+            styleOverrides: {
+                root: { '&.Mui-disabled': { color: DRACULA_TEXT_SECONDARY } },
             },
         },
         MuiOutlinedInput: {
@@ -655,6 +699,11 @@ export const draculaTheme = createTheme({
                     // Casella marcada d'una fila seleccionada: gairebé blanca, es veu sobre el fons fosc
                     '& .MuiDataGrid-row.Mui-selected .MuiCheckbox-root.Mui-checked': {
                         color: `${GRID_ROW_CHECKED_DARK} !important`,
+                    },
+                    // Enllaços d'una fila seleccionada: el color primari es confon amb el fons de la fila;
+                    // en el color del text es distingeixen pel subratllat.
+                    '& .MuiDataGrid-row.Mui-selected .MuiLink-root': {
+                        color: `#f8f8f2 !important`,
                     },
                 },
                 row: {

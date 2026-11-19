@@ -27,7 +27,6 @@ import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -455,8 +454,9 @@ public class PermisosHelper {
 			Authentication auth) {
 		List<Sid> sids = new ArrayList<Sid>();
 		sids.add(new PrincipalSid(auth.getName()));
-		for (GrantedAuthority ga: auth.getAuthorities())
-			sids.add(new GrantedAuthoritySid(ga.getAuthority()));
+		// Tots els rols de l'usuari, no només el rol amb què opera a la interfície REACT
+		for (String rol: AclHelper.getRolsAcl(auth))
+			sids.add(new GrantedAuthoritySid(rol));
 		boolean[] granted = new boolean[permissions.length];
 		try {
 			ObjectIdentity oid = new ObjectIdentityImpl(

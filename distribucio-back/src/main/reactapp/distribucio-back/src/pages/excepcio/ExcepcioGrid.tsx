@@ -36,8 +36,14 @@ const columns: MuiDataGridColDef[] = [
 const sortModel: GridSortModel = [{ field: 'data', sort: 'desc' }];
 
 const ExcepcioStacktrace: React.FC = () => {
-    const { data } = useDetailContext();
-    return data?.stacktrace ? <IntegracioStacktrace stacktrace={data.stacktrace} height={400} /> : null;
+    const { data, fields } = useDetailContext();
+    return data?.stacktrace ? (
+        <IntegracioStacktrace
+            label={fields?.find?.((f: any) => f?.name === 'stacktrace')?.label}
+            stacktrace={data.stacktrace}
+            height={400}
+        />
+    ) : null;
 };
 
 /**

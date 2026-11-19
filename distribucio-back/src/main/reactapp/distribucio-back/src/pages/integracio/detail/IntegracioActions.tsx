@@ -51,7 +51,7 @@ export const useIntegracioActions = () => {
             label: t('page.integracio.detail.title'),
             icon: icons.detall,
             showInMenu: false,
-            onClick: (id: any, row: any) => mostrarDetall(id, row),
+            onClick: (id: any) => mostrarDetall(id),
         },
     ]
 

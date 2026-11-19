@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -199,12 +198,12 @@ public class EntitatHelper {
 	}
 	
 	/**
-	 * Rols de l'autenticacio, ordenats i concatenats, per a formar part de la clau de la cache
-	 * d'entitats accessibles (veure {@code CacheHelper.findEntitatsAccessiblesUsuari}).
+	 * Tots els rols de l'usuari (els mateixos amb què s'avaluen els permisos ACL, veure
+	 * {@link AclHelper#getRolsAcl(Authentication)}), ordenats i concatenats, per a formar part de la
+	 * clau de la cache d'entitats accessibles (veure {@code CacheHelper.findEntitatsAccessiblesUsuari}).
 	 */
 	private String getRolsClauCache(Authentication auth) {
-		return auth.getAuthorities().stream().
-				map(GrantedAuthority::getAuthority).
+		return AclHelper.getRolsAcl(auth).stream().
 				sorted().
 				collect(Collectors.joining(","));
 	}

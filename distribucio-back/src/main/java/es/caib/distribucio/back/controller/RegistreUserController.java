@@ -284,7 +284,7 @@ public class RegistreUserController extends BaseUserController {
 		RegistreFiltreCommand registreFiltreCommand = getFiltreCommand(request);
 		List<BustiaDto> bustiesPermesesPerUsuari = bustiaService.findBustiesPermesesPerUsuari(
 				entitatActual.getId(), 
-				registreFiltreCommand.isMostrarInactives());
+				true);
 		return DatatablesHelper.getDatatableResponse(
 				request,
 				registreService.findMovimentsRegistre(

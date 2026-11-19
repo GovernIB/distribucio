@@ -109,6 +109,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(RegistreResource.ACTION_RESERVAR_CODE, new ReservarActionExecutor());
         register(RegistreResource.ACTION_ALLIBERAR_CODE, new AlliberarActionExecutor());
         register(RegistreResource.ACTION_ASSIGNAR_CODE, new AssignarActionExecutor());
+        register(RegistreResource.ACTION_PROCESSAR_ANNEXOS_CODE, new ProcessarAnnexosActionExecutor());
     }
 
     @Override
@@ -144,9 +145,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         }
         Set<Serializable> ids = aclResourceHelper.findIdsWithAnyPermission(
                 ResourceType.BUSTIA,
-                List.of(PermissionEnum.READ),
-                authenticationHelper.getCurrentUserName(),
-                new ArrayList<>(List.of(BaseConfig.ROLE_USER)));
+                List.of(PermissionEnum.READ));
         List<Long> bustiesIds = ids.stream()
                 .map(i -> i instanceof Number ? ((Number) i).longValue() : Long.valueOf(i.toString()))
                 .collect(Collectors.toList());
@@ -180,14 +179,11 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 predicates.add(cb.equal(root.get("entitat").get("id"), entitatActualId));
             }
 
-            /// Permisos
+            /// Permisos (amb tots els rols de l'usuari, no només el rol amb què opera)
             if ( isUser ) {
                 Set<Serializable> ids = aclResourceHelper.findIdsWithAnyPermission(
                         ResourceType.BUSTIA,
-                        List.of(PermissionEnum.READ),
-                        authenticationHelper.getCurrentUserName(),
-                        new ArrayList<>(List.of(authenticationHelper.getCurrentUserRoles()))
-                );
+                        List.of(PermissionEnum.READ));
 
                 if (ids.isEmpty()) {
                     return cb.disjunction();
@@ -462,10 +458,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         if (isUser) {
             permesesIds = aclResourceHelper.findIdsWithAnyPermission(
                     ResourceType.BUSTIA,
-                    List.of(PermissionEnum.WRITE),
-                    authenticationHelper.getCurrentUserName(),
-                    new ArrayList<>(List.of(authenticationHelper.getCurrentUserRoles()))
-            );
+                    List.of(PermissionEnum.WRITE));
         }
 
         for (RegistreResource resource: resources) {
@@ -1556,6 +1549,27 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
         @Override
         public void onChange(Serializable id, RegistreResource.AssignarForm previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, RegistreResource.AssignarForm target) {
+        }
+    }
+    protected class ProcessarAnnexosActionExecutor implements ActionExecutor<RegistreResourceEntity, Serializable, Serializable> {
+
+        @Override
+        public Serializable exec(String code, RegistreResourceEntity entity, Serializable params) throws ActionExecutionException {
+            Long entitatActualId = SessioActualUtil.getEntitatId();
+            boolean processatOk = registreService.processarAnnexosAdmin(entitatActualId, entity.getId());
+            if (!processatOk) {
+                throw new ActionExecutionException(
+                        RegistreResourceEntity.class,
+                        entity.getId(),
+                        code,
+                        I18nUtil.getInstance().getI18nMessage("contingut.admin.controller.registre.desat.arxiu.error")
+                );
+            }
+            return null;
+        }
+
+        @Override
+        public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
         }
     }
 

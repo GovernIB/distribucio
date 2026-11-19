@@ -2,9 +2,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 import { ContenidoData, DetailCard, DetailCardContent } from '../../components/CardData';
+import TonalLinearProgress from '../../components/TonalLinearProgress';
 import type { InformacioSistema, MemoriaUs } from './useInformacioSistema';
 
 /** Percentatge d'ocupació a partir del qual la barra passa a avís i a error. */
@@ -25,17 +25,19 @@ const UsageBar: React.FC<{ label?: string; used?: number; total?: number; detail
                 {label}
             </Grid>
             <Grid size={6}>
-                <LinearProgress
-                    variant="determinate"
+                {/* El percentatge s'escriu sobre la barra: el nivell no es pot transmetre només amb el color */}
+                <TonalLinearProgress
                     value={percentatge}
                     color={percentatge >= LLINDAR_ERROR ? 'error' : percentatge >= LLINDAR_AVIS ? 'warning' : 'success'}
-                    sx={{ width: '100%', height: 15, borderRadius: '4px' }}
-                />
+                    sx={{ height: 20 }}
+                >
+                    {percentatge} %
+                </TonalLinearProgress>
             </Grid>
             <Grid size={1} />
             <Grid size={3}>
                 <Typography variant="inherit" color="textSecondary">
-                    {detail} ({percentatge} %)
+                    {detail}
                 </Typography>
             </Grid>
         </>

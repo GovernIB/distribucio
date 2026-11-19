@@ -69,6 +69,7 @@ export const EntitatPermisos = () => {
                     resourceType={'ENTITAT'}
                     columns={useEntitatPermisosColumns()}
                     formContent={<EntitatPermisForm/>}
+                    toolbarCreateTitle={t('page.entitats.permis.accio.nou')}
                 />
             </ScreenFrame>
         </GridPage>

@@ -21,7 +21,7 @@ const RUTE_MAPPING_JSP: Record<string, string> = {
     '/massiva': PARAM_INTERFICIE_JSP,
     '/metriques': PARAM_INTERFICIE_JSP,
     '/monitor': PARAM_INTERFICIE_JSP,
-    '/registre': 'registreUser',
+    '/registre': PARAM_INTERFICIE_JSP,
     '/vistaMoviments': 'registreUser/moviments',
     '/contingut': 'contingutAdmin',
     '/usuariCanviCodis': 'usernames/change',

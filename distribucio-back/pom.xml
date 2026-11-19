@@ -407,6 +407,35 @@
 							</execution>
 						</executions>
 					</plugin>
+					<!-- Buida src/main/webapp/reactapp abans de copiar-hi el dist/ nou: copy-resources no
+					     elimina res i mvn clean no hi arriba (és fora de target/), de manera que sense això
+					     s'hi acumulen els index-<hash>.js de cada build i acaben tots dins el WAR. Va
+					     després de npm-build (mateixa fase, declarat després) i abans de la còpia
+					     (process-resources). Amb -Dfrontend.skip=true no es buida, perquè no es regenera.
+					     Igual que a ConCSV (concsv-back/pom.xml). -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-clean-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>buida-reactapp-de-webapp</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>clean</goal>
+								</goals>
+								<configuration>
+									<skip>${frontend.skip}</skip>
+									<excludeDefaultDirectories>true</excludeDefaultDirectories>
+									<failOnError>false</failOnError>
+									<filesets>
+										<fileset>
+											<directory>${basedir}/src/main/webapp/reactapp</directory>
+										</fileset>
+									</filesets>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 					<!-- Copia el build del SPA dins del document root de l'aplicacio web.
 					     En el WAR empaquetat el SPA hi arriba per <webResources>, pero quan
 					     s'arrenca DistribucioBackBootApp des del codi font el document root

@@ -42,6 +42,9 @@ const translationEs = {
             error: 'No se ha podido obtener la sesión del usuario.',
             tornarAProvar: 'Vuelve a intentarlo',
         },
+        footer: {
+            accessibilitat: 'Accesibilidad',
+        },
         menu: {
             home: 'Inicio',
             entitats: 'Entidades',
@@ -50,7 +53,7 @@ const translationEs = {
             serveis: 'Servicios',
             sia: 'Procedimientos y servicios',
             configuracio: "Configuración",
-            configurar: "Configurar",
+            configurar: "Configuración",
             limitCanviEstat: "Limites de cambios de estado",
             usuariCanviCodis: "Cambio de códigos de usuarios",
             bustia: 'Buzones',
@@ -58,9 +61,9 @@ const translationEs = {
             procediment: 'Procedimientos',
             contingut: 'Contenidos',
             annex: 'Anexos',
-            config: 'Propiedades configurables',
+            config: 'Propiedades de configuración',
             massiva: "Consultar acciones masivas",
-            monitoritzar: 'Monitorizar',
+            monitoritzar: 'Monitorización',
             integracio: 'Integraciones',
             monitor: 'Monitor de sistema',
             metriques: 'Métricas',
@@ -73,6 +76,15 @@ const translationEs = {
         avisos: {
             mostra: 'Muestra el detalle del aviso',
             amaga: 'Oculta el detalle del aviso',
+            tanca: 'Minimiza el aviso',
+            nivell: {
+                INFO: 'Información',
+                WARNING: 'Advertencia',
+                ERROR: 'Error',
+            },
+            chip: '{{nivell}}: {{count}}',
+            chipRestaura: 'Muestra los avisos de nivel «{{nivell}}» que has minimizado',
+            chipBuit: 'Ningún aviso de nivel «{{nivell}}»',
         },
         interficie: {
             classica: 'Interfaz clásica',
@@ -84,6 +96,86 @@ const translationEs = {
         },
         notFound: {
             message: 'Página no encontrada',
+        },
+        accesibilitat: {
+            title: "Declaración de Accesibilidad",
+            intro: {
+                title: "Introducción",
+                p1Part1: "El Govern de les Illes Balears se ha comprometido a hacer accesible su sitio web y su aplicación para dispositivos móviles, de conformidad con",
+                p1LinkText: "el Real Decreto 1112/2018",
+                p1Part2: ", de 7 de septiembre, de accesibilidad de los sitios web y aplicaciones móviles del sector público.",
+                p2Part1: "La presente declaración de accesibilidad se aplica al sitio web",
+                p2Part2: "y excluye las páginas que conducen a enlaces externos.",
+            },
+            compliment: {
+                title: "Situación de cumplimiento",
+                introPart1: "Este sitio web es parcialmente conforme con",
+                introLinkText: "el RD 1112/2018",
+                introPart2: "a causa de las excepciones y de la falta de conformidad de los aspectos que se indican a continuación.",
+            },
+            noAccesible: {
+                title: "Lista de contenido no accesible y explicación del motivo",
+                item1: {
+                    title: "Uso de listas",
+                    desc1: "Criterio 1.3: las listas no se estructuran correctamente, en todas las páginas.",
+                    desc2: "Se trata del menú lateral: los grupos con submenú quedan dentro del elemento <ul> sin el elemento <li> correspondiente. La corrección debe hacerse en la librería base de componentes (lib/) y está prevista para una próxima versión.",
+                },
+                item2: {
+                    title: "Formularios y etiquetas",
+                    desc1: "Criterio 1.9: no se realiza adecuadamente la asociación explícita entre controles y etiquetas, en 4 páginas.",
+                    desc2: "En los campos de formulario de tipo selector (por ejemplo, el campo \"Estado\" del listado de anotaciones), el atributo \"for\" de la etiqueta apunta a un elemento <div role=\"combobox\"> y no a un campo de entrada, porque la librería Material UI (MUI) asigna el identificador al elemento que hace de selector. El validador lo reporta estrictamente como error; el selector dispone igualmente de un nombre accesible correcto para los lectores de pantalla mediante el atributo \"aria-labelledby\".",
+                },
+                item3: {
+                    title: "Múltiples vías de navegación",
+                    desc1: "Criterio 2.4: ausencia de un enlace al mapa web y de un buscador en el sitio, en todas las páginas.",
+                    desc2: "Nivel de advertencia al no proporcionar ningún método complementario de navegación como un mapa web o una opción de búsqueda.",
+                },
+            },
+            preparacio: {
+                title: "Preparación de la presente declaración",
+                elaborat: "Esta declaración se ha elaborado mediante autoevaluación realizada por el equipo de desarrollo utilizando la herramienta automatizada: Rastreador Web del Observatorio de Accesibilidad Web.",
+                darreraRevisio: "Última revisión: 23/10/2026",
+                properaRevisio: "Próxima revisión programada: 23/10/2027",
+                norma: "Norma de referencia: UNE-EN 301549:2022, niveles A y AA",
+                mostra: "Muestra evaluada: 10 páginas de la aplicación, con los roles de superadministrador y administrador de entidad",
+                resultatTitle: "Resultado",
+                puntuacioLabel: "Puntuación media del sitio web",
+                puntuacioVal: "8,47",
+                nivellLabel: "Nivel de adecuación estimado",
+                nivellVal: "AA",
+                situacioLabel: "Situación de cumplimiento estimada",
+                situacioVal: "Parcialmente conforme",
+                responsive: "El sitio web está diseñado para su visualización responsive, de manera que se visualiza de forma óptima en dispositivos tableta y móviles.",
+            },
+            contacte: {
+                title: "Observaciones y datos de contacto",
+                p1: "El Govern de les Illes Balears pretende continuar mejorando y ofrecer a los ciudadanos el mejor servicio posible. Podéis realizar comunicaciones sobre requisitos de accesibilidad (artículo 10.2.a) del RD 1112/2018, como por ejemplo:",
+                li1: "Informar sobre cualquier posible incumplimiento por parte de este sitio web",
+                li2: "Transmitir otras dificultades de acceso al contenido",
+                li3: "Formular cualquier otra consulta o sugerencia de mejora relativa a la accesibilidad del sitio web",
+                p2Part1: "A través del siguiente formulario de",
+                p2LinkText: "contacto",
+                p2Part2: "o llamando al teléfono 971177140. Puede presentar:",
+                li4: "Una queja relativa al cumplimiento de los requisitos del RD 1112/2018, o",
+                li5: "Una solicitud de información accesible relativa a:",
+                li5a: "Contenidos que están excluidos del ámbito de aplicación del RD 1112/2018 según lo establecido en el artículo 3, apartado 4, o",
+                li5b: "Contenidos que están exentos del cumplimiento de los requisitos de accesibilidad por imponer una carga desproporcionada.",
+                p4Part1: "A través del siguiente procedimiento:",
+                p4LinkText: "Peticiones de información accesible y quejas relativas a la accesibilidad de sitios web y aplicaciones móviles.",
+            },
+            procediment: {
+                title: "Procedimiento de aplicación",
+                p1: "El procedimiento de reclamación recogido en el artículo 13 del RD 1112/2018 entró en vigor el 20 de septiembre de 2020.",
+                p2: "Si una vez realizada una solicitud de información accesible o una queja, esta ha sido desestimada, no se está de acuerdo con la decisión adoptada, o la respuesta no cumple los requisitos contemplados en el artículo 12.5, la persona interesada podrá iniciar una reclamación. Igualmente, se podrá iniciar una reclamación en el caso de que haya transcurrido el plazo de veinte días hábiles sin haber obtenido respuesta.",
+                p3Part1: "La reclamación puede ser presentada a través del procedimiento",
+                p3LinkText: "Reclamaciones relativas a la accesibilidad de sitios web y aplicaciones móviles",
+            },
+            opcional: {
+                title: "Contenido opcional",
+                mesures: "Medidas de accesibilidad adicionales implementadas: identificación del idioma de la página (atributo lang), que se actualiza cuando el usuario cambia el idioma de la aplicación; estructura de encabezados revisada (se han eliminado encabezados vacíos y corregido los saltos de nivel); estructura de listas corregida en los formularios y en las entradas de primer nivel del menú de navegación (los submenús todavía no, véase el apartado \"Uso de listas\" de la lista de contenido no accesible); añadidas etiquetas a los campos de formulario y a los buscadores que no las tenían; corrección de los bloques de texto de más de 150 caracteres sin marcado de párrafo en los listados.",
+                config: "Configuración técnica recomendada: navegadores actualizados (Chrome, Firefox, Edge, Safari en sus dos últimas versiones), resolución mínima de 1280x720 píxeles, y soporte de zoom hasta 200% sin pérdida de contenido o funcionalidad.",
+                recursos: "Recursos de interés: Guía de accesibilidad web del W3C (https://www.w3.org/WAI/), lista de herramientas de evaluación de accesibilidad del W3C (https://www.w3.org/WAI/test-evaluate/tools/list/), Observatorio de Accesibilidad Web (OAW) de la Administración General del Estado, herramienta con la que se ha realizado la medición, y el Real Decreto 1112/2018 (https://www.boe.es/eli/es/rd/2018/09/07/1112).",
+            },
         },
         home: {
             toolbar: {
@@ -118,7 +210,7 @@ const translationEs = {
                 },
                 accio: {
                     gestionar: 'Gestiona los permisos',
-                    nou: 'Nuevo permiso',
+                    nou: 'Nuevo permiso de entidad',
                     modificar: 'Modifica',
                     esborrar: 'Elimina',
                     guardarOk: 'El permiso se ha guardado correctamente',
@@ -132,6 +224,10 @@ const translationEs = {
                 // El diálogo de la cuadrícula compone el título con el verbo de la acción ("Crea" o
                 // "Modifica") más este nombre de recurso.
                 resourceTitle: 'entidad',
+                legend: {
+                    clar: 'Configuración para el tema claro',
+                    oscur: 'Configuración para el tema oscuro',
+                },
             },
             accio: {
                 new: "Nueva entidad",
@@ -306,6 +402,8 @@ const translationEs = {
                 },
                 arxiuEstat: {
                     buitAvis: 'Este anexo no está guardado dentro del Arxiu',
+                    firmaInvalida: "Este anexo contiene una firma no válida o no se ha podido validar",
+                    esborrany: "Este anexo se encuentra en estado de borrador en el Archivo",
                 },
             },
             accio: {
@@ -314,6 +412,7 @@ const translationEs = {
                 concsv: 'Enlace a ConCSV',
                 descarregarOriginal: 'Descarga original',
                 descarregarImprimible: 'Descarga imprimible',
+                previsualitzar: 'Previsualizar',
                 guardarDefinitiu: {
                     label: 'Custodia',
                     jaDefinitiu: 'El anexo "{{titol}}" de la anotación {{numero}} ya consta como Definitivo en Distribución',
@@ -504,6 +603,11 @@ const translationEs = {
                     validarICustodiar: 'Valida y custodia',
                     descarregarFirma: 'Descarga firma',
                 },
+                alert: {
+                    esborranys: "Hay {{num}} anexos en estado de borrador en el Archivo",
+                    noGodatsAxiu: "Hay {{num}} anexos pendientes de guardar en el Archivo",
+                    firmaInvalida: "Hay {{num}} anexos con una firma no válida o con errores en la validación",
+                },
             },
         },
         metriques: {
@@ -614,16 +718,6 @@ const translationEs = {
         integracio: {
             grid: {
                 title: 'Monitor de integraciones',
-                column: {
-                    data: 'Fecha',
-                    descripcio: 'Descripción',
-                    tipus: 'Tipo',
-                    codiUsuari: 'Usuario',
-                    entitat: 'Entidad',
-                    numeroRegistre: 'Número de registro',
-                    tempsResposta: 'Tiempo respuesta',
-                    estat: 'Estado',
-                },
             },
             pipella: {
                 USUARIS: 'Usuarios',
@@ -641,14 +735,6 @@ const translationEs = {
             },
             detail: {
                 title: 'Detalle',
-                tipus: {
-                    ENVIAMENT: 'Enviado',
-                    RECEPCIO: 'Recepción',
-                },
-                params: 'Parámetros',
-                errorDescripcio: 'Descripción del error',
-                excepcioMessage: 'Mensaje',
-                excepcioStacktrace: 'Traza',
                 copyTooltip: 'Copia la traza al portapapeles',
             },
             diagnostic: {
@@ -903,14 +989,24 @@ const translationEs = {
                 usuarisBustia: {
                     label: "Usuarios",
                     ok: "El documento se ha descargado correctamente",
-                }
+                },
+                usersPermis: {
+                    label: 'Permisos por usuario...',
+                    title: "Permisos por usuario del buzón '{{nom}}'",
+                    grid: {
+                        codi: 'Código',
+                        nom: 'Nombre',
+                        hasUsuariPermission: '¿Por usuario?',
+                        rols: 'Roles',
+                    }
+                },
             },
         },
         config: {
             title: "Propiedades de configuración",
             accio: {
                 sync: {
-                    label: "Sincroniza",
+                    label: "Sincroniza con JBoss",
                     ok: "Sincronización realizada correctamente",
                 },
             }
@@ -1121,6 +1217,10 @@ const translationEs = {
                     reassignaLabel: "Reasigna...",
                     title: "Asignación de la anotación de registro a un usuario",
                     ok: "La anotación {{numero}} se ha asignado correctamente",
+                },
+                processarAnnexos: {
+                    label: "Procesar el guardado de anexos",
+                    ok: "El guardado en el Archivo se ha procesado correctamente",
                 },
             },
         },
@@ -1354,6 +1454,10 @@ const translationEs = {
         UserLastConection: {
             lastConnection: "Fecha y hora de la última conexión del usuario",
             darreraConnexio: "Última conexión:",
+        },
+        DownloadManuals: {
+            manual: "Manual de usuario",
+            manualAdmin: "Manual de administrador",
         },
     },
 };

@@ -99,7 +99,7 @@ export const DetailCard = (props: DetailCardProps) => {
                 {(title || header) && (
                     <CardHead icon={icon} action={actionHeader} className={'detail'} sx={{ py: 0, px: 2, backgroundColor: 'primarySoft', ...headerProps }}>
                         {title && (
-                            <Typography mt={0.5} variant={variant} sx={{ fontWeight: 600, color: 'primary.dark' }} {...(titleComponent && { component: titleComponent })}>
+                            <Typography mt={0.5} variant={variant} sx={{ fontWeight: 600, color: headerProps.color ?? 'primary.dark' }} {...(titleComponent && { component: titleComponent })}>
                                 {title}
                             </Typography>
                         )}

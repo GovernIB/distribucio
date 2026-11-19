@@ -9,6 +9,7 @@ import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.UnitatOrganizzativaEstatEnumDto;
+import es.caib.distribucio.logic.intf.dto.UsuariPermisDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -121,7 +122,7 @@ public class BustiaResource extends ContingutResource {
     @Transient private Boolean favorita;
 
     @Transient private UnitatOrganizzativaEstatEnumDto uoEstat;
-    @Transient private List<FieldOption> usuarisPermis;
+    @Transient private List<UsuariPermisDto> usuarisPermis;
 
     @Getter
     @Setter

@@ -263,7 +263,8 @@ export const BustiaOrganigrama = () => {
                     <Box sx={{ flex: '0 0 33%', minWidth: 0 }}>
                         {content}
                     </Box>
-                    <Box sx={{ flex: '1 1 0', minWidth: 0, overflow: 'auto' }}>
+                    {/* La barra del formulari és sticky amb top 64px (pensat per al scroll de pàgina); aquí el scroll és d'aquest contenidor. */}
+                    <Box sx={{ flex: '1 1 0', minWidth: 0, overflow: 'auto', '& .MuiToolbar-root': { top: 0 } }}>
                         <Load value={entity} noEffect>
                             <BustiaOrganigramaForm apiRef={formApiRef} entity={entity} toolbarElementsWithPositions={isAdmin?[
                                 {

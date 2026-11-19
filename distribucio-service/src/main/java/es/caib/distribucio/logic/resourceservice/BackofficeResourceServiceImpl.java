@@ -6,11 +6,13 @@ import es.caib.distribucio.logic.intf.base.exception.ActionExecutionException;
 import es.caib.distribucio.logic.intf.base.exception.AnswerRequiredException;
 import es.caib.distribucio.logic.intf.model.BackofficeResource;
 import es.caib.distribucio.logic.intf.model.BackofficeResource.ReturnedMessage;
+import es.caib.distribucio.logic.intf.model.EntitatResource;
 import es.caib.distribucio.logic.intf.resourceservice.BackofficeResourceService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.persist.entity.BackofficeEntity;
 import es.caib.distribucio.persist.repository.BackofficeRepository;
 import es.caib.distribucio.persist.resourceentity.BackofficeResourceEntity;
+import es.caib.distribucio.persist.resourcerepository.BackofficeResourceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -29,6 +32,7 @@ import java.util.Map;
 public class BackofficeResourceServiceImpl extends BaseMutableResourceService<BackofficeResource, Long, BackofficeResourceEntity> implements BackofficeResourceService {
 
     private final BackofficeRepository backofficeRepository;
+    private final BackofficeResourceRepository backofficeResourceRepository;
     private final RegistreHelper registreHelper;
 
     @PostConstruct
@@ -84,4 +88,9 @@ public class BackofficeResourceServiceImpl extends BaseMutableResourceService<Ba
         }
     }
 
+    @Override
+    public Optional<BackofficeResource> findByCodi(String codi) {
+        return backofficeResourceRepository.findByCodi(codi)
+                .map(entity -> objectMappingHelper.newInstanceMap(entity, BackofficeResource.class));
+    }
 }

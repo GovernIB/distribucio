@@ -8,7 +8,6 @@ import es.caib.distribucio.logic.intf.base.util.I18nUtil;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.*;
 import es.caib.distribucio.logic.intf.model.ResourceType;
-import es.caib.distribucio.logic.intf.resourceservice.AclEntryResourceService;
 import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import es.caib.distribucio.logic.intf.util.SessioActualUtil;
 import es.caib.distribucio.persist.resourceentity.RegistreResourceEntity;
@@ -24,7 +23,7 @@ public class ExecucioMassivaResourceHelper {
 
     private final ExecucioMassivaService execucioMassivaService;
     private final AuthenticationHelper authenticationHelper;
-    private final AclEntryResourceService aclEntryResourceService;
+    private final AclResourceHelper aclResourceHelper;
 
     private String construirParametres(Map<String, Object> params) {
         ObjectMapper mapper = new ObjectMapper();
@@ -44,13 +43,12 @@ public class ExecucioMassivaResourceHelper {
         List<RegistreResourceEntity> filteredList = registreList;
         if (!List.of(authenticationHelper.getCurrentUserRoles()).contains(BaseConfig.ROLE_ADMIN)) {
             filteredList = registreList.stream()
+                    // Amb tots els rols de l'usuari, no només el rol amb què opera
                     .filter(registre ->
-                            aclEntryResourceService.anyPermissionGranted(
+                            aclResourceHelper.anyPermissionGranted(
                                     ResourceType.BUSTIA,
                                     registre.getPare().getId(),
-                                    List.of(PermissionEnum.WRITE),
-                                    authenticationHelper.getCurrentUserName(),
-                                    List.of(authenticationHelper.getCurrentUserRoles())
+                                    List.of(PermissionEnum.WRITE)
                             ))
                     .collect(Collectors.toList());
         }

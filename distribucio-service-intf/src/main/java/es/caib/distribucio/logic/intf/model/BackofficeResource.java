@@ -9,6 +9,7 @@ import es.caib.distribucio.logic.intf.base.model.ResourceReference;
 import es.caib.distribucio.logic.intf.base.permission.PermissionEnum;
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.BackofficeTipusEnumDto;
+import es.caib.distribucio.logic.intf.resourcevalidation.BackofficeValid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,6 +51,7 @@ import java.util.List;
                         formClass = BackofficeResource.MassiveActionForm.class),
         }
 )
+@BackofficeValid
 public class BackofficeResource extends BaseResource<Long> {
 
     public static final String FILTER_CODE = "FILTER";

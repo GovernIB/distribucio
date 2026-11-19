@@ -11,12 +11,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
-import es.caib.distribucio.logic.intf.base.util.ThreadLocalUtil;
-import es.caib.distribucio.logic.intf.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +35,16 @@ import es.caib.distribucio.logic.helper.ExecucioMassivaHelper;
 import es.caib.distribucio.logic.helper.MessageHelper;
 import es.caib.distribucio.logic.helper.PluginHelper;
 import es.caib.distribucio.logic.helper.UsuariHelper;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaAccioDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaContingutEstatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaEstatDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaFiltreDto;
+import es.caib.distribucio.logic.intf.dto.ExecucioMassivaTipusDto;
+import es.caib.distribucio.logic.intf.dto.FitxerDto;
+import es.caib.distribucio.logic.intf.dto.RegistreAnnexDto;
+import es.caib.distribucio.logic.intf.dto.RegistreDto;
 import es.caib.distribucio.logic.intf.exception.NotFoundException;
 import es.caib.distribucio.logic.intf.service.ExecucioMassivaService;
 import es.caib.distribucio.persist.entity.EntitatEntity;
@@ -175,7 +181,7 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 		return dtos;
 	}
 
-	@Transactional(noRollbackFor = InterruptedException.class)
+	@Transactional
 	@Override
 	public void executeNextMassiveScheduledTask(Long entitatId) {
 		logger.trace("Execució tasca periòdica: Execucions massives");
@@ -192,17 +198,11 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
                 } else if (em.getContinguts() != null) {
                 	ConfigHelper.setEntitatActualCodi(em.getEntitat().getCodi());
 					execucioMassivaHelper.updateProcessantNewTransaction(em, new Date());
-
-                    String minuts = configHelper.getConfig("es.caib.distribucio.segonpla.timeout.execucio.massiva", "10");
-
 					for (ExecucioMassivaContingutEntity emc: em.getContinguts()) {
 						if (execucioMassivaHelper.isEmcDisponibleNewTransaction(emc)) {
                             setAuthentication(emc);
                             execucioMassivaHelper.updateProcessantNewTransaction(emc, new Date());
-
 							entrarSemafor(emc.getElementId());
-                            ScheduledExecutorService scheduler = ThreadLocalUtil.setTimeout(Integer.parseInt(minuts), TimeUnit.MINUTES);
-
 							try {
 								switch (em.getTipus()) {
 								case CLASSIFICAR:
@@ -276,10 +276,6 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 									break;
 								}
 							} catch (Exception e) {
-                                if (InterruptedException.class.isAssignableFrom(e.getClass())) {
-                                    e = new Exception("L'execució massiva s'ha interromput després de superar el temps màxim de " + minuts + " minuts.", e);
-                                }
-
 								StringBuilder errMsg = new StringBuilder("Hi ha hagut un error executant el contingut de l'acció massiva [id=" + emc.getId());
 								Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 								errMsg.append(", tipus=" + em.getTipus());
@@ -301,7 +297,6 @@ public class ExecucioMassivaServiceImpl implements ExecucioMassivaService {
 							} finally {
 								sortirSemafor(emc.getElementId());
 								removeAuthentication();
-                                scheduler.shutdownNow();
 							}
                             execucioMassivaHelper.updateFinalitzatNewTransaction(emc, new Date());
 						}

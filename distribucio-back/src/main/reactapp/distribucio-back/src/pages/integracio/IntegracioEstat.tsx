@@ -1,53 +1,36 @@
-import Box from '@mui/material/Box';
-import Icon from '@mui/material/Icon';
-import { icons } from '../../util/icons';
+import React from 'react';
+import EtiquetaEstat from '../../components/EtiquetaEstat';
+import type { TonalColor } from '../../util/tonal';
 
 type IntegracioEstatProps = {
+    /** Codi de l'estat (OK, ERROR...): decideix el color i la icona. */
     value?: string;
+    /** Text que es mostra; per defecte, el codi. A la graella, el valor formatat (traduït). */
+    children?: React.ReactNode;
     excepcioMessage?: string;
 };
 
-export const IntegracioEstat: React.FC<IntegracioEstatProps> = ({ value, excepcioMessage }) => {
-    if (value === 'OK') {
-        return (
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                    p: '4px',
-                    px: 1,
-                    color: 'success.contrastText',
-                    backgroundColor: 'success.main',
-                    borderRadius: '4px',
-                }}
-            >
-                <Icon fontSize="small" sx={{ fontSize: '18px' }}>{icons.correcte}</Icon>
-                {value}
-            </Box>
-        );
+/** Icona i color tonal de cada estat. La resta d'estats es mostren com a text pla. */
+const ESTATS: Record<string, { color: TonalColor; icon: string }> = {
+    OK: { color: 'success', icon: 'check' },
+    ERROR: { color: 'error', icon: 'warning' },
+};
+
+export const IntegracioEstat: React.FC<IntegracioEstatProps> = ({ value, children, excepcioMessage }) => {
+    const text = children ?? value;
+    const estat = value != null ? ESTATS[value] : undefined;
+    if (estat == null) {
+        return <>{text}</>;
     }
-    if (value === 'ERROR') {
-        return (
-            <Box
-                title={excepcioMessage}
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                    p: '4px',
-                    px: 1,
-                    color: 'error.contrastText',
-                    backgroundColor: 'error.main',
-                    borderRadius: '4px',
-                }}
-            >
-                <Icon fontSize="small" sx={{ fontSize: '18px' }}>{icons.advertencia}</Icon>
-                {value}
-            </Box>
-        );
-    }
-    return <>{value}</>;
+    return (
+        <EtiquetaEstat
+            color={estat.color}
+            icon={estat.icon}
+            title={value === 'ERROR' && excepcioMessage ? excepcioMessage : undefined}
+        >
+            {text}
+        </EtiquetaEstat>
+    );
 };
 
 export default IntegracioEstat;

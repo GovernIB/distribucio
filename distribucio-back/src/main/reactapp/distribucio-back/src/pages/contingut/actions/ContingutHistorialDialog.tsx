@@ -29,7 +29,7 @@ export const useContingutHistorialDialog = () => {
             buttons={closeButtons}
             buttonCallback={() => handleClose()}
         >
-            <MuiDetail hiddenToolbar id={contingut?.id} resourceName={'registreResource'} >
+            <MuiDetail hiddenToolbar id={contingut?.id} resourceName={'contingutResource'} >
                 <ContingutHistorialContent />
             </MuiDetail>
         </MuiDialog>

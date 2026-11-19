@@ -63,7 +63,7 @@ export const getFieldFromItem = (item:any, t: TranslateFn) => {
                 .map((v: string) => [v, configTypeValueLabel(t, item.type.id, v)])
         )
         : undefined;
-    const value = item.value != null ?item.value :item.alternativeValue
+    const value = (item.value != null && !item.jbossProperty) ?item.value :item.alternativeValue
 
     return {
         label: item.description,
@@ -117,7 +117,7 @@ const PropsListItem: React.FC<any> = ({ highlight }:any) => {
                         ...(ambEtiqueta && { id: inputId }),
                         type: password ?'password' :field.type,
                         placeholder: item.alternativeValue || item.key,
-                        helperText: <TextHighlight text={item.key} match={highlight} ignoreCase />
+                        helperText: <TextHighlight text={item.key} component="span" match={highlight} ignoreCase />
                     }}
                 />
             </Grid>

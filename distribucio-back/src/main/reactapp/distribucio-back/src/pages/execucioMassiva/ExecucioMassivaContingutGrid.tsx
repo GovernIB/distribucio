@@ -3,13 +3,14 @@ import Load from "../../components/Load.tsx";
 import * as builder from '../../util/springFilterUtils';
 import {useBaseAppContext, useMuiContentDialog, useMuiDataGridApiRef} from "reactlib";
 import {Chip, Tooltip} from "@mui/material";
+import {tonal, tonalNeutre} from "../../util/tonal.ts";
 
 const columns = [
     { field: 'elementNom', flex: 3 },
     { field: 'estat', flex: 0.5,
         renderCell: (params:any) => <>
             <Tooltip title={params.row.error || params.row.missatge}>
-                <Chip label={params.formattedValue} color={params.row.estat == "ERROR" ?'error' :"default"}/>
+                <Chip label={params.formattedValue} sx={params.row.estat == "ERROR" ?tonal('error') :tonalNeutre}/>
             </Tooltip>
         </>
     },

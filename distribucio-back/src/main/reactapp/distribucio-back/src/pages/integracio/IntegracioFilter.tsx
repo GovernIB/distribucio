@@ -14,8 +14,8 @@ const IntegracioFilterForm: React.FC = () => {
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="dataInici" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="entitat" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 1.25 }} name="estat" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 1.75 }} name="tipus" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="descripcio" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="tipus" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.75 }} name="descripcio" />
                 </>
             )}
 
@@ -28,7 +28,7 @@ const IntegracioFilterForm: React.FC = () => {
                     <GridFormField size={{ xs: 12, sm: 6, md: 2.25 }} name="dataInici" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2.25 }} name="dataFi" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="usuari" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="numeroRegistre" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="numeroRegistre" />
                 </>
             )}
         </>
