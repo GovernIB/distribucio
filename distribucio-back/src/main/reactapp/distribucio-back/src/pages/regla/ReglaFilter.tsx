@@ -12,32 +12,29 @@ const ReglaFilterForm: React.FC = () => {
         <>
             {!data?.advanced && (
                 <>
-                    <GridFormField size={{ xs: 12, sm: 6, md: 3.8 }} name="nom" />
-                    {/*<GridFormField size={{ xs: 12, sm: 6, md: 2.4 }} name="codiAssumpte" />*/}
+                    <GridFormField size={{ xs: 12, sm: 6, md: 3.2 }} name="nom" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="codiSIA" />
-                    {/*<GridFormField size={{ xs: 12, sm: 6, md: 1.7 }} name="codiServei" />*/}
                     <GridFormField size={{ xs: 12, sm: 6, md: 2.3 }} name="codiTramit" />
+                    <GridUnitatField size={{ xs: 12, sm: 6, md: 2.5 }} name="unitat" />
                 </>
             )}
             {data?.advanced && (
                 <>
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="nom" />
-                    {/*<GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="codiAssumpte" />*/}
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="codiSIA" />
-                    {/*<GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="codiServei" />*/}
                     <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="codiTramit" />
                     <GridUnitatField size={{ xs: 12, sm: 6, md: 3 }} name="unitat" />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="bustia" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="bustia" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="activa" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 1.5 }} name="presencial" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="tipus" />
 
                     {data?.tipus === 'UNITAT' && (
-                        <GridUnitatField size={{ xs: 12, sm: 6, md: 3.5 }} name="unitatDesti" />
+                        <GridUnitatField size={{ xs: 12, sm: 6, md: 3 }} name="unitatDesti" />
                     )}
-                    {data?.tipus === 'BUSTIA' && <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="bustiaDesti" />}
+                    {data?.tipus === 'BUSTIA' && <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="bustiaDesti" />}
                     {data?.tipus === 'BACKOFFICE' && (
-                        <GridFormField size={{ xs: 12, sm: 6, md: 3.5 }} name="backoffice" />
+                        <GridFormField size={{ xs: 12, sm: 6, md: 3 }} name="backoffice" />
                     )}
                 </>
             )}

@@ -57,7 +57,7 @@ const RegistreFilterForm: React.FC<any> = ({ isAdmin }: any) => {
                     <GridFormField size={{ xs: 12, sm: 6, md: 2.5 }} name="procesEstat" />
                     <GridButtonField icon={icons.error} size={{ xs: 12, sm: 1, md: 0.5 }} name="ambErrors" />
                     <GridFormField size={{ xs: 12, sm: 6, md: 2 }} name="sobreescriure" hidden={!isAdmin} />
-                    <GridFormField size={{ xs: 12, sm: 6, md: 2.75 }} name="nombreAnnexes" />
+                    <GridFormField size={{ xs: 12, sm: 6, md: 2.25 }} name="nombreAnnexes" />
                     <GridFormField
                         size={{ xs: 12, sm: 6, md: 3 }}
                         name="sia"

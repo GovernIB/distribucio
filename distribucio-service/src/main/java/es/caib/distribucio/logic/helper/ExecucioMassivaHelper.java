@@ -116,8 +116,7 @@ public class ExecucioMassivaHelper {
 		} finally {
 	        scheduler.shutdownNow();
 		}
-		return null;
-	}
+    }
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void reenviarNewTransaction(Long entitatId, Long elementId, String parametres) throws Exception {
