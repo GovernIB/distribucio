@@ -9,6 +9,17 @@ import { toolbarBackgroundStyle } from 'reactlib';
 import drassanaLogo from '../assets/drassana.png';
 import { FOOTER_HEIGHT } from '../util/layout';
 
+const footerLinkSx = {
+    color: '#F6F6F6',
+    mr: 2,
+    mt: 1,
+    alignSelf: 'flex-start',
+    display: 'inline-flex',
+    alignItems: 'center',
+    minHeight: 24,
+    minWidth: 24,
+}
+
 type DrassanaFooterProps = {
     title: string;
     backgroundColor?: string;
@@ -87,21 +98,10 @@ export const DrassanaFooter: React.FC<DrassanaFooterProps> = (props) => {
                     ({buildTimestamp} | Revisió: {scmRevision})
                 </span>
             </Typography>
-            <Link
-                component={RouterLink}
-                to="/accessibilitat"
-                variant="body2"
-                underline="hover"
-                sx={{
-                    color: '#F6F6F6',
-                    mr: 2,
-                    mt: 1,
-                    alignSelf: 'flex-start',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    minHeight: 24,
-                    minWidth: 24,
-                }}>
+            <Link component={RouterLink} to="/sitemap" variant="body2" underline="hover" sx={footerLinkSx}>
+                {t('app.footer.sitemap')}
+            </Link>
+            <Link component={RouterLink} to="/accessibilitat" variant="body2" underline="hover" sx={footerLinkSx}>
                 {t('app.footer.accessibilitat')}
             </Link>
             <Box sx={{ mr: 0, pt: 0, pr: 0, height: FOOTER_HEIGHT + 'px', cursor: 'pointer' }}>

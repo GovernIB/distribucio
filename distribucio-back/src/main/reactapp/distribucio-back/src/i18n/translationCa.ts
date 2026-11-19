@@ -43,6 +43,7 @@ const translationCa = {
             tornarAProvar: 'Torna-ho a provar',
         },
         footer: {
+            sitemap: "Mapa del lloc web",
             accessibilitat: 'Accessibilitat',
         },
         menu: {
@@ -1455,6 +1456,10 @@ const translationCa = {
             manual: "Manual d'usuari",
             manualAdmin: "Manual d'administrador",
         },
+        Sitemap: {
+            title: "Mapa del lloc web",
+            subtitle: "Accés directe a totes les seccions principals de l’aplicació.",
+        }
     },
 };
 

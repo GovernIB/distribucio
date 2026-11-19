@@ -45,6 +45,7 @@ export const icons = {
     metaDada: 'data_object',
     domini: 'domain',
     regla: 'rule',
+    sitemap: 'map',
     accessibilitat: 'accessibility',
 
     // --- Accions -----------------------------------------------------------------------------

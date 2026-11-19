@@ -32,6 +32,7 @@ import UsuariCanviCodis from './pages/usuari/UsuariCanviCodis.tsx';
 import {MetaDadaGrid} from "./pages/metadada/MetaDadaGrid.tsx";
 import {DominiGrid} from "./pages/domini/DominiGrid.tsx";
 import Accesibilitat from './pages/Accesibilitat';
+import Sitemap from "./pages/Sitemap.tsx";
 
 export const router = createBrowserRouter(
     [
@@ -333,6 +334,11 @@ export const router = createBrowserRouter(
                             handle: { titol: 'page.domini.title' },
                         },
                     ],
+                },
+                {
+                    path: 'sitemap',
+                    element: <Sitemap />,
+                    handle: { titol: 'component.Sitemap.title' },
                 },
                 {
                     path: 'accessibilitat',

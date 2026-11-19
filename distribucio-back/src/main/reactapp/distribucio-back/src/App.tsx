@@ -61,19 +61,9 @@ export const getEnvApiUrl = () => {
 
 const version = import.meta.env.VITE_APP_VERSION ?? '0.0.0';
 
-// Les mides de la capçalera, del menú i del peu són a util/layout.ts: MENU_WIDTH és l'amplada del
-// menú lateral obert, APPBAR_PADDING_LEFT desplaça el botó de menú fins a la columna de les icones
-// del menú, i LOGO_BOX_LEFT és on comença la caixa del logo amb aquest padding.
-
-const InnerApp: React.FC = () => {
+export const useMenuEntries = () => {
     const { t } = useTranslation();
-    const theme = useTheme();
-    const mode = theme.palette.mode;
-
     const { currentRole } = useDistribucioContext();
-    // La pantalla de cada entrada determina a quins rols es mostra (veure PANTALLA_ROLS a
-    // util/pantalles.ts): el menú i les guardes de ruta surten de la mateixa declaració.
-    // Icones a util/icons.ts: la mateixa icona que fa servir el títol de cada pantalla (ScreenFrame).
     const menuEntries: MenuEntryAmbPantalla[] = [
         {
             id: 'home',
@@ -280,6 +270,21 @@ const InnerApp: React.FC = () => {
             ],
         },
     ];
+    return filtrarEntradesMenu(menuEntries, currentRole);
+}
+
+// Les mides de la capçalera, del menú i del peu són a util/layout.ts: MENU_WIDTH és l'amplada del
+// menú lateral obert, APPBAR_PADDING_LEFT desplaça el botó de menú fins a la columna de les icones
+// del menú, i LOGO_BOX_LEFT és on comença la caixa del logo amb aquest padding.
+
+const InnerApp: React.FC = () => {
+    const theme = useTheme();
+    const mode = theme.palette.mode;
+
+    // La pantalla de cada entrada determina a quins rols es mostra (veure PANTALLA_ROLS a
+    // util/pantalles.ts): el menú i les guardes de ruta surten de la mateixa declaració.
+    // Icones a util/icons.ts: la mateixa icona que fa servir el títol de cada pantalla (ScreenFrame).
+    const menuEntries = useMenuEntries()
 
     const bgColor = mode === 'light' ? theme.palette.background.paper : undefined;
     const textColor = bgColor ? theme.palette.getContrastText(bgColor) : undefined;
@@ -322,7 +327,7 @@ const InnerApp: React.FC = () => {
                 />
             }
             version={version}
-            menuEntries={filtrarEntradesMenu(menuEntries, currentRole)}
+            menuEntries={menuEntries}
             menuAppearance={estilMenu}
             appbarBackgroundColor={bgColor}
             // El botó de menú duu ml -12, així que amb APPBAR_PADDING_LEFT queda centrat a la mateixa

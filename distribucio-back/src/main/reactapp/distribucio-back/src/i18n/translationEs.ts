@@ -43,6 +43,7 @@ const translationEs = {
             tornarAProvar: 'Vuelve a intentarlo',
         },
         footer: {
+            sitemap: "Mapa del sitio web",
             accessibilitat: 'Accesibilidad',
         },
         menu: {
@@ -1455,6 +1456,10 @@ const translationEs = {
             manual: "Manual de usuario",
             manualAdmin: "Manual de administrador",
         },
+        Sitemap: {
+            title: "Mapa del sitio web",
+            subtitle: "Acceso directo a todas las secciones principales de la aplicación.",
+        }
     },
 };
 
