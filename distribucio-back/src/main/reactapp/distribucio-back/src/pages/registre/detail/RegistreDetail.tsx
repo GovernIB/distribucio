@@ -121,7 +121,7 @@ const RegistreDetail = (props: any) => {
                 label: t('component.RegistreDetail.tabs.procesAuto'),
                 icon: icons.advertencia,
                 content: <ProcessAuto entity={data} refresh={refresh} />,
-                error: true,
+                error: data.procesError != null,
                 hidden: !(
                     data.procesEstat == 'ARXIU_PENDENT' ||
                     data.procesEstat == 'REGLA_PENDENT' ||

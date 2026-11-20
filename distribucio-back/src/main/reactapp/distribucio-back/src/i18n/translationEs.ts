@@ -454,6 +454,7 @@ const translationEs = {
                     fitxer: 'Fichero',
                     firma: 'Firma',
                     firmes: 'Firmas',
+                    firmants: 'Firmantes',
                 },
                 firmes: {
                     mostrar: 'Muestra firmas',
@@ -493,6 +494,7 @@ const translationEs = {
                         fitxer: 'Fichero',
                         csvRegulacio: 'CSV regulación',
                         autofirma: 'Firmado por DISTRIBUCIÓN',
+                        autofirmaTitle: "DISTRIBUCIÓ ha añadido automáticamente esta firma al anexo de la anotación de registro para guardarlo como definitivo en el Archivo",
                         gesdocFirmaId: 'Gestión documental firma',
                     },
                 },

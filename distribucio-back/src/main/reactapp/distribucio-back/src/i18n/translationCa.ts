@@ -454,6 +454,7 @@ const translationCa = {
                     fitxer: 'Fitxer',
                     firma: 'Firma',
                     firmes: 'Firmes',
+                    firmants: 'Firmants',
                 },
                 firmes: {
                     mostrar: 'Mostra firmes',
@@ -493,6 +494,7 @@ const translationCa = {
                         fitxer: 'Fitxer',
                         csvRegulacio: 'CSV regulació',
                         autofirma: "Firmat per DISTRIBUCIÓ",
+                        autofirmaTitle: "DISTRIBUCIÓ ha afegit automaticament aquesta firma a l'annex de l'anotació de registre per desar-lo com a definitiu a l'arxiu",
                         gesdocFirmaId: 'Gestió documental firma',
                     },
                 },
