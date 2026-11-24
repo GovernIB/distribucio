@@ -3,6 +3,8 @@
  */
 package es.caib.distribucio.persist.repository;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -550,4 +552,25 @@ public interface RegistreRepository extends JpaRepository<RegistreEntity, Long> 
 			@Param("codiNou") String codiNou);
 
 	public RegistreEntity findTopByEntitatAndExpedientArxiuUuidNotNull(EntitatEntity entitat);
+
+    @Query(	"select count(r) " +
+            "from " +
+            "    RegistreEntity r " +
+            "where r.pare.id = :pareId " +
+            "and :dateBefore <= r.createdDate " +
+            "and r.createdDate <= :dateAfter")
+    Long countByPareIdAndCreatedDateBetween(
+            @Param("pareId") Long pareId,
+            @Param("dateBefore") Date dateBefore,
+            @Param("dateAfter") Date dateAfter);
+
+    @Query(	"select count(r) " +
+            "from " +
+            "    RegistreEntity r " +
+            "where r.pare.id = :pareId " +
+            "and r.procesEstat in :procesEstats")
+    Long countByPareIdAndProcesEstatIsIn(
+            @Param("pareId") Long pareId,
+            @Param("procesEstats") Collection<RegistreProcesEstatEnum> procesEstats);
+
 }

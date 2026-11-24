@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import es.caib.distribucio.persist.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,6 @@ import es.caib.distribucio.persist.entity.HistoricAnotacioEntity;
 import es.caib.distribucio.persist.entity.HistoricBustiaEntity;
 import es.caib.distribucio.persist.entity.HistoricEstatEntity;
 import es.caib.distribucio.persist.entity.UnitatOrganitzativaEntity;
-import es.caib.distribucio.persist.repository.EntitatRepository;
-import es.caib.distribucio.persist.repository.HistoricAnotacioRepository;
-import es.caib.distribucio.persist.repository.HistoricBustiaRepository;
-import es.caib.distribucio.persist.repository.HistoricEstatRepository;
-import es.caib.distribucio.persist.repository.UnitatOrganitzativaRepository;
 import es.caib.distribucio.plugin.usuari.DadesUsuari;
 
 /** 
@@ -63,6 +59,8 @@ public class HistoricHelper {
 	HistoricBustiaRepository historicBustiaRepository;
 	@Autowired
 	ConversioTipusHelper conversioTipusHelper;
+    @Autowired
+    RegistreRepository registreRepository;
 
 	/** Calcula i guarda les dades històriques de:
 	 * - Dades d'anotacions per UO
@@ -424,7 +422,31 @@ public class HistoricHelper {
 			if (!usuarisEntitat.containsKey(bustia.getEntitat().getId()))
 				usuarisEntitat.put(bustia.getEntitat().getId(), new HashSet<String>());
 			usuarisEntitat.get(bustia.getEntitat().getId()).addAll(usuarisPermis);
-			
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(data);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            Date startDate = cal.getTime();
+
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.MILLISECOND, 999);
+            Date endDate = cal.getTime();
+
+            bustia.setNoves(registreRepository.countByPareIdAndCreatedDateBetween( bustia.getBustiaId(), startDate, endDate ));
+            bustia.setErrors(registreRepository.countByPareIdAndProcesEstatIsIn( bustia.getBustiaId(), List.of(
+                    RegistreProcesEstatEnum.BACK_ERROR
+            )));
+            bustia.setPendents(registreRepository.countByPareIdAndProcesEstatIsIn( bustia.getBustiaId(), List.of(
+                    RegistreProcesEstatEnum.ARXIU_PENDENT,
+                    RegistreProcesEstatEnum.REGLA_PENDENT,
+                    RegistreProcesEstatEnum.BUSTIA_PENDENT
+            )));
+
 		    historicBustiaRepository.save(bustia);
 		}
 		

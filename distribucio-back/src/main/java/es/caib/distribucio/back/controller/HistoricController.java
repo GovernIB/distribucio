@@ -275,7 +275,10 @@ public class HistoricController extends BaseAdminController {
 						bustia.getNom(),
 						bustia.getUsuaris(),
 						bustia.getUsuarisPermis(),
-						bustia.getUsuarisRol()));
+						bustia.getUsuarisRol(),
+						bustia.getNoves(),
+						bustia.getErrors(),
+						bustia.getPendents()));
 			}
 		}
 		
@@ -538,7 +541,19 @@ public class HistoricController extends BaseAdminController {
 					
 					HSSFCell cellUsuarisRol = xlsRow.createCell(7);
 					cellUsuarisRol.setCellValue(bustia.getUsuarisRol());
-					cellUsuarisRol.setCellStyle(defaultStyle);	
+					cellUsuarisRol.setCellStyle(defaultStyle);
+
+					HSSFCell cellAnotacionsNoves = xlsRow.createCell(8);
+					cellAnotacionsNoves.setCellValue(bustia.getNoves());
+					cellAnotacionsNoves.setCellStyle(defaultStyle);
+
+					HSSFCell cellAnotacionsError = xlsRow.createCell(9);
+					cellAnotacionsError.setCellValue(bustia.getErrors());
+					cellAnotacionsError.setCellStyle(defaultStyle);
+
+					HSSFCell cellAnotacionsPendent = xlsRow.createCell(10);
+					cellAnotacionsPendent.setCellValue(bustia.getPendents());
+					cellAnotacionsPendent.setCellStyle(defaultStyle);
 				} catch (Exception e) {
 					logger.error("Export Excel: No s'ha pogut crear la línia: " + rowNum, e);
 				}
@@ -712,6 +727,18 @@ public class HistoricController extends BaseAdminController {
 		
 		cell = xlsRow.createCell(colNum++);
 		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.busties.usuarisRol")));
+		cell.setCellStyle(headerStyle);
+
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.busties.noves")));
+		cell.setCellStyle(headerStyle);
+
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.busties.errors")));
+		cell.setCellStyle(headerStyle);
+
+		cell = xlsRow.createCell(colNum++);
+		cell.setCellValue(new HSSFRichTextString(this.getMessage(request, "historic.taula.header.busties.pendents")));
 		cell.setCellStyle(headerStyle);
 	}
 	
