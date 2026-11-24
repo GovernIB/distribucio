@@ -682,6 +682,9 @@
 				fila += ('<td>' + dataBustia.usuaris + '</td>');
 				fila += ('<td>' + dataBustia.usuaris_permis + '</td>');
 				fila += ('<td>' + dataBustia.usuaris_rol + '</td>');
+				fila += ('<td>' + dataBustia.noves + '</td>');
+				fila += ('<td>' + dataBustia.errors + '</td>');
+				fila += ('<td>' + dataBustia.pendents + '</td>');
 				fila += ('</tr>');
 				$("#tBodyTaulaBustia").append(fila);
 			});
@@ -1027,6 +1030,9 @@
 							<th><spring:message code="historic.taula.header.busties.usuaris" /></th>
 							<th><spring:message code="historic.taula.header.busties.usuarisPermis" /></th>
 							<th><spring:message code="historic.taula.header.busties.usuarisRol" /></th>
+							<th><spring:message code="historic.taula.header.busties.noves" /></th>
+							<th><spring:message code="historic.taula.header.busties.errors" /></th>
+							<th><spring:message code="historic.taula.header.busties.pendents" /></th>
 						</tr>
 					</thead>
 					<tbody id="tBodyTaulaBustia"></tbody>

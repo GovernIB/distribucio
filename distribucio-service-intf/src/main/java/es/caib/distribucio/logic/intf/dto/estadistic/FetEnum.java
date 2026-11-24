@@ -89,8 +89,12 @@ public enum FetEnum {
 	// Permisos bústies
 	BST_PRM_TOT ("Permisos totals", "Els permisos totals que hi ha sobre una bústia"),
 	BST_PRM_USR ("Usuaris amb permís directe", "El total d'usuaris que tenen donat permís directe sobre una bústia"),
-	BST_PRM_ROL ("Usuaris amb permís per rol", "El total d'usuaris que tenen donat permís per rol sobre una bústia");
-	
+	BST_PRM_ROL ("Usuaris amb permís per rol", "El total d'usuaris que tenen donat permís per rol sobre una bústia"),
+
+    BST_ANT_NEW("Anotacions noves", "Numero d'anotacions noves"),
+    BST_ANT_ERR("Anotacions amb errors", "Numero d'anotacions amb errors"),
+    BST_ANT_PND("Anotacions pendents", "Numero d'anotacions pendents");
+
     private String nom;
     private String descripcio;
     

@@ -1,6 +1,5 @@
 package es.caib.distribucio.logic.mapper;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -12,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import es.caib.distribucio.logic.intf.dto.historic.TipusHistoricEnumDto;
 import es.caib.distribucio.logic.intf.util.DatesUtils;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,6 @@ import es.caib.comanda.model.server.monitoring.Dimensio;
 import es.caib.comanda.model.server.monitoring.Fet;
 import es.caib.comanda.model.server.monitoring.RegistreEstadistic;
 import es.caib.comanda.model.server.monitoring.RegistresEstadistics;
-//import es.caib.comanda.model.server.monitoring.Temps;
 import es.caib.distribucio.logic.helper.HibernateHelper;
 import es.caib.distribucio.logic.intf.dto.estadistic.DimEnum;
 import es.caib.distribucio.logic.intf.dto.estadistic.DimensioDistribucio;
@@ -114,7 +113,8 @@ public class EstadisticaMapper {
         List<Dimensio> dimensions = List.of(
                 new DimensioDistribucio(DimEnum.ENT, anotacio.getEntitat().getCodi()),
                 new DimensioDistribucio(DimEnum.UNT, anotacio.getUnitat() != null ? anotacio.getUnitat().getCodi() : null),
-                new DimensioDistribucio(DimEnum.TIP, anotacio.getTipus()),
+//                new DimensioDistribucio(DimEnum.TIP, anotacio.getTipus()),
+                new DimensioDistribucio(DimEnum.TIP, TipusHistoricEnumDto.ANOTACIO),
                 new DimensioDistribucio(DimEnum.BST, (String) null)
         );
 
@@ -138,7 +138,8 @@ public class EstadisticaMapper {
         List<Dimensio> dimensions = List.of(
                 new DimensioDistribucio(DimEnum.ENT, estat.getEntitat().getCodi()),
                 new DimensioDistribucio(DimEnum.UNT, estat.getUnitat() != null ? estat.getUnitat().getCodi() : null),
-                new DimensioDistribucio(DimEnum.TIP, estat.getTipus()),
+//                new DimensioDistribucio(DimEnum.TIP, estat.getTipus()),
+                new DimensioDistribucio(DimEnum.TIP, TipusHistoricEnumDto.ESTAT),
                 new DimensioDistribucio(DimEnum.BST, (String) null)
         );
 
@@ -246,14 +247,18 @@ public class EstadisticaMapper {
         List<Dimensio> dimensions = List.of(
                 new DimensioDistribucio(DimEnum.ENT, bustia.getEntitat().getCodi()),
                 new DimensioDistribucio(DimEnum.UNT, bustia.getUnitat().getCodi()),
-                new DimensioDistribucio(DimEnum.TIP, bustia.getTipus()),
+//                new DimensioDistribucio(DimEnum.TIP, bustia.getTipus()),
+                new DimensioDistribucio(DimEnum.TIP, TipusHistoricEnumDto.BUSTIA),
                 new DimensioDistribucio(DimEnum.BST, bustia.getNom())
         );
         
         Map<FetEnum, Function<HistoricBustiaEntity, Long>> fetsValors = Map.of(
                 FetEnum.BST_PRM_USR, e -> e.getUsuarisPermis(),
                 FetEnum.BST_PRM_ROL, e -> e.getUsuarisRol(),
-                FetEnum.BST_PRM_TOT, e -> e.getUsuaris()
+                FetEnum.BST_PRM_TOT, e -> e.getUsuaris(),
+                FetEnum.BST_ANT_NEW, e -> e.getNoves(),
+                FetEnum.BST_ANT_ERR, e -> e.getErrors(),
+                FetEnum.BST_ANT_PND, e -> e.getPendents()
         );
         
         return registreEstadisticFromEntity(bustia, dimensions, fetsValors);

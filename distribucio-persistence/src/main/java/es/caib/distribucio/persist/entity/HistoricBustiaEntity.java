@@ -16,6 +16,8 @@ import javax.persistence.TemporalType;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
 import es.caib.distribucio.logic.intf.dto.historic.HistoricTipusEnumDto;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Classe de model de dades que conté la informació de les dades estadístiques
@@ -24,6 +26,8 @@ import es.caib.distribucio.logic.intf.dto.historic.HistoricTipusEnumDto;
  * 
  * @author Limit Tecnologies <limit@limit.es>
  */
+@Getter
+@Setter
 @Entity
 @Table(name = BaseConfig.DB_PREFIX + "his_bustia")
 public class HistoricBustiaEntity extends DistribucioPersistable<Long> {
@@ -69,75 +73,13 @@ public class HistoricBustiaEntity extends DistribucioPersistable<Long> {
 	@Column(name = "usuaris_rol")
 	private Long usuarisRol= 0L;
 
-	public EntitatEntity getEntitat() {
-		return entitat;
-	}
+    @Column(name = "noves")
+    private Long noves = 0L;
 
-	public void setEntitat(EntitatEntity entitat) {
-		this.entitat = entitat;
-	}
+    @Column(name = "errors")
+    private Long errors = 0L;
 
-	public UnitatOrganitzativaEntity getUnitat() {
-		return unitat;
-	}
+    @Column(name = "pendents")
+    private Long pendents = 0L;
 
-	public void setUnitat(UnitatOrganitzativaEntity unitat) {
-		this.unitat = unitat;
-	}
-
-	public HistoricTipusEnumDto getTipus() {
-		return tipus;
-	}
-
-	public void setTipus(HistoricTipusEnumDto tipus) {
-		this.tipus = tipus;
-	}
-
-	public Date getData() {
-		return data;
-	}
-
-	public void setData(Date data) {
-		this.data = data;
-	}
-
-	public Long getBustiaId() {
-		return bustiaId;
-	}
-
-	public void setBustiaId(Long bustiaId) {
-		this.bustiaId = bustiaId;
-	}
-
-	public String getNom() {
-		return nom;
-	}
-
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	public Long getUsuaris() {
-		return usuaris;
-	}
-
-	public void setUsuaris(Long usuaris) {
-		this.usuaris = usuaris;
-	}
-
-	public Long getUsuarisPermis() {
-		return usuarisPermis;
-	}
-
-	public void setUsuarisPermis(Long usuarisPermis) {
-		this.usuarisPermis = usuarisPermis;
-	}
-
-	public Long getUsuarisRol() {
-		return usuarisRol;
-	}
-
-	public void setUsuarisRol(Long usuarisRol) {
-		this.usuarisRol = usuarisRol;
-	}	
 }

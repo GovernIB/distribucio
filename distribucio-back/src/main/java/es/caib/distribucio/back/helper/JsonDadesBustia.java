@@ -6,7 +6,11 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class JsonDadesBustia implements Comparable<JsonDadesBustia>{
 
@@ -20,9 +24,12 @@ public class JsonDadesBustia implements Comparable<JsonDadesBustia>{
 	private Long usuaris;
 	private Long usuarisPermis;
 	private Long usuarisRol;
-	
+	private Long noves;
+	private Long errors;
+	private Long pendents;
+
 	public JsonDadesBustia(Date fecha, String uoCodi, String uo, Long bustiaId, String nom, Long usuaris,
-			Long usuarisPermis, Long usuarisRol) {
+			Long usuarisPermis, Long usuarisRol, Long noves, Long errors, Long pendents) {
 		super();
 		this.fecha = fecha;
 		this.uoCodi = uoCodi;
@@ -32,75 +39,14 @@ public class JsonDadesBustia implements Comparable<JsonDadesBustia>{
 		this.usuaris = usuaris;
 		this.usuarisPermis = usuarisPermis;
 		this.usuarisRol = usuarisRol;
+		this.noves = noves;
+		this.errors = errors;
+		this.pendents = pendents;
 	}
 
 	@Override
 	public int compareTo(JsonDadesBustia o) {
 		return this.fecha.compareTo(o.getFecha());
-	}
-    
-	public Date getFecha() {
-		return fecha;
-	}
-
-	public void setFecha(Date fecha) {
-		this.fecha = fecha;
-	}
-
-	public String getUoCodi() {
-		return uoCodi;
-	}
-
-	public void setUoCodi(String uoCodi) {
-		this.uoCodi = uoCodi;
-	}
-
-	public String getUo() {
-		return uo;
-	}
-
-	public void setUo(String uo) {
-		this.uo = uo;
-	}
-
-	public Long getBustiaId() {
-		return bustiaId;
-	}
-
-	public void setBustiaId(Long bustiaId) {
-		this.bustiaId = bustiaId;
-	}
-
-	public String getNom() {
-		return nom;
-	}
-
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	public Long getUsuaris() {
-		return usuaris;
-	}
-
-	public void setUsuaris(Long usuaris) {
-		this.usuaris = usuaris;
-	}
-
-	public Long getUsuarisPermis() {
-		return usuarisPermis;
-	}
-
-	public void setUsuarisPermis(Long usuarisPermis) {
-		this.usuarisPermis = usuarisPermis;
-	}
-
-	public Long getUsuarisRol() {
-		return usuarisRol;
-	}
-
-	public void setUsuarisRol(Long usuarisRol) {
-		this.usuarisRol = usuarisRol;
 	}
 
 	public int getMes() {
