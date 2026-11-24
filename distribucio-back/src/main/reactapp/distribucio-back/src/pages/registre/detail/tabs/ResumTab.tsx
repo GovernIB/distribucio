@@ -1,5 +1,5 @@
 import { useBaseAppContext } from 'reactlib';
-import { Box, Grid, Icon, IconButton, Typography } from '@mui/material';
+import { Box, Button, Grid, Icon, Typography } from '@mui/material';
 import { DetailCard, DetailExpandCard, DetailField } from '../../../../components/CardData.tsx';
 import { ROLE_ADMIN, ROLE_ADMIN_LECTURA, useDistribucioContext } from '../../../../components/DistribucioContext.ts';
 import { useActions } from '../RegistreActions.tsx';
@@ -30,13 +30,15 @@ export const Resum = ({ entity }: any) => {
                             <Typography variant="inherit" color="text.primary">
                                 {v}
                             </Typography>
-                            <IconButton
-                                title={t('page.registre.accio.justificant.label')}
+                            <Button
+                                variant="outlined"
+                                size={"small"}
+                                // title={t('page.registre.accio.justificant.label')}
                                 onClick={() => justificant(entity.id)}
-                                sx={{ m: 0, p: 0 }}
                             >
                                 <Icon fontSize={'small'}>{icons.descarrega}</Icon>
-                            </IconButton>
+                                {t('page.registre.accio.justificant.label')}
+                            </Button>
                         </Box>
                     )}
                 />
@@ -93,12 +95,14 @@ export const Resum = ({ entity }: any) => {
 
             <DetailExpandCard
                 title={t('component.RegistreDetail.tabs.interessats')}
+                expanded
             >
                 <InteressatsGrid id={entity.id} />
             </DetailExpandCard>
 
             <DetailExpandCard
                 title={t('component.RegistreDetail.tabs.annexos')}
+                expanded
             >
                 <AnnexGrid entity={entity} />
             </DetailExpandCard>

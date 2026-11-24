@@ -185,6 +185,7 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
         autoHeight = false,
         sx,
         columns,
+        onRowClick,
         ...others
     } = { ...defaultProps, ...props };
     // Memoritzat: la llibreria torna a processar les columnes cada vegada que canvia l'array.
@@ -410,6 +411,11 @@ const StyledMuiGrid = (props: StyledMuiGridProps) => {
                 toolbarHideQuickFilter={!toolbarShowQuickFilter ? true : undefined}
                 getRowClassName={getRowClassName}
                 toolbarElementsWithPositions={toolbarElements}
+                onRowClick={(params: any, event: any, details:any) => {
+                    // el checkbox de selecció i el menú d'accions no han d'obrir el detall
+                    if (event?.target?.closest?.('.MuiCheckbox-root, [data-field="actions"], [data-field="__check__"]')) return;
+                    onRowClick?.(params, event, details)
+                }}
                 // Defaults pel formulari popup: cada pantalla pot sobreescriure'ls parcialment,
                 // ja que el spread de `others` no inclou aquestes props (es gestionen aquí).
                 popupEditFormDialogComponentProps={{

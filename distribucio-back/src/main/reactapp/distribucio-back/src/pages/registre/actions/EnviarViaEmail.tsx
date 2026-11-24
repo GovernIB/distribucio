@@ -13,8 +13,8 @@ const EnviarViaEmailForm = () => {
     return <Grid container direction={"row"} columnSpacing={1} rowSpacing={1}>
         <RegistreSelector disabled />
 
-        {data.massive && data.vistaMoviments && <Grid size={12}>
-            <Alert severity={'warning'}>L'enviament via email es farà dels registres diferents a partir de la selecció de moviments</Alert>
+        {data.vistaMoviments && <Grid size={12}>
+            <Alert severity={'warning'}>{t('page.registre.accio.email.form.vistaMoviments')}</Alert>
         </Grid>}
 
         <GridFormField size={12} name="destinatari" type={'textarea'} componentProps={{ helperText: t('page.registre.accio.email.form.destinatari') }}/>

@@ -68,28 +68,28 @@ export const useMenuEntries = () => {
         {
             id: 'home',
             title: t('app.menu.home'),
-            to: 'home',
+            to: '/home',
             icon: icons.inici,
             pantalla: 'home',
         },
         {
             id: 'registre',
             title: t('app.menu.registre'),
-            to: 'registre',
+            to: '/registre',
             icon: icons.anotacio,
             pantalla: 'registre',
         },
         {
             id: 'vistaMoviments',
             title: t('app.menu.vistaMoviments'),
-            to: 'vistaMoviments',
+            to: '/vistaMoviments',
             icon: icons.vistaMoviments,
             pantalla: 'vistaMoviments',
         },
         {
             id: 'entitats',
             title: t('app.menu.entitats'),
-            to: 'entitat',
+            to: '/entitat',
             icon: icons.entitat,
             pantalla: 'entitat',
         },
@@ -101,128 +101,51 @@ export const useMenuEntries = () => {
                 {
                     id: 'bustia',
                     title: t('app.menu.bustia'),
-                    to: 'bustiaAdminOrganigrama',
+                    to: '/bustiaAdminOrganigrama',
                     icon: icons.bustia,
                     pantalla: 'bustiaAdminOrganigrama'
                 },
                 {
                     id: 'uo',
                     title: t('app.menu.unitatOrganitzativa'),
-                    to: 'unitatOrganitzativa',
+                    to: '/unitatOrganitzativa',
                     icon: icons.unitatOrganitzativa,
                     pantalla: 'unitatOrganitzativa'
                 },
                 {
                     id: 'regla',
                     title: t('app.menu.regla'),
-                    to: 'regla',
+                    to: '/regla',
                     icon: icons.regla,
                     pantalla: 'regla'
                 },
                 {
                     id: 'backoffice',
                     title: t('page.backoffice.title'),
-                    to: 'backoffice',
+                    to: '/backoffice',
                     icon: icons.backoffice,
                     pantalla: 'backoffice'
                 },
                 {
                     id: 'permis',
                     title: t('page.entitats.permis.title'),
-                    to: 'permis',
+                    to: '/permis',
                     icon: icons.permis,
                     pantalla: 'permis'
                 },
                 {
                     id: 'metaDada',
                     title: t('page.metadada.title'),
-                    to: 'metaDada',
+                    to: '/metaDada',
                     icon: icons.metaDada,
                     pantalla: 'metaDada',
                 },
                 {
                     id: 'domini',
                     title: t('page.domini.title'),
-                    to: 'domini',
+                    to: '/domini',
                     icon: icons.domini,
                     pantalla: 'domini',
-                },
-            ],
-        },
-        {
-            id: 'configurar',
-            title: t('app.menu.configurar'),
-            icon: icons.ajustos,
-            children: [
-                {
-                    id: 'config',
-                    title: t('app.menu.config'),
-                    to: 'config',
-                    icon: icons.config,
-                    pantalla: 'config'
-                },
-                {
-                    id: 'limitCanviEstat',
-                    title: t('app.menu.limitCanviEstat'),
-                    to: 'limitCanviEstat',
-                    icon: icons.limitCanviEstat,
-                    pantalla: 'limitCanviEstat'
-                },
-                {
-                    id: 'usuariCanviCodis',
-                    title: t('app.menu.usuariCanviCodis'),
-                    to: 'usuariCanviCodis',
-                    icon: icons.usuariCanviCodis,
-                    pantalla: 'usuariCanviCodis'
-                },
-            ],
-        },
-        {
-            id: 'avisos',
-            title: t('app.menu.avisos'),
-            to: 'avis',
-            icon: icons.avis,
-            pantalla: 'avis',
-        },
-        {
-            id: 'monitoritzar',
-            title: t('app.menu.monitoritzar'),
-            icon: icons.monitoritzacio,
-            children: [
-                {
-                    id: 'integracio',
-                    title: t('app.menu.integracio'),
-                    to: 'integracio',
-                    icon: icons.integracio,
-                    pantalla: 'integracio',
-                },
-                {
-                    id: 'excepcio',
-                    title: t('app.menu.excepcio'),
-                    to: 'excepcio',
-                    icon: icons.excepcio,
-                    pantalla: 'excepcio',
-                },
-                {
-                    id: 'metriques',
-                    title: t('app.menu.metriques'),
-                    to: 'metriques',
-                    icon: icons.metriques,
-                    pantalla: 'metriques',
-                },
-                {
-                    id: 'pendentsArxiu',
-                    title: t('app.menu.pendentsArxiu'),
-                    to: 'pendentsArxiu',
-                    icon: icons.pendentsArxiu,
-                    pantalla: 'pendentsArxiu',
-                },
-                {
-                    id: 'monitor',
-                    title: t('app.menu.monitor'),
-                    to: 'monitor',
-                    icon: icons.monitorSistema,
-                    pantalla: 'monitor',
                 },
             ],
         },
@@ -234,28 +157,28 @@ export const useMenuEntries = () => {
                 {
                     id: 'contingut',
                     title: t('app.menu.contingut'),
-                    to: 'contingut',
+                    to: '/contingut',
                     icon: icons.contingut,
                     pantalla: 'contingut',
                 },
                 {
                     id: 'annex',
                     title: t('app.menu.annex'),
-                    to: 'annexosAdmin',
+                    to: '/annexosAdmin',
                     icon: icons.annex,
                     pantalla: 'annex',
                 },
                 {
                     id: 'procediment',
                     title: t('app.menu.procediment'),
-                    to: 'procediment',
+                    to: '/procediment',
                     icon: icons.procediment,
                     pantalla: 'procediment',
                 },
                 {
                     id: 'serveis',
                     title: t('app.menu.serveis'),
-                    to: 'servei',
+                    to: '/servei',
                     icon: icons.servei,
                     pantalla: 'servei',
                 },
@@ -263,11 +186,88 @@ export const useMenuEntries = () => {
                 {
                     id: 'massiva',
                     title: t('app.menu.massiva'),
-                    to: 'massiva',
+                    to: '/massiva',
                     icon: icons.massiva,
                     pantalla: 'massiva',
                 },
             ],
+        },
+        {
+            id: 'monitoritzar',
+            title: t('app.menu.monitoritzar'),
+            icon: icons.monitoritzacio,
+            children: [
+                {
+                    id: 'integracio',
+                    title: t('app.menu.integracio'),
+                    to: '/integracio',
+                    icon: icons.integracio,
+                    pantalla: 'integracio',
+                },
+                {
+                    id: 'excepcio',
+                    title: t('app.menu.excepcio'),
+                    to: '/excepcio',
+                    icon: icons.excepcio,
+                    pantalla: 'excepcio',
+                },
+                {
+                    id: 'metriques',
+                    title: t('app.menu.metriques'),
+                    to: '/metriques',
+                    icon: icons.metriques,
+                    pantalla: 'metriques',
+                },
+                {
+                    id: 'pendentsArxiu',
+                    title: t('app.menu.pendentsArxiu'),
+                    to: '/pendentsArxiu',
+                    icon: icons.pendentsArxiu,
+                    pantalla: 'pendentsArxiu',
+                },
+                {
+                    id: 'monitor',
+                    title: t('app.menu.monitor'),
+                    to: '/monitor',
+                    icon: icons.monitorSistema,
+                    pantalla: 'monitor',
+                },
+            ],
+        },
+        {
+            id: 'configurar',
+            title: t('app.menu.configurar'),
+            icon: icons.ajustos,
+            children: [
+                {
+                    id: 'config',
+                    title: t('app.menu.config'),
+                    to: '/config',
+                    icon: icons.config,
+                    pantalla: 'config'
+                },
+                {
+                    id: 'limitCanviEstat',
+                    title: t('app.menu.limitCanviEstat'),
+                    to: '/limitCanviEstat',
+                    icon: icons.limitCanviEstat,
+                    pantalla: 'limitCanviEstat'
+                },
+                {
+                    id: 'usuariCanviCodis',
+                    title: t('app.menu.usuariCanviCodis'),
+                    to: '/usuariCanviCodis',
+                    icon: icons.usuariCanviCodis,
+                    pantalla: 'usuariCanviCodis'
+                },
+            ],
+        },
+        {
+            id: 'avisos',
+            title: t('app.menu.avisos'),
+            to: '/avis',
+            icon: icons.avis,
+            pantalla: 'avis',
         },
     ];
     return filtrarEntradesMenu(menuEntries, currentRole);
@@ -277,8 +277,13 @@ export const useMenuEntries = () => {
 // menú lateral obert, APPBAR_PADDING_LEFT desplaça el botó de menú fins a la columna de les icones
 // del menú, i LOGO_BOX_LEFT és on comença la caixa del logo amb aquest padding.
 
+const getImgFromBytes = (img: string): string | undefined => {
+    return img ? `data:image/png;base64,${img}` : undefined;
+};
+
 const InnerApp: React.FC = () => {
     const theme = useTheme();
+    const {currentEntitat} = useDistribucioContext()
     const mode = theme.palette.mode;
 
     // La pantalla de cada entrada determina a quins rols es mostra (veure PANTALLA_ROLS a
@@ -286,15 +291,16 @@ const InnerApp: React.FC = () => {
     // Icones a util/icons.ts: la mateixa icona que fa servir el títol de cada pantalla (ScreenFrame).
     const menuEntries = useMenuEntries()
 
-    const bgColor = mode === 'light' ? theme.palette.background.paper : undefined;
-    const textColor = bgColor ? theme.palette.getContrastText(bgColor) : undefined;
+    const bgColor = mode === 'light' ? (currentEntitat?.colorFons || theme.palette.background.paper) : (currentEntitat?.colorFonsDark || undefined);
+    const textColor = mode === 'light' ? (currentEntitat?.colorLletra || theme.palette.getContrastText(bgColor)) : (currentEntitat?.colorLletraDark || undefined);
     const logoColor = mode === 'light' ? distribucioLogo : distribucioLogoBlanc;
+    const logoGovern = mode === 'light' ? (getImgFromBytes(currentEntitat?.logoImgBytes) || goibLogoLight) : (getImgFromBytes(currentEntitat?.logoImgBytesDark) || goibLogoDark)
     const { estilMenu } = useUserPreferences();
 
     return (
         <BaseApp
             code="DISTRIBUCIO"
-            logo={mode === 'light' ? goibLogoLight : goibLogoDark}
+            logo={logoGovern}
             logoStyle={{
                 // El logo del Govern és més ample que la caixa: s'hi ajusta sense deformar-se.
                 '& img': { height: LOGO_HEIGHT + 'px', maxWidth: '100%', objectFit: 'contain', display: 'block' },

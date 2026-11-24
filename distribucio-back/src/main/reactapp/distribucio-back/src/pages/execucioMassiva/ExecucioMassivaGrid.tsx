@@ -10,6 +10,7 @@ import {useEMContent} from "./ExecucioMassivaContingutGrid.tsx";
 import ExecucioMassivaFilter from "./ExecucioMassivaFiltre.tsx";
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import {useExecucioMassivaActions} from "./detail/ExecucioMassivaActions.tsx";
+import {Theme} from "@mui/material/styles";
 
 const useToogleInterval = (time:number, fn: () => void) => {
     const [isRunning, setIsRunning] = useState(false);
@@ -113,7 +114,10 @@ const EMGrid = ({ autoHeight = true }: { autoHeight?: boolean }) => {
                 disableColumnSorting
                 toolbarShowFilterCount
                 rowAdditionalActions={additionalActions}
-                // toolbarHideRefresh
+                toolbarHideRefresh
+                onRowClick={(params: any) => {
+                    handleOpen(params?.id);
+                }}
                 toolbarElementsWithPositions={[
                     {
                         position: 2,
@@ -128,17 +132,17 @@ const EMGrid = ({ autoHeight = true }: { autoHeight?: boolean }) => {
                             </ToolbarButton>
                         ),
                     },
-                    // {
-                    //     position: 2,
-                    //     element: (
-                    //         <ToolbarButton
-                    //             title={t('common.refresh')}
-                    //             icon={icons.refresca}
-                    //             onClick={refresh}
-                    //             sx={{ color: (theme: Theme) => theme.palette.primary.contrastText }}
-                    //         />
-                    //     ),
-                    // },
+                    {
+                        position: 2,
+                        element: (
+                            <ToolbarButton
+                                title={t('common.refresh')}
+                                icon={icons.refresca}
+                                onClick={refresh}
+                                sx={{ color: (theme: Theme) => theme.palette.primary.contrastText }}
+                            />
+                        ),
+                    },
                 ]}
                 paginationActive
                 autoHeight={autoHeight}

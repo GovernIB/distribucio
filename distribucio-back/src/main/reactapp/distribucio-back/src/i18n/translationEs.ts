@@ -1140,6 +1140,7 @@ const translationEs = {
                     titleMassive: "Enviar por correo electrónico {{num}} anotaciones",
                     ok: "L'anotació \"{{numero}}\" s'ha enviat correctament",
                     form: {
+                        vistaMoviments: "El envío por correo electrónico se realizará de los registros diferentes a partir de la selección de movimientos",
                         destinatari: "Introduïu els destinataris separats per coma o espai",
                     }
                 },

@@ -299,9 +299,7 @@ export const RegistreGrid = () => {
                         // filterCount={(num) => num + (namedQueries.length || 0)}
                         // toolbarShowFilterCount
 
-                        onRowClick={(params: any, event: any) => {
-                            // el checkbox de selecció i el menú d'accions no han d'obrir el detall
-                            if (event?.target?.closest?.('.MuiCheckbox-root, [data-field="actions"], [data-field="__check__"]')) return;
+                        onRowClick={(params: any) => {
                             handleDetail(params?.row?.id, params?.row);
                         }}
                         rowAdditionalActions={additionalActions}

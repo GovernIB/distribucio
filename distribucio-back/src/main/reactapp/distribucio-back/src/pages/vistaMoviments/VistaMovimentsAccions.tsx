@@ -2,37 +2,21 @@ import { useTranslation } from 'react-i18next';
 import {useBaseAppContext, useResourceApiService} from 'reactlib';
 import useContingutHistorialDialog from '../contingut/actions/ContingutHistorialDialog.tsx';
 import { useAlertes } from '../registre/detail/Alertes.tsx';
-import {useRegistreDetail} from '../registre/detail/useRegistreDetail.tsx';
 import useEnviarViaEmail from "../registre/actions/EnviarViaEmail.tsx";
 import {useActions} from "../registre/detail/RegistreActions.tsx";
 import {Divider} from "@mui/material";
 import useReenviar from "../registre/actions/Reenviar.tsx";
 import {useExecucioMassivaGrid} from "../execucioMassiva/ExecucioMassivaGrid.tsx";
-import * as builder from '../../util/springFilterUtils';
 import { icons } from '../../util/icons';
 
 /** Menú d'accions de la "Vista de moviments" */
-export const useVistaMovimentsAccions = (options: {
-    gridApiRef: any;
-    filter?: string;
-    namedQueries?: any[];
-    refresh?: () => void;
-}) => {
-    const { gridApiRef, filter, namedQueries, refresh } = options;
+export const useVistaMovimentsAccions = (refresh?: () => void) => {
     const { t } = useTranslation();
     const { temporalMessageShow } = useBaseAppContext();
 
     const { descarregarDoc } = useActions(refresh)
     const { show: handleHistoric, component: componentHistoric } = useContingutHistorialDialog();
-    const { handleOpen: handleDetail, dialog: dialogDetail } = useRegistreDetail({
-        gridApiRef,
-        filter,
-        namedQueries,
-        resourceName: 'vistaMovimentResource',
-        getDetailId: (row: any) => row?.idRegistre,
-        perspectives: ['VISTA_MOVIMENTS'],
-        onClose: refresh,
-    });
+
     const { handleOpen: handleAlertes, component: componentAlertes } = useAlertes(refresh);
     const { handleShow: handleEnviarEmail, content: contentEnviarEmail } = useEnviarViaEmail((result:any) => {
         refresh?.()
@@ -44,12 +28,6 @@ export const useVistaMovimentsAccions = (options: {
     })
 
     const actions: any[] = [
-        {
-            label: t('page.contingut.accio.detalls.label'),
-            icon: icons.detall,
-            showInMenu: true,
-            onClick: (id: any, row: any) => handleDetail(id, row),
-        },
         {
             label: t('page.contingut.accio.historial.label'),
             icon: icons.llista,
@@ -98,7 +76,6 @@ export const useVistaMovimentsAccions = (options: {
 
     const components = (
         <>
-            {dialogDetail}
             {componentHistoric}
             {componentAlertes}
             {contentEnviarEmail}
@@ -119,14 +96,13 @@ export const useVistaMovimentsMassiveAccions = (refresh?: () => void) => {
     const {
         isReady: apiIsReady,
         find: apiFindAll,
-    } = useResourceApiService('vistaMovimentResource');
+    } = useResourceApiService('registreResource');
 
     const toRegistreId = (ids:any[]) => new Promise<any[]>((resolve, reject) => {
         if (!apiIsReady) reject()
-        apiFindAll({ filter: builder.inside("id", ids.map(id => `'${id}'`)), unpaged: true })
+        apiFindAll({ namedQueries: [`VISTA#${ids.join(';')}`], unpaged: true })
             .then((response) => {
-                const idsUnicos = [...new Set(response.rows.map(mov => mov.idRegistre))];
-                resolve(idsUnicos)
+                resolve(response.rows?.map(r => r.id))
             })
             .catch(reject)
     })

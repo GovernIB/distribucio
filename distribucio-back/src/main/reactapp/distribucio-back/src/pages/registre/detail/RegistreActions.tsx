@@ -254,8 +254,8 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
             icon: icons.correu,
             action: 'ENVIAR_EMAIL',
             showInMenu: true,
-            disabled: (row:any) => row.pendentExecucioMassiva,
             onClick: (id:any) => handleEnviarEmail([id], false),
+            disabled: (row:any) => row.pendentExecucioMassiva || (row.procesEstat == 'ARXIU_PENDENT' && !row.reintentsEsgotat),
         },
         {
             label: t('page.registre.accio.reenviar.label'),
@@ -297,7 +297,8 @@ export const useRegistreActions = (refresh?: (code?:string) => void) => {
             action: 'MARCAR_SOBREESCRIURE',
             showInMenu: true,
             onClick: marcarSobreescriure,
-            hidden: (row:any) => row.sobreescriure || !row.potModificar,
+            disabled: (row:any) => row.pendentExecucioMassiva,
+            hidden: (row:any) => row.sobreescriure || !(row.procesEstatSimple == 'PENDENT') || row.arxiuTancat || !row.potModificar,
         },
         {
             label: t('page.registre.accio.descargaOriginal.label'),

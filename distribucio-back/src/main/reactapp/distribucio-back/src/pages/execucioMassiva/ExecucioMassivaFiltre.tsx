@@ -2,7 +2,7 @@ import React from 'react';
 import StyledMuiFilter from '../../components/StyledMuiFilter';
 import GridFormField from '../../components/GridFormField';
 import * as builder from '../../util/springFilterUtils';
-import {ROLE_USER, useDistribucioContext} from "../../components/DistribucioContext.ts";
+import {ROLE_ADMIN, useDistribucioContext} from "../../components/DistribucioContext.ts";
 import {useFormContext} from "reactlib";
 
 const ExecucioMassivaFilterForm: React.FC = () => {
@@ -24,7 +24,7 @@ const springFilterBuilder = (data: any) => {
 
 export const ExecucioMassivaFilter: React.FC<any> = (props) => {
     const { currentUser, currentRole } = useDistribucioContext();
-    const isUser = currentRole == ROLE_USER
+    const isUser = currentRole != ROLE_ADMIN
     return (
         <StyledMuiFilter
             resourceName="execucioMassivaResource"

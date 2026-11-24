@@ -5,7 +5,7 @@ import BustiaPathCell from '../../components/BustiaPathCell';
 import { icons } from '../../util/icons';
 import StyledMuiGrid from '../../components/StyledMuiGrid.tsx';
 import { VistaMovimentsFilter } from './VistaMovimentsFilter.tsx';
-import React from 'react';
+import React, {useMemo} from 'react';
 import { Box, Icon, IconButton, Tooltip, Typography } from '@mui/material';
 import { RegistreEstat } from '../../components/RegistreEstat.tsx';
 import { useCommentsColumn } from '../../components/CommentsColumn.tsx';
@@ -13,6 +13,7 @@ import { useProcesEstatLegend } from '../../components/ProcesEstatLegend.tsx';
 import { useVistaMovimentsAccions, useVistaMovimentsMassiveAccions } from './VistaMovimentsAccions.tsx';
 import {GridSortDirection, useGridApiRef} from '@mui/x-data-grid-pro';
 import { EMPTY_SELECTION_MODEL } from '../../util/selectionModelUtils.ts';
+import {useRegistreDetail} from "../registre/detail/useRegistreDetail.tsx";
 
 /** Número: icona de llibre (anotació de registre) + número, amb el triangle d'avís si l'anotació té alertes */
 const VistaMovimentsNumeroCell = ({ row }: any) => {
@@ -167,12 +168,32 @@ export const VistaMovimentsGrid = () => {
     const [springFilter, setSpringFilter] = React.useState<string>();
     const [namedQueries, setNamedQueries] = React.useState<string[]>([]);
 
-    const { actions, components } = useVistaMovimentsAccions({
+    const refresh = () => {
+        apiRef.current?.refresh()
+    }
+
+    const { handleOpen: handleDetail, dialog: dialogDetail } = useRegistreDetail({
         gridApiRef: datagridApiRef,
         filter: springFilter,
         namedQueries,
-        refresh: () => apiRef.current?.refresh(),
+        resourceName: 'vistaMovimentResource',
+        getDetailId: (row: any) => row?.idRegistre,
+        perspectives: ['VISTA_MOVIMENTS'],
+        onClose: refresh,
     });
+
+    const { actions, components } = useVistaMovimentsAccions(refresh);
+
+    const additionalActions = useMemo(() => [
+        {
+            label: t('page.contingut.accio.detalls.label'),
+            icon: icons.detall,
+            showInMenu: true,
+            onClick: (id: any, row: any) => handleDetail(id, row),
+        },
+        ...actions
+    ], [actions])
+
     // Refresca la graella i neteja la selecció (després de qualsevol acció massiva)
     const refreshAfterMassiveAction = () => {
         apiRef.current?.refresh();
@@ -228,7 +249,10 @@ export const VistaMovimentsGrid = () => {
                     toolbarShowFilterCount
                     namedQueries={namedQueries}
                     sortModel={sortModel}
-                    rowAdditionalActions={actions}
+                    onRowClick={(params: any) => {
+                        handleDetail(params?.row?.id, params?.row);
+                    }}
+                    rowAdditionalActions={additionalActions}
                     toolbarMassiveActions={massiveActions}
                     selectionActive
                     paginationActive
@@ -236,6 +260,7 @@ export const VistaMovimentsGrid = () => {
                     rowHideUpdateButton
                     rowHideDeleteButton
                 />
+                {dialogDetail}
                 {components}
                 {massiveComponents}
                 {llegendaComponent}

@@ -1140,6 +1140,7 @@ const translationCa = {
                     titleMassive: "Enviar via email {{num}} anotacions",
                     ok: "La anotación \"{{numero}}\" se ha enviado correctamente",
                     form: {
+                        vistaMoviments: "L'enviament via email es farà dels registres diferents a partir de la selecció de moviments",
                         destinatari: "Introduïu els destinataris separats per coma o per espai",
                     }
                 },

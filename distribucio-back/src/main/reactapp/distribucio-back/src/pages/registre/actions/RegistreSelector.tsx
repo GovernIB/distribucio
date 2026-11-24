@@ -48,7 +48,9 @@ export const RegistreSelector = ({ expanded = false, disabled = false }: any) =>
                     resourceName="registreResource"
                     title={t('component.RegistreSelector.title')}
                     columns={columns}
-                    filter={builder.inside('id', data.tempIds)}
+                    filter={data.tempIds?.length > 0
+                        ?builder.inside('id', data.tempIds)
+                        :builder.eq('id', 0)}
                     rowSelectionModel={toSelectionModel(data.ids)}
                     onRowSelectionModelChange={setIds}
                     toolbarHide

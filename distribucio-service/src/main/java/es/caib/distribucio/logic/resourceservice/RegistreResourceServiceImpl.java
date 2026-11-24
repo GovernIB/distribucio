@@ -77,6 +77,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     private final DominiResourceRepository dominiResourceRepository;
     private final DominiService dominiService;
     private final ContingutLogResourceRepository contingutLogResourceRepository;
+    private final VistaMovimentResourceRepository vistaMovimentResourceRepository;
 
     @PostConstruct
     public void init() {
@@ -333,6 +334,29 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                         break;
                 }
             }
+            /// VISTA
+            if (mapaNamedQueries.containsKey("VISTA")) {
+                List<String> movimentsIds = List.of(mapaNamedQueries.get("VISTA").split(";"));
+
+                List<VistaMovimentResourceEntity> moviments = vistaMovimentResourceRepository.findAllById(movimentsIds);
+
+                Set<Serializable> ids = moviments.stream()
+                        .map(VistaMovimentResourceEntity::getIdRegistre)
+                        .collect(Collectors.toSet());
+
+                if (ids.isEmpty()) {
+                    return cb.disjunction();
+                }
+
+                int chunkSize = 900;
+                List<Predicate> orPredicates = new ArrayList<>();
+                for (int i = 0; i < ids.size(); i += chunkSize) {
+                    List<Serializable> chunk = new ArrayList<>(ids).subList(i, Math.min(i + chunkSize, ids.size()));
+                    orPredicates.add(root.get("id").in(chunk));
+                }
+
+                predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
+            }
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
@@ -437,13 +461,6 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         }
 
         if (resource.getPotModificar() == null) {
-//            resource.setPotModificar( aclResourceHelper.anyPermissionGranted(
-//                    ResourceType.BUSTIA,
-//                    resource.getPare().getId(),
-//                    List.of(PermissionEnum.WRITE),
-//                    authenticationHelper.getCurrentUserName(),
-//                    new ArrayList<>(List.of(authenticationHelper.getCurrentUserRoles()))
-//            ));
             this.afterConversion(List.of(entity), List.of(resource));
         }
 
@@ -488,11 +505,18 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 resource.setReintentsEsgotat(true);
             }
 
-            if (resource.getAgafatPer() != null) {
-                resource.setPotModificar(isAdmin ||
-                        Objects.equals(resource.getAgafatPer().getId(), authenticationHelper.getCurrentUserName()) );
-            } else {
-                resource.setPotModificar( isAdmin || ( resource.getPare() != null && permesesIds.contains(new BigDecimal(resource.getPare().getId()))) );
+            resource.setPotModificar(isAdmin);
+            if (isAdmin) {
+                continue;
+            }
+            
+            if ( resource.getPare() != null && permesesIds.contains(new BigDecimal(resource.getPare().getId())) ) {
+                if (resource.getAgafatPer() != null) {
+                    resource.setPotModificar(
+                            Objects.equals(resource.getAgafatPer().getId(), authenticationHelper.getCurrentUserName()) );
+                } else {
+                    resource.setPotModificar(true);
+                }
             }
         }
 
