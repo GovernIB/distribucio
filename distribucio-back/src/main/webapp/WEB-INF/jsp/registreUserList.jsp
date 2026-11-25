@@ -773,7 +773,37 @@ function syncFields(fromSelector, toSelector) {
             </div>
         </div>
         <div class="row">
-            <div class="col-md-2"></div>
+        	<c:choose>
+            <c:when test="${isPermesAssignarAnotacions}">
+				<div class="col-md-2">
+					<div class="row">
+					<div class="col-md-9">
+						<dis:inputSelect 
+							name="usuariAssignatCodi" 
+							optionItems="${replacedByJquery}" 
+							optionValueAttribute="codi" 
+							optionTextAttribute="nom" 
+							emptyOption="true" 
+							placeholderKey="bustia.list.filtre.usuari.assignat" 
+							inline="true"
+							optionMinimumResultsForSearch="0" />
+						</div>
+						<div class="col-md-3" style="padding-left: 0;">
+							<button id="mostrarSenseAssignarBtn" title="<spring:message code="bustia.list.filtre.sense.assignar"/>" class="btn btn-default btn-sm<c:if test="${registreFiltreCommand.mostrarSenseAssignar}"> active</c:if>" data-toggle="button">
+								<span class="fa-stack" aria-hidden="true">
+									<i class="fa fa-user fa-stack-1x"></i>
+			    	    			<i class="fa fa-ban fa-stack-2x"></i>
+			   					</span>
+							</button>
+							<dis:inputHidden name="mostrarSenseAssignar"/>
+						</div>
+					</div>
+				</div>
+			</c:when>
+			<c:otherwise>
+            	<div class="col-md-2"></div>
+			</c:otherwise>
+			</c:choose>
             <div class="col-md-2">
                 <dis:inputSelect
                         name="nombreAnnexes"
@@ -1070,8 +1100,8 @@ function syncFields(fromSelector, toSelector) {
 					<spring:message code="bustia.pendent.columna.interessats"/>
 				</th>	
 				<th data-col-name="agafatPer.nom" data-visible="${isPermesAssignarAnotacions}">
-+					<spring:message code="bustia.pendent.columna.agafat"/>
-+				</th>
+					<spring:message code="bustia.pendent.columna.agafat"/>
+				</th>
                 <th data-col-name="backCodi" data-orderable="true">
                     <spring:message code="contingut.admin.columna.backoffice"/>
                 </th>
