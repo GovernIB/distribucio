@@ -11,6 +11,7 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreEntr
 import es.caib.distribucio.logic.intf.service.ws.backoffice.AnotacioRegistreId;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeIntegracioWsService;
 import es.caib.distribucio.logic.intf.service.ws.backoffice.Estat;
+import es.caib.distribucio.logic.intf.util.ExceptionUtilsDistribucio;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -188,12 +189,14 @@ public class BackofficeRestV1Controller {
 					estat,
 					infoCanviEstat.getObservacions());
 			return new ResponseEntity<>(HttpStatus.OK);
-		} catch(ReversioRebuigNoPermesaException ex) {
-            String errMsg = "Error al canviar estat d'un registre d'entrada rebutjat";
-            return new ResponseEntity<Object>(errMsg, HttpStatus.CONFLICT);
         } catch(Exception e) {
-			String errMsg = "Error no controlat canviant l'estat a l'anotació amb informació d'entrada infoCanviEstat =  " + infoCanviEstat + ": " + e.getMessage();
-			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
+        	if (ExceptionUtilsDistribucio.isCausedBy(e, ReversioRebuigNoPermesaException.class)) {
+                String errMsg = "Error al canviar estat d'un registre d'entrada rebutjat";
+                return new ResponseEntity<Object>(errMsg, HttpStatus.CONFLICT);
+        	} else {
+    			String errMsg = "Error no controlat canviant l'estat a l'anotació amb informació d'entrada infoCanviEstat =  " + infoCanviEstat + ": " + e.getMessage();
+    			return new ResponseEntity<Object>(errMsg, HttpStatus.INTERNAL_SERVER_ERROR);
+        	}
 		}
 	}
 	

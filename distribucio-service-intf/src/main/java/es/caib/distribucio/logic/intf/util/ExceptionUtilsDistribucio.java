@@ -1,4 +1,4 @@
-package es.caib.distribucio.logic.utils;
+package es.caib.distribucio.logic.intf.util;
 
 import java.util.Arrays;
 import java.util.List;

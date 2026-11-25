@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.ejb.access.LocalStatelessSessionProxyFactoryBean;
 
 import es.caib.distribucio.logic.intf.config.BaseConfig;
+import es.caib.distribucio.logic.intf.resourceservice.SiaResourceService;
 import es.caib.distribucio.logic.intf.service.AnnexosService;
 import es.caib.distribucio.logic.intf.service.BackofficeService;
 import es.caib.distribucio.logic.intf.service.ConfigService;
@@ -120,6 +121,12 @@ public class EjbClientConfig {
     @ConditionalOnWarDeployment
 	public LocalStatelessSessionProxyFactoryBean logService() {
 		return getLocalEjbFactoyBean(LogService.class);
+	}
+	
+	@Bean
+	@ConditionalOnWarDeployment
+	public LocalStatelessSessionProxyFactoryBean siaResourceService() {
+		return getLocalEjbFactoyBean(SiaResourceService.class);
 	}
 
 	private LocalStatelessSessionProxyFactoryBean getLocalEjbFactoyBean(Class<?> serviceClass) {
