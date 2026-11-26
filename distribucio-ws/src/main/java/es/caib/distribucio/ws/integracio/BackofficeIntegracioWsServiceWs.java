@@ -36,6 +36,7 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.Estat;
 		urlPattern = "/backofficeIntegracio",
 		secureWSDLAccess = false)
 @RolesAllowed(BaseConfig.ROLE_BACKOFFICE_WS)
+@Deprecated
 public class BackofficeIntegracioWsServiceWs implements BackofficeIntegracioWsServiceI {
 
 	@EJB(name="BackofficeIntegracioWsServiceEjb")

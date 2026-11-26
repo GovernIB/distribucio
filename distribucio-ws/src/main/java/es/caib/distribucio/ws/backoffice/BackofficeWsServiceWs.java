@@ -31,6 +31,7 @@ import es.caib.distribucio.logic.intf.service.ws.backoffice.BackofficeWsService;
 		contextRoot = "/distribucio/ws",
 		urlPattern = "/backoffice",
 		secureWSDLAccess = false)
+@Deprecated
 public class BackofficeWsServiceWs implements BackofficeWsService {
 
 	@EJB(name="BackofficeWsServiceEjb")

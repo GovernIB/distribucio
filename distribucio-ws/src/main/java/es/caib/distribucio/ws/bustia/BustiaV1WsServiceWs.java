@@ -34,6 +34,7 @@ import es.caib.distribucio.logic.intf.service.ws.bustia.BustiaV1WsService;
 		contextRoot = "/distribucio/ws",
 		urlPattern = "/v1/bustia",
 		secureWSDLAccess = false)
+@Deprecated
 public class BustiaV1WsServiceWs implements BustiaV1WsServiceI {
 
 	@EJB(name="BustiaV1WsServiceEjb")
