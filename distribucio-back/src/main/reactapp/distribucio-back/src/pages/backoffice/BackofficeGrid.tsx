@@ -12,7 +12,7 @@ import {Grid, Icon, Typography} from "@mui/material";
 import {SectionDivider} from "../entitat/EntitatFormContent.tsx";
 import CircularProgress from "@mui/material/CircularProgress";
 
-const BackofficeForm = ({ prova }:any) => {
+const BackofficeForm = ({ isAdmin, prova }:any) => {
     const { t } = useTranslation();
     const { data, modified } = useFormContext();
     const [testing, setTesting] = useState<boolean>()
@@ -27,7 +27,7 @@ const BackofficeForm = ({ prova }:any) => {
         <GridFormField size={12} name="enviamentEmail" />
         <GridFormField size={12} name="emailResponsable" />
 
-        {data.id && <>
+        {isAdmin && data.id && <>
             <SectionDivider>{t('page.backoffice.accio.prova.title')}</SectionDivider>
             <GridButton
                 size={2}
@@ -94,7 +94,7 @@ export const BackofficeGrid = () => {
                     toolbarCreateTitle={t('page.backoffice.accio.new.label')}
                     popupEditFormDialogResourceTitle={t('page.backoffice.form.resourceTitle')}
                     popupEditActive
-                    popupEditFormContent={<BackofficeForm prova={massiveProva}/>}
+                    popupEditFormContent={<BackofficeForm isAdmin={isAdmin} prova={massiveProva}/>}
                     formAdditionalData={{
                         entitat: { id: currentEntitatId }
                     }}
