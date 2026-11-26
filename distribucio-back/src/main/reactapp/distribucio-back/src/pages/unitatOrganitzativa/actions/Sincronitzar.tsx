@@ -137,11 +137,16 @@ export const useSincronitzar = () => {
     }
 
     const sync = (value:boolean) => {
+        setInfo(undefined);
         apiAction(undefined, {code: "SYNCHRONIZE", data: value})
-            .then(() => temporalMessageShow(null, t('page.unitatOrganitzativa.accio.sincronitzar.ok'), 'success'))
+            .then(() => {
+                temporalMessageShow(null, t('page.unitatOrganitzativa.accio.sincronitzar.ok'), 'success')
+            })
             .catch((error) => {
-                handleClose()
                 temporalMessageShow(null, error?.message, 'error');
+            })
+            .finally(() => {
+                handleClose()
             });
     }
 
@@ -206,8 +211,8 @@ export const useSincronitzar = () => {
                         if (ref?.current)
                             descargarPDF(ref?.current);
                         break;
-                    case 'sinc': sync(false); handleClose(); break;
-                    case 'forzar': sync(true); handleClose(); break;
+                    case 'sinc': sync(false); break;
+                    case 'forzar': sync(true); break;
                     case 'close': handleClose(); break;
                 }
             }}

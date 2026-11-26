@@ -5,7 +5,7 @@ import { Grid, Typography, Divider } from "@mui/material";
 import {useTranslation} from "react-i18next";
 
 /** Capçalera de secció ("Clar"/"Oscur") */
-const SectionDivider: React.FC<any> = ({ children }) => (
+export const SectionDivider: React.FC<any> = ({ children }) => (
     <Grid size={12} sx={{ mt: 1 }}>
         <Typography variant="body1" color="text.secondary">{children}</Typography>
         <Divider ></Divider>

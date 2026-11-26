@@ -111,7 +111,7 @@ const Comments = (props: any) => {
                         <Grid container columnSpacing={1} rowSpacing={1}>
                             <Grid size={12} sx={{ display: 'flex' }}>
                                 <FormField name="text" />
-                                <Button onClick={handleButtonClick} startIcon={<Icon>{icons.envia}</Icon>} variant="contained">
+                                <Button onClick={handleButtonClick} startIcon={<Icon sx={{mr: 1}} >{icons.envia}</Icon>} variant="contained">
                                     {t('component.CommentDialog.envia')}
                                 </Button>
                             </Grid>

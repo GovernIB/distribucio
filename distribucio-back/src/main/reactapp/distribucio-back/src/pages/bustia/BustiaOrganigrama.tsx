@@ -1,6 +1,13 @@
 import Load from "../../components/Load.tsx";
 import React, {useEffect, useMemo, useState} from "react";
-import {FormApi, GridPage, useBaseAppContext, useMuiFormDialogApiRef, useResourceApiService} from "reactlib";
+import {
+    FormApi,
+    GridPage,
+    useBaseAppContext,
+    useConfirmDialogButtons,
+    useMuiFormDialogApiRef,
+    useResourceApiService
+} from "reactlib";
 import {useTranslation} from "react-i18next";
 import {ROLE_ADMIN, useDistribucioContext} from "../../components/DistribucioContext.ts";
 import {TreeView} from "../../components/TreeView.tsx";
@@ -156,7 +163,12 @@ export const BustiaOrganigrama = () => {
     const {
         delete: apiDelete
     } = useResourceApiService('bustiaResource');
-    const {temporalMessageShow, t: tLib} = useBaseAppContext();
+    const {temporalMessageShow, messageDialogShow, t: tLib} = useBaseAppContext();
+    const confirmDialogButtons = useConfirmDialogButtons();
+    const confirmDialogComponentProps = {
+        maxWidth: 'sm',
+        fullWidth: true,
+    };
 
     const {apiRef, busties, content, refresh} = useOrganigrama({
         filter: springFilter,
@@ -192,15 +204,24 @@ export const BustiaOrganigrama = () => {
             label: t('common.delete'),
             icon: icons.esborra,
             onClick: () => {
-                apiDelete(entity.id)
-                    .then(() => {
-                        setEntity(undefined)
-                        refresh()
-                        temporalMessageShow(null, tLib('form.delete.success'), 'success');
-                    })
-                    .catch((error: ResourceApiError) => {
-                        temporalMessageShow(tLib('form.delete.error'), error.message, 'error');
-                    });
+                messageDialogShow(
+                    tLib('actionreport.action.confirm.title'),
+                    tLib('form.delete.confirm'),
+                    confirmDialogButtons,
+                    confirmDialogComponentProps
+                ).then((value: any) => {
+                    if (value) {
+                        apiDelete(entity.id)
+                            .then(() => {
+                                setEntity(undefined)
+                                refresh()
+                                temporalMessageShow(null, tLib('form.delete.success'), 'success');
+                            })
+                            .catch((error: ResourceApiError) => {
+                                temporalMessageShow(tLib('form.delete.error'), error.message, 'error');
+                            });
+                    }
+                });
             },
         },
     ];

@@ -9,11 +9,16 @@ import Load from '../../../../components/Load.tsx';
 import AnnexDetailContent from '../../../annex/actions/AnnexDetailContent.tsx';
 import { useTranslation } from 'react-i18next';
 import useVisualitzar from '../../../annex/actions/AnnexVisualitzar.tsx';
-import { REPORT_DESCARREGAR_IMPRIMIBLE, useDescarregarAnnex } from '../../../annex/AnnexAccions.tsx';
+import {
+    REPORT_DESCARREGAR_FIRMA,
+    REPORT_DESCARREGAR_IMPRIMIBLE,
+    useDescarregarAnnex
+} from '../../../annex/AnnexAccions.tsx';
 import { icons } from '../../../../util/icons';
 import Alert from "@mui/material/Alert";
 import {ROLE_ADMIN, ROLE_USER, useDistribucioContext} from "../../../../components/DistribucioContext.ts";
 import {useActions} from "../RegistreActions.tsx";
+import IconButton from "@mui/material/IconButton";
 
 const annexPerspectives = ['FIRMES'];
 
@@ -227,7 +232,7 @@ export const AnnexGrid = ({ entity }: any) => {
                                             {detall.responsableNif}
                                         </DetailCardContent>
                                         <DetailCardContent size={3} title={t('page.annex.detall.firmes.column.data')}>
-                                            {formatDate(detall.data) || t('page.annex.firmes.data.nd')}
+                                            {formatDate(detall.data) || t('page.annex.detall.firmes.data.nd')}
                                         </DetailCardContent>
                                         {/*<DetailCardContent title={"Emisor"}>{detall.emissorCertificat}</DetailCardContent>*/}
                                         {firma.tipus != 'PADES' &&
@@ -250,6 +255,21 @@ export const AnnexGrid = ({ entity }: any) => {
                                         </DetailCardContent>
                                         {/*<DetailCardContent title={"Tipus firma"}>{firma.tipus}</DetailCardContent>*/}
                                         {/*<DetailCardContent title={"Perfil"}>{firma.perfil}</DetailCardContent>*/}
+
+                                        {!['PADES', 'CADES_ATT', 'XADES_ENV', 'XADES_DET'].includes(firma.tipus) &&
+                                            <Tooltip title={t('page.annex.detall.action.descarregarFirma')}>
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() =>
+                                                        descarregar(params.row?.id, REPORT_DESCARREGAR_FIRMA, {
+                                                            firmaIndex,
+                                                        })
+                                                    }
+                                                >
+                                                    <Icon fontSize="small">{icons.descarrega}</Icon>
+                                                </IconButton>
+                                            </Tooltip>
+                                        }
                                     </DetailExpandCard>
                                 ))
                             )}
@@ -257,6 +277,7 @@ export const AnnexGrid = ({ entity }: any) => {
                     );
                 }}
                 toolbarHide
+                autoHeight
                 readOnly
             />
             {component}

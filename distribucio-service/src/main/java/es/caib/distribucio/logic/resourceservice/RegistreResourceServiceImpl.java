@@ -293,7 +293,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 if ( isUser ) {
                     annexPredicates.add( cb.or(
                             cb.isNull(annex.get("sicresTipusDocument")),
-                            cb.notEqual(annex.get("sicresTipusDocument"), RegistreAnnexSicresTipusDocumentEnum.INTERN.getValor())
+                            cb.notEqual(annex.get("sicresTipusDocument"), RegistreAnnexSicresTipusDocumentEnum.INTERN)
                     ) );
                 }
 
@@ -563,13 +563,17 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
     protected class DetailInfoPerspectiveApplicator implements PerspectiveApplicator<RegistreResourceEntity, RegistreResource> {
         @Override
         public void applySingle(String code, RegistreResourceEntity entity, RegistreResource resource) {
+            boolean isUser = List.of(authenticationHelper.getCurrentUserRoles()).contains(BaseConfig.ROLE_USER);
             resource.setNumInteressats((int) entity.getInteressats().stream()
                     .filter(i -> i.getRepresentat() == null)
                     .count());
             resource.setNumAnnexos((int) entity.getAnnexos().stream()
-                    .filter(a ->
-                            entity.getJustificant() == null ||
-                            !Objects.equals(a.getId(), entity.getJustificant().getId()))
+                    .filter(annex ->
+                            // No es el justificante
+                            (entity.getJustificant() == null || !Objects.equals(annex.getId(), entity.getJustificant().getId()))
+                            // Y (no es usuario, o no es documento interno)
+                            && (!isUser || annex.getSicresTipusDocument() == null || !RegistreAnnexSicresTipusDocumentEnum.INTERN.equals(annex.getSicresTipusDocument()))
+                    )
                     .count());
             resource.setNumDada((int) dadaResourceRepository.countByRegistreId(entity.getId()));
             resource.setNumCopies((int) registreResourceRepository.countByNumero(entity.getNumero()));

@@ -408,7 +408,7 @@ const translationEs = {
                 detallsAnotacio: 'Detalles de la anotación',
                 concsv: 'Enlace a ConCSV',
                 descarregarOriginal: 'Descarga original',
-                descarregarImprimible: 'Descarga imprimible',
+                descarregarImprimible: 'Copia auténtica imprimible',
                 previsualitzar: 'Previsualizar',
                 guardarDefinitiu: {
                     label: 'Custodia',
@@ -970,7 +970,8 @@ const translationEs = {
                 },
                 moureAnotacions: {
                     title: "Mover las anotaciones de registro del buzón '{{nom}}'",
-                    label: "Mueve anotaciones"
+                    label: "Mueve anotaciones",
+                    ok: "Las anotaciones se han movido correctamente",
                 },
                 perDefecte: {
                     label: "Marca como principal",
@@ -1024,7 +1025,9 @@ const translationEs = {
                     label: "Nuevo backoffice",
                 },
                 prova: {
+                    title: "Prueba de comunicación",
                     label: "Prueba",
+                    helperText: "Notifica una lista de anotaciones vacía para probar la comunicación.",
                 }
             }
         },

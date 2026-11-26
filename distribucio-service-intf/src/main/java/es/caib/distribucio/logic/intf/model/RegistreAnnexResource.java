@@ -81,14 +81,7 @@ import java.util.Map;
 				@ResourceArtifact(
 						type = ResourceArtifactType.REPORT,
 						code = RegistreAnnexResource.REPORT_DESCARREGAR_IMPRIMIBLE_CODE,
-						requiresId = true,
-						accessConstraints = {
-								@ResourceAccessConstraint(
-										type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-										roles = {BaseConfig.ROLE_ADMIN},
-										grantedPermissions = {PermissionEnum.READ}
-								)
-							}),
+						requiresId = true),
 				@ResourceArtifact(
 						// Descàrrega del fitxer d'una firma individual.
 						type = ResourceArtifactType.REPORT,
@@ -103,8 +96,7 @@ import java.util.Map;
 						accessConstraints = {
 								@ResourceAccessConstraint(
 										type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-										roles = {BaseConfig.ROLE_ADMIN},
-										grantedPermissions = {PermissionEnum.READ, PermissionEnum.WRITE}
+										roles = {BaseConfig.ROLE_ADMIN}
 								)
 						}),
 				@ResourceArtifact(
@@ -115,8 +107,7 @@ import java.util.Map;
 						accessConstraints = {
 								@ResourceAccessConstraint(
 										type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
-										roles = {BaseConfig.ROLE_ADMIN},
-										grantedPermissions = {PermissionEnum.READ, PermissionEnum.WRITE}
+										roles = {BaseConfig.ROLE_ADMIN}
 								)
 						})
 		}

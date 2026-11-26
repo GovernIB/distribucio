@@ -20,10 +20,9 @@ export const InformacioRegistre = ({ entity }: any) => {
                 <DetailField name={'registreTipus'} inline />
                 <DetailField name={'nom'} inline hidden={!isAdmin} />
                 <DetailField name={isAdmin ? 'identificador' : 'numero'} inline />
-                <DetailField name={'data'} size={6} inline />
+                <DetailField name={'data'} inline />
                 <DetailField
                     name={'procesEstat'}
-                    size={3}
                     inline
                     formatterValue={(v: any) => (
                         <Box display={'flex'} alignItems={'center'}>
@@ -40,7 +39,7 @@ export const InformacioRegistre = ({ entity }: any) => {
                         </Box>
                     )}
                 />
-                <DetailField name={'presencial'} size={3} inline>
+                <DetailField name={'presencial'} inline>
                     {t(`common.boolean.${entity.presencial}`)}
                 </DetailField>
             </DetailCard>

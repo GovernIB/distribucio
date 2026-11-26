@@ -4,15 +4,18 @@ import { icons } from '../../util/icons';
 import {useTranslation} from "react-i18next";
 import StyledMuiGrid from "../../components/StyledMuiGrid.tsx";
 import BackofficeFilter from "./BackofficeFilter.tsx";
-import React from "react";
+import React, {useState} from "react";
 import {ROLE_ADMIN, useDistribucioContext} from "../../components/DistribucioContext.ts";
-import Grid from "@mui/material/Grid";
-import GridFormField from "../../components/GridFormField.tsx";
-import {useBackofficeActions, useBackofficeMassiveActions} from "./detail/BackofficeActions.tsx";
+import GridFormField, {GridButton} from "../../components/GridFormField.tsx";
+import {useActions, useBackofficeActions, useBackofficeMassiveActions} from "./detail/BackofficeActions.tsx";
+import {Grid, Icon, Typography} from "@mui/material";
+import {SectionDivider} from "../entitat/EntitatFormContent.tsx";
+import CircularProgress from "@mui/material/CircularProgress";
 
-const BackofficeForm = () => {
+const BackofficeForm = ({ prova }:any) => {
     const { t } = useTranslation();
-    const { data } = useFormContext();
+    const { data, modified } = useFormContext();
+    const [testing, setTesting] = useState<boolean>()
 
     return <Grid container direction={"row"} columnSpacing={1} rowSpacing={1}>
         <GridFormField size={12} name="codi" disabled={data?.id} componentProps={{ helperText: t('page.backoffice.form.codi') }} />
@@ -23,6 +26,31 @@ const BackofficeForm = () => {
         <GridFormField size={12} name="contrasenya" componentProps={{ helperText: t('page.backoffice.form.contrasenya') }} />
         <GridFormField size={12} name="enviamentEmail" />
         <GridFormField size={12} name="emailResponsable" />
+
+        {data.id && <>
+            <SectionDivider>{t('page.backoffice.accio.prova.title')}</SectionDivider>
+            <GridButton
+                size={2}
+                variant={'contained'}
+                onClick={() => {
+                    setTesting(true)
+                    prova?.([data.id])
+                        ?.finally(() => setTesting(false))
+                }}
+                disabled={testing || modified}
+            >
+                {testing
+                    ?<CircularProgress size={'20px'} sx={{ mr: 1 }}/>
+                    :<Icon sx={{ mr: 1 }}>settings</Icon>
+                }
+                {t('page.backoffice.accio.prova.label')}
+            </GridButton>
+            <Grid size={12}>
+                <Typography variant={'caption'} color="text.secondary">
+                    {t('page.backoffice.accio.prova.helperText')}
+                </Typography>
+            </Grid>
+        </>}
     </Grid>
 }
 
@@ -46,6 +74,7 @@ export const BackofficeGrid = () => {
         apiRef.current?.refresh()
     }
 
+    const { massiveProva } = useActions()
     const {actions, components} = useBackofficeActions(refresh);
     const {actions: massiveActions, components: massiveComponents} = useBackofficeMassiveActions(refresh);
 
@@ -65,7 +94,7 @@ export const BackofficeGrid = () => {
                     toolbarCreateTitle={t('page.backoffice.accio.new.label')}
                     popupEditFormDialogResourceTitle={t('page.backoffice.form.resourceTitle')}
                     popupEditActive
-                    popupEditFormContent={<BackofficeForm/>}
+                    popupEditFormContent={<BackofficeForm prova={massiveProva}/>}
                     formAdditionalData={{
                         entitat: { id: currentEntitatId }
                     }}

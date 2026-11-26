@@ -51,6 +51,7 @@ export const AclPermissionGrid = (
         resourceName={"aclEntryResource"}
         filter={"resourceType:'" + resourceType + "' and resourceId:" + resourceId}
         columns={columns}
+        toolbarHideRefresh
         popupEditActive
         popupEditCreateActive
         popupEditUpdateActive

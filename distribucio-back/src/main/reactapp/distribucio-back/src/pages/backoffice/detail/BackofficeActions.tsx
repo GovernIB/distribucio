@@ -4,7 +4,7 @@ import {useSnackbar} from "notistack";
 import {ROLE_ADMIN, useDistribucioContext} from "../../../components/DistribucioContext.ts";
 import { icons } from '../../../util/icons';
 
-const useActions = (refresh?: () => void) => {
+export const useActions = (refresh?: () => void) => {
     const {
         isReady: apiIsReady,
         artifactAction: apiAction,
@@ -18,15 +18,19 @@ const useActions = (refresh?: () => void) => {
 
     const massiveProva = (ids:any[]) => {
         if (apiIsReady) {
-            apiAction(undefined, {code: "PROVAR", data: { ids }})
-                .then((response) => {
-                    response?.forEach((r:any) => {
-                        enqueueSnackbar(r.message, { variant: r.severity })
-                    } )
-                })
-                .catch((error) => {
-                    temporalMessageShow(null, error?.message, 'error');
-                });
+            return new Promise((resolve, reject) => {
+                apiAction(undefined, {code: "PROVAR", data: { ids }})
+                    .then((response) => {
+                        response?.forEach((r:any) => {
+                            enqueueSnackbar(r.message, { variant: r.severity })
+                        } )
+                        resolve(response)
+                    })
+                    .catch((error) => {
+                        temporalMessageShow(null, error?.message, 'error');
+                        reject(error)
+                    });
+            })
         }
     }
 
@@ -56,6 +60,7 @@ const useActions = (refresh?: () => void) => {
     }
 
     return {
+        apiIsReady,
         massiveProva,
         massiveDelete
     }

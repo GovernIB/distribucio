@@ -51,7 +51,10 @@ export const InteressatDetail = () => {
             </DetailCard>
 
             {data?.representant && (
-                <DetailExpandCard title={t('component.RegistreDetail.titles.representant')} cardProps={{ mb: 1 }}>
+                <DetailExpandCard 
+                    title={t('component.RegistreDetail.titles.representant') + " - " + data?.representant.description}
+                    cardProps={{ mb: 1 }}
+                >
                     <MuiDetail
                         id={data?.representant?.id}
                         resourceName={'registreInteressatResource'}

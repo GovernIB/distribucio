@@ -48,6 +48,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.criteria.Predicate;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -89,10 +90,27 @@ public class RegistreAnnexResourceServiceImpl
 	@Override
 	protected Specification<RegistreAnnexResourceEntity> additionalSpecification(String[] namedQueries) {
 		Long entitatId = SessioActualUtil.getEntitatId();
-		if (entitatId != null) {
-			return (root, query, cb) -> cb.equal(root.get("registre").get("entitat").get("id"), entitatId);
-		}
-		return null;
+        boolean isUser = List.of(authenticationHelper.getCurrentUserRoles()).contains(BaseConfig.ROLE_USER);
+
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (entitatId != null) {
+                cb.equal(root.get("registre").get("entitat").get("id"), entitatId);
+            } else {
+                return cb.disjunction();
+            }
+
+            /// Usuaris no tenen accés a tots el s annexos
+            if ( isUser ) {
+                predicates.add( cb.or(
+                        cb.isNull(root.get("sicresTipusDocument")),
+                        cb.notEqual(root.get("sicresTipusDocument"), RegistreAnnexSicresTipusDocumentEnum.INTERN)
+                ) );
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
 	}
 
 	/**

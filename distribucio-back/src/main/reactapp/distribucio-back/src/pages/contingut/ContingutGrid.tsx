@@ -9,8 +9,6 @@ import BustiaPathCell from '../../components/BustiaPathCell';
 import { formatDate } from '../../util/dateUtils';
 import ContingutFilter from './ContingutFilter';
 import useContingutAccions from './ContingutAccions';
-import useContingutHistorialDialog from './actions/ContingutHistorialDialog';
-import useContingutDetailDialog from './actions/ContingutDetailDialog';
 import {GridSortDirection} from "@mui/x-data-grid-pro";
 
 const ContingutNomCell: React.FC<{ params: any }> = ({ params }) => {
@@ -94,9 +92,7 @@ export const ContingutGrid: React.FC = () => {
     const { t } = useTranslation();
     const apiRef = useMuiDataGridApiRef();
     const [springFilter, setSpringFilter] = React.useState<string>();
-    const { show: mostrarHistorial, component: historialDialog } = useContingutHistorialDialog();
-    const { show: mostrarDetall, component: detailDialog } = useContingutDetailDialog();
-    const accions = useContingutAccions(mostrarDetall, mostrarHistorial);
+    const {actions, components} = useContingutAccions();
 
     return (
         <GridPage>
@@ -112,11 +108,10 @@ export const ContingutGrid: React.FC = () => {
                     paginationActive
                     rowHideUpdateButton
                     rowHideDeleteButton
-                    rowAdditionalActions={accions}
+                    rowAdditionalActions={actions}
                     sortModel={[{ field: 'createdDate', sort: 'desc' }]}
                 />
-                {historialDialog}
-                {detailDialog}
+                {components}
             </ScreenFrame>
         </GridPage>
     );
