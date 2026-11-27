@@ -108,6 +108,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
         register(RegistreResource.ACTION_ALLIBERAR_CODE, new AlliberarActionExecutor());
         register(RegistreResource.ACTION_ASSIGNAR_CODE, new AssignarActionExecutor());
         register(RegistreResource.ACTION_PROCESSAR_ANNEXOS_CODE, new ProcessarAnnexosActionExecutor());
+        register(RegistreResource.ACTION_ANOTACIO_NUM_CODE, new AnotacioNumActionExecutor());
     }
 
     @Override
@@ -1611,6 +1612,34 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                 );
             }
             return null;
+        }
+
+        @Override
+        public void onChange(Serializable id, Serializable previous, String fieldName, Object fieldValue, Map<String, AnswerRequiredException.AnswerValue> answers, String[] previousFieldNames, Serializable target) {
+        }
+    }
+    protected class AnotacioNumActionExecutor implements ActionExecutor<RegistreResourceEntity, Serializable, String> {
+
+        @Override
+        public String exec(String code, RegistreResourceEntity entity, Serializable params) throws ActionExecutionException {
+
+            try {
+                long num = registreResourceRepository.count(
+                        toFindProcessedSpecification(
+                                null,
+                                "pendent:true",
+                                null
+                        )
+                );
+                return "{\"num\" : " + num + "}";
+            } catch (Exception e) {
+                throw new ActionExecutionException(
+                        getResourceClass(),
+                        null,
+                        code,
+                        e.getMessage()
+                );
+            }
         }
 
         @Override

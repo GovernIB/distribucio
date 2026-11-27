@@ -12,7 +12,7 @@ import { UserPreferencesProvider, useUserPreferences } from './components/UserPr
 import { TemaProvider } from './components/TemaProvider';
 import { DistribucioProvider } from './components/DistribucioProvider';
 import { DistribucioAuthProvider } from './components/DistribucioAuthProvider';
-import { useDistribucioContext } from './components/DistribucioContext';
+import {ROLE_USER, useDistribucioContext} from './components/DistribucioContext';
 import { filtrarEntradesMenu, type MenuEntryAmbPantalla } from './util/pantalles';
 import { icons } from './util/icons';
 import {
@@ -24,7 +24,7 @@ import {
     LOGO_SEPARATOR_GAP,
     MENU_WIDTH,
 } from './util/layout';
-import { SessionStorageProvider } from './components/SessionStorageContext';
+import {SessionStorageProvider, useSession} from './components/SessionStorageContext';
 import TitolPagina from './components/TitolPagina';
 import {SnackbarProvider} from "notistack";
 
@@ -64,6 +64,8 @@ const version = import.meta.env.VITE_APP_VERSION ?? '0.0.0';
 export const useMenuEntries = () => {
     const { t } = useTranslation();
     const { currentRole } = useDistribucioContext();
+    const isUser = currentRole == ROLE_USER
+    const { value: numAnotacions } = useSession("numAnotacions")
     const menuEntries: MenuEntryAmbPantalla[] = [
         {
             id: 'home',
@@ -78,6 +80,12 @@ export const useMenuEntries = () => {
             to: '/registre',
             icon: icons.anotacio,
             pantalla: 'registre',
+            badgeProps: {
+                color: 'primary',
+                badgeContent: numAnotacions,
+                max: 999,
+                hidden: !isUser || !numAnotacions,
+            }
         },
         {
             id: 'vistaMoviments',

@@ -9,7 +9,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { Box, Icon, Tooltip } from '@mui/material';
 import { useCommentsColumn } from '../../components/CommentsColumn.tsx';
 import { RegistreEstat } from '../../components/RegistreEstat.tsx';
-import { useRegistreActions, useRegistreMassiveActions } from './detail/RegistreActions.tsx';
+import {useActions, useRegistreActions, useRegistreMassiveActions} from './detail/RegistreActions.tsx';
 import {GridSortDirection, useGridApiRef} from '@mui/x-data-grid-pro';
 import { useRegistreDetail, useBasicDetail } from './detail/useRegistreDetail.tsx';
 import { useSearchParams } from 'react-router-dom';
@@ -17,6 +17,7 @@ import Load from '../../components/Load.tsx';
 import IconButton from '@mui/material/IconButton';
 import { useConfig } from '../../components/ConfigProvider.tsx';
 import useProcesEstatLegend from '../../components/ProcesEstatLegend.tsx';
+import {useSession} from "../../components/SessionStorageContext.tsx";
 
 const RegistreAvisos = ({ entity }: any) => {
     const { t } = useTranslation();
@@ -229,8 +230,18 @@ export const RegistreGrid = () => {
         commentsColumn,
     ];
 
+    const { apiIsReady, getAnotacionNum } = useActions()
+
+    const { value: numAnotacions } = useSession("numAnotacions")
+    useEffect(() => {
+        if (!numAnotacions && apiIsReady) {
+            getAnotacionNum()
+        }
+    }, [apiIsReady])
+
     const refresh = () => {
         apiRef.current?.refresh();
+        getAnotacionNum()
     };
 
     const { handleOpen: handleDetail, dialog: dialogDetail } = useRegistreDetail({

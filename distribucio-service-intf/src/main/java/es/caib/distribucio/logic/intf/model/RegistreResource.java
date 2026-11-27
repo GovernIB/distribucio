@@ -271,6 +271,16 @@ import java.util.*;
                                 ),
                         }
                 ),
+                @ResourceArtifact(
+                        type = ResourceArtifactType.ACTION,
+                        code = RegistreResource.ACTION_ANOTACIO_NUM_CODE,
+                        accessConstraints = {
+                                @ResourceAccessConstraint(
+                                        type = ResourceAccessConstraint.ResourceAccessConstraintType.ROLE,
+                                        roles = { BaseConfig.ROLE_USER }
+                                ),
+                        }
+                ),
         }
 )
 public class RegistreResource extends ContingutResource {
@@ -302,6 +312,7 @@ public class RegistreResource extends ContingutResource {
     public static final String ACTION_ALLIBERAR_CODE = "ALLIBERAR";
     public static final String ACTION_ASSIGNAR_CODE = "ASSIGNAR";
     public static final String ACTION_PROCESSAR_ANNEXOS_CODE = "PROCESSAR_ANNEXOS";
+    public static final String ACTION_ANOTACIO_NUM_CODE = "ANOTACIO_NUM";
 
     private RegistreTipusEnum registreTipus;
     private String numero;
