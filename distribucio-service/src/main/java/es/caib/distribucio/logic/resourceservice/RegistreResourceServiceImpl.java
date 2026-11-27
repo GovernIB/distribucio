@@ -358,6 +358,25 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
 
                 predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
             }
+            /// NOT_IN_MASSIVE_ACTION
+            if (mapaNamedQueries.containsKey("NOT_IN_MASSIVE_ACTION")) {
+                Subquery<Long> subquery = query.subquery(Long.class);
+                Root<ExecucioMassivaContingutEntity> subRoot = subquery.from(ExecucioMassivaContingutEntity.class);
+
+                List<ExecucioMassivaContingutEstatDto> estatsPendents = Arrays.asList(
+                        ExecucioMassivaContingutEstatDto.PENDENT,
+                        ExecucioMassivaContingutEstatDto.PROCESSANT,
+                        ExecucioMassivaContingutEstatDto.PAUSADA
+                );
+
+                subquery.select(subRoot.get("id"));
+                subquery.where(
+                        cb.equal(subRoot.get("elementId"), root.get("id")),
+                        subRoot.get("estat").in(estatsPendents)
+                );
+
+                predicates.add( cb.not(cb.exists(subquery)) );
+            }
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
@@ -1628,7 +1647,7 @@ public class RegistreResourceServiceImpl extends BaseMutableResourceService<Regi
                         toFindProcessedSpecification(
                                 null,
                                 "pendent:true",
-                                null
+                                new String[]{"NOT_IN_MASSIVE_ACTION"}
                         )
                 );
                 return "{\"num\" : " + num + "}";

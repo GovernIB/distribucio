@@ -24,9 +24,10 @@ import {
     LOGO_SEPARATOR_GAP,
     MENU_WIDTH,
 } from './util/layout';
-import {SessionStorageProvider, useSession} from './components/SessionStorageContext';
+import {SessionStorageProvider} from './components/SessionStorageContext';
 import TitolPagina from './components/TitolPagina';
 import {SnackbarProvider} from "notistack";
+import {useNumAnotacio} from "./components/NumAnotacio.tsx";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const envVars = {
@@ -65,7 +66,7 @@ export const useMenuEntries = () => {
     const { t } = useTranslation();
     const { currentRole } = useDistribucioContext();
     const isUser = currentRole == ROLE_USER
-    const { value: numAnotacions } = useSession("numAnotacions")
+    const { value: numAnotacions } = useNumAnotacio()
     const menuEntries: MenuEntryAmbPantalla[] = [
         {
             id: 'home',
@@ -82,9 +83,8 @@ export const useMenuEntries = () => {
             pantalla: 'registre',
             badgeProps: {
                 color: 'primary',
-                badgeContent: numAnotacions,
+                badgeContent: (isUser && numAnotacions) ?numAnotacions :null,
                 max: 999,
-                hidden: !isUser || !numAnotacions,
             }
         },
         {

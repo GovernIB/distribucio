@@ -17,9 +17,8 @@ import useDescargaMassiva from "../actions/DescargaMassiva.tsx";
 import useReenviarBackoffice from "../actions/ReenviarBackoffice.tsx";
 import useEnviarMarcar from "../actions/EnviarMarcar.tsx";
 import useAssignar from "../actions/Assignar.tsx";
-import {ROLE_USER, useDistribucioContext} from "../../../components/DistribucioContext.ts";
+import {useDistribucioContext} from "../../../components/DistribucioContext.ts";
 import { icons } from '../../../util/icons';
-import {useSession} from "../../../components/SessionStorageContext.tsx";
 
 export const useActions = (refresh?: () => void) => {
     const { t } = useTranslation();
@@ -30,23 +29,6 @@ export const useActions = (refresh?: () => void) => {
         artifactAction: apiAction,
     } = useResourceApiService('registreResource');
     const {temporalMessageShow} = useBaseAppContext();
-
-    const { save: setNumAnotacions } = useSession("numAnotacions")
-    const {currentRole} = useDistribucioContext();
-    const isUser = currentRole == ROLE_USER
-
-    const getAnotacionNum = () => {
-        if (apiIsReady && isUser) {
-            apiAction(undefined, {code: "ANOTACIO_NUM"})
-                .then((response) => {
-                    setNumAnotacions(response.num)
-                })
-                .catch((error) => {
-                    setNumAnotacions(null)
-                    temporalMessageShow(null, error?.message, 'error');
-                });
-        }
-    }
 
     const marcarSobreescriure = (id:any) => {
         if (apiIsReady) {
@@ -182,7 +164,6 @@ export const useActions = (refresh?: () => void) => {
 
     return {
         apiIsReady,
-        getAnotacionNum,
         marcarSobreescriure,
         descarregarDoc,
         informeLogs,
